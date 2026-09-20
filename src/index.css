@@ -1,1 +1,16 @@
-:root{font-family:'DM Sans','Segoe UI',sans-serif;color:#20252b;background:#f5f6f8;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}*{box-sizing:border-box}body{margin:0;min-width:320px}button,input{font:inherit}button{cursor:pointer}#root{min-height:100vh}
+:root {
+  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+  color: #26323d;
+  background: #f5f6f3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #26323d;
+  --muted: #7d8790;
+  --line: #e4e8e5;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; }
+#root { min-height: 100vh; }
