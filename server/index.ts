@@ -2,69 +2,60 @@ import 'dotenv/config'
 import express from 'express'
 import mysql from 'mysql2/promise'
 
-type StockItem = {
-  name: string
-  ref: string
-  location: string
-  stock: number
-  minimum: number
-  status: 'Critique' | 'Disponible'
-}
-
-type Activity = {
-  type: 'Réception' | 'Vente' | 'Retour'
-  title: string
-  detail: string
-  time: string
-  tone: 'green' | 'blue' | 'orange'
-}
-
-const requiredEnvironment = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'] as const
-const missingEnvironment = requiredEnvironment.filter((key) => !process.env[key])
-
-if (missingEnvironment.length > 0) {
-  throw new Error(`Variables d'environnement manquantes : ${missingEnvironment.join(', ')}`)
-}
-
+const app = express()
+const port = Number(process.env.API_PORT ?? 3001)
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST ?? '127.0.0.1',
   port: Number(process.env.DB_PORT ?? 3306),
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  user: process.env.DB_USER ?? 'root',
+  password: process.env.DB_PASSWORD ?? '',
+  database: process.env.DB_NAME ?? 'autostrass_test',
   waitForConnections: true,
   connectionLimit: 5,
 })
 
-const app = express()
 app.use(express.json())
 
 app.get('/api/health', async (_request, response) => {
   try {
     await pool.query('SELECT 1')
-    response.json({ status: 'ok', database: 'connected' })
-  } catch {
-    response.status(503).json({ status: 'error', database: 'unavailable' })
+    response.json({ status: 'ok', database: process.env.DB_NAME ?? 'autostrass_test' })
+  } catch (error) {
+    console.error('MariaDB health check failed', error)
+    response.status(503).json({ status: 'error', message: 'Connexion MariaDB indisponible' })
   }
 })
 
 app.get('/api/dashboard', async (_request, response) => {
   try {
-    const [stockRows] = await pool.query(
-      'SELECT name, reference AS ref, location, stock_quantity AS stock, minimum_quantity AS minimum, status FROM stock_items ORDER BY stock_quantity / NULLIF(minimum_quantity, 0), name',
+    const [stockRows] = await pool.query<mysql.RowDataPacket[]>(
+      'SELECT name, reference, location, stock_quantity, status FROM stock_items ORDER BY id',
     )
-    const [activityRows] = await pool.query(
-      'SELECT activity_type AS type, title, detail, relative_time AS time, tone FROM activities ORDER BY occurred_at DESC LIMIT 10',
+    const [activityRows] = await pool.query<mysql.RowDataPacket[]>(
+      'SELECT title, detail, relative_time, tone FROM activities ORDER BY occurred_at DESC LIMIT 10',
     )
-
-    response.json({ stockItems: stockRows as StockItem[], activities: activityRows as Activity[] })
+    response.json({
+      stock: stockRows.map((row) => ({
+        reference: row.reference,
+        name: row.name,
+        location: row.location,
+        quantity: Number(row.stock_quantity),
+        status: row.status === 'Critique' ? 'Stock faible' : 'En stock',
+        tone: row.status === 'Critique' ? 'orange' : 'green',
+      })),
+      activities: activityRows.map((row) => ({
+        time: row.relative_time,
+        title: row.title,
+        detail: row.detail,
+        color: row.tone,
+      })),
+    })
   } catch (error) {
-    console.error('Erreur de lecture du dashboard', error)
-    response.status(503).json({ message: 'Les données du dashboard sont indisponibles.' })
+    console.error('Dashboard query failed', error)
+    response.status(503).json({ status: 'error', message: 'Données MariaDB indisponibles' })
   }
 })
 
-const port = Number(process.env.PORT ?? 3001)
 app.listen(port, () => {
-  console.log(`API autostrass disponible sur http://localhost:${port}`)
+  console.log(`Autostrass API listening on http://localhost:${port}`)
 })

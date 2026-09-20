@@ -1,5 +1,15 @@
 # React + TypeScript + Vite
 
+## MariaDB
+
+Le tableau de bord charge le stock et l’activité depuis MariaDB via l’API Express située dans `server/index.ts`.
+
+1. Copier `.env.example` vers `.env`.
+2. Renseigner les paramètres MariaDB dans `.env` sans les committer.
+3. Lancer `npm run dev`.
+
+L’API expose `GET /api/health` et `GET /api/dashboard` sur le port `3001`. Vite relaie automatiquement les appels `/api` vers cette API.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

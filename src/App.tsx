@@ -1,55 +1,75 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
-type NavItem = { label: string; icon: string }
-type StockItem = { name: string; ref: string; location: string; stock: number; minimum: number; status: 'Critique' | 'Disponible' }
-type Activity = { type: 'Réception' | 'Vente' | 'Retour'; title: string; detail: string; time: string; tone: 'green' | 'blue' | 'orange' }
-
-const navItems: NavItem[] = [
-  { label: 'Vue d’ensemble', icon: '⌂' }, { label: 'Stock & pièces', icon: '▦' },
-  { label: 'Réceptions', icon: '↓' }, { label: 'Ventes', icon: '▣' },
-  { label: 'Livraisons', icon: '⇢' }, { label: 'Retours', icon: '↶' },
+type ModuleKey = 'Vue d’ensemble' | 'Stock' | 'Ventes' | 'Clients' | 'Réceptions' | 'Livraisons' | 'Retours' | 'Administration'
+type StockRow = { reference: string; name: string; location: string; quantity: number; status: string; tone: string }
+type Activity = { time: string; title: string; detail: string; color: string }
+type DashboardPayload = { stock?: StockRow[]; stockItems?: Array<{ name: string; ref: string; location: string; stock: number; status: string }>; activities?: Array<{ time: string; title: string; detail: string; color?: string; tone?: string }>; }
+const modules: { label: ModuleKey; icon: string; badge?: string }[] = [
+  { label: 'Vue d’ensemble', icon: '⌂' }, { label: 'Stock', icon: '▦', badge: '24' }, { label: 'Ventes', icon: '▤' }, { label: 'Clients', icon: '♙' },
+  { label: 'Réceptions', icon: '↓', badge: '3' }, { label: 'Livraisons', icon: '▰' }, { label: 'Retours', icon: '↶' }, { label: 'Administration', icon: '⚙' },
 ]
+const fallbackStockRows: StockRow[] = [
+  { reference: 'PLA-038-09', name: 'Plaquettes de frein avant', location: 'A-03 · E-02 · P-09', quantity: 12, status: 'En stock', tone: 'green' },
+  { reference: 'FIL-5W30-5L', name: 'Huile moteur 5W30 · 5L', location: 'A-01 · E-01 · P-04', quantity: 4, status: 'Stock faible', tone: 'orange' },
+  { reference: 'BAT-74AH-680', name: 'Batterie 74Ah · 680A', location: 'B-02 · E-04 · P-02', quantity: 0, status: 'Rupture', tone: 'red' },
+  { reference: 'BAL-205-55R16', name: 'Pneu été 205/55 R16', location: 'C-01 · E-06 · P-12', quantity: 28, status: 'En stock', tone: 'green' },
+]
+const fallbackActivities: Activity[] = [
+  { time: '09:42', title: 'Vente comptoir #V-1048', detail: 'Caisse 01 · 246,80 €', color: 'orange' }, { time: '09:18', title: 'Réception fournisseur', detail: 'Auto Pièces Nord · 18 lignes', color: 'blue' },
+  { time: '08:55', title: 'Bon de livraison #BL-286', detail: 'Garage des Tilleuls · expédié', color: 'green' }, { time: '08:31', title: 'Retour enregistré #RT-019', detail: 'Filtre habitacle · contrôle requis', color: 'red' },
+]
+
 function App() {
-  const [activeNav, setActiveNav] = useState('Vue d’ensemble')
-  const [notice, setNotice] = useState('')
-  const [showAllStock, setShowAllStock] = useState(false)
-  const [stockItems, setStockItems] = useState<StockItem[]>([])
-  const [activities, setActivities] = useState<Activity[]>([])
+  const [activeModule, setActiveModule] = useState<ModuleKey>('Vue d’ensemble')
+  const [search, setSearch] = useState('')
+  const [showNotification, setShowNotification] = useState(false)
+  const [showQuickSale, setShowQuickSale] = useState(false)
+  const [stockRows, setStockRows] = useState<StockRow[]>(fallbackStockRows)
+  const [activities, setActivities] = useState<Activity[]>(fallbackActivities)
   const [isLoading, setIsLoading] = useState(true)
-  const [loadError, setLoadError] = useState('')
-  const handleAction = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3200) }
-
+  const [apiError, setApiError] = useState(false)
   useEffect(() => {
-    const loadDashboard = async () => {
-      try {
-        const response = await fetch('/api/dashboard')
-        if (!response.ok) throw new Error('dashboard unavailable')
-        const data: { stockItems: StockItem[]; activities: Activity[] } = await response.json()
-        setStockItems(data.stockItems)
-        setActivities(data.activities)
-      } catch {
-        setLoadError('Impossible de charger les données MariaDB.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    void loadDashboard()
+    fetch('/api/dashboard').then(async (response) => {
+      if (!response.ok) throw new Error('API unavailable')
+      return response.json() as Promise<DashboardPayload>
+    }).then((data) => {
+      const remoteStock = data.stock ?? data.stockItems?.map((row) => ({
+        reference: row.ref,
+        name: row.name,
+        location: row.location,
+        quantity: row.stock,
+        status: row.status === 'Critique' ? 'Stock faible' : 'En stock',
+        tone: row.status === 'Critique' ? 'orange' : 'green',
+      }))
+      const remoteActivities = data.activities?.map((activity) => ({ ...activity, color: activity.color ?? activity.tone ?? 'blue' }))
+      if (!remoteStock || !remoteActivities) throw new Error('Invalid API payload')
+      setStockRows(remoteStock)
+      setActivities(remoteActivities)
+      setApiError(false)
+    }).catch(() => setApiError(true)).finally(() => setIsLoading(false))
   }, [])
+  const filteredRows = useMemo(() => stockRows.filter((row) => `${row.reference} ${row.name} ${row.location}`.toLowerCase().includes(search.toLowerCase())), [search, stockRows])
+  const title = activeModule === 'Vue d’ensemble' ? 'Bonjour Marc, voici votre activité.' : activeModule
+  const subtitle = activeModule === 'Vue d’ensemble' ? 'Mardi 12 mars 2024 · Atelier Central' : `Gérez votre module ${activeModule.toLowerCase()} depuis cet espace.`
+  const navigate = (module: ModuleKey) => setActiveModule(module)
 
-  return (
-    <div className="app-shell">
-      <aside className="sidebar"><div className="brand"><span className="brand-mark">A</span><span>autostrass</span></div><div className="workspace-switcher"><span className="workspace-dot" /> Atelier Lyon <span className="chevron">⌄</span></div><nav className="main-nav" aria-label="Navigation principale"><span className="nav-caption">Espace de travail</span>{navItems.map((item) => <button className={activeNav === item.label ? 'nav-item active' : 'nav-item'} key={item.label} onClick={() => setActiveNav(item.label)}><span className="nav-icon">{item.icon}</span>{item.label}{item.label === 'Stock & pièces' && <span className="nav-count">{stockItems.length}</span>}</button>)}</nav><div className="sidebar-bottom"><button className="nav-item"><span className="nav-icon">⚙</span>Paramètres</button><div className="user-chip"><span className="avatar">CM</span><span><strong>Clara Martin</strong><small>Administratrice</small></span><span className="more">•••</span></div></div></aside>
-      <main className="main-content"><header className="topbar"><div className="breadcrumb"><span>Opérations</span><b>/</b><strong>{activeNav}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Rechercher">⌕</button><button className="icon-button notification" aria-label="Notifications">♧<i /></button><div className="top-avatar">CM</div></div></header>
-        {notice && <div className="toast" role="status">✓ {notice}</div>}
-        <div className="page-content"><section className="page-heading"><div><p className="eyebrow">Mardi 24 septembre 2024 <span className="live-dot" /> {isLoading ? 'Connexion à la base…' : loadError ? 'Base indisponible' : 'Données à jour'}</p><h1>Bonjour Clara, <em>voici votre journée.</em></h1><p className="subtitle">Gardez un œil sur vos flux et vos pièces critiques.</p></div><button className="primary-button" onClick={() => handleAction('Nouvelle réception créée')}><span>＋</span> Nouvelle opération <b>⌄</b></button></section>
-          {loadError && <div className="toast" role="alert">⚠ {loadError}</div>}
-          <section className="metric-grid" aria-label="Indicateurs clés"><article className="metric-card accent-green"><div className="metric-top"><span>Chiffre d'affaires</span><span className="metric-icon">↗</span></div><strong>24 680 €</strong><p><span className="positive">↑ 12,8 %</span> vs mois dernier</p><div className="sparkline green"><i /><i /><i /><i /><i /><i /><i /></div></article><article className="metric-card"><div className="metric-top"><span>Commandes en cours</span><span className="metric-icon blue-icon">▣</span></div><strong>38</strong><p><span className="positive">↑ 8,2 %</span> cette semaine</p><div className="mini-bars"><i /><i /><i /><i /><i /><i /><i /><i /></div></article><article className="metric-card accent-orange"><div className="metric-top"><span>À expédier aujourd'hui</span><span className="metric-icon orange-icon">⇢</span></div><strong>12</strong><p><span className="neutral">4 prioritaires</span> avant 16h</p><div className="progress-line"><span /></div></article><article className="metric-card accent-red"><div className="metric-top"><span>Stock sous seuil</span><span className="metric-icon red-icon">!</span></div><strong>4</strong><p><span className="negative">2 critiques</span> nécessitent une action</p><div className="progress-line red-line"><span /></div></article></section>
-          <section className="quick-actions"><div className="section-label">Actions rapides</div><div className="quick-grid"><button onClick={() => handleAction('Ouverture de la réception fournisseur')}><span className="quick-icon purple">↓</span><span><strong>Réceptionner</strong><small>Entrer du stock</small></span><b>→</b></button><button onClick={() => handleAction('Nouvelle vente initiée')}><span className="quick-icon yellow">＋</span><span><strong>Créer une vente</strong><small>Commande comptoir</small></span><b>→</b></button><button onClick={() => handleAction('Ouverture du module retours')}><span className="quick-icon orange">↶</span><span><strong>Gérer un retour</strong><small>Contrôle & avoir</small></span><b>→</b></button></div></section>
-          <div className="dashboard-grid"><section className="panel stock-panel"><div className="panel-header"><div><span className="panel-kicker">Surveillance</span><h2>Stock à surveiller</h2></div><button className="text-button" onClick={() => setShowAllStock(!showAllStock)}>{showAllStock ? 'Réduire' : 'Voir tout'} <span>→</span></button></div><div className="table-wrap"><table><thead><tr><th>Pièce</th><th>Emplacement</th><th>En stock</th><th>État</th><th /></tr></thead><tbody>{isLoading ? <tr><td colSpan={5}>Chargement du stock…</td></tr> : stockItems.slice(0, showAllStock ? stockItems.length : 3).map((item) => <tr key={item.ref}><td><div className="part-name"><span className="part-icon">⚙</span><span><strong>{item.name}</strong><small>{item.ref}</small></span></div></td><td className="muted">{item.location}</td><td><strong className={item.stock <= item.minimum ? 'stock-low' : ''}>{item.stock}</strong><small className="stock-unit"> / {item.minimum} min.</small></td><td><span className={item.status === 'Critique' ? 'status critical' : 'status available'}><i />{item.status}</span></td><td><button className="row-menu" aria-label={`Actions pour ${item.name}`}>•••</button></td></tr>)}</tbody></table></div></section><section className="panel activity-panel"><div className="panel-header"><div><span className="panel-kicker">Journal d'activité</span><h2>Derniers mouvements</h2></div><button className="icon-button">•••</button></div><div className="activity-list">{isLoading ? <p>Chargement des mouvements…</p> : activities.map((activity) => <div className="activity-item" key={activity.title}><span className={`activity-icon ${activity.tone}`}>{activity.type === 'Réception' ? '↓' : activity.type === 'Vente' ? '▣' : '↶'}</span><div><strong>{activity.title}</strong><p>{activity.detail}</p><small>{activity.time}</small></div></div>)}</div><button className="activity-footer" onClick={() => handleAction('Historique complet ouvert')}>Voir l'historique complet <span>→</span></button></section></div>
-        </div></main>
-    </div>
-  )
+  return <div className="app-shell">
+    <aside className="sidebar"><div className="brand"><span className="brand-mark">A</span><span>autostrass<span className="brand-dot">.</span></span></div><div className="workspace-switcher"><span className="workspace-avatar">AC</span><span><strong>Atelier Central</strong><small>Site principal</small></span><span className="chevron">⌄</span></div><nav className="main-nav" aria-label="Navigation principale"><span className="nav-label">PILOTAGE</span>{modules.slice(0, 1).map((module) => <NavItem key={module.label} module={module} activeModule={activeModule} navigate={navigate} />)}<span className="nav-label">OPÉRATIONS</span>{modules.slice(1, 7).map((module) => <NavItem key={module.label} module={module} activeModule={activeModule} navigate={navigate} />)}<span className="nav-label">PARAMÈTRES</span>{modules.slice(7).map((module) => <NavItem key={module.label} module={module} activeModule={activeModule} navigate={navigate} />)}</nav><div className="sidebar-footer"><div className="help-icon">?</div><div><strong>Besoin d’aide ?</strong><small>Consulter le centre d’aide</small></div><span>›</span></div><div className="user-card"><div className="user-avatar">MD</div><div><strong>Marc Dupont</strong><small>Administrateur</small></div><button aria-label="Menu du compte">•••</button></div></aside>
+    <main className="main-content"><header className="topbar"><div className="breadcrumb"><span>Atelier Central</span><b>/</b><strong>{activeModule}</strong></div><div className="top-actions"><label className="search-box"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Rechercher une référence, un client..." /><kbd>⌘ K</kbd></label><button className="icon-button notification-button" aria-label="Notifications" onClick={() => setShowNotification((value) => !value)}>♢<i /></button><button className="avatar-button">MD</button></div>{showNotification && <div className="notification-popover"><strong>Notifications</strong><p>3 commandes attendent une réception.</p><p>La batterie BAT-74AH-680 est en rupture.</p></div>}</header><div className="page-content"><div className="page-heading"><div><p className="eyebrow">TABLEAU DE BORD</p><h1>{title}</h1><p className="page-subtitle">{subtitle}</p>{apiError && <p className="api-status warning">Mode hors connexion · données locales affichées</p>}{!apiError && !isLoading && <p className="api-status connected">● MariaDB synchronisée</p>}</div><button className="primary-button" onClick={() => setShowQuickSale(true)}><span>＋</span> Nouvelle vente</button></div>{activeModule === 'Vue d’ensemble' ? <Dashboard filteredRows={filteredRows} activities={activities} isLoading={isLoading} navigate={navigate} setShowQuickSale={setShowQuickSale} /> : <section className="module-placeholder panel"><div className="module-placeholder-icon">{modules.find((module) => module.label === activeModule)?.icon}</div><h2>{activeModule}</h2><p>Le module est prêt à accueillir vos opérations. Utilisez la recherche globale ou revenez au tableau de bord pour consulter les alertes et accès rapides.</p><button className="secondary-button" onClick={() => navigate('Vue d’ensemble')}>Retour au tableau de bord</button></section>}</div></main>
+    {showQuickSale && <div className="modal-backdrop" onClick={() => setShowQuickSale(false)}><section className="sale-modal" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowQuickSale(false)}>×</button><p className="eyebrow">VENTE COMPTOIR</p><h2>Nouvelle vente</h2><p className="modal-copy">Choisissez une caisse pour commencer un nouveau ticket.</p><div className="registers"><button><span className="register-number">01</span><span><strong>Caisse principale</strong><small>Marc Dupont · ouverte</small></span><b>→</b></button><button><span className="register-number muted">02</span><span><strong>Caisse atelier</strong><small>Disponible</small></span><b>→</b></button></div></section></div>}
+  </div>
 }
+
+function NavItem({ module, activeModule, navigate }: { module: typeof modules[number]; activeModule: ModuleKey; navigate: (module: ModuleKey) => void }) { return <button className={`nav-item ${activeModule === module.label ? 'active' : ''}`} onClick={() => navigate(module.label)}><span className="nav-icon">{module.icon}</span>{module.label}{module.badge && <span className="nav-badge">{module.badge}</span>}</button> }
+
+function Dashboard({ filteredRows, activities, isLoading, navigate, setShowQuickSale }: { filteredRows: StockRow[]; activities: Activity[]; isLoading: boolean; navigate: (module: ModuleKey) => void; setShowQuickSale: (show: boolean) => void }) {
+  return <><section className="metric-grid" aria-label="Indicateurs clés"><Metric icon="▤" color="orange" label="Chiffre d’affaires du jour" value="4 286,40 €"><small className="positive">↑ 12,8 % <em>vs. mardi dernier</em></small></Metric><Metric icon="▦" color="blue" label="Articles en stock" value={isLoading ? '...' : String(filteredRows.reduce((total, row) => total + row.quantity, 0))}><small><b className="warning-dot" />{filteredRows.filter((row) => row.tone === 'orange' || row.tone === 'red').length} à réapprovisionner</small></Metric><Metric icon="♙" color="green" label="Clients actifs" value="386"><small className="positive">↑ 4,2 % <em>ce mois-ci</em></small></Metric></section><section className="dashboard-grid"><StockPanel filteredRows={filteredRows} navigate={navigate} /><ActivityPanel activities={activities} /></section><section className="bottom-grid"><CashPanel /><QuickPanel setShowQuickSale={setShowQuickSale} navigate={navigate} /></section></>
+}
+function Metric({ icon, color, label, value, children }: { icon: string; color: string; label: string; value: string; children: React.ReactNode }) { return <article className="metric-card"><div className={`metric-icon ${color}`}>{icon}</div><div><span>{label}</span><strong>{value}</strong>{children}</div><div className={`mini-chart ${color}-chart`}><i /><i /><i /><i /><i /><i /><i /></div></article> }
+function StockPanel({ filteredRows, navigate }: { filteredRows: StockRow[]; navigate: (module: ModuleKey) => void }) { return <article className="panel stock-panel"><div className="panel-header"><div><h2>Stock à surveiller</h2><p>Les références qui nécessitent votre attention</p></div><button className="text-button" onClick={() => navigate('Stock')}>Voir le stock <span>→</span></button></div><div className="table-wrap"><table><thead><tr><th>RÉFÉRENCE</th><th>EMPLACEMENT</th><th>QUANTITÉ</th><th>STATUT</th><th /></tr></thead><tbody>{filteredRows.map((row) => <tr key={row.reference}><td><strong>{row.reference}</strong><span>{row.name}</span></td><td><span className="location-tag">⌖ {row.location}</span></td><td><strong>{row.quantity}</strong> <span>unités</span></td><td><span className={`status ${row.tone}`}><b />{row.status}</span></td><td><button className="row-menu" aria-label={`Actions pour ${row.reference}`}>•••</button></td></tr>)}</tbody></table>{filteredRows.length === 0 && <div className="empty-state">Aucune référence ne correspond à votre recherche.</div>}</div></article> }
+function ActivityPanel({ activities }: { activities: Activity[] }) { return <article className="panel activity-panel"><div className="panel-header"><div><h2>Activité récente</h2><p>Les dernières opérations enregistrées</p></div><button className="more-button" aria-label="Plus d'options">•••</button></div><div className="activity-list">{activities.map((activity) => <div className="activity-row" key={activity.time + activity.title}><div className={`activity-dot ${activity.color}`} /><div><strong>{activity.title}</strong><span>{activity.detail}</span></div><time>{activity.time}</time></div>)}</div><button className="activity-link">Voir toute l’activité <span>→</span></button></article> }
+function CashPanel() { return <article className="panel cash-panel"><div className="panel-header"><div><h2>Ventes par caisse</h2><p>Suivi de la journée en cours</p></div><button className="date-chip">Aujourd’hui⌄</button></div><div className="cash-total"><strong>4 286,40 €</strong><span>+ 12,8 %</span></div><div className="bar-chart">{[42, 56, 38, 78, 62, 91].map((height, index) => <div key={height}><i style={{ height: `${height}%` }} /><span>{8 + index * 2}h</span></div>)}</div></article> }
+function QuickPanel({ setShowQuickSale, navigate }: { setShowQuickSale: (show: boolean) => void; navigate: (module: ModuleKey) => void }) { return <article className="panel quick-panel"><div className="panel-header"><div><h2>Accès rapides</h2><p>Les actions les plus utilisées</p></div></div><div className="quick-actions"><button onClick={() => setShowQuickSale(true)}><span className="quick-icon orange">＋</span><span><strong>Nouvelle vente</strong><small>Créer un ticket comptoir</small></span><b>→</b></button><button onClick={() => navigate('Réceptions')}><span className="quick-icon blue">↓</span><span><strong>Réception fournisseur</strong><small>Enregistrer une livraison</small></span><b>→</b></button><button onClick={() => navigate('Clients')}><span className="quick-icon green">♙</span><span><strong>Nouveau client</strong><small>Ajouter au carnet d’adresses</small></span><b>→</b></button></div></article> }
 
 export default App
