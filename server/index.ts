@@ -16,28 +16,19 @@ const pool = hasDatabaseConfig ? mysql.createPool({
   waitForConnections: true,
 }) : null
 
-const demoDashboard = {
-  stockValue: 128640,
-  references: 2486,
-  lowStock: 12,
-  pendingOrders: 7,
-  lowStockItems: [
-    { reference: 'PLA-2841', label: 'Plaquettes de frein avant', quantity: 2, minimum: 6, location: 'A-03 / E-02 / P-14' },
-    { reference: 'FIL-0920', label: 'Filtre a huile - Renault', quantity: 3, minimum: 8, location: 'B-01 / E-04 / P-02' },
-    { reference: 'BAT-7710', label: 'Batterie 12V 70Ah', quantity: 1, minimum: 4, location: 'C-02 / E-01 / P-08' },
-    { reference: 'HUI-5400', label: 'Huile moteur 5W30 - 5L', quantity: 4, minimum: 10, location: 'D-05 / E-03 / P-21' },
-  ],
-  activity: [
-    { type: 'RECEPTION', title: 'Reception fournisseur', detail: 'Auto Pieces Nord - 24 lignes', time: 'Il y a 18 min' },
-    { type: 'VENTE', title: 'Vente comptoir #C-10482', detail: 'Caisse 02 - 184,50 EUR', time: 'Il y a 32 min' },
-    { type: 'TRANSFERT', title: 'Transfert de stock', detail: 'Allee A vers zone comptoir', time: 'Il y a 1 h' },
-  ],
+const emptyDashboard = {
+  stockValue: 0,
+  references: 0,
+  lowStock: 0,
+  pendingOrders: 0,
+  lowStockItems: [] as Array<{ reference: string; label: string; quantity: number; minimum: number; location: string }>,
+  activity: [] as Array<{ type: string; title: string; detail: string; time: string }>,
 }
 
 app.use(express.json())
 
 app.get('/api/health', async (_request: Request, response: Response) => {
-  let database = 'demo'
+  let database: 'connected' | 'unavailable' | 'unconfigured' = 'unconfigured'
   if (pool) {
     try {
       await pool.query('SELECT 1')
@@ -51,7 +42,7 @@ app.get('/api/health', async (_request: Request, response: Response) => {
 
 app.get('/api/dashboard', async (_request: Request, response: Response) => {
   if (!pool) {
-    response.json(demoDashboard)
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
     return
   }
 
@@ -63,9 +54,14 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
         SUM(CASE WHEN quantity <= minimum_quantity THEN 1 ELSE 0 END) AS low_stock
       FROM stock_balances`,
     )
-    response.json({ ...demoDashboard, stockValue: Number(rows[0]?.stock_value ?? 0), references: Number(rows[0]?.references ?? 0), lowStock: Number(rows[0]?.low_stock ?? 0) })
+    response.json({
+      ...emptyDashboard,
+      stockValue: Number(rows[0]?.stock_value ?? 0),
+      references: Number(rows[0]?.references ?? 0),
+      lowStock: Number(rows[0]?.low_stock ?? 0),
+    })
   } catch {
-    response.json(demoDashboard)
+    response.status(503).json({ error: 'DATABASE_UNAVAILABLE', message: 'Impossible de lire le dashboard depuis MariaDB.' })
   }
 })
 

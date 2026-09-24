@@ -12,38 +12,16 @@ import RetoursView from './views/RetoursView'
 import ClientsView from './views/ClientsView'
 import VehiculesView from './views/VehiculesView'
 import UtilisateursView from './views/UtilisateursView'
+import type { ApiDashboard, ApiMode, DashboardData } from './types'
 
-type DashboardData = {
-  stockValue: number
-  references: number
-  lowStock: number
-  pendingOrders: number
-  lowStockItems: Array<{ reference: string; label: string; quantity: number; minimum: number; location: string }>
-  activity: Array<{ type: string; title: string; detail: string; time: string }>
-}
-
-type ApiDashboard = Partial<DashboardData> & {
-  stockItems?: Array<{ ref: string; name: string; location: string; stock: number; minimum: number }>
-  activities?: Array<{ type: string; title: string; detail: string; time: string }>
-}
-
-const demoDashboard: DashboardData = {
-  stockValue: 128640,
-  references: 2486,
-  lowStock: 12,
-  pendingOrders: 7,
-  lowStockItems: [
-    { reference: 'PLA-2841', label: 'Plaquettes de frein avant', quantity: 2, minimum: 6, location: 'A-03 / E-02 / P-14' },
-    { reference: 'FIL-0920', label: 'Filtre a huile - Renault', quantity: 3, minimum: 8, location: 'B-01 / E-04 / P-02' },
-    { reference: 'BAT-7710', label: 'Batterie 12V 70Ah', quantity: 1, minimum: 4, location: 'C-02 / E-01 / P-08' },
-    { reference: 'HUI-5400', label: 'Huile moteur 5W30 - 5L', quantity: 4, minimum: 10, location: 'D-05 / E-03 / P-21' },
-  ],
-  activity: [
-    { type: 'RECEPTION', title: 'Reception fournisseur', detail: 'Auto Pieces Nord - 24 lignes', time: 'Il y a 18 min' },
-    { type: 'VENTE', title: 'Vente comptoir #C-10482', detail: 'Caisse 02 - 184,50 EUR', time: 'Il y a 32 min' },
-    { type: 'TRANSFERT', title: 'Transfert de stock', detail: 'Allee A vers zone comptoir', time: 'Il y a 1 h' },
-  ],
-}
+const initialDashboard = {
+  stockValue: 0,
+  references: 0,
+  lowStock: 0,
+  pendingOrders: 0,
+  lowStockItems: [],
+  activity: [],
+} satisfies DashboardData
 
 const navigation = [
   { label: 'Vue d ensemble', path: '/' },
@@ -56,11 +34,28 @@ const navigation = [
   { label: 'Retours', path: '/retours' },
   { label: 'Clients', path: '/clients' },
   { label: 'Vehicules', path: '/vehicules' }
-]
+] as const
 
-function App() {
-  const [dashboard, setDashboard] = useState<DashboardData>(demoDashboard)
-  const [apiMode, setApiMode] = useState<'demo' | 'connected'>('demo')
+function mapDashboardPayload(data: ApiDashboard): DashboardData {
+  const lowStockItems = data.lowStockItems ?? data.stockItems?.map((item) => ({
+    reference: item.ref,
+    label: item.name,
+    quantity: item.stock,
+    minimum: item.minimum,
+    location: item.location,
+  }))
+
+  return {
+    ...initialDashboard,
+    ...data,
+    lowStockItems: lowStockItems ?? initialDashboard.lowStockItems,
+    activity: data.activity ?? data.activities ?? initialDashboard.activity,
+  }
+}
+
+function AppContent() {
+  const [dashboard, setDashboard] = useState<DashboardData>(initialDashboard)
+  const [apiMode, setApiMode] = useState<ApiMode>('loading')
   const [mobileNav, setMobileNav] = useState(false)
   const location = useLocation()
 
@@ -68,15 +63,16 @@ function App() {
     fetch('/api/dashboard')
       .then((response) => response.ok ? response.json() as Promise<ApiDashboard> : Promise.reject(new Error('API unavailable')))
       .then((data) => {
-        const lowStockItems = data.lowStockItems ?? data.stockItems?.map((item) => ({ reference: item.ref, label: item.name, quantity: item.stock, minimum: item.minimum, location: item.location }))
-        setDashboard({ ...demoDashboard, ...data, lowStockItems: lowStockItems ?? demoDashboard.lowStockItems, activity: data.activity ?? data.activities ?? demoDashboard.activity })
+        setDashboard(mapDashboardPayload(data))
         setApiMode('connected')
       })
-      .catch(() => setApiMode('demo'))
+      .catch(() => {
+        setDashboard(initialDashboard)
+        setApiMode('error')
+      })
   }, [])
 
   return (
-    <BrowserRouter>
       <div className="app-shell">
         <aside className={`sidebar ${mobileNav ? 'sidebar-open' : ''}`}>
           <div className="brand"><span className="brand-mark">A</span><span>AUTOSTRASS</span></div>
@@ -112,7 +108,15 @@ function App() {
           <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu">☰</button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher">⌕</button><button className="icon-button notification" aria-label="Notifications">♢<i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">ML</span><span>Marie Laurent</span><span className="chevron">⌄</span></div></div></header>
           <div className="content-wrap">
             <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour Marie <span className="wave">✦</span></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><span>＋</span> Nouvelle operation <span className="button-chevron">⌄</span></button></div>
-            <div className="status-line"><span className={`status-dot ${apiMode === 'connected' ? 'connected' : ''}`}></span>{apiMode === 'connected' ? 'Donnees MariaDB synchronisees' : 'Mode demonstration'}<span className="status-time">Derniere mise a jour : a l instant</span></div>
+            <div className="status-line">
+              <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : ''}`}></span>
+              {apiMode === 'connected'
+                ? 'Donnees MariaDB synchronisees'
+                : apiMode === 'loading'
+                  ? 'Connexion a MariaDB...'
+                  : 'Erreur de connexion a la base de donnees MariaDB'}
+              <span className="status-time">Derniere mise a jour : a l instant</span>
+            </div>
 
             <Routes>
               <Route path="/" element={<DashboardView dashboard={dashboard} apiMode={apiMode} />} />
@@ -131,6 +135,13 @@ function App() {
           </div>
         </main>
       </div>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   )
 }

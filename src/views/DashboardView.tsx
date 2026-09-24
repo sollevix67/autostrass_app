@@ -1,52 +1,12 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import type { ApiMode, DashboardData } from '../types'
 
-type DashboardData = {
-  stockValue: number
-  references: number
-  lowStock: number
-  pendingOrders: number
-  lowStockItems: Array<{ reference: string; label: string; quantity: number; minimum: number; location: string }>
-  activity: Array<{ type: string; title: string; detail: string; time: string }>
+type DashboardViewProps = {
+  dashboard: DashboardData
+  apiMode: ApiMode
 }
 
-type ApiDashboard = Partial<DashboardData> & {
-  stockItems?: Array<{ ref: string; name: string; location: string; stock: number; minimum: number }>
-  activities?: Array<{ type: string; title: string; detail: string; time: string }>
-}
-
-const demoDashboard: DashboardData = {
-  stockValue: 128640,
-  references: 2486,
-  lowStock: 12,
-  pendingOrders: 7,
-  lowStockItems: [
-    { reference: 'PLA-2841', label: 'Plaquettes de frein avant', quantity: 2, minimum: 6, location: 'A-03 / E-02 / P-14' },
-    { reference: 'FIL-0920', label: 'Filtre a huile - Renault', quantity: 3, minimum: 8, location: 'B-01 / E-04 / P-02' },
-    { reference: 'BAT-7710', label: 'Batterie 12V 70Ah', quantity: 1, minimum: 4, location: 'C-02 / E-01 / P-08' },
-    { reference: 'HUI-5400', label: 'Huile moteur 5W30 - 5L', quantity: 4, minimum: 10, location: 'D-05 / E-03 / P-21' },
-  ],
-  activity: [
-    { type: 'RECEPTION', title: 'Reception fournisseur', detail: 'Auto Pieces Nord - 24 lignes', time: 'Il y a 18 min' },
-    { type: 'VENTE', title: 'Vente comptoir #C-10482', detail: 'Caisse 02 - 184,50 EUR', time: 'Il y a 32 min' },
-    { type: 'TRANSFERT', title: 'Transfert de stock', detail: 'Allee A vers zone comptoir', time: 'Il y a 1 h' },
-  ],
-}
-
-export default function DashboardView({ apiMode: initialApiMode }: { apiMode?: 'demo' | 'connected' }) {
-  const [dashboard, setDashboard] = useState<DashboardData>(demoDashboard)
-  const [apiMode, setApiMode] = useState<'demo' | 'connected'>(initialApiMode ?? 'demo')
-
-  useEffect(() => {
-    fetch('/api/dashboard')
-      .then((response) => response.ok ? response.json() as Promise<ApiDashboard> : Promise.reject(new Error('API unavailable')))
-      .then((data) => {
-        const lowStockItems = data.lowStockItems ?? data.stockItems?.map((item) => ({ reference: item.ref, label: item.name, quantity: item.stock, minimum: item.minimum, location: item.location }))
-        setDashboard({ ...demoDashboard, ...data, lowStockItems: lowStockItems ?? demoDashboard.lowStockItems, activity: data.activity ?? data.activities ?? demoDashboard.activity })
-        setApiMode('connected')
-      })
-      .catch(() => setApiMode('demo'))
-  }, [])
+export default function DashboardView({ dashboard, apiMode }: DashboardViewProps) {
 
   return (
     <>
@@ -69,7 +29,19 @@ export default function DashboardView({ apiMode: initialApiMode }: { apiMode?: '
                 <tr><th>REFERENCE</th><th>DESIGNATION</th><th>EMPLACEMENT</th><th>DISPONIBLE</th><th></th></tr>
               </thead>
               <tbody>
-                {dashboard.lowStockItems.map((item) => (
+                {dashboard.lowStockItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={5}>
+                      <p className="empty-state">
+                        {apiMode === 'loading'
+                          ? 'Chargement du stock depuis MariaDB...'
+                          : apiMode === 'error'
+                            ? 'Impossible de charger le stock. Verifiez la connexion MariaDB.'
+                            : 'Aucun article sous le seuil minimum.'}
+                      </p>
+                    </td>
+                  </tr>
+                ) : dashboard.lowStockItems.map((item) => (
                   <tr key={item.reference}>
                     <td><b className="reference">{item.reference}</b></td>
                     <td><span className="item-name">{item.label}</span></td>
@@ -78,7 +50,7 @@ export default function DashboardView({ apiMode: initialApiMode }: { apiMode?: '
                       <span className="stock-level"><i style={{ width: `${Math.min(100, item.quantity / item.minimum * 100)}%` }}></i></span>
                       <b className="quantity">{item.quantity} <small>/ {item.minimum}</small></b>
                     </td>
-                    <td><Link className="row-action" to="/catalogue?edit={item.reference}" aria-label={`Commander ${item.label}`}>•••</Link></td>
+                    <td><Link className="row-action" to={`/catalogue?edit=${item.reference}`} aria-label={`Commander ${item.label}`}>•••</Link></td>
                   </tr>
                 ))}
               </tbody>
@@ -88,8 +60,16 @@ export default function DashboardView({ apiMode: initialApiMode }: { apiMode?: '
         <section className="panel activity-panel">
           <div className="panel-heading"><div><p className="panel-kicker">En direct</p><h2>Activite recente</h2></div><Link className="icon-button" to="/receptions">↗</Link></div>
           <div className="activity-list">
-            {dashboard.activity.map((item) => (
-              <div className="activity-item" key={item.title}>
+            {dashboard.activity.length === 0 ? (
+              <p className="empty-state">
+                {apiMode === 'loading'
+                  ? 'Chargement de l activite...'
+                  : apiMode === 'error'
+                    ? 'Activite indisponible.'
+                    : 'Aucune activite recente.'}
+              </p>
+            ) : dashboard.activity.map((item) => (
+              <div className="activity-item" key={`${item.type}-${item.title}-${item.time}`}>
                 <span className={`activity-icon activity-${item.type.toLowerCase()}`}>{item.type === 'VENTE' ? '€' : item.type === 'RECEPTION' ? '↓' : '⇄'}</span>
                 <div><b>{item.title}</b><p>{item.detail}</p></div>
                 <time>{item.time}</time>
