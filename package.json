@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"tsx server/index.ts\" \"vite\"",
     "dev:api": "tsx server/index.ts",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
@@ -15,13 +15,15 @@
     "express": "^5.2.1",
     "mysql2": "^3.24.4",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
+    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^6.1.1",
     "concurrently": "^10.0.5",
     "oxlint": "^1.81.0",

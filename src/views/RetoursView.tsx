@@ -1,0 +1,74 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { FormInput, FormSelect } from '../components/forms/FormFields'
+import type { Client, Retour } from '../types'
+
+const motifs = ['Article défectueux', 'Erreur de commande', 'Article non conforme', 'Changement d\'avis', 'Autre']
+
+export default function RetoursView() {
+  const [retours, setRetours] = useState<Retour[]>([
+    { id: 'R-001', venteId: 'V-010482', clientId: 'C-10482', dateRetour: '2026-09-18', motif: 'Article défectueux', articles: [{ reference: 'BAT-7710', designation: 'Batterie 12V 70Ah', quantite: 1, prixUnitaire: 45.00 }], montantRembourse: 45.00 },
+  ])
+
+  const [newRetour, setNewRetour] = useState<Partial<Retour>>({
+    venteId: '',
+    clientId: '',
+    dateRetour: new Date().toISOString().split('T')[0],
+    motif: '',
+    articles: [],
+    montantRembourse: 0,
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const r: Retour = { ...newRetour, id: `R-${String(retours.length + 1).padStart(3, '0')}`, montantRembourse: newRetour.montantRembourse || 0 } as Retour
+    setRetours((prev) => [r, ...prev])
+    setNewRetour({ venteId: '', clientId: '', dateRetour: new Date().toISOString().split('T')[0], motif: '', articles: [], montantRembourse: 0 })
+    alert('Retour enregistré !')
+  }
+
+  return (
+    <div className="page-view">
+      <div className="page-heading">
+        <div><p className="eyebrow">RETOURS</p><h1>Gestion des retours</h1><p className="heading-copy">Enregistrez et suivez les retours clients.</p></div>
+      </div>
+
+      <form className="form-card" onSubmit={handleSubmit}>
+        <h2>Nouveau retour</h2>
+        <div className="form-grid-2">
+          <FormInput label="ID Vente" name="venteId" value={newRetour.venteId || ''} onChange={(name, value) => setNewRetour((prev) => ({ ...prev, [name]: value }))} required placeholder="ex: V-010482" />
+          <FormInput label="ID Client" name="clientId" value={newRetour.clientId || ''} onChange={(name, value) => setNewRetour((prev) => ({ ...prev, [name]: value }))} required />
+          <FormInput label="Date du retour" name="dateRetour" type="date" value={newRetour.dateRetour || ''} onChange={(name, value) => setNewRetour((prev) => ({ ...prev, [name]: value }))} required />
+          <FormSelect label="Motif" name="motif" value={newRetour.motif || ''} options={motifs.map(m => ({ value: m, label: m }))} onChange={(name, value) => setNewRetour((prev) => ({ ...prev, [name]: value }))} required />
+          <FormInput label="Montant rembourse (€)" name="montantRembourse" type="number" step="0.01" value={newRetour.montantRembourse?.toString() || ''} onChange={(name, value) => setNewRetour((prev) => ({ ...prev, [name]: parseFloat(value) || 0 }))} required />
+        </div>
+        <div className="form-actions">
+          <button type="submit" className="primary-button">✓ Enregistrer le retour</button>
+        </div>
+      </form>
+
+      <div className="form-card">
+        <h2>Historique des retours</h2>
+        <div className="table-wrap">
+          <table>
+            <thead><tr><th>N°</th><th>VENTE</th><th>CLIENT</th><th>DATE</th><th>MOTIF</th><th>MONTANT</th></tr></thead>
+            <tbody>
+              {retours.map((r) => (
+                <tr key={r.id}>
+                  <td>{r.id}</td>
+                  <td>{r.venteId}</td>
+                  <td>{r.clientId}</td>
+                  <td>{r.dateRetour}</td>
+                  <td>{r.motif}</td>
+                  <td><strong>{r.montantRembourse.toFixed(2)} €</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Link className="back-link" to="/">← Retour au dashboard</Link>
+    </div>
+  )
+}
