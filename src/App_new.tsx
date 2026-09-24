@@ -133,6 +133,26 @@ function AppContent() {
               <Route path="*" element={<h1>404 - Page non trouvée</h1>} />
             </Routes>
           </div>
+
+          <footer className="app-footer" role="status" aria-live="polite">
+            <div className="footer-status">
+              <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : 'loading'}`}></span>
+              <span className="status-text">
+                {apiMode === 'connected'
+                  ? 'MariaDB connectee'
+                  : apiMode === 'loading'
+                    ? 'Connexion a MariaDB en cours...'
+                    : 'MariaDB deconnectee'}
+              </span>
+              <span className="status-divider" aria-hidden="true">|</span>
+              <time className="status-time" dateTime={new Date().toISOString()}>
+                Derniere mise a jour : {new Date().toLocaleTimeString('fr-FR')}
+              </time>
+            </div>
+            <div className="footer-version">
+              <small>Autostrass Depot v0.1.0</small>
+            </div>
+          </footer>
         </main>
       </div>
   )
