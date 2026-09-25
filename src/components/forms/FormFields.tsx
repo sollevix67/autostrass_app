@@ -1,16 +1,15 @@
-import { useState } from 'react'
-
 interface FormInputProps {
   label: string
   name: string
   type?: string
+  step?: string
   value: string
   onChange: (name: string, value: string) => void
   required?: boolean
   placeholder?: string
 }
 
-export function FormInput({ label, name, type = 'text', value, onChange, required, placeholder }: FormInputProps) {
+export function FormInput({ label, name, type = 'text', step, value, onChange, required, placeholder }: FormInputProps) {
   return (
     <div className="form-group">
       <label htmlFor={name}>{label}{required && <span className="required">*</span>}</label>
@@ -18,6 +17,7 @@ export function FormInput({ label, name, type = 'text', value, onChange, require
         id={name}
         name={name}
         type={type}
+        step={step}
         value={value}
         onChange={(e) => onChange(name, e.target.value)}
         placeholder={placeholder}

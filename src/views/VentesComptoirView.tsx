@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FormInput, FormSelect, FormTextarea } from '../components/forms/FormFields'
-import type { Article, Vente } from '../types'
+import { FormInput, FormSelect } from '../components/forms/FormFields'
+import type { Vente } from '../types'
 
 const caisses = ['Caisse 01', 'Caisse 02', 'Caisse 03']
 const modesPaiement = [
@@ -21,14 +21,6 @@ export default function VentesComptoirView() {
     monnaie: 0,
     modePaiement: 'espèces',
   })
-
-  const addArticle = (article: { reference: string; designation: string; prixUnitaire: number }) => {
-    setVente((prev) => {
-      const newArticles = [...prev.articles, { ...article, quantite: 1, montant: article.prixUnitaire }]
-      const total = newArticles.reduce((sum, a) => sum + a.montant, 0)
-      return { ...prev, articles: newArticles, totalHT: total }
-    })
-  }
 
   const updateQuantity = (index: number, value: string) => {
     setVente((prev) => {

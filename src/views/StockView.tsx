@@ -1,27 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FormInput, FormSelect, FormTextarea } from '../components/forms/FormFields'
+import { FormInput } from '../components/forms/FormFields'
 import type { Article } from '../types'
-
-const emplacements = [
-  { value: 'A', label: 'Allée A' },
-  { value: 'B', label: 'Allée B' },
-  { value: 'C', label: 'Allée C' },
-  { value: 'D', label: 'Allée D' },
-  { value: 'E', label: 'Zone E' },
-  { value: 'P', label: 'Zone P' },
-]
-
-const defaultArticle: Article = {
-  reference: '',
-  designation: '',
-  category: '',
-  prixUnitaireHT: 0,
-  quantite: 0,
-  minimum: 0,
-  emplacement: '',
-  description: '',
-}
 
 export default function StockView() {
   const [articles, setArticles] = useState<Article[]>([

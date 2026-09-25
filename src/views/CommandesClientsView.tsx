@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FormInput, FormSelect, FormTextarea } from '../components/forms/FormFields'
+import { FormInput, FormSelect } from '../components/forms/FormFields'
 import type { CommandeClient } from '../types'
 
 const statuts = [

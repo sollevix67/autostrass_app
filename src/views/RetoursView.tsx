@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
-import type { Client, Retour } from '../types'
+import type { Retour } from '../types'
 
 const motifs = ['Article défectueux', 'Erreur de commande', 'Article non conforme', 'Changement d\'avis', 'Autre']
 

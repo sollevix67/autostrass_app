@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FormInput, FormSelect, FormTextarea } from '../components/forms/FormFields'
-import type { Article, Reception } from '../types'
+import { FormInput, FormSelect } from '../components/forms/FormFields'
+import type { Reception } from '../types'
 
 const fournisseurs = [
   { value: 'auto-pieces-nord', label: 'Auto Pieces Nord' },
@@ -78,10 +78,10 @@ export default function ReceptionsView() {
         {reception.articles.map((article, index) => (
           <div key={index} className="reception-article">
             <div className="form-grid-2">
-              <FormInput label="Référence" name={`ref-${index}`} value={article.reference} onChange={(name, value) => updateArticle(index, 'reference', value)} required />
-              <FormInput label="Désignation" name={`desig-${index}`} value={article.designation} onChange={(name, value) => updateArticle(index, 'designation', value)} required />
-              <FormInput label="Quantité reçue" name={`qt-${index}`} type="number" value={article.quantiteRecue.toString()} onChange={(name, value) => updateArticle(index, 'quantiteRecue', value)} required />
-              <FormInput label="Prix unitaire (€)" name={`price-${index}`} type="number" step="0.01" value={article.prixUnitaire.toString()} onChange={(name, value) => updateArticle(index, 'prixUnitaire', value)} required />
+              <FormInput label="Référence" name={`ref-${index}`} value={article.reference} onChange={(_name, value) => updateArticle(index, 'reference', value)} required />
+              <FormInput label="Désignation" name={`desig-${index}`} value={article.designation} onChange={(_name, value) => updateArticle(index, 'designation', value)} required />
+              <FormInput label="Quantité reçue" name={`qt-${index}`} type="number" value={article.quantiteRecue.toString()} onChange={(_name, value) => updateArticle(index, 'quantiteRecue', value)} required />
+              <FormInput label="Prix unitaire (€)" name={`price-${index}`} type="number" step="0.01" value={article.prixUnitaire.toString()} onChange={(_name, value) => updateArticle(index, 'prixUnitaire', value)} required />
             </div>
             <button type="button" className="action-btn delete" onClick={() => removeArticle(index)}>✕</button>
           </div>
