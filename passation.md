@@ -1,6 +1,6 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-25 — **Semaine 1 (Fondations) terminée**. Build ✅, lint ✅ (0 warning), parcours UI validés au navigateur.
+> État du projet au 2026-09-25 — **Semaines 1 et 2 terminées**. Build ✅, lint ✅ (0 warning), parcours UI validés au navigateur.
 
 ---
 
@@ -61,13 +61,36 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 - `server/middleware/validation.ts` : validation sans dépendance (longueurs, NaN, négatifs) → 422
 - `database/schema.sql` : `articles`, `stock_balances`, `stock_movements`, vue `v_stock`, seed démo
 
-### ✅ 7. Nettoyage
+### ✅ 7. Semaine 2 — Formulaires & Factorisation
+
+**Dépendances** : `react-hook-form`, `zod`, `@hookform/resolvers`
+
+| Fichier | Rôle |
+|---------|------|
+| `src/schemas/index.ts` | 8 schémas Zod (article, réception, client, véhicule, utilisateur, livraison, panier) + messages utilisateur en français |
+| `src/components/forms/ErrorSummary.tsx` | Résumé d'erreurs focusable et lié aux champs |
+| `src/components/PageLayout.tsx` | Structure commune : eyebrow + titre + description + actions |
+| `src/components/DataTable.tsx` | Tableau générique triable (`aria-sort`, 3e clic = tri naturel) |
+| `src/components/ConfirmDialog.tsx` | Dialogue accessible remplace `window.confirm` |
+| `src/components/useConfirm.ts` | Hook d'état du dialogue |
+| `src/components/Toast.tsx` + `toastContext.ts` + `useToast.ts` | Notifications éphémères (`role="status"`, `aria-live="polite"`) |
+| `src/components/forms/FormFields.tsx` | Champs réécrits : double mode (contrôlé / RHF), `aria-invalid`, `aria-describedby`, `valueAsNumber` |
+
+**Vues pilotes refactorées** : `CatalogueView`, `StockView`, `ReceptionsView` (avec `useFieldArray`).
+
+**Guidelines ui-ux-pro-max appliquées** :
+- *Focusable Error Summary* (High) : `role="alert"` + `tabIndex={-1}` + liens ancres `#nomDuChamp`, focus posé à la première apparition
+- *Error Placement* (High) : chaque erreur inline reliée à son champ par `aria-describedby`
+- *Error Messages* (High) : `role="alert"` sur les erreurs
+- *Data-Dense Dashboard* : profilage des vues tableau
+- *Compact Control Semantics* (Critical) : `aria-pressed` sur les onglets de filtre
+
+### ✅ 8. Nettoyage
 - `src/App_new.tsx` supprimé (doublon à l'origine du bug TS2440)
 - `src/main.tsx` pointe désormais sur `./App`
-- Alertes `alert()` bloquantes remplacées par feedback inline (`role="status"`)
-- Validation métier ajoutée (panier vide, montant insuffisant, réception vide)
+- Alertes `alert()` bloquantes remplacées par feedback inline et toasts
 - Formatage monétaire FR homogénéisé (`Intl.NumberFormat`)
-- Accessibilité : `aria-label`, `role="alert"`, `aria-sort`, `<label>` conditionnel dans `FormSelect`
+- Hiérarchie des titres : un seul `<h1>` par page (shell global), titres de vue en `<h2>`
 
 ---
 
@@ -112,6 +135,11 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `setState` synchrone dans `useEffect` | Provoque un rendu en cascade (warning oxlint). Déplacer dans le callback de `reload()` |
 | `<label>` vide pour un `<select>` en ligne | `FormSelect` accepte désormais `label=""` + `aria-label` |
 | Casts `'x' as UnionType` dans un objet littéral | Utiliser `const DEFAULT_X: XType = 'x'` puis `satisfies` — le compilateur vérifie la valeur |
+| `register` de RHF passé directement à un composant générique | `UseFormRegister<T>` est **contravariant** sur le nom de champ : un composant déclarant `(name: string)` refuse l'instance typée. Élargir côté vue (`register as unknown as FieldRegister`) et garder le composant réutilisable |
+| Champs `type="number"` + Zod `z.number()` | RHF renvoie une **chaîne** par défaut → validation « champ requis » alors que le champ est rempli. Passer `{ valueAsNumber: true }` en 2e argument de `register` |
+| `containerRef.current?.focus()` dans un `useEffect` | React réattribue le focus au bouton déclencheur après l'effet. Solution retenue : `ref` callback sur un nœud rendu conditionnellement + `key` incrémenté par cycle d'erreurs |
+| `setState` synchrone dans un effet de composant | Warning oxlint `react(set-state-in-effect)`. Utiliser une `ref` de signature pour détecter un nouveau cycle sans état |
+| Fichiers `.tsx` exportant hooks **et** composants | `react(only-export-components)` casse le fast refresh. Séparer : `Toast.tsx` (composant) / `toastContext.ts` (types) / `useToast.ts` (hook) |
 | Alias SQL `AS references` | `references` est un **mot-clé réservé** en MariaDB : la requête échoue silencieusement côté 503. Utiliser `total_references` |
 | Colonne `unit_price_ht` lue depuis `v_stock` | La vue l'expose sous **`prix_unitaire_ht`** (alias explicite dans le `CREATE VIEW`) |
 | `JSON_ARRAYAGG` pour filtrer le stock bas | MariaDB ne supporte pas de `FILTER` : agréger tout puis filtrer côté TypeScript (moins coûteux qu'une sous-requête corrélée) |

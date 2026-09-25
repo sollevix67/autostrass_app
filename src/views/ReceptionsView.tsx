@@ -1,134 +1,286 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { FormInput, FormSelect } from '../components/forms/FormFields'
-import { createLineId, nextId } from '../utils/ids'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { PageLayout } from '../components/PageLayout'
+import { DataTable, type ColumnDef } from '../components/DataTable'
+import { ConfirmDialog } from '../components/ConfirmDialog'
+import { useConfirm } from '../components/useConfirm'
+import { useToast } from '../components/useToast'
+import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
+import { receptionSchema, type ReceptionFormValues } from '../schemas'
 import type { Reception } from '../types'
 
 const fournisseurs = [
-  { value: 'auto-pieces-nord', label: 'Auto Pieces Nord' },
-  { value: 'frein-plus', label: 'Frein Plus' },
-  { value: 'filtre-pro', label: 'Filtre Pro' },
-  { value: 'batterie-express', label: 'Batterie Express' },
-  { value: 'huile-max', label: 'Huile Max' },
+  { value: 'Auto Pieces Nord', label: 'Auto Pieces Nord' },
+  { value: 'Frein Plus', label: 'Frein Plus' },
+  { value: 'Filtre Pro', label: 'Filtre Pro' },
+  { value: 'Batterie Express', label: 'Batterie Express' },
+  { value: 'Huile Max', label: 'Huile Max' },
+]
+
+const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+const today = () => new Date().toISOString().split('T')[0]
+
+const SEED_HISTORY: Reception[] = [
+  {
+    id: 'R-001',
+    fournisseur: 'Auto Pieces Nord',
+    dateReception: '2026-09-19',
+    articles: [
+      { lineId: 'seed-1', reference: 'BRK-0428', designation: 'Plaquettes frein', quantiteRecue: 50, prixUnitaire: 15.5 },
+    ],
+    totalHT: 775,
+  },
 ]
 
 export default function ReceptionsView() {
-  const [reception, setReception] = useState<Reception>({
-    fournisseur: '',
-    dateReception: new Date().toISOString().split('T')[0],
-    articles: [],
-    totalHT: 0,
+  const toast = useToast()
+  const { dialogProps, confirm } = useConfirm()
+  const [history, setHistory] = useState<Reception[]>(SEED_HISTORY)
+  const [savingReception, setSavingReception] = useState(false)
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<ReceptionFormValues>({
+    resolver: zodResolver(receptionSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      fournisseur: '',
+      dateReception: today(),
+      articles: [{ reference: '', designation: '', quantiteRecue: 0, prixUnitaire: 0 }],
+    },
   })
-  const [message, setMessage] = useState<string | null>(null)
-  const [history, setHistory] = useState<Reception[]>([
-    { id: 'R-001', fournisseur: 'Auto Pieces Nord', dateReception: '2026-09-19', articles: [{ lineId: 'seed-1', reference: 'PLA-2841', designation: 'Plaquettes frein', quantiteRecue: 50, prixUnitaire: 15.50 }], totalHT: 775 },
-  ])
 
-  const addArticle = () => {
-    setReception((prev) => ({
-      ...prev,
-      articles: [...prev.articles, { lineId: createLineId('rec'), reference: '', designation: '', quantiteRecue: 0, prixUnitaire: 0 }],
-    }))
-  }
+  /**
+   * `useFieldArray` gere les cles de ligne et l'insertion/suppression.
+   * On garde un `lineId` dans les donnees pour lier chaque ligne a la table
+   * d'historique apres enregistrement.
+   */
+  const { fields, append, remove } = useFieldArray({ control, name: 'articles' })
 
-  const updateArticle = (lineId: string, field: 'reference' | 'designation' | 'quantiteRecue' | 'prixUnitaire', value: string) => {
-    setReception((prev) => ({
-      ...prev,
-      articles: prev.articles.map((article) => {
-        if (article.lineId !== lineId) return article
-        const numeric = field === 'quantiteRecue' || field === 'prixUnitaire'
-        return { ...article, [field]: numeric ? Number.parseFloat(value) || 0 : value }
-      }),
-    }))
-  }
+  // `register` est type sur les noms de champs du formulaire ; on l'elargit
+  // pour nos composants generiques (le nom reste identique a l'attribut name).
+  const reg = register as unknown as FieldRegister
 
-  const removeArticle = (lineId: string) => {
-    setReception((prev) => ({
-      ...prev,
-      articles: prev.articles.filter((article) => article.lineId !== lineId),
-    }))
-  }
+  const watchedArticles = watch('articles')
+  const totalHT = (watchedArticles ?? []).reduce(
+    (sum, line) => sum + (line.quantiteRecue || 0) * (line.prixUnitaire || 0),
+    0,
+  )
 
-  const totalHT = reception.articles.reduce((sum, a) => sum + a.quantiteRecue * a.prixUnitaire, 0)
+  const onSubmit = handleSubmit(async (values) => {
+    setSavingReception(true)
+    try {
+      const reception: Reception = {
+        id: `R-${String(history.length + 1).padStart(3, '0')}`,
+        fournisseur: values.fournisseur,
+        dateReception: values.dateReception,
+        articles: values.articles.map((line, index) => ({
+          lineId: `rec-${Date.now()}-${index}`,
+          reference: line.reference,
+          designation: line.designation,
+          quantiteRecue: line.quantiteRecue,
+          prixUnitaire: line.prixUnitaire,
+        })),
+        totalHT,
+      }
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    if (reception.articles.length === 0) {
-      window.alert('Ajoutez au moins un article a la reception.')
-      return
+      setHistory((prev) => [reception, ...prev])
+      toast.success(`Reception ${reception.id} enregistree (${reception.articles.length} ligne(s), ${currency.format(totalHT)} €).`)
+      reset({ fournisseur: '', dateReception: today(), articles: [{ reference: '', designation: '', quantiteRecue: 0, prixUnitaire: 0 }] })
+    } finally {
+      setSavingReception(false)
     }
-    const newReception: Reception = { ...reception, id: nextId('R', history.length), totalHT }
-    setHistory((prev) => [newReception, ...prev])
-    setReception({ fournisseur: '', dateReception: new Date().toISOString().split('T')[0], articles: [], totalHT: 0 })
-    setMessage(`Reception ${newReception.id} enregistree (${reception.articles.length} ligne(s)).`)
+  })
+
+  const handleDeleteHistory = (reception: Reception) => {
+    confirm(
+      `Supprimer la reception ${reception.id} ?`,
+      <>
+        La reception du <strong>{reception.dateReception}</strong> chez{' '}
+        <strong>{reception.fournisseur}</strong> sera retirees de l'historique
+        ({currency.format(reception.totalHT)} €).
+      </>,
+      () => {
+        setHistory((prev) => prev.filter((item) => item.id !== reception.id))
+        toast.success(`Reception ${reception.id} supprimee de l'historique.`)
+      },
+    )
   }
+
+  const columns: ColumnDef<Reception>[] = [
+    { key: 'id', header: 'N°', width: '70px', render: (row) => row.id ?? '—' },
+    { key: 'fournisseur', header: 'FOURNISSEUR', sortable: true, sortValue: (row) => row.fournisseur, render: (row) => row.fournisseur },
+    { key: 'dateReception', header: 'DATE', sortable: true, sortValue: (row) => row.dateReception, render: (row) => row.dateReception },
+    {
+      key: 'articles',
+      header: 'ARTICLES',
+      align: 'right',
+      render: (row) => `${row.articles.length} ligne(s)`,
+    },
+    {
+      key: 'totalHT',
+      header: 'TOTAL HT',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.totalHT,
+      render: (row) => <b>{currency.format(row.totalHT)} €</b>,
+    },
+    {
+      key: 'actions',
+      header: 'ACTIONS',
+      width: '60px',
+      render: (row) => (
+        <div className="actions-cell">
+          <button
+            type="button"
+            className="action-btn delete"
+            onClick={() => handleDeleteHistory(row)}
+            title="Supprimer"
+            aria-label={`Supprimer la reception ${row.id}`}
+          >
+            🗑
+          </button>
+        </div>
+      ),
+    },
+  ]
 
   return (
-    <div className="page-view">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">RECEPTIONS</p>
-          <h1>Enregistrer une réception</h1>
-          <p className="heading-copy">Ajoutez les articles reçus de vos fournisseurs.</p>
-        </div>
-      </div>
-
-      <form className="form-card" onSubmit={handleSubmit}>
+    <PageLayout
+      eyebrow="RECEPTIONS"
+      title="Enregistrer une réception"
+      description="Ajoutez les articles reçus de vos fournisseurs."
+    >
+      <form className="form-card" onSubmit={onSubmit} noValidate>
         <h2>Nouvelle réception</h2>
-        
+
+        {/*
+          Erreur de collection : Zod la place sur `articles.root` (ou `articles`).
+          On affiche un resume global au-dessus des lignes ; chaque ligne garde
+          son erreur inline, qui est la source la plus utile pour l'utilisateur.
+        */}
+        {errors.articles && (
+          <p className="error-banner" role="alert">
+            {typeof errors.articles.message === 'string' && errors.articles.message !== 'Invalid input: expected array, received undefined'
+              ? errors.articles.message
+              : 'Completez chaque ligne d\'article avant d\'enregistrer la reception.'}
+          </p>
+        )}
+
         <div className="form-grid-2">
-          <FormSelect label="Fournisseur" name="fournisseur" value={reception.fournisseur} options={fournisseurs} onChange={(_name, value) => setReception((prev) => ({ ...prev, fournisseur: value }))} required />
-          <FormInput label="Date de réception" name="dateReception" type="date" value={reception.dateReception} onChange={(_name, value) => setReception((prev) => ({ ...prev, dateReception: value }))} required />
+          <FormSelect
+            label="Fournisseur"
+            name="fournisseur"
+            options={fournisseurs}
+            register={reg}
+            error={errors.fournisseur?.message}
+            required
+          />
+          <FormInput
+            label="Date de réception"
+            name="dateReception"
+            type="date"
+            register={reg}
+            error={errors.dateReception?.message}
+            required
+          />
         </div>
 
         <h3 className="sub-heading">Articles reçus</h3>
-        {reception.articles.length === 0 && <p className="empty-state">Aucun article ajouté. Cliquez sur « Ajouter un article ».</p>}
-        {reception.articles.map((article) => (
-          <div key={article.lineId} className="reception-article">
-            <div className="form-grid-2">
-              <FormInput label="Référence" name={`ref-${article.lineId}`} value={article.reference} onChange={(_name, value) => updateArticle(article.lineId, 'reference', value)} required />
-              <FormInput label="Désignation" name={`desig-${article.lineId}`} value={article.designation} onChange={(_name, value) => updateArticle(article.lineId, 'designation', value)} required />
-              <FormInput label="Quantité reçue" name={`qt-${article.lineId}`} type="number" value={article.quantiteRecue.toString()} onChange={(_name, value) => updateArticle(article.lineId, 'quantiteRecue', value)} required />
-              <FormInput label="Prix unitaire (€)" name={`price-${article.lineId}`} type="number" step="0.01" value={article.prixUnitaire.toString()} onChange={(_name, value) => updateArticle(article.lineId, 'prixUnitaire', value)} required />
+
+        {fields.map((field, index) => {
+          const lineErrors = errors.articles?.[index]
+          return (
+            <div key={field.id} className="reception-article">
+              <div className="form-grid-2">
+                <FormInput
+                  label="Référence"
+                  name={`articles.${index}.reference`}
+                  register={reg}
+                  error={lineErrors?.reference?.message}
+                  required
+                  placeholder="ex: BRK-0428"
+                />
+                <FormInput
+                  label="Désignation"
+                  name={`articles.${index}.designation`}
+                  register={reg}
+                  error={lineErrors?.designation?.message}
+                  required
+                />
+                <FormInput
+                  label="Quantité reçue"
+                  name={`articles.${index}.quantiteRecue`}
+                  type="number"
+                  min="1"
+                  register={reg}
+                  error={lineErrors?.quantiteRecue?.message}
+                  required
+                />
+                <FormInput
+                  label="Prix unitaire (€)"
+                  name={`articles.${index}.prixUnitaire`}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  register={reg}
+                  error={lineErrors?.prixUnitaire?.message}
+                  required
+                />
+              </div>
+              <button
+                type="button"
+                className="action-btn delete"
+                onClick={() => remove(index)}
+                aria-label={`Retirer la ligne ${index + 1}`}
+                disabled={fields.length === 1}
+                title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
+              >
+                ✕
+              </button>
             </div>
-            <button type="button" className="action-btn delete" onClick={() => removeArticle(article.lineId)} aria-label="Retirer cette ligne">✕</button>
-          </div>
-        ))}
-        <button type="button" className="secondary-button" onClick={addArticle}>＋ Ajouter un article</button>
+          )
+        })}
+
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={() => append({ reference: '', designation: '', quantiteRecue: 0, prixUnitaire: 0 })}
+        >
+          ＋ Ajouter un article
+        </button>
 
         <div className="reception-total">
-          <strong>Total HT : {totalHT.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</strong>
+          <strong>Total HT : {currency.format(totalHT)} €</strong>
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Enregistrer la réception</button>
-          {message && <span className="form-success" role="status">✓ {message}</span>}
+          <button type="submit" className="primary-button" disabled={savingReception}>
+            ✓ {savingReception ? 'Enregistrement...' : 'Enregistrer la réception'}
+          </button>
         </div>
       </form>
 
-      {history.length > 0 && (
-        <div className="form-card">
-          <h2>Historique des réceptions</h2>
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>N°</th><th>FOURNISSEUR</th><th>DATE</th><th>ARTICLES</th><th>TOTAL HT</th></tr></thead>
-              <tbody>
-                {history.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.id}</td>
-                    <td>{r.fournisseur}</td>
-                    <td>{r.dateReception}</td>
-                    <td>{r.articles.length} article(s)</td>
-                    <td><strong>{r.totalHT.toLocaleString('fr-FR', { minimumFractionDigits: 2 }) } €</strong></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <div className="form-card">
+        <h2>Historique des réceptions</h2>
+        <DataTable
+          columns={columns}
+          rows={history}
+          rowKey={(row) => row.id ?? row.dateReception}
+          emptyMessage="Aucune réception enregistrée."
+          defaultSort={{ key: 'dateReception', direction: 'desc' }}
+          caption="Historique des réceptions fournisseurs"
+        />
+      </div>
 
-      <Link className="back-link" to="/">← Retour au dashboard</Link>
-    </div>
+      <ConfirmDialog {...dialogProps} confirmLabel="Supprimer" destructive />
+    </PageLayout>
   )
 }

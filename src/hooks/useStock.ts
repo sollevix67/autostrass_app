@@ -20,7 +20,6 @@ type UseStockResult = {
   setQuery: (query: string) => void
   sortKey: StockSortKey
   sortDirection: 'asc' | 'desc'
-  toggleSort: (key: StockSortKey) => void
   editing: Article | null
   startEditing: (article: Article) => void
   updateEditing: (patch: Partial<Article>) => void
@@ -37,14 +36,12 @@ type UseStockResult = {
   reload: () => void
 }
 
-function compareArticles(a: Article, b: Article, key: StockSortKey): number {
-  if (key === 'quantite' || key === 'minimum') return a[key] - b[key]
-  return String(a[key]).localeCompare(String(b[key]), 'fr', { numeric: true })
-}
-
 /**
- * Table de stock : chargement, filtres, tri, ajustement des quantites et
- * edition en ligne. Bascule en mode local si l'API est indisponible.
+ * Table de stock : chargement, filtres, recherche, ajustement des quantites
+ * et edition en ligne. Bascule en mode local si l'API est indisponible.
+ *
+ * Le tri n'est plus gere ici : `DataTable` s'en charge (tri local, `aria-sort`).
+ * Le hook expose uniquement la colonne et le sens de tri par defaut.
  */
 export function useStock(): UseStockResult {
   const [articles, setArticles] = useState<Article[]>([])
@@ -54,8 +51,8 @@ export function useStock(): UseStockResult {
   const [offline, setOffline] = useState(false)
   const [filter, setFilter] = useState<StockFilter>('all')
   const [query, setQuery] = useState('')
-  const [sortKey, setSortKey] = useState<StockSortKey>('reference')
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [sortKey] = useState<StockSortKey>('reference')
+  const [sortDirection] = useState<'asc' | 'desc'>('asc')
   const [editing, setEditing] = useState<Article | null>(null)
   const [nonce, setNonce] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
@@ -102,7 +99,7 @@ export function useStock(): UseStockResult {
 
   const visibleArticles = useMemo(() => {
     const needle = query.trim().toLowerCase()
-    const filtered = articles.filter((item) => {
+    return articles.filter((item) => {
       const matchesFilter =
         filter === 'all' ? true : filter === 'low' ? item.quantite <= item.minimum : item.quantite > item.minimum
       if (!matchesFilter) return false
@@ -113,23 +110,7 @@ export function useStock(): UseStockResult {
         item.emplacement.toLowerCase().includes(needle)
       )
     })
-
-    return filtered.sort((a, b) => {
-      const result = compareArticles(a, b, sortKey)
-      return sortDirection === 'asc' ? result : -result
-    })
-  }, [articles, filter, query, sortKey, sortDirection])
-
-  const toggleSort = useCallback((key: StockSortKey) => {
-    setSortKey((currentKey) => {
-      if (currentKey !== key) {
-        setSortDirection('asc')
-        return key
-      }
-      setSortDirection((dir) => (dir === 'asc' ? 'desc' : 'asc'))
-      return currentKey
-    })
-  }, [])
+  }, [articles, filter, query])
 
   /**
    * Application optimiste : on affiche la nouvelle quantite immediatement,
@@ -224,7 +205,6 @@ export function useStock(): UseStockResult {
     setQuery,
     sortKey,
     sortDirection,
-    toggleSort,
     editing,
     startEditing: setEditing,
     updateEditing: (patch: Partial<Article>) => setEditing((prev) => (prev ? { ...prev, ...patch } : prev)),

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import './App.css'
 import { useDashboard } from './hooks/useDashboard'
+import { ToastProvider } from './components/Toast'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
@@ -131,7 +132,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </BrowserRouter>
   )
 }

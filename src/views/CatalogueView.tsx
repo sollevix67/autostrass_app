@@ -1,7 +1,14 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { PageLayout } from '../components/PageLayout'
+import { DataTable, type ColumnDef } from '../components/DataTable'
+import { ConfirmDialog } from '../components/ConfirmDialog'
+import { useConfirm } from '../components/useConfirm'
+import { useToast } from '../components/useToast'
+import { ErrorSummary } from '../components/forms/ErrorSummary'
+import { FormInput, FormSelect, FormTextarea, type FieldRegister } from '../components/forms/FormFields'
 import { EMPTY_ARTICLE, useCatalogue } from '../hooks/useCatalogue'
+import { articleSchema, type ArticleFormValues, type ArticleFormOutput } from '../schemas'
 import type { Article } from '../types'
 
 const categories = [
@@ -16,133 +23,208 @@ const categories = [
 
 const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-type Feedback = { tone: 'success' | 'error'; message: string }
+const FIELD_LABELS = {
+  reference: 'Référence',
+  designation: 'Désignation',
+  category: 'Catégorie',
+  prixUnitaireHT: 'Prix unitaire HT',
+  quantite: 'Quantité',
+  minimum: 'Seuil minimum',
+  emplacement: 'Emplacement',
+  description: 'Description',
+} as const
+
+const FIELD_ORDER = Object.keys(FIELD_LABELS)
 
 export default function CatalogueView() {
   const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
-  const [draft, setDraft] = useState<Article>(EMPTY_ARTICLE)
-  /** Reference de l'article en cours d'edition, `null` pour une creation. */
-  const [editingReference, setEditingReference] = useState<string | null>(null)
-  const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const toast = useToast()
+  const { dialogProps, confirm } = useConfirm()
 
-  const isEditing = editingReference !== null
+  const {
+    register: rhfRegister,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<ArticleFormValues>({
+    resolver: zodResolver(articleSchema),
+    mode: 'onBlur',
+    defaultValues: EMPTY_ARTICLE,
+  })
 
-  const resetForm = () => {
-    setDraft(EMPTY_ARTICLE)
-    setEditingReference(null)
-    setFeedback(null)
-  }
+  /**
+   * `register` de RHF est type sur les noms de champs du formulaire (contravariant),
+   * ce que nos composants generiques ne peuvent pas declarer. On elargit donc
+   * l'appel a `string` ici : le nom transmis reste identique a l'attribut `name`.
+   */
+  const register = rhfRegister as unknown as FieldRegister
 
-  const setField = (field: keyof Article, value: string) => {
-    setDraft((prev) => ({ ...prev, [field]: value }))
-    setFeedback(null)
-  }
+  /** Reference en cours d'edition ; `null` = mode creation. */
+  const editingReference = watch('reference')
+  const isEditing = editingReference.length > 0
 
-  const setNumericField = (field: 'prixUnitaireHT' | 'quantite' | 'minimum', value: string) => {
-    setDraft((prev) => ({ ...prev, [field]: Number.parseFloat(value) || 0 }))
-    setFeedback(null)
-  }
-
-  /** Charge un article existant dans le formulaire pour edition. */
-  const handleEdit = (article: Article) => {
-    setDraft(article)
-    setEditingReference(article.reference)
-    setFeedback(null)
-  }
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-
-    const cleaned: Article = {
-      ...draft,
-      reference: draft.reference.trim(),
-      designation: draft.designation.trim(),
-    }
-
-    // En mode edition la reference est la cle : elle ne doit pas changer.
-    const payload = isEditing ? { ...cleaned, reference: editingReference } : cleaned
-
+  const onSubmit = handleSubmit(async (values) => {
+    // Le schema transforme la reference en majuscules ; on aligne l'etat local.
+    const payload = { ...values } as ArticleFormOutput
     const saved = isEditing ? await update(payload) : await create(payload)
+
     if (!saved) {
-      setFeedback({ tone: 'error', message: "L'enregistrement a echoue. Verifiez la connexion a l'API." })
+      toast.error("L'enregistrement a echoue. Verifiez la connexion a l'API.")
       return
     }
 
-    setFeedback({
-      tone: 'success',
-      message: isEditing
+    toast.success(
+      isEditing
         ? `Article ${payload.reference} mis a jour.`
         : offline
           ? `Article ${payload.reference} ajoute en local (non persiste).`
           : `Article ${payload.reference} cree.`,
+    )
+    reset(EMPTY_ARTICLE)
+  })
+
+  /** Charge un article dans le formulaire et place le focus sur la reference. */
+  const handleEdit = (article: Article) => {
+    reset({
+      reference: article.reference,
+      designation: article.designation,
+      category: article.category,
+      prixUnitaireHT: article.prixUnitaireHT,
+      quantite: article.quantite,
+      minimum: article.minimum,
+      emplacement: article.emplacement,
+      description: article.description ?? '',
     })
-    setDraft(EMPTY_ARTICLE)
-    setEditingReference(null)
+    document.getElementById('reference')?.focus()
   }
 
-  const handleDelete = async (article: Article) => {
-    if (!window.confirm(`Supprimer definitivement ${article.reference} ?`)) return
-    const ok = await remove(article.reference)
-    setFeedback(
-      ok
-        ? { tone: 'success', message: `Article ${article.reference} supprime.` }
-        : { tone: 'error', message: `La suppression de ${article.reference} a echoue.` },
+  const handleDelete = (article: Article) => {
+    confirm(
+      `Supprimer ${article.reference} ?`,
+      <>
+        L'article <strong>{article.designation}</strong> et ses mouvements de stock seront
+        definitivement supprimes. Cette action est irreversible.
+      </>,
+      async () => {
+        const ok = await remove(article.reference)
+        if (ok) {
+          toast.success(`Article ${article.reference} supprime.`)
+          if (editingReference === article.reference) reset(EMPTY_ARTICLE)
+        } else {
+          toast.error(`La suppression de ${article.reference} a echoue.`)
+        }
+      },
     )
-    if (ok && editingReference === article.reference) {
-      setDraft(EMPTY_ARTICLE)
-      setEditingReference(null)
-    }
   }
+
+  const columns: ColumnDef<Article>[] = [
+    {
+      key: 'reference',
+      header: 'REFERENCE',
+      sortable: true,
+      sortValue: (row) => row.reference,
+      render: (row) => <b className="reference">{row.reference}</b>,
+    },
+    { key: 'designation', header: 'DESIGNATION', sortable: true, sortValue: (row) => row.designation, render: (row) => row.designation },
+    { key: 'category', header: 'CATEGORIE', sortable: true, sortValue: (row) => row.category, render: (row) => row.category },
+    {
+      key: 'prixUnitaireHT',
+      header: 'PRIX HT',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.prixUnitaireHT,
+      render: (row) => `${currency.format(row.prixUnitaireHT)} €`,
+    },
+    {
+      key: 'quantite',
+      header: 'STOCK',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.quantite,
+      render: (row) => <b>{row.quantite}</b>,
+    },
+    {
+      key: 'minimum',
+      header: 'SEUIL',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.minimum,
+      render: (row) => row.minimum,
+    },
+    { key: 'emplacement', header: 'EMPLACEMENT', sortable: true, sortValue: (row) => row.emplacement, render: (row) => <span className="location-tag">{row.emplacement}</span> },
+    {
+      key: 'actions',
+      header: 'ACTIONS',
+      width: '92px',
+      render: (row) => (
+        <div className="actions-cell">
+          <button type="button" className="action-btn edit" onClick={() => handleEdit(row)} title="Charger dans le formulaire" aria-label={`Modifier ${row.reference}`}>
+            ✎
+          </button>
+          <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
+            🗑
+          </button>
+        </div>
+      ),
+    },
+  ]
 
   return (
-    <div className="page-view">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">CATALOGUE</p>
-          <h1>Gestion du catalogue</h1>
-          <p className="heading-copy">Ajouter, modifier ou supprimer des articles du catalogue.</p>
-        </div>
-      </div>
-
+    <PageLayout
+      eyebrow="CATALOGUE"
+      title="Gestion du catalogue"
+      description="Ajouter, modifier ou supprimer des articles du catalogue."
+      actions={
+        isEditing ? (
+          <button type="button" className="secondary-button" onClick={() => reset(EMPTY_ARTICLE)}>
+            Annuler la modification
+          </button>
+        ) : undefined
+      }
+    >
       {offline && (
         <p className="info-banner" role="status">
           API catalogue indisponible : les modifications restent en memoire et seront perdues au rechargement.
         </p>
       )}
 
-      <form className="form-card" onSubmit={handleSubmit}>
+      <form className="form-card" onSubmit={onSubmit} noValidate>
         <h2>{isEditing ? `Modifier ${editingReference}` : 'Nouvel article'}</h2>
+
+        <ErrorSummary errors={errors} labels={FIELD_LABELS} order={FIELD_ORDER} />
 
         <div className="form-grid-2">
           <FormInput
             label="Référence"
             name="reference"
-            value={draft.reference}
-            onChange={(_name, value) => setField('reference', value)}
+            register={register}
+            error={errors.reference?.message}
             required
             placeholder="ex: PLA-2841"
+            hint="Lettres, chiffres, point, tiret, slash et undescore"
           />
           <FormInput
             label="Désignation"
             name="designation"
-            value={draft.designation}
-            onChange={(_name, value) => setField('designation', value)}
+            register={register}
+            error={errors.designation?.message}
             required
             placeholder="Nom de l'article"
           />
           <FormSelect
             label="Catégorie"
             name="category"
-            value={draft.category}
             options={categories}
-            onChange={(_name, value) => setField('category', value)}
+            register={register}
+            error={errors.category?.message}
             required
           />
           <FormInput
             label="Emplacement"
             name="emplacement"
-            value={draft.emplacement}
-            onChange={(_name, value) => setField('emplacement', value)}
+            register={register}
+            error={errors.emplacement?.message}
             required
             placeholder="ex: A-03 / E-02"
           />
@@ -151,45 +233,45 @@ export default function CatalogueView() {
             name="prixUnitaireHT"
             type="number"
             step="0.01"
-            value={String(draft.prixUnitaireHT)}
-            onChange={(_name, value) => setNumericField('prixUnitaireHT', value)}
+            min="0"
+            register={register}
+            error={errors.prixUnitaireHT?.message}
             required
           />
           <FormInput
             label="Quantité en stock"
             name="quantite"
             type="number"
-            value={String(draft.quantite)}
-            onChange={(_name, value) => setNumericField('quantite', value)}
+            min="0"
+            register={register}
+            error={errors.quantite?.message}
             required
           />
           <FormInput
             label="Seuil minimum"
             name="minimum"
             type="number"
-            value={String(draft.minimum)}
-            onChange={(_name, value) => setNumericField('minimum', value)}
+            min="0"
+            register={register}
+            error={errors.minimum?.message}
             required
+            hint="Alerte de réapprovisionnement"
           />
-          <FormInput
+          <FormTextarea
             label="Description"
             name="description"
-            value={draft.description ?? ''}
-            onChange={(_name, value) => setField('description', value)}
+            rows={2}
+            register={register}
+            error={errors.description?.message}
             placeholder="Optionnel"
           />
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="primary-button" disabled={saving}>
-            <span>＋</span> {saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
+          <button type="submit" className="primary-button" disabled={isSubmitting || saving}>
+            <span>＋</span> {isSubmitting || saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
           </button>
-          {feedback && (
-            <span className={feedback.tone === 'success' ? 'form-success' : 'form-error'} role="status">
-              {feedback.tone === 'success' ? '✓' : '⚠'} {feedback.message}
-            </span>
-          )}
-          <button type="button" className="secondary-button" onClick={resetForm}>
+          <button type="button" className="secondary-button" onClick={() => reset(EMPTY_ARTICLE)}>
             Effacer
           </button>
         </div>
@@ -198,73 +280,25 @@ export default function CatalogueView() {
 
       <div className="form-card">
         <h2>Liste des articles {saving && <span className="saving-indicator">· synchronisation...</span>}</h2>
-        {loading ? (
-          <p className="table-state">Chargement du catalogue...</p>
-        ) : articles.length === 0 ? (
-          <p className="table-state">Aucun article. Utilisez le formulaire ci-dessus pour creer le premier.</p>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>REFERENCE</th>
-                  <th>DESIGNATION</th>
-                  <th>CATEGORIE</th>
-                  <th>PRIX HT</th>
-                  <th>STOCK</th>
-                  <th>SEUIL</th>
-                  <th>EMPLACEMENT</th>
-                  <th>ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {articles.map((article) => (
-                  <tr
-                    key={article.reference}
-                    className={[
-                      article.quantite <= article.minimum ? 'row-warning' : '',
-                      editingReference === article.reference ? 'row-editing' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                  >
-                    <td><b className="reference">{article.reference}</b></td>
-                    <td>{article.designation}</td>
-                    <td>{article.category}</td>
-                    <td>{currency.format(article.prixUnitaireHT)} €</td>
-                    <td><b>{article.quantite}</b></td>
-                    <td>{article.minimum}</td>
-                    <td><span className="location-tag">{article.emplacement}</span></td>
-                    <td className="actions-cell">
-                      <button
-                        type="button"
-                        className="action-btn edit"
-                        onClick={() => handleEdit(article)}
-                        title="Charger dans le formulaire"
-                        aria-label={`Modifier ${article.reference}`}
-                      >
-                        ✎
-                      </button>
-                      <button
-                        type="button"
-                        className="action-btn delete"
-                        onClick={() => void handleDelete(article)}
-                        title="Supprimer"
-                        aria-label={`Supprimer ${article.reference}`}
-                        disabled={saving}
-                      >
-                        🗑
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <DataTable
+          columns={columns}
+          rows={articles}
+          rowKey={(row) => row.reference}
+          loading={loading}
+          loadingMessage="Chargement du catalogue..."
+          emptyMessage="Aucun article. Utilisez le formulaire ci-dessus pour creer le premier."
+          isRowActive={(row) => row.reference === editingReference}
+          defaultSort={{ key: 'reference', direction: 'asc' }}
+          caption="Liste des articles du catalogue"
+        />
       </div>
 
-      <Link className="back-link" to="/">← Retour au dashboard</Link>
-    </div>
+      <ConfirmDialog
+        {...dialogProps}
+        confirmLabel="Supprimer"
+        destructive
+        cancelLabel="Annuler"
+      />
+    </PageLayout>
   )
 }
