@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { pickEnum } from '../utils/coerce'
+import { nextId } from '../utils/ids'
 import type { Utilisateur } from '../types'
+
+const ROLES = ['admin', 'magasinier', 'caissier'] as const
+type Role = (typeof ROLES)[number]
 
 const roles = [
   { value: 'admin', label: 'Administrateur' },
@@ -9,23 +14,40 @@ const roles = [
   { value: 'caissier', label: 'Caissier' },
 ]
 
+const DEFAULT_ROLE: Role = 'magasinier'
+
+const EMPTY_USER = {
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  role: DEFAULT_ROLE,
+  actif: true,
+} satisfies Omit<Utilisateur, 'id'>
+
+type UserDraft = typeof EMPTY_USER
+
 export default function UtilisateursView() {
   const [utilisateurs, setUtilisateurs] = useState<Utilisateur[]>([
     { id: 'U-001', nom: 'Laurent', prenom: 'Marie', email: 'marie.laurent@autostrass.fr', telephone: '0612345678', role: 'admin', actif: true },
   ])
 
-  const [newUser, setNewUser] = useState<Partial<Utilisateur>>({ actif: true })
+  const [draft, setDraft] = useState<UserDraft>(EMPTY_USER)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const u: Utilisateur = { ...newUser, id: `U-${String(utilisateurs.length + 1).padStart(3, '0')}` } as Utilisateur
-    setUtilisateurs((prev) => [...prev, u])
-    setNewUser({ actif: true })
-    alert('Utilisateur enregistré !')
+  const setField = (field: keyof UserDraft, value: string) => {
+    setDraft((prev) => ({ ...prev, [field]: field === 'role' ? pickEnum(value, ROLES, 'magasinier') : value }))
   }
 
-  const toggleActive = (id: string) => {
-    setUtilisateurs((prev) => prev.map((u) => u.id === id ? { ...u, actif: !u.actif } : u))
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    const user: Utilisateur = { ...draft, id: nextId('U', utilisateurs.length) }
+    setUtilisateurs((prev) => [...prev, user])
+    setDraft(EMPTY_USER)
+  }
+
+  const toggleActive = (id: string | undefined) => {
+    if (!id) return
+    setUtilisateurs((prev) => prev.map((u) => (u.id === id ? { ...u, actif: !u.actif } : u)))
   }
 
   return (
@@ -37,11 +59,11 @@ export default function UtilisateursView() {
       <form className="form-card" onSubmit={handleSubmit}>
         <h2>Nouvel utilisateur</h2>
         <div className="form-grid-2">
-          <FormInput label="Nom" name="nom" value={newUser.nom || ''} onChange={(name, value) => setNewUser((prev) => ({ ...prev, [name]: value }))} required />
-          <FormInput label="Prénom" name="prenom" value={newUser.prenom || ''} onChange={(name, value) => setNewUser((prev) => ({ ...prev, [name]: value }))} required />
-          <FormInput label="Email" name="email" type="email" value={newUser.email || ''} onChange={(name, value) => setNewUser((prev) => ({ ...prev, [name]: value }))} required />
-          <FormInput label="Téléphone" name="telephone" value={newUser.telephone || ''} onChange={(name, value) => setNewUser((prev) => ({ ...prev, [name]: value }))} />
-          <FormSelect label="Rôle" name="role" value={newUser.role || ''} options={roles} onChange={(name, value) => setNewUser((prev) => ({ ...prev, [name]: value }))} required />
+          <FormInput label="Nom" name="nom" value={draft.nom} onChange={(_name, value) => setField('nom', value)} required />
+          <FormInput label="Prénom" name="prenom" value={draft.prenom} onChange={(_name, value) => setField('prenom', value)} required />
+          <FormInput label="Email" name="email" type="email" value={draft.email} onChange={(_name, value) => setField('email', value)} required />
+          <FormInput label="Téléphone" name="telephone" value={draft.telephone} onChange={(_name, value) => setField('telephone', value)} />
+          <FormSelect label="Rôle" name="role" value={draft.role} options={roles} onChange={(_name, value) => setField('role', value)} required />
         </div>
         <div className="form-actions">
           <button type="submit" className="primary-button">✓ Ajouter l'utilisateur</button>

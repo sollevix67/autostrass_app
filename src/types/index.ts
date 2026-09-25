@@ -47,6 +47,8 @@ export interface Reception {
   fournisseur: string
   dateReception: string
   articles: Array<{
+    /** Cle React stable, generee cote client (non envoyee a l'API). */
+    lineId: string
     reference: string
     designation: string
     quantiteRecue: number
@@ -62,6 +64,8 @@ export interface Vente {
   dateVente: string
   caissier: string
   articles: Array<{
+    /** Cle React stable, generee cote client (non envoyee a l'API). */
+    lineId: string
     reference: string
     designation: string
     quantite: number

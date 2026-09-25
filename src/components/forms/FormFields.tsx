@@ -39,13 +39,16 @@ interface FormSelectProps {
 export function FormSelect({ label, name, value, options, onChange, required }: FormSelectProps) {
   return (
     <div className="form-group">
-      <label htmlFor={name}>{label}{required && <span className="required">*</span>}</label>
+      {label && (
+        <label htmlFor={name}>{label}{required && <span className="required">*</span>}</label>
+      )}
       <select
         id={name}
         name={name}
         value={value}
         onChange={(e) => onChange(name, e.target.value)}
         required={required}
+        aria-label={label || name}
       >
         <option value="">Sélectionner...</option>
         {options.map((opt) => (

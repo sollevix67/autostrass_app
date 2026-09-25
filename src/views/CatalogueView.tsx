@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { EMPTY_ARTICLE, useCatalogue } from '../hooks/useCatalogue'
+import type { Article } from '../types'
 
 const categories = [
   { value: 'freins', label: 'Freins' },
@@ -12,35 +14,84 @@ const categories = [
   { value: 'carrosserie', label: 'Carrosserie' },
 ]
 
-const defaultArticle = {
-  reference: '',
-  designation: '',
-  category: '',
-  prixUnitaireHT: 0,
-  quantite: 0,
-  minimum: 0,
-  emplacement: '',
-  description: '',
-}
+const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+type Feedback = { tone: 'success' | 'error'; message: string }
 
 export default function CatalogueView() {
-  const [article, setArticle] = useState(defaultArticle)
-  const [saved, setSaved] = useState(false)
+  const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
+  const [draft, setDraft] = useState<Article>(EMPTY_ARTICLE)
+  /** Reference de l'article en cours d'edition, `null` pour une creation. */
+  const [editingReference, setEditingReference] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
 
-  const handleChange = (name: string, value: string) => {
-    setArticle((prev) => ({ ...prev, [name]: value }))
-    setSaved(false)
+  const isEditing = editingReference !== null
+
+  const resetForm = () => {
+    setDraft(EMPTY_ARTICLE)
+    setEditingReference(null)
+    setFeedback(null)
   }
 
-  const handleNumericChange = (name: string, value: string) => {
-    setArticle((prev) => ({ ...prev, [name]: parseFloat(value) || 0 }))
-    setSaved(false)
+  const setField = (field: keyof Article, value: string) => {
+    setDraft((prev) => ({ ...prev, [field]: value }))
+    setFeedback(null)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Article à enregistrer:', article)
-    setSaved(true)
+  const setNumericField = (field: 'prixUnitaireHT' | 'quantite' | 'minimum', value: string) => {
+    setDraft((prev) => ({ ...prev, [field]: Number.parseFloat(value) || 0 }))
+    setFeedback(null)
+  }
+
+  /** Charge un article existant dans le formulaire pour edition. */
+  const handleEdit = (article: Article) => {
+    setDraft(article)
+    setEditingReference(article.reference)
+    setFeedback(null)
+  }
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    const cleaned: Article = {
+      ...draft,
+      reference: draft.reference.trim(),
+      designation: draft.designation.trim(),
+    }
+
+    // En mode edition la reference est la cle : elle ne doit pas changer.
+    const payload = isEditing ? { ...cleaned, reference: editingReference } : cleaned
+
+    const saved = isEditing ? await update(payload) : await create(payload)
+    if (!saved) {
+      setFeedback({ tone: 'error', message: "L'enregistrement a echoue. Verifiez la connexion a l'API." })
+      return
+    }
+
+    setFeedback({
+      tone: 'success',
+      message: isEditing
+        ? `Article ${payload.reference} mis a jour.`
+        : offline
+          ? `Article ${payload.reference} ajoute en local (non persiste).`
+          : `Article ${payload.reference} cree.`,
+    })
+    setDraft(EMPTY_ARTICLE)
+    setEditingReference(null)
+  }
+
+  const handleDelete = async (article: Article) => {
+    if (!window.confirm(`Supprimer definitivement ${article.reference} ?`)) return
+    const ok = await remove(article.reference)
+    setFeedback(
+      ok
+        ? { tone: 'success', message: `Article ${article.reference} supprime.` }
+        : { tone: 'error', message: `La suppression de ${article.reference} a echoue.` },
+    )
+    if (ok && editingReference === article.reference) {
+      setDraft(EMPTY_ARTICLE)
+      setEditingReference(null)
+    }
   }
 
   return (
@@ -53,34 +104,164 @@ export default function CatalogueView() {
         </div>
       </div>
 
+      {offline && (
+        <p className="info-banner" role="status">
+          API catalogue indisponible : les modifications restent en memoire et seront perdues au rechargement.
+        </p>
+      )}
+
       <form className="form-card" onSubmit={handleSubmit}>
-        <h2>{article.reference ? 'Modifier l\'article' : 'Nouvel article'}</h2>
-        
+        <h2>{isEditing ? `Modifier ${editingReference}` : 'Nouvel article'}</h2>
+
         <div className="form-grid-2">
-          <FormInput label="Référence" name="reference" value={article.reference} onChange={handleChange} required placeholder="ex: PLA-2841" />
-          <FormInput label="Désignation" name="designation" value={article.designation} onChange={handleChange} required placeholder="Nom de l'article" />
-          <FormSelect label="Catégorie" name="category" value={article.category} options={categories} onChange={handleChange} required />
-          <FormInput label="Emplacement" name="emplacement" value={article.emplacement} onChange={handleChange} required placeholder="ex: A-03 / E-02" />
-          <FormInput label="Prix unitaire HT (€)" name="prixUnitaireHT" type="number" step="0.01" value={article.prixUnitaireHT.toString()} onChange={handleNumericChange} required />
-          <FormInput label="Quantité en stock" name="quantite" type="number" value={article.quantite.toString()} onChange={handleNumericChange} required />
-          <FormInput label="Seuil minimum" name="minimum" type="number" value={article.minimum.toString()} onChange={handleNumericChange} required />
-          <FormInput label="Description" name="description" value={article.description} onChange={handleChange} placeholder="Optionnel" />
+          <FormInput
+            label="Référence"
+            name="reference"
+            value={draft.reference}
+            onChange={(_name, value) => setField('reference', value)}
+            required
+            placeholder="ex: PLA-2841"
+          />
+          <FormInput
+            label="Désignation"
+            name="designation"
+            value={draft.designation}
+            onChange={(_name, value) => setField('designation', value)}
+            required
+            placeholder="Nom de l'article"
+          />
+          <FormSelect
+            label="Catégorie"
+            name="category"
+            value={draft.category}
+            options={categories}
+            onChange={(_name, value) => setField('category', value)}
+            required
+          />
+          <FormInput
+            label="Emplacement"
+            name="emplacement"
+            value={draft.emplacement}
+            onChange={(_name, value) => setField('emplacement', value)}
+            required
+            placeholder="ex: A-03 / E-02"
+          />
+          <FormInput
+            label="Prix unitaire HT (€)"
+            name="prixUnitaireHT"
+            type="number"
+            step="0.01"
+            value={String(draft.prixUnitaireHT)}
+            onChange={(_name, value) => setNumericField('prixUnitaireHT', value)}
+            required
+          />
+          <FormInput
+            label="Quantité en stock"
+            name="quantite"
+            type="number"
+            value={String(draft.quantite)}
+            onChange={(_name, value) => setNumericField('quantite', value)}
+            required
+          />
+          <FormInput
+            label="Seuil minimum"
+            name="minimum"
+            type="number"
+            value={String(draft.minimum)}
+            onChange={(_name, value) => setNumericField('minimum', value)}
+            required
+          />
+          <FormInput
+            label="Description"
+            name="description"
+            value={draft.description ?? ''}
+            onChange={(_name, value) => setField('description', value)}
+            placeholder="Optionnel"
+          />
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="primary-button">
-            <span>＋</span> {article.reference ? 'Enregistrer' : 'Créer'} l\'article
+          <button type="submit" className="primary-button" disabled={saving}>
+            <span>＋</span> {saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
           </button>
-          {saved && <span className="form-success">✓ Enregistré avec succès</span>}
-          <button type="button" className="secondary-button" onClick={() => { setArticle(defaultArticle); setSaved(false) }}>
+          {feedback && (
+            <span className={feedback.tone === 'success' ? 'form-success' : 'form-error'} role="status">
+              {feedback.tone === 'success' ? '✓' : '⚠'} {feedback.message}
+            </span>
+          )}
+          <button type="button" className="secondary-button" onClick={resetForm}>
             Effacer
           </button>
         </div>
+        {error && <p className="error-banner" role="alert">{error}</p>}
       </form>
 
       <div className="form-card">
-        <h2>Liste des articles</h2>
-        <p className="empty-state">Aucun article n'est encore affiché ici. Les articles créés apparaîtront dans cette liste.</p>
+        <h2>Liste des articles {saving && <span className="saving-indicator">· synchronisation...</span>}</h2>
+        {loading ? (
+          <p className="table-state">Chargement du catalogue...</p>
+        ) : articles.length === 0 ? (
+          <p className="table-state">Aucun article. Utilisez le formulaire ci-dessus pour creer le premier.</p>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>REFERENCE</th>
+                  <th>DESIGNATION</th>
+                  <th>CATEGORIE</th>
+                  <th>PRIX HT</th>
+                  <th>STOCK</th>
+                  <th>SEUIL</th>
+                  <th>EMPLACEMENT</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {articles.map((article) => (
+                  <tr
+                    key={article.reference}
+                    className={[
+                      article.quantite <= article.minimum ? 'row-warning' : '',
+                      editingReference === article.reference ? 'row-editing' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    <td><b className="reference">{article.reference}</b></td>
+                    <td>{article.designation}</td>
+                    <td>{article.category}</td>
+                    <td>{currency.format(article.prixUnitaireHT)} €</td>
+                    <td><b>{article.quantite}</b></td>
+                    <td>{article.minimum}</td>
+                    <td><span className="location-tag">{article.emplacement}</span></td>
+                    <td className="actions-cell">
+                      <button
+                        type="button"
+                        className="action-btn edit"
+                        onClick={() => handleEdit(article)}
+                        title="Charger dans le formulaire"
+                        aria-label={`Modifier ${article.reference}`}
+                      >
+                        ✎
+                      </button>
+                      <button
+                        type="button"
+                        className="action-btn delete"
+                        onClick={() => void handleDelete(article)}
+                        title="Supprimer"
+                        aria-label={`Supprimer ${article.reference}`}
+                        disabled={saving}
+                      >
+                        🗑
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <Link className="back-link" to="/">← Retour au dashboard</Link>

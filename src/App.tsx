@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import './App.css'
+import { useDashboard } from './hooks/useDashboard'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
@@ -12,16 +13,6 @@ import RetoursView from './views/RetoursView'
 import ClientsView from './views/ClientsView'
 import VehiculesView from './views/VehiculesView'
 import UtilisateursView from './views/UtilisateursView'
-import type { ApiDashboard, ApiMode, DashboardData } from './types'
-
-const initialDashboard = {
-  stockValue: 0,
-  references: 0,
-  lowStock: 0,
-  pendingOrders: 0,
-  lowStockItems: [],
-  activity: [],
-} satisfies DashboardData
 
 const navigation = [
   { label: 'Vue d ensemble', path: '/' },
@@ -36,41 +27,10 @@ const navigation = [
   { label: 'Vehicules', path: '/vehicules' }
 ] as const
 
-function mapDashboardPayload(data: ApiDashboard): DashboardData {
-  const lowStockItems = data.lowStockItems ?? data.stockItems?.map((item) => ({
-    reference: item.ref,
-    label: item.name,
-    quantity: item.stock,
-    minimum: item.minimum,
-    location: item.location,
-  }))
-
-  return {
-    ...initialDashboard,
-    ...data,
-    lowStockItems: lowStockItems ?? initialDashboard.lowStockItems,
-    activity: data.activity ?? data.activities ?? initialDashboard.activity,
-  }
-}
-
 function AppContent() {
-  const [dashboard, setDashboard] = useState<DashboardData>(initialDashboard)
-  const [apiMode, setApiMode] = useState<ApiMode>('loading')
+  const { dashboard, apiMode, error, lastUpdated, refresh } = useDashboard()
   const [mobileNav, setMobileNav] = useState(false)
   const location = useLocation()
-
-  useEffect(() => {
-    fetch('/api/dashboard')
-      .then((response) => response.ok ? response.json() as Promise<ApiDashboard> : Promise.reject(new Error('API unavailable')))
-      .then((data) => {
-        setDashboard(mapDashboardPayload(data))
-        setApiMode('connected')
-      })
-      .catch(() => {
-        setDashboard(initialDashboard)
-        setApiMode('error')
-      })
-  }, [])
 
   return (
     <div className="app-shell">
@@ -115,8 +75,18 @@ function AppContent() {
               : apiMode === 'loading'
                 ? 'Connexion a MariaDB...'
                 : 'Erreur de connexion a la base de donnees MariaDB'}
-            <span className="status-time">Derniere mise a jour : a l instant</span>
+            <span className="status-time">
+              {lastUpdated
+                ? `Derniere mise a jour : ${lastUpdated.toLocaleTimeString('fr-FR')}`
+                : 'Derniere mise a jour : en cours'}
+            </span>
+            <button className="link-button" onClick={refresh} disabled={apiMode === 'loading'}>
+              {apiMode === 'loading' ? 'Actualisation...' : 'Actualiser'}
+            </button>
           </div>
+          {error && apiMode === 'error' && (
+            <p className="error-banner" role="alert">{error}</p>
+          )}
 
           <Routes>
             <Route path="/" element={<DashboardView dashboard={dashboard} apiMode={apiMode} />} />
