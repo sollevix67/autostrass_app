@@ -85,10 +85,12 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
   }
 
   try {
-    const [rows] = await pool!.query<Array<RowDataPacket & { stock_value: number; references: number; low_stock: number; low_stock_items: string }>>(
+    // `references` est un mot-cle reserve en MariaDB -> on evite l'alias.
+    // `unit_price_ht` est expose par la vue sous le nom `prix_unitaire_ht`.
+    const [rows] = await pool!.query<Array<RowDataPacket & { stock_value: number; total_references: number; low_stock: number; low_stock_items: string }>>(
       `SELECT
-        COALESCE(SUM(quantity * unit_price_ht), 0)  AS stock_value,
-        COUNT(*)                                     AS references,
+        COALESCE(SUM(quantity * prix_unitaire_ht), 0) AS stock_value,
+        COUNT(*)                                        AS total_references,
         SUM(CASE WHEN quantity <= minimum THEN 1 ELSE 0 END) AS low_stock,
         COALESCE(JSON_ARRAYAGG(JSON_OBJECT(
           'reference', reference,
@@ -112,8 +114,10 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
       LIMIT 8`,
     )
 
+    // JSON_ARRAYAGG ne supporte pas de filtre : on agrege tout puis on ne garde
+    // que les lignes sous le seuil, ce qui evite une sous-requete corralee.
     const parsed: unknown = rows[0]?.low_stock_items
-    const lowStockItems: LowStockItem[] = Array.isArray(parsed)
+    const allItems: LowStockItem[] = Array.isArray(parsed)
       ? (parsed as Array<Record<string, unknown>>).map((item) => ({
           reference: String(item.reference ?? ''),
           label: String(item.label ?? ''),
@@ -123,12 +127,17 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
         }))
       : []
 
+    const lowStockItems = allItems
+      .filter((item) => item.quantity <= item.minimum)
+      .sort((a, b) => a.quantity - b.quantity || a.minimum - b.minimum)
+      .slice(0, 8)
+
     response.json({
       ...emptyDashboard,
       stockValue: Number(rows[0]?.stock_value ?? 0),
-      references: Number(rows[0]?.references ?? 0),
+      references: Number(rows[0]?.total_references ?? 0),
       lowStock: Number(rows[0]?.low_stock ?? 0),
-      lowStockItems: lowStockItems.slice(0, 8),
+      lowStockItems,
       activity: movements.map((movement) => ({
         type: movement.type,
         title: movement.title,

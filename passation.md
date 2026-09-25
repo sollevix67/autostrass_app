@@ -96,7 +96,8 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/views/RetoursView.tsx` | Retours + remboursement | ✅ |
 | `server/repositories/articleRepository.ts` | Accès MariaDB transactions | ✅ |
 | `server/middleware/validation.ts` | Validation 422 | ✅ |
-| `database/schema.sql` | Schéma + seed | ✅ |
+| `database/schema.sql` | Schéma v1 + seed | ✅ |
+| `database/migrate_v1.sql` | Migration v0.1 → v1 (préserve les données) | ✅ |
 | `server/index.ts` | Routes Express | ✅ |
 
 ---
@@ -111,6 +112,10 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `setState` synchrone dans `useEffect` | Provoque un rendu en cascade (warning oxlint). Déplacer dans le callback de `reload()` |
 | `<label>` vide pour un `<select>` en ligne | `FormSelect` accepte désormais `label=""` + `aria-label` |
 | Casts `'x' as UnionType` dans un objet littéral | Utiliser `const DEFAULT_X: XType = 'x'` puis `satisfies` — le compilateur vérifie la valeur |
+| Alias SQL `AS references` | `references` est un **mot-clé réservé** en MariaDB : la requête échoue silencieusement côté 503. Utiliser `total_references` |
+| Colonne `unit_price_ht` lue depuis `v_stock` | La vue l'expose sous **`prix_unitaire_ht`** (alias explicite dans le `CREATE VIEW`) |
+| `JSON_ARRAYAGG` pour filtrer le stock bas | MariaDB ne supporte pas de `FILTER` : agréger tout puis filtrer côté TypeScript (moins coûteux qu'une sous-requête corrélée) |
+| `ALTER TABLE ... MODIFY COLUMN` pour recoder un ENUM | Valeurs existantes hors du nouvel ENUM = data loss. Passer par une table tampon + `RENAME TABLE` |
 
 ---
 
@@ -167,8 +172,17 @@ JWT_SECRET=***
 ### Initialisation de la base
 
 ```bash
-mysql -u root -p < database/schema.sql
+# Schema v1 (base vierge)
+mysql -h HOST -u USER -p < database/schema.sql
+
+# Migration depuis le schema v0.1 (stock_items / activities)
+mysql -h HOST -u USER -p autostrass_test < database/migrate_v1.sql
 ```
+
+> `migrate_v1.sql` est idempotente : sauvegardes les tables d'origine dans
+> `stock_items_backup_v1` et `activities_backup_v1` avant de les supprimer.
+> ⚠️ `v_stock` expose le prix sous le nom **`prix_unitaire_ht`** (et non `unit_price_ht`).
+> ⚠️ `references` est un **mot-clé réservé MariaDB** : ne jamais l'utiliser comme alias de colonne.
 
 > Sans ces variables, l'API démarre quand même : `/api/health` répond `database: "unconfigured"` et les autres routes renvoient **503**. Le frontend bascule automatiquement en mode local (bandeau d'information + données de démonstration).
 
