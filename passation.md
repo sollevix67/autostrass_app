@@ -121,12 +121,28 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ## 5. Plan d'actions — Semaine 2
 
-### 📋 Formulaires & Factorisation> Planifier avec `npm run uipro -- "<besoin>" --domain ux` avant d'implémenter.
-> Recommandations déjà identifiées pour ce projet :
-> - **Data-Dense Dashboard** (style) : correspond exactement au profilage du dépôt
-> - **Focusable Error Summary** + **Error Placement** (ux, sévérité High) : à appliquer aux formulaires
+### 📋 Formulaires & Factorisation
+
+> Planifier avec `npm run uipro -- "<besoin>" --domain ux` avant d'implémenter.
+> Source de vérité visuelle : `design-system/autostrass/MASTER.md`.
+>
+> Recommandations déjà identifiées :
+> - **Data-Dense Dashboard** (style) : profilage exact du dépôt
+> - **Focusable Error Summary** + **Error Placement** (ux, sévérité High) : les erreurs
+>   existent mais ne sont pas reliées aux champs par `aria-describedby`
 > - **Memoized Components** + **Narrow Dependencies** (react) : pour les tables de stock
-> - **Line Chart** (chart) : évolution du stock dans le temps, avec repli stat card si < 4 points
+> - **Line Chart** (chart) : évolution du stock, avec repli stat card si < 4 points
+>
+> **Avancement de la checklist ui-ux-pro-max :**
+> - [x] `cursor: pointer` sur tous les éléments cliquables
+> - [x] Anneau de focus visible au clavier (`:focus-visible`)
+> - [x] `prefers-reduced-motion` respecté
+> - [x] Contraste des libellés d'état ≥ 4.5:1
+> - [ ] Remplacer les emojis utilisés comme icônes (`✎ 🗑 ☰ ⌕ ♢ ＋ ✕`) par des SVG
+> - [ ] Vérifier les breakpoints 375 / 768 / 1024 / 1440 px
+> - [ ] Appliquer la typographie Fira Code / Fira Sans
+> - [ ] Migrer la palette vers les variables du design system
+
 1. **React Hook Form + Zod** — schémas dans `src/schemas/`
 2. **Composants partagés** :
    - `src/components/PageLayout.tsx` — heading + actions + back-link
@@ -162,23 +178,50 @@ npm run preview    # prévisualiser le build
 
 Le dépôt embarque le skill [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
 (179 fichiers dans `.github/prompts/`, 7 skills dont `ui-ux-pro-max`, `design-system`, `ui-styling`).
+**Python 3.13 est installé** → le moteur complet du skill est utilisable.
 
 ```bash
-# Consulter les guidelines sans Python (lecteur CSV en Node)
+# Design system complet (raisonnement multi-domaines)
+npm run uipro -- "erp inventory operations internal tool data dense" \
+  --design-system --density 9 --variance 3 -p "Autostrass"
+
+# Persister dans design-system/<projet>/MASTER.md
+npm run uipro -- "<requete>" --design-system --persist -p "Autostrass" --output-dir .
+
+# Recherche par domaine
 npm run uipro -- "form validation error" --domain ux
 npm run uipro -- "memo rerender list keys" --domain react
 npm run uipro -- "dashboard data dense" --domain style
 
-# Recharger le skill depuis le CLI officiel
-npm install -g ui-ux-pro-max-cli
-uipro update
+# Recharger le skill
+npm install -g ui-ux-pro-max-cli && uipro update
 ```
 
-> Le script officiel `search.py` du skill nécessite **Python 3**, absent de cette machine.
-> `scripts/uipro-search.mjs` interroge les mêmes CSV en Node avec un scoring BM25 :
-> résultats équivalents pour les domaines `ux`, `style`, `color`, `typography`, `chart`,
-> `product`, `react` et `icons`. Seul le mode `--design-system` (raisonnement multi-domaines)
-> reste réservé au script Python.
+> `npm run uipro:node` (`scripts/uipro-search.mjs`) reste disponible comme
+> alternative sans Python : mêmes CSV, scoring BM25, 8 domaines. Seul le mode
+> `--design-system` exige Python.
+
+#### ⚠️ Reformuler les requêtes
+
+La formulation determine la qualite du resultat. Exemple reel sur ce projet :
+
+| Requête | Résultat | Verdict |
+|---------|----------|---------|
+| `automotive parts depot inventory management` | Cormorant Garamond, mood « academia, library, scholarly » | ❌ Inadapté |
+| `erp inventory operations internal tool data dense` | Fira Code / Fira Sans, mood « dashboard, technical, precise » | ✅ Retenu |
+
+Le vocabulaire marketing attire les palettes editorial/serif. Nommer le **type d'interface**
+(ERP, dashboard, outil interne) et le niveau de **densité** donne des résultats coherents.
+
+#### Design system retenu — `design-system/autostrass/MASTER.md`
+
+| Aspect | Valeur |
+|--------|--------|
+| Style | Minimalism & Swiss Style — « enterprise apps, dashboards, professional tools » |
+| Densité | 9/10 (dashboard) — espacement 2→32 px |
+| Primaire / Accent | `#1E40AF` bleu / `#D97706` ambre |
+| Typographie | Fira Code (titres) / Fira Sans (texte) |
+| À éviter | Ornements, designs surchargés, absence de filtrage |
 
 ---
 

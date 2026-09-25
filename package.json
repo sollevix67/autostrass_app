@@ -9,7 +9,8 @@
     "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "uipro": "node scripts/uipro-search.mjs"
+    "uipro": "python .github/prompts/ui-ux-pro-max/scripts/search.py",
+    "uipro:node": "node scripts/uipro-search.mjs"
   },
   "dependencies": {
     "dotenv": "^18.0.1",

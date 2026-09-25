@@ -66,3 +66,31 @@
 .form-error { color: #b2543f; font-size: 11px; }
 .action-btn:disabled { opacity: .45; cursor: not-allowed; }
 
+/* --- Checklist ui-ux-pro-max : focus visible + reduced motion --------------- */
+/* Anneau de focus net sur tous les elements interactifs au clavier.
+   Sans cela, la navigation clavier (liens, boutons, selects, champs) est invisible. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #ee806c;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+/* Ne pas imposer d'anneau au pointeur : on le remplace par un etat de survol. */
+:where(a, button, input, select, textarea, [tabindex]):focus:not(:focus-visible) { outline: none; }
+/* Anneau double sur fond sombre (sidebar) pour garantir le contraste 4.5:1. */
+.sidebar :where(a, button):focus-visible { outline-color: #f3a08f; }
+
+/* Respecte le reglage systeme "reduire les animations" : coupe transitions
+   et scroll fluide sans supprimer les retours d'etat visuels. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Contraste : le texte secondaire #9aa4a7 sur blanc vaut ~2.6:1, insuffisant.
+   On remonte a #6b7679 (~5.1:1) pour les libelles d'etat. */
+.table-state, .saving-indicator { color: #6b7679; }
+.eyebrow, .panel-kicker { color: #6b7679; }
+
