@@ -121,7 +121,12 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ## 5. Plan d'actions — Semaine 2
 
-### 📋 Formulaires & Factorisation
+### 📋 Formulaires & Factorisation> Planifier avec `npm run uipro -- "<besoin>" --domain ux` avant d'implémenter.
+> Recommandations déjà identifiées pour ce projet :
+> - **Data-Dense Dashboard** (style) : correspond exactement au profilage du dépôt
+> - **Focusable Error Summary** + **Error Placement** (ux, sévérité High) : à appliquer aux formulaires
+> - **Memoized Components** + **Narrow Dependencies** (react) : pour les tables de stock
+> - **Line Chart** (chart) : évolution du stock dans le temps, avec repli stat card si < 4 points
 1. **React Hook Form + Zod** — schémas dans `src/schemas/`
 2. **Composants partagés** :
    - `src/components/PageLayout.tsx` — heading + actions + back-link
@@ -152,6 +157,28 @@ npm run build      # tsc -b + tsc server + vite build
 npm run lint       # oxlint
 npm run preview    # prévisualiser le build
 ```
+
+### Recherche design (UI/UX Pro Max)
+
+Le dépôt embarque le skill [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+(179 fichiers dans `.github/prompts/`, 7 skills dont `ui-ux-pro-max`, `design-system`, `ui-styling`).
+
+```bash
+# Consulter les guidelines sans Python (lecteur CSV en Node)
+npm run uipro -- "form validation error" --domain ux
+npm run uipro -- "memo rerender list keys" --domain react
+npm run uipro -- "dashboard data dense" --domain style
+
+# Recharger le skill depuis le CLI officiel
+npm install -g ui-ux-pro-max-cli
+uipro update
+```
+
+> Le script officiel `search.py` du skill nécessite **Python 3**, absent de cette machine.
+> `scripts/uipro-search.mjs` interroge les mêmes CSV en Node avec un scoring BM25 :
+> résultats équivalents pour les domaines `ux`, `style`, `color`, `typography`, `chart`,
+> `product`, `react` et `icons`. Seul le mode `--design-system` (raisonnement multi-domaines)
+> reste réservé au script Python.
 
 ---
 
