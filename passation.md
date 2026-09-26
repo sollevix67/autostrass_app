@@ -1,8 +1,12 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-26 — **Semaines 1, 2 et 3 (backend) terminées**.
-> Build ✅, lint ✅ 0 warning, **69/69 tests API** + **58/58 tests sécurité** ✅,
-> parcours de connexion et vue Clients validés au navigateur.
+> État du projet au 2026-09-26 — **2 modules du cahier des charges sur 13
+> terminés**. Build ✅, lint ✅ 0 warning, **69/69 tests API** +
+> **58/58 tests sécurité** ✅.
+>
+> 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
+> ce document en reprend chaque module avec l'écart restant et l'ordre
+> d'exécution proposé.
 
 ---
 
@@ -14,6 +18,14 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 - **Architecture** : Monorepo, types partagés, API REST typée
 
 **Cible** : Déploiement en production avec authentification, persistance réelle, tests, observabilité.
+
+**Périmètre complet** (13 modules) : voir `TODO.md`. Résumé de l'état :
+
+| | |
+|---|---|
+| ✅ Terminé | Gestion des utilisateurs, carnet d'adresses clients |
+| ⚠️ Partiel | Stock, catalogues, réceptions, ventes, commandes, livraisons, retours |
+| ❌ Non commencé | Devis, commande fournisseurs, carnet fournisseurs, historique, autocomplétion, WhatsApp |
 
 ---
 
@@ -181,15 +193,16 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/utils/coerce.ts` | `pickEnum`, `toNumber` | ✅ |
 | `src/types/index.ts` | **Source of truth** — types métier | ✅ |
 | `src/App.tsx` | Routing, layout, statut connexion | ✅ |
-| `src/views/CatalogueView.tsx` | CRUD complet + mode local | ✅ || `src/views/ClientsView.tsx` | **Pilote branché API** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
-| `src/views/StockView.tsx` | Filtres, recherche, tri, modale — données locales | ✅ |
-| `src/views/VentesComptoirView.tsx` | Panier, paiement, monnaie — données locales | ✅ |
-| `src/views/ReceptionsView.tsx` | Lignes dynamiques (clés stables) — données locales | ✅ |
-| `src/views/VehiculesView.tsx` | Parc véhicules typé — données locales | ⚠️ à migrer |
-| `src/views/UtilisateursView.tsx` | Rôles, activation — données locales | ⚠️ à migrer |
-| `src/views/CommandesClientsView.tsx` | Statuts via `pickEnum` — données locales | ⚠️ à migrer |
-| `src/views/LivraisonsView.tsx` | Statuts éditables inline — données locales | ⚠️ à migrer |
-| `src/views/RetoursView.tsx` | Retours + remboursement — données locales | ⚠️ à migrer |
+| `src/views/CatalogueView.tsx` | CRUD complet branché API + mode local | ✅ |
+| `src/views/ClientsView.tsx` | **Pilote branché API** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
+| `src/views/StockView.tsx` | Filtres, recherche, tri, modale — branché API (emplacement en texte libre) | ⚠️ |
+| `src/views/VentesComptoirView.tsx` | Panier et paiement — **données locales**, caisse décorative | ⚠️ à migrer |
+| `src/views/ReceptionsView.tsx` | Lignes dynamiques (clés stables) — **données locales** | ⚠️ à migrer |
+| `src/views/VehiculesView.tsx` | Parc véhicules — **données locales** | ⚠️ à migrer |
+| `src/views/UtilisateursView.tsx` | Rôles et activation — **données locales** | ⚠️ à migrer |
+| `src/views/CommandesClientsView.tsx` | Statuts via `pickEnum` — **données locales** | ⚠️ à migrer |
+| `src/views/LivraisonsView.tsx` | Statuts éditables inline — **données locales** | ⚠️ à migrer |
+| `src/views/RetoursView.tsx` | Retours et remboursement — **données locales** | ⚠️ à migrer |
 | `src/components/Icon.tsx` | Jeu d'icônes SVG (remplace les emojis) | ✅ |
 | `src/tokens.css` | Tokens de design (palette, typo, espacement) | ✅ |
 | `src/hooks/useResource.ts` | CRUD générique sur l'API | ✅ |
@@ -248,25 +261,45 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ---
 
-## 5. Plan d'actions — Semaine 2
+## 5. Plan d'actions — feuille de route du projet
 
-### 📋 Formulaires & Factorisation
+> La source de vérité est **`TODO.md`** (cahier des charges initial).
+> Cette section en reprend les 13 modules et indique, pour chacun, ce qui
+> manque. Les sections 1 à 4 décrivent l'historique ; celle-ci décrit
+> l'avenir et n'est donc plus organized par semaine.
 
-> Planifier avec `npm run uipro -- "<besoin>" --domain ux` avant d'implémenter.
-> Source de vérité visuelle : `design-system/autostrass/MASTER.md`.
->
-> Recommandations déjà identifiées :
-> - **Data-Dense Dashboard** (style) : profilage exact du dépôt
-> - **Focusable Error Summary** + **Error Placement** (ux, sévérité High) : les erreurs
->   existent mais ne sont pas reliées aux champs par `aria-describedby`
-> - **Memoized Components** + **Narrow Dependencies** (react) : pour les tables de stock
-> - **Line Chart** (chart) : évolution du stock, avec repli stat card si < 4 points
->
-> **Avancement de la checklist ui-ux-pro-max :**
-> - [x] `cursor: pointer` sur tous les éléments cliquables
-> - [x] Anneau de focus visible au clavier (`:focus-visible`)
-> - [x] `prefers-reduced-motion` respecté
-> - [x] Contraste des libellés d'état ≥ 4.5:1
+### 📊 Avancement global : **2 modules terminés / 13**
+
+| Module du cahier des charges | État | Écart restant |
+|---|---|---|
+| Gestion des utilisateurs | ✅ **complet** | — |
+| Carnet d'adresses clients | ✅ **complet** | — |
+| Gestion de stock | ⚠️ partiel | Emplacement en texte libre, pas allée → étagère → place |
+| Catalogues HT/TTC | ⚠️ partiel | Prix **HT seul** : ni TVA, ni prix TTC |
+| Réception fournisseurs | ⚠️ partiel | API prête, **interface encore locale** (ne persiste rien) |
+| Vente au comptoir | ⚠️ partiel | Caisse **décorative** (liste en dur), pas de mouvements de caisse |
+| Commande client | ⚠️ partiel | API prête, interface locale, **pas de bon de commande PDF** |
+| Livraisons clients pro | ⚠️ partiel | API prête, interface locale, **pas de bon de livraison** |
+| Gestion des retours | ⚠️ partiel | API prête, interface locale, **pas d'avoir** |
+| Création de devis | ❌ non commencé | — |
+| Commande fournisseurs | ❌ non commencé | Aucun concept dans le schéma |
+| Carnet d'adresses fournisseurs | ❌ non commencé | `fournisseur` est une simple chaîne sur les réceptions |
+| Historique complet des actions | ❌ non commencé | Seul `stock_movements` existe, pas de journal d'audit |
+| Autocomplétion Google (adresses) | ❌ non commencé | — |
+| Intégration WhatsApp | ❌ non commencé | — |
+
+> **Point clé** : sur les 6 modules « ⚠️ partiel », **le backend est
+> terminé** (tables, repositories, routes, RBAC, validation). Ce qui manque
+> est presque toujours du frontend. C'est le chantier le plus mécanique et
+> le plus rentable : `src/hooks/useResource.ts` existe déjà et
+> `src/views/ClientsView.tsx` sert de modèle de référence.
+
+### 📋 Avancement de la checklist ui-ux-pro-max
+
+- [x] `cursor: pointer` sur tous les éléments cliquables
+- [x] Anneau de focus visible au clavier (`:focus-visible`)
+- [x] `prefers-reduced-motion` respecté
+- [x] Contraste des libellés d'état ≥ 4.5:1
 - [x] Remplacer les emojis utilisés comme icônes par des SVG (`src/components/Icon.tsx`)
 - [x] Vérifier les breakpoints 375 / 768 / 1024 / 1440 px
 - [x] Appliquer la typographie Fira Code / Fira Sans
@@ -296,51 +329,101 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 **Subtilités de la normalisation** :
 - La longueur est vérifiée **après** normalisation, sinon 4 000 caractères de largeur nulle passaient sous une limite de 64.
-- On normalise **avant** de détecter : U+2028 se replie en LF (caractère de contrôle). Nettoyer d'abord laisserait passer un caractère qui redevient invisible ensuite.
+- On normalise **avant** de détecter : U+2028 se replie en LF (caractère de contrôle). Nettoyer d'abord laisserait passer un caractère redevenu invisible.
 - Le mot de passe n'est **pas** normalisé à la connexion : bcrypt compare octet par octet, supprimer un caractère invaliderait un mot de passe valide.
 
 **CSRF** : `SameSite=Lax` bloque le cookie sur les requêtes cross-site *de premier niveau*, mais **autorise** le même site. Une page-XSS sur l'origine, ou un sous-domaine volé, pouvait donc déclencher `POST /api/ventes` avec le cookie de session. La double soumission (cookie non-`httpOnly` + en-tête `X-CSRF-Token`, comparés à temps constant) ferme ce reste.
 
 **Rate limit** : seules les tentatives **échouées** sont comptées. Compter les succès bloquerait un magasinier qui se trompe de mot de passe dix fois, alors que l'attaquant n'a progressé sur rien. Un succès purge le compteur. Les compteurs sont cloisonnés par famille de routes — sinon la suite de tests de sécurité bloquait la suite d'API pendant 15 minutes.
 
-### 🚀 Semaine 4 — Intégration frontend & qualité
+### 🗺️ Ordre d'exécution proposé
 
-> **Avant tout : fixer la CSP.** `frame-ancestors` est déjà posé ; une
-> politique complète reste à définir au moment du déploiement, quand les
-> domaines exacts (hébergement des polices Fira) sont connus. Elle est
-> volontairement absente tant que les polices viennent de Google Fonts et
-> que Vite sert le client en développement.
-   `UtilisateursView`, `CommandesClientsView`, `LivraisonsView`, `RetoursView`,
-   `VentesComptoirView`, `ReceptionsView`. `ClientsView` sert de pilote.
-2. **Conditionner l'interface au rôle** : masquer ou désactiver les actions
-   d'écriture quand `canWrite(user.role, metier)` est faux.
-3. **Tests** : Vitest pour les hooks et les schemas Zod, Playwright pour les
-   parcours de connexion et de saisie.
-4. **Performance** : `React.lazy` + `Suspense` sur les routes, `useMemo` sur les vues lourdes.
-5. **Observabilité** : logs structurés (pino), Sentry.
-6. **CI/CD** : GitHub Actions → lint + typecheck + test + build.
+**Étape 1 — Débloquer la persistance (7 vues)**
+Migrer vers `useResource` : `VehiculesView`, `UtilisateursView`, `ReceptionsView`,
+`VentesComptoirView`, `CommandesClientsView`, `LivraisonsView`, `RetoursView`.
+Chaque vue : RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`.
+Tant que ce n'est pas fait, ces modules affichent des données codées en dur
+et **aucune saisie n'est enregistrée**.
 
-### Rappel : ce qui reste de la semaine 3
+> Cette étape supprime aussi les `window.alert` / `window.confirm` bloquants.
 
-- Les 7 vues ci-dessus tournent encore sur des données en mémoire
-  (`SEED_*`) : elles nepersistent rien tant qu'elles ne sont pas migrées.
-- La déconnexion invalide le cookie mais pas le jeton : un stockage de
-  jetons révocables serait nécessaire pour une déconnexion définitive.
+**Étape 2 — Modèle de données**
+- `emplacements` hiérarchiques (allée → étagère → place) + migration de
+  `articles.location` (texte libre) vers une clé étrangère
+- `tva` + `prix_ttc` sur le catalogue
+- `fournisseurs` (entité à part entière) + `commandes_fournisseurs`
+- `sessions_caisse` + `mouvements_caisse`
+- `journal_actions` (audit global : qui, quoi, quand, sur quoi)
 
-1. **React Hook Form + Zod** — schémas dans `src/schemas/`
-2. **Composants partagés** :
-   - `src/components/PageLayout.tsx` — heading + actions + back-link
-   - `src/components/DataTable.tsx` — tableau générique triable/paginable
-   - `src/components/ConfirmDialog.tsx` — remplacer les `window.confirm`
-3. **Refactorer les 3 vues pilotes** (Catalogue, Stock, Réceptions) sur les nouveaux patterns
-4. **Toast/snackbar** pour remplacer les feedbacks inline dispersés
+**Étape 3 — Documents PDF**
+Devis, factures, bons de commande, bons de livraison, avoirs.
+Choix d'architecture : génération **côté serveur** (`pdfmake` ou `puppeteer`)
+plutôt que côté client — un numéro de facture doit être immuable et
+imprimable depuis n'importe quel poste.
 
-### 🔧 Semaine 3 — Backend & Persistance
+**Étape 4 — Caisse**
+Ouverture / fermeture de session, fond de caisse, clôture avec écart,
+journal des mouvements.
+
+**Étape 5 — Intégrations**
+- Autocomplétion d'adresses (Google Places, ou alternative sans quota ni clé
+  API comme `api-adresse.data.gouv.fr`)
+- WhatsApp Business Cloud API (webhook + messages sortants)
+
+**Étape 6 — Qualité et production**
+Vitest + Playwright, `React.lazy`, logs structurés, CI/CD, CSP.
+
+### ❓ Décisions en attente
+
+Deux points du cahier des charges demandent un arbitrage, pas une
+implémentation :
+
+1. **Immatriculation / VIN** — le TODO demande « voir si c'est possible ».
+   L'API **SIV** française (interieur.gouv.fr) permet de résoudre un VIN
+   (marque, modèle, année, kilométrage) mais exige un compte professionnel et
+   des quotas. L'alternative gratuite `api-adresse.data.gouv.fr` ne couvre
+   pas les véhicules. **Question : intégrer l'API SIV derrière une
+   abstraction (avec repli sur la saisie manuelle), ou rester en saisie
+   manuelle ?**
+
+2. **Gestion de caisse** — « gestion de caisse » est ambigu : sessions
+   d'ouverture/fermeture, tiroir, fond de caisse, clôture avec comptage ?
+   **Question : quel niveau de détail est attendu ?**
+
+### 🔐 Dette technique connue
+
+- **CSP** volontairement absente : `frame-ancestors` est posé, mais une
+  politique complète casserait le chargement des polices Google et le client
+  Vite. À définir au moment du déploiement, quand les domaines exacts sont connus.
+- **Déconnexion** : le cookie est effacé mais le jeton reste valide 12 h. Un
+  stockage de jetons révocables (table `sessions` ou Redis) est nécessaire
+  pour une déconnexion définitive.
+- **Rate limit en mémoire** : le compteur vit dans un seul processus. Derrière
+  un load balancer, la limite effective est multipliée par le nombre
+  d'instances. Acceptable pour un dépôt mono-instance ; sinon il faut un
+  stockage partagé.
+- **Inactivité** : les 7 vues non migrées affichent des `SEED_*` et n'écrivent
+  nulle part.
+
+---
+
+## 5 bis. Historique des plans hebdomadaires
+
+> Conservé pour la traçabilité. Ces découpages ne correspondent plus à la
+> feuille de route ci-dessus, qui fait foi.
+
+### Semaine 2 — Formulaires & Factorisation
+1. **React Hook Form + Zod** — schémas dans `src/schemas/` ✅
+2. **Composants partagés** : `PageLayout`, `DataTable`, `ConfirmDialog` ✅
+3. **Refactorer les 3 vues pilotes** (Catalogue, Stock, Réceptions) ✅
+4. **Toast/snackbar** pour remplacer les feedbacks inline dispersés ✅
+
+### Semaine 3 — Backend & Persistance
 5. ~~Endpoints REST pour les 9 entités restantes~~ ✅
 6. ~~Migrations versionnées (Drizzle)~~ ✅
 7. ~~Auth JWT + RBAC — `requireRole`~~ ✅
 
-### 🚀 Semaine 4 — Qualité & Production
+### Semaine 4 — Qualité & Production
 8. Tests : 20 unitaires (Vitest) + 5 intégration (MSW) + 3 E2E (Playwright)
 9. Performance : `React.lazy` + `Suspense` sur les routes, `useMemo` sur les vues lourdes
 10. Observabilité : Sentry + logs structurés (pino)
