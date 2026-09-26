@@ -1,8 +1,8 @@
 # Passation — Autostrass App
 
 > État du projet au 2026-09-26 — **Semaines 1, 2 et 3 (backend) terminées**.
-> Build ✅, lint ✅ 0 warning, **69/69 tests API** ✅, parcours de connexion
-> et vue Clients validés au navigateur.
+> Build ✅, lint ✅ 0 warning, **69/69 tests API** + **58/58 tests sécurité** ✅,
+> parcours de connexion et vue Clients validés au navigateur.
 
 ---
 
@@ -200,6 +200,9 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `server/repositories/articleRepository.ts` | Accès MariaDB transactions (v1) | ✅ |
 | `server/middleware/validation.ts` | Validation 422 (v1) | ✅ |
 | `server/middleware/auth.ts` | JWT + `requireRole` | ✅ |
+| `server/middleware/sanitize.ts` | Normalisation Unicode + rejet du markup | ✅ |
+| `server/middleware/csrf.ts` | Double soumission CSRF + rate limit | ✅ |
+| `server/middleware/security.ts` | En-têtes HTTP de sécurité | ✅ |
 | `server/middleware/resourceRoutes.ts` | Routes des 8 métiers + RBAC | ✅ |
 | `database/schema.sql` | Schéma v1 + seed | ✅ |
 | `database/migrate_v1.sql` | Migration v0.1 → v1 (préserve les données) | ✅ |
@@ -238,6 +241,10 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `defaultNow()` en Drizzle 0.45 | Émet `DEFAULT (now())`, que le dialecte MariaDB de `drizzle-kit` **abandonne** → colonnes sans défaut, `created_at` toujours `NULL`. Écrire `.default(sql\`CURRENT_TIMESTAMP\`)` |
 | `SET @var` + `multipleStatements` | `mysql2` ne renvoie que le **dernier** jeu de résultats : une erreur sur la 1ʳᵉ instruction passe silencieusement. Répéter le littéral, ou exécuter instruction par instruction |
 | Test qui supprime un compte de démo | Casse les runs suivants (les identifiants séquentiels changent). Viser un compte créé par le test et rejouer le seed en ouverture |
+| Exception dans un `.transform` Zod | Court-circuite le schema et remonte en **500**. Passer par `ctx.addIssue({ code: 'custom', message })` + `return z.NEVER` → 422, et Zod poursuit la validation (toutes les erreurs d'un coup) |
+| `x.optional().or(z.literal(''))` | Rejette une clé **absente** : le `or` exige sa branche littérale. `PUT { role: 'caissier' }` → 422 « Téléphone est requis ». Utiliser `z.preprocess(v => v === '' ? undefined : v, x.optional())` |
+| Normaliser avant de détecter | U+2028 se replie en LF, un caractère de contrôle. Nettoyer d'abord laisserait passer un caractère redevenu invisible |
+| `no-control-regex` (oxlint) | Déclenché légitimement par une regex de nettoyage. Désactiver en ligne, avec justification |
 
 ---
 
@@ -265,9 +272,44 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 - [x] Appliquer la typographie Fira Code / Fira Sans
 - [x] Migrer la palette vers les variables du design system (`src/tokens.css`)
 
+### ✅ 11. Durcissement des formulaires contre l'injection
+
+> **Point de méthode** : l'audit a d'abord établi ce que l'architecture
+> garantit **déjà**, pour ne pas empiler des filtres redondants.
+
+| Vecteur | État | Pourquoi |
+|---------|------|----------|
+| Injection SQL | ✅ déjà couvert | Toutes les requêtes sont paramétrées (`?`) ou passent par Drizzle, qui lie les valeurs. Zéro interpolation SQL sur une variable. |
+| XSS stocké | ✅ déjà couvert | React échappe le texte ; zéro `innerHTML` / `dangerouslySetInnerHTML`. |
+| Mass-assignment | ✅ déjà couvert | Zod 4 est en mode *strip* : les clés inconnues sont supprimées du corps validé. |
+| Biais Unicode | ⚠️ **corrigé** | U+202E, U+200B, C0/DEL/C1 étaient acceptés. |
+| CSRF | ⚠️ **corrigé** | `SameSite=Lax` ne protège pas du même site. |
+| Force brute | ⚠️ **corrigé** | Aucune limite sur `/api/auth/login`. |
+| En-têtes HTTP | ⚠️ **corrigé** | Aucun `nosniff`, ni protection clickjacking. |
+
+| Fichier | Rôle |
+|---------|------|
+| `server/middleware/sanitize.ts` | NFKC, suppression des caractères de contrôle et invisibles, détection du markup |
+| `server/middleware/csrf.ts` | Double soumission CSRF, rate limit à fenêtre glissante |
+| `server/middleware/security.ts` | En-têtes HTTP de sécurité |
+| `scripts/test-security.ts` | **58 assertions** d'injection |
+
+**Subtilités de la normalisation** :
+- La longueur est vérifiée **après** normalisation, sinon 4 000 caractères de largeur nulle passaient sous une limite de 64.
+- On normalise **avant** de détecter : U+2028 se replie en LF (caractère de contrôle). Nettoyer d'abord laisserait passer un caractère qui redevient invisible ensuite.
+- Le mot de passe n'est **pas** normalisé à la connexion : bcrypt compare octet par octet, supprimer un caractère invaliderait un mot de passe valide.
+
+**CSRF** : `SameSite=Lax` bloque le cookie sur les requêtes cross-site *de premier niveau*, mais **autorise** le même site. Une page-XSS sur l'origine, ou un sous-domaine volé, pouvait donc déclencher `POST /api/ventes` avec le cookie de session. La double soumission (cookie non-`httpOnly` + en-tête `X-CSRF-Token`, comparés à temps constant) ferme ce reste.
+
+**Rate limit** : seules les tentatives **échouées** sont comptées. Compter les succès bloquerait un magasinier qui se trompe de mot de passe dix fois, alors que l'attaquant n'a progressé sur rien. Un succès purge le compteur. Les compteurs sont cloisonnés par famille de routes — sinon la suite de tests de sécurité bloquait la suite d'API pendant 15 minutes.
+
 ### 🚀 Semaine 4 — Intégration frontend & qualité
 
-1. **Migrer les 7 vues restantes vers `useResource`** : `VehiculesView`,
+> **Avant tout : fixer la CSP.** `frame-ancestors` est déjà posé ; une
+> politique complète reste à définir au moment du déploiement, quand les
+> domaines exacts (hébergement des polices Fira) sont connus. Elle est
+> volontairement absente tant que les polices viennent de Google Fonts et
+> que Vite sert le client en développement.
    `UtilisateursView`, `CommandesClientsView`, `LivraisonsView`, `RetoursView`,
    `VentesComptoirView`, `ReceptionsView`. `ClientsView` sert de pilote.
 2. **Conditionner l'interface au rôle** : masquer ou désactiver les actions
@@ -322,8 +364,9 @@ npm run db:seed     # jeu de démonstration (idempotent)
 npm run db:studio   # interface d'exploration
 
 # Tests
-npm run test:api    # 69 assertions de bout en bout (API demarrée requise)
-npm run test:repos  # lecture de la base réelle par repository
+npm run test:api      # 69 assertions de bout en bout (API démarrée requise)
+npm run test:security # 58 assertions d'injection / CSRF / en-têtes
+npm run test:repos    # lecture de la base réelle par repository
 ```
 
 ### Recherche design (UI/UX Pro Max)
