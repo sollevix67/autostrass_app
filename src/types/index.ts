@@ -1,3 +1,18 @@
+/**
+ * Types metier partages.
+ *
+ * `Article` et les types du tableau de bord decrivent des formes qui
+ * n'existent pas encore dans l'API (catalogue v1, agregats) et restent
+ * partagees entre le hook, la vue et les schemas.
+ *
+ * Les sept autres metiers (clients, vehicules, receptions, ventes, commandes,
+ * livraisons, retours) sont desagrees par l'API : leurs formes vivent dans
+ * `src/services/contracts.ts`. Les interfaces locales correspondantes ont ete
+ * supprimees — elles concentraient des `id` en chaine et des `lineId`
+ * locaux que la base ignore, ce qui avait produit deux definitions
+ * concurrentes du meme metier.
+ */
+
 export type ActivityType = 'RECEPTION' | 'VENTE' | 'TRANSFERT' | 'INVENTAIRE' | string
 
 export type LowStockItem = {
@@ -40,6 +55,13 @@ export type ApiMode = 'loading' | 'connected' | 'error'
 export const USER_ROLES = ['admin', 'magasinier', 'caissier'] as const
 export type UserRole = (typeof USER_ROLES)[number]
 
+/**
+ * Reference de piece du catalogue et du stock.
+ *
+ * `emplacement` est aujourd'hui un texte libre (« A-03 / E-02 / P-14 »). Le
+ * cahier des charges demande une hierarchie allee -> etagere -> place ; le
+ * passage a une cle etrangere fait partie de l'etape 2 de la feuille de route.
+ */
 export interface Article {
   reference: string
   designation: string
@@ -49,115 +71,4 @@ export interface Article {
   minimum: number
   emplacement: string
   description?: string
-}
-
-export interface Reception {
-  id?: string
-  fournisseur: string
-  dateReception: string
-  articles: Array<{
-    /** Cle React stable, generee cote client (non envoyee a l'API). */
-    lineId: string
-    reference: string
-    designation: string
-    quantiteRecue: number
-    prixUnitaire: number
-  }>
-  totalHT: number
-  notes?: string
-}
-
-export interface Vente {
-  id?: string
-  clientId: string
-  dateVente: string
-  caissier: string
-  articles: Array<{
-    /** Cle React stable, generee cote client (non envoyee a l'API). */
-    lineId: string
-    reference: string
-    designation: string
-    quantite: number
-    prixUnitaire: number
-    montant: number
-  }>
-  totalHT: number
-  montantPaye: number
-  monnaie: number
-  modePaiement: 'espèces' | 'carte' | 'chèque'
-}
-
-export interface CommandeClient {
-  id?: string
-  clientId: string
-  dateCommande: string
-  articles: Array<{
-    reference: string
-    designation: string
-    quantite: number
-    prixUnitaire: number
-  }>
-  statut: 'en attente' | 'validée' | 'expédiée' | 'livrée' | 'annulée'
-  dateLivraisonPrevue?: string
-}
-
-export interface Livraison {
-  id?: string
-  commandeId: string
-  transporteur: string
-  dateExpedition: string
-  dateLivraisonPrevue: string
-  adresseLivraison: string
-  statut: 'en transit' | 'livrée' | 'en attente'
-  tracking?: string
-}
-
-export interface Retour {
-  id?: string
-  venteId: string
-  clientId: string
-  dateRetour: string
-  motif: string
-  articles: Array<{
-    reference: string
-    designation: string
-    quantite: number
-    prixUnitaire: number
-  }>
-  montantRembourse: number
-}
-
-export interface Client {
-  id?: string
-  nom: string
-  prenom: string
-  telephone: string
-  email: string
-  adresse: string
-  ville: string
-  codePostal: string
-  type: 'particulier' | 'professionnel'
-  numeroClient: string
-}
-
-export interface Vehicule {
-  id?: string
-  immatriculation: string
-  marque: string
-  modele: string
-  annee: number
-  type: 'voiture' | 'camionnette' | 'camion' | 'autre'
-  kilometrage: number
-  proprietaire: string
-  statut: 'disponible' | 'en service' | 'en maintenance'
-}
-
-export interface Utilisateur {
-  id?: string
-  nom: string
-  prenom: string
-  email: string
-  telephone: string
-  role: 'admin' | 'magasinier' | 'caissier'
-  actif: boolean
 }

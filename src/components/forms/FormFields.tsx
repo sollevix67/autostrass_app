@@ -117,7 +117,15 @@ export function FormInput({
   )
 }
 
-type SelectProps = CommonProps & {
+/**
+ * Props du `<select>`.
+ *
+ * `Omit<CommonProps, 'placeholder'>` est indispensable : en intersection
+ * simple, `placeholder?: string` (herite de `CommonProps`) et
+ * `placeholder?: string | null` se reduiraient a `string`, et `null` serait
+ * refuse alors qu'il est la maniere documentee de supprimer l'option vide.
+ */
+type SelectProps = Omit<CommonProps, 'placeholder'> & {
   options: Array<{ value: string; label: string }>
   register?: FieldRegister
   value?: string
@@ -188,7 +196,7 @@ export function FormSelect({
   )
 }
 
-type TextareaProps = CommonProps & {
+type TextareaProps = Omit<CommonProps, 'rows'> & {
   rows?: number
   register?: FieldRegister
   value?: string

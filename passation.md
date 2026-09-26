@@ -1,8 +1,8 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-26 — **2 modules du cahier des charges sur 13
-> terminés**. Build ✅, lint ✅ 0 warning, **69/69 tests API** +
-> **58/58 tests sécurité** ✅.
+> État du projet au 2026-09-26 — **Étape 1 de la feuille de route terminée :
+> les 7 vues restantes sont branchées sur l'API**. Build ✅, lint ✅ 0 warning,
+> **69/69 tests API** + **58/58 tests sécurité** ✅.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -24,8 +24,8 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | | |
 |---|---|
 | ✅ Terminé | Gestion des utilisateurs, carnet d'adresses clients |
-| ⚠️ Partiel | Stock, catalogues, réceptions, ventes, commandes, livraisons, retours |
-| ❌ Non commencé | Devis, commande fournisseurs, carnet fournisseurs, historique, autocomplétion, WhatsApp |
+| 🟡 Persistance acquise | Stock, réceptions, ventes, commandes, livraisons, retours — les saisies sont **réellement enregistrées** |
+| ❌ Non commencé | Devis, commande fournisseurs, carnet fournisseurs, historique, autocomplétion, WhatsApp, documents PDF |
 
 ---
 
@@ -194,15 +194,15 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/types/index.ts` | **Source of truth** — types métier | ✅ |
 | `src/App.tsx` | Routing, layout, statut connexion | ✅ |
 | `src/views/CatalogueView.tsx` | CRUD complet branché API + mode local | ✅ |
-| `src/views/ClientsView.tsx` | **Pilote branché API** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
+| `src/views/ClientsView.tsx` | **Modele de reference** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
 | `src/views/StockView.tsx` | Filtres, recherche, tri, modale — branché API (emplacement en texte libre) | ⚠️ |
-| `src/views/VentesComptoirView.tsx` | Panier et paiement — **données locales**, caisse décorative | ⚠️ à migrer |
-| `src/views/ReceptionsView.tsx` | Lignes dynamiques (clés stables) — **données locales** | ⚠️ à migrer |
-| `src/views/VehiculesView.tsx` | Parc véhicules — **données locales** | ⚠️ à migrer |
-| `src/views/UtilisateursView.tsx` | Rôles et activation — **données locales** | ⚠️ à migrer |
-| `src/views/CommandesClientsView.tsx` | Statuts via `pickEnum` — **données locales** | ⚠️ à migrer |
-| `src/views/LivraisonsView.tsx` | Statuts éditables inline — **données locales** | ⚠️ à migrer |
-| `src/views/RetoursView.tsx` | Retours et remboursement — **données locales** | ⚠️ à migrer |
+| `src/views/VentesComptoirView.tsx` | Panier, encaissement, journal — **branche API** (caisse non modelisee) | ✅ |
+| `src/views/ReceptionsView.tsx` | Lignes dynamiques, historique — **branche API** | ✅ |
+| `src/views/VehiculesView.tsx` | Parc, statut editable inline — **branche API** | ✅ |
+| `src/views/UtilisateursView.tsx` | Roles, activation, garde-fou auto-suppression — **branche API** | ✅ |
+| `src/views/CommandesClientsView.tsx` | Lignes + statut inline — **branche API** | ✅ |
+| `src/views/LivraisonsView.tsx` | Rattachement commande par liste + statut inline — **branche API** | ✅ |
+| `src/views/RetoursView.tsx` | Lignes, montant recalcule — **branche API** | ✅ |
 | `src/components/Icon.tsx` | Jeu d'icônes SVG (remplace les emojis) | ✅ |
 | `src/tokens.css` | Tokens de design (palette, typo, espacement) | ✅ |
 | `src/hooks/useResource.ts` | CRUD générique sur l'API | ✅ |
@@ -258,6 +258,13 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `x.optional().or(z.literal(''))` | Rejette une clé **absente** : le `or` exige sa branche littérale. `PUT { role: 'caissier' }` → 422 « Téléphone est requis ». Utiliser `z.preprocess(v => v === '' ? undefined : v, x.optional())` |
 | Normaliser avant de détecter | U+2028 se replie en LF, un caractère de contrôle. Nettoyer d'abord laisserait passer un caractère redevenu invisible |
 | `no-control-regex` (oxlint) | Déclenché légitimement par une regex de nettoyage. Désactiver en ligne, avec justification |
+| Intersection de props qui **retrecit** le type | `CommonProps & { placeholder?: string \| null }` se réduit à `string` (le `undefined` de l'héritage gagne) : l'option `null`, documentée pour supprimer l'option vide d'un `<select>`, ne compilait pas. Écrire `Omit<CommonProps, 'placeholder'> & {...}` |
+| `<select>` + `valueAsNumber` sur option vide | Renvoie `NaN`, pas `''`. Un champ obligatoire affiche « est requis » sur une option volontairement laissée vide, et un champ facultatif envoie `NaN` (422). Envelopper d'un `z.preprocess` qui convertit vide/NaN en `null` |
+| Deux définitions du même métier | `src/types` (local, `id: string`, `lineId`) et `src/services/contracts.ts` (API, `id: number`) divergeaient. Le backend étant fait, la forme de l'API doit gagner : les interfaces locales mortes sont supprimées, pas maintenues en parallèle |
+| Total ou montant **saisi** dans un document | Permet un total incohérent avec le détail — exactement la pièce contestée par un client. Le total est recalculé par le serveur, jamais envoyé par le formulaire |
+| Cache module typé par `T` | Fige le type de la **première** réponse pour toutes les vues suivantes. Stocker `unknown[]` dans le cache, typer à la lecture |
+| `setState` synchrone dans un effet de hook | Warning `react(set-state-in-effect)`. Relire le cache **pendant le rendu** et ne garder que la réponse réseau dans l'état : la lecture est pure |
+| Classes CSS utilisées mais jamais déclarées | `.status-badge`, `.status-select`, `.toggle-btn`… présentes dans les vues depuis la semaine 1, absentes de `App.css` : les statuts s'affichaient en texte nu. Vérifier qu'un `className` a une règle |
 
 ---
 
@@ -270,17 +277,22 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ### 📊 Avancement global : **2 modules terminés / 13**
 
-| Module du cahier des charges | État | Écart restant |
+> **Étape 1 faite.** Les 7 vues « ⚠️ partiel » sont branchées sur l'API :
+> RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`, et les
+> `window.alert` / `window.confirm` ont disparu. Le tableau ci-dessous décrit
+> donc l'écart **fonctionnel restant**, plus l'écart de persistance.
+
+| Module du cahier des charges | Persistance | Écart restant |
 |---|---|---|
-| Gestion des utilisateurs | ✅ **complet** | — |
-| Carnet d'adresses clients | ✅ **complet** | — |
-| Gestion de stock | ⚠️ partiel | Emplacement en texte libre, pas allée → étagère → place |
-| Catalogues HT/TTC | ⚠️ partiel | Prix **HT seul** : ni TVA, ni prix TTC |
-| Réception fournisseurs | ⚠️ partiel | API prête, **interface encore locale** (ne persiste rien) |
-| Vente au comptoir | ⚠️ partiel | Caisse **décorative** (liste en dur), pas de mouvements de caisse |
-| Commande client | ⚠️ partiel | API prête, interface locale, **pas de bon de commande PDF** |
-| Livraisons clients pro | ⚠️ partiel | API prête, interface locale, **pas de bon de livraison** |
-| Gestion des retours | ⚠️ partiel | API prête, interface locale, **pas d'avoir** |
+| Gestion des utilisateurs | ✅ API | — (documents PDF non produits) |
+| Carnet d'adresses clients | ✅ API | Autocomplétion d'adresses (étape 5) |
+| Gestion de stock | ✅ API | Emplacement en texte libre, pas allée → étagère → place |
+| Catalogues HT/TTC | ✅ API (v1) | Prix **HT seul** : ni TVA, ni prix TTC |
+| Réception fournisseurs | ✅ API | Fournisseur en texte libre, **pas de carnet** (étape 2) |
+| Vente au comptoir | ✅ API | Caisse **non modélisée** : ni session, ni fond de caisse, ni journal des mouvements (étape 4) |
+| Commande client | ✅ API | **Pas de bon de commande PDF** (étape 3) |
+| Livraisons clients pro | ✅ API | **Pas de bon de livraison PDF** (étape 3) |
+| Gestion des retours | ✅ API | **Pas d'avoir PDF** (étape 3) |
 | Création de devis | ❌ non commencé | — |
 | Commande fournisseurs | ❌ non commencé | Aucun concept dans le schéma |
 | Carnet d'adresses fournisseurs | ❌ non commencé | `fournisseur` est une simple chaîne sur les réceptions |
@@ -288,11 +300,10 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | Autocomplétion Google (adresses) | ❌ non commencé | — |
 | Intégration WhatsApp | ❌ non commencé | — |
 
-> **Point clé** : sur les 6 modules « ⚠️ partiel », **le backend est
-> terminé** (tables, repositories, routes, RBAC, validation). Ce qui manque
-> est presque toujours du frontend. C'est le chantier le plus mécanique et
-> le plus rentable : `src/hooks/useResource.ts` existe déjà et
-> `src/views/ClientsView.tsx` sert de modèle de référence.
+> **Point clé** : le backend des 8 métiers est terminé (tables, repositories,
+> routes, RBAC, validation) et le frontend est désormais branché dessus. Ce
+> qui manque est presque toujours du **modèle de données** (étape 2) ou des
+> **documents PDF** (étape 3) — plus de travail d'interface.
 
 ### 📋 Avancement de la checklist ui-ux-pro-max
 
@@ -338,14 +349,13 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ### 🗺️ Ordre d'exécution proposé
 
-**Étape 1 — Débloquer la persistance (7 vues)**
-Migrer vers `useResource` : `VehiculesView`, `UtilisateursView`, `ReceptionsView`,
+**Étape 1 — Débloquer la persistance (7 vues)** ✅ **FAITE**
+Migré vers `useResource` : `VehiculesView`, `UtilisateursView`, `ReceptionsView`,
 `VentesComptoirView`, `CommandesClientsView`, `LivraisonsView`, `RetoursView`.
 Chaque vue : RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`.
-Tant que ce n'est pas fait, ces modules affichent des données codées en dur
-et **aucune saisie n'est enregistrée**.
+Les `window.alert` / `window.confirm` ont disparu.
 
-> Cette étape supprime aussi les `window.alert` / `window.confirm` bloquants.
+> Détail dans la section 12 ci-dessous.
 
 **Étape 2 — Modèle de données**
 - `emplacements` hiérarchiques (allée → étagère → place) + migration de
@@ -545,6 +555,82 @@ npm run db:seed
 > `database: "unconfigured"` et les autres routes renvoient **503**. Le
 > frontend bascule automatiquement en mode local (bandeau d'information +
 > données de démonstration).
+
+---
+
+## 12. ✅ Étape 1 — Les 7 vues branchées sur l'API
+
+> Avant cette étape, ces modules affichaient des données codées en dur et
+> **aucune saisie n'était enregistrée** : la caisse, les commandes et les
+> retours n'existaient que dans l'état mémoire du navigateur.
+
+### Fichiers créés
+
+| Fichier | Rôle |
+|---------|------|
+| `src/options.ts` | Listes de `<select>`, formats monétaires, `today()`. Centralisées pour que les libellés soient identiques partout (les documents PDF reprendront ces libellés) |
+| `src/components/ResourceBanners.tsx` | Bandeaux « API indisponible » / erreur / droits insuffisants. Factorisés : un module qui oublierait le bandeau de mode dégradé afficherait des données de démo en laissant croire qu'elles sont enregistrées |
+| `src/hooks/useReferentials.ts` | Cache module des listes de référence (clients, commandes, ventes) pour les `<select>`. Une seule requête par chemin, partagée entre vues |
+
+### Fichiers réécrits
+
+`VehiculesView`, `UtilisateursView`, `ReceptionsView`, `VentesComptoirView`,
+`CommandesClientsView`, `LivraisonsView`, `RetoursView` — toutes au même
+patron que `ClientsView`, qui sert de modèle.
+
+### Écarts fonctionnels corrigés au passage
+
+Ces modules affichaient un état qui n'existait pas en base. L'écart a été
+corrigé plutôt que conservé :
+
+- **Commandes** : le formulaire n'avait pas de lignes, or l'API en exige au
+  moins une. Elles ont été ajoutées (comme à la réception).
+- **Retours** : le montant remboursé était **saisi** et stocké dans une
+  colonne. Il vaut désormais la somme des lignes, recalculée par le serveur —
+  un montant saisi permettait un remboursement incohérent avec le détail, qui
+  est exactement la pièce contestée par un client.
+- **Livraisons** : la commande de rattachement était saisie à la main. Elle se
+  choisit maintenant dans une liste issue de l'API : un numéro erroné n'existe
+  pas, et l'API répondait 422.
+- **Ventes** : les 3 `window.alert` (dont un qui affichait le ticket de caisse
+  dans une boîte système bloquante) sont remplacés par des toasts.
+- **Utilisateurs** : le mot de passe est demandé à la création, comme l'exige
+  l'API. Le formulaire ne le montre pas à la modification : on ne change un
+  compte que pour ce qu'on veut changer. Le serveur interdit à un
+  administrateur de se supprimer, se désactiver ou se retirer ses propres
+  droits (409) : le bouton correspondant est désactivé sur sa propre ligne
+  plutôt que de laisser un échec.
+- **Véhicules** : le statut est modifiable depuis le tableau (le geste le plus
+  fréquent du dépôt). L'immatriculation en doublon est refusée **avant**
+  l'appel réseau, la base n'ayant pas de contrainte d'unicité sur cette
+  colonne.
+- **Schémas** : `quantiteRecue` devient `quantite` pour coller au contrat de
+  l'API. Une seule forme de ligne (`documentLineSchema`) pour les 4 documents.
+
+### Nettoyage
+
+- 7 interfaces mortes supprimées de `src/types/index.ts` (`Reception`, `Vente`,
+  `CommandeClient`, `Livraison`, `Retour`, `Client`, `Vehicule`, `Utilisateur`).
+  Elles portaient des `id` en chaîne et des `lineId` locaux que la base ignore :
+  deux définitions concurrentes du même métier. Les formes autoritatives
+  vivent dans `src/services/contracts.ts`.
+- `src/App.css` : `.status-badge`, `.type-badge`, `.role-badge`,
+  `.status-select`, `.toggle-btn`, `.static-value` et `.muted` étaient
+  **utilisées depuis la semaine 1 sans avoir jamais été déclarées** — les
+  statuts s'affichaient en texte nu, sans la lecture en couleur que le dépôt
+  fait tous les jours. Déclarées.
+- `src/components/forms/FormFields.tsx` : `SelectProps` était
+  `CommonProps & { placeholder?: string | null }`. L'intersection se réduit au
+  type le plus étroit : `placeholder` redevenait `string`, et l'option `null`
+  documentée pour supprimer l'option vide d'un `<select>` **ne compilait pas**.
+  Corrigé par `Omit<CommonProps, 'placeholder'>`. Même piège sur `rows` du
+  `textarea`.
+
+### Vérification
+
+Build ✅ · lint ✅ 0 warning · **69/69** tests API · **58/58** tests sécurité.
+Contrôle visuel des 4 vues les plus sensibles (véhicules, réceptions, ventes,
+clients) : les données affichées proviennent bien de MariaDB.
 
 ---
 

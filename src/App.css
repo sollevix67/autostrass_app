@@ -159,3 +159,38 @@ th.sortable:hover { color: #6d7a80; }
 th.align-right, td.align-right { text-align: right; }
 th.align-center, td.align-center { text-align: center; }
 
+/* --- Badges de statut et select d'edition en ligne ---------------------- */
+/* Ces classes etaient utilisees par les vues depuis la semaine 1 mais n'ont
+   jamais ete declarees : les statuts s'affichaient en texte nu, sans la
+   lecture en couleur que le depot fait tous les jours. Palette derivee des
+   tokens de `tokens.css` pour rester sur la meme echelle de contraste. */
+.status-badge, .type-badge, .role-badge {
+  display: inline-block; padding: 3px 8px; border-radius: 10px;
+  background: var(--color-muted); color: var(--text-body);
+  font-size: 9px; font-weight: 600; white-space: nowrap;
+}
+.status-badge.status-disponible, .type-badge.particulier { background: #e6f4ec; color: #2f7d55; }
+.status-badge.status-inservice, .type-badge.professionnel { background: #eaf1f8; color: #3a6ea5; }
+.status-badge.status-enmaintenance { background: #fdf1ef; color: #b2543f; }
+.role-badge { background: #f3ecdf; color: #8a6420; }
+
+/* Statut d'un document en cours d'enregistrement : le select est desactive et
+   la ligne ne doit pas paraitre figee par erreur. */
+.status-select {
+  padding: 4px 6px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  background: #fff; color: var(--text-body); font-size: 10px; cursor: pointer;
+}
+.status-select:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Interrupteur d'activation d'un compte. Le libelle Oui/Non est porte par le
+   texte : `aria-pressed` n'a pas besoin d'un second libelle cache. */
+.toggle-btn {
+  padding: 3px 10px; border: 1px solid var(--color-border); border-radius: 10px;
+  background: #f4f6f4; color: var(--text-muted); font-size: 9px; font-weight: 600; cursor: pointer;
+}
+.toggle-btn.active { border-color: #b6dcc6; background: #e6f4ec; color: #2f7d55; }
+
+/* Valeur en lecture seule dans un formulaire (detail de ligne de panier). */
+.static-value { display: block; padding: 9px 0; color: var(--text-strong); font-size: 12px; }
+.muted { color: var(--text-muted); }
+

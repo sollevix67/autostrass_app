@@ -33,18 +33,59 @@ const dateISO = (label: string) =>
     .string()
     .trim()
     .min(1, `${label} est requise.`)
+    .regex(/^\d{4}-\d{2}-\d{2}/, `${label} doit etre au format AAAA-MM-JJ.`)
+
+/**
+ * Horodatage complet (ventes).
+ *
+ * Distinct de `dateISO` : l'API attend un `dateTimeISO` pour `dateVente` et un
+ * `dateISO` pour les dates de document. Utiliser le mauvais schema ferait
+ * rejeter par l'API une valeur que le formulaire jugeait valide.
+ */
+const dateTimeISO = (label: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, `${label} est requise.`)
     .refine((value) => !Number.isNaN(Date.parse(value)), `${label} invalide.`)
+
+/**
+ * Champ select dont la valeur est un identifiant numerique.
+ *
+ * `<select>` et `valueAsNumber` renvoient `NaN` sur l'option vide, pas `''`.
+ * Sans ce preprocess, un champ obligatoire affiche « est requis » sur une
+ * option volontairement laissee vide, et un champ facultatif envoie `NaN`
+ * a l'API, qui le refuse en 422.
+ */
+const toNullableNumber = (value: unknown): unknown =>
+  value === '' || value === null || value === undefined || (typeof value === 'number' && Number.isNaN(value))
+    ? null
+    : value
+
+/** Reference obligatoire vers une ligne du referentiel (client, commande...). */
+const requiredRef = (label: string) =>
+  z.preprocess(
+    (value) => (toNullableNumber(value) === null ? undefined : toNullableNumber(value)),
+    z.number({ message: `${label} est requis.` }).int().positive(),
+  )
+
+/** Reference facultative : l'absence est acceptee, l'id invalide non. */
+const optionalRef = (label: string) =>
+  z.preprocess(toNullableNumber, z.number({ message: `${label} est invalide.` }).int().positive().nullable())
+
+/** Reference de piece : meme grammaire que celle de l'API. */
+const pieceReference = z
+  .string()
+  .trim()
+  .min(1, 'La reference est requise.')
+  .max(64, 'La reference ne doit pas depasser 64 caracteres.')
+  // Reference de piece : lettres, chiffres, tirets, points, slash
+  .regex(/^[A-Za-z0-9._/-]+$/, 'Caracteres autorises : lettres, chiffres, . - _ /')
+  .transform((value) => value.toUpperCase())
 
 /** Reutilise par le catalogue, le stock et la vente comptoir. */
 export const articleSchema = z.object({
-  reference: z
-    .string()
-    .trim()
-    .min(1, 'La reference est requise.')
-    .max(64, 'La reference ne doit pas depasser 64 caracteres.')
-    // Reference de piece : lettres, chiffres, tirets, points, slash
-    .regex(/^[A-Za-z0-9._/-]+$/, 'Caracteres autorises : lettres, chiffres, . - _ /')
-    .transform((value) => value.toUpperCase()),
+  reference: pieceReference,
   designation: required('La designation').max(255, 'La designation ne doit pas depasser 255 caracteres.'),
   category: z
     .string()
@@ -61,51 +102,65 @@ export const articleSchema = z.object({
   description: optionalText('La description'),
 })
 
-/** Ligne de reception : meme validation que l'article mais sans stock. */
-export const receptionLineSchema = z.object({
-  reference: z
-    .string()
-    .trim()
-    .min(1, 'La reference est requise.')
-    .max(64, 'Reference trop longue.')
-    .regex(/^[A-Za-z0-9._/-]+$/, 'Caracteres autorises : lettres, chiffres, . - _ /')
-    .transform((value) => value.toUpperCase()),
+/**
+ * Ligne de document, forme unique partagee par les quatre metiers
+ * (reception, vente, commande, retour).
+ *
+ * Volontairement identique a `documentLineSchema` cote API : c'est ce meme
+ * contrat que `PUT /:id/lignes` attend, si bien qu'une ligne saisie en
+ * reception peut etre reprise a l'identique dans un panier de vente.
+ */
+export const documentLineSchema = z.object({
+  reference: pieceReference,
   designation: required('La designation'),
-  quantiteRecue: nonNegative('La quantite recue').refine((value) => Number.isInteger(value) && value > 0, 'La quantite doit etre un entier positif.'),
-  prixUnitaire: nonNegative('Le prix unitaire'),
+  quantite: nonNegative('La quantite')
+    .refine((value) => Number.isInteger(value) && value > 0, 'La quantite doit etre un entier positif.')
+    .refine((value) => value <= 9999, 'Quantite maximale : 9999.'),
+  prixUnitaire: nonNegative('Le prix unitaire').refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
 })
 
+/** Ligne de reception : alias conserve pour les formulaires existants. */
+export const receptionLineSchema = documentLineSchema
+
 export const receptionSchema = z.object({
-  fournisseur: z.string().trim().min(1, 'Le fournisseur est requis.'),
+  fournisseur: required('Le fournisseur').max(128, 'Nom de fournisseur trop long.'),
   dateReception: dateISO('La date de reception'),
+  notes: optionalText('Les notes'),
   articles: z
-    .array(receptionLineSchema)
-    .min(1, 'Ajoutez au moins un article a la reception.'),
+    .array(documentLineSchema)
+    .min(1, 'Ajoutez au moins un article a la reception.')
+    .max(200, 'Maximum 200 lignes par document.'),
 })
 
 /** Ligne de panier : la quantite doit rester un entier positif borne. */
-export const cartLineSchema = z.object({
-  reference: z.string().trim().min(1, 'La reference est requise.'),
-  quantite: z
-    .number({ message: 'La quantite est requise.' })
-    .int('La quantite doit etre un entier.')
-    .min(1, 'La quantite doit etre au moins 1.')
-    .max(9999, 'Quantite maximale : 9999.'),
-})
+export const cartLineSchema = documentLineSchema
 
-/** Regles de la vente ; le total est ajoute comme contexte par `venteContext`. */
+/**
+ * Vente au comptoir.
+ *
+ * Le total n'est jamais saisi : il est recalcule par le serveur a partir des
+ * lignes. Le formulaire ne verifie donc que la regle « montant encaisse >=
+ * total », que `venteContext` replique cote client.
+ */
 const venteBase = z.object({
-  clientId: optionalText('Le client'),
+  clientId: optionalRef('Le client'),
+  dateVente: dateTimeISO('La date de vente'),
+  caissier: required('Le caissier').max(128, 'Nom de caissier trop long.'),
   modePaiement: z.enum(['espèces', 'carte', 'chèque'], { message: 'Mode de paiement invalide.' }),
   montantPaye: nonNegative('Le montant paye'),
 })
 
 /** Ajoute la regle "montant encaisse >= total" avec un message contextuel. */
 export function venteContext(totalHT: number) {
-  return venteBase.refine((value) => value.montantPaye >= totalHT, {
+  return venteBase.refine((value) => value.montantPaye >= totalHT - 0.005, {
     message: `Le montant encaisse est inferieur au total de ${totalHT.toFixed(2)} EUR.`,
     path: ['montantPaye'],
   })
+}
+
+/** Schema de vente a valider en submission : depend du total calcule. */
+export function venteSchema(totalHT: number) {
+  return venteContext(totalHT)
 }
 
 export const clientSchema = z.object({
@@ -146,6 +201,13 @@ export const vehiculeSchema = z.object({
   statut: z.enum(['disponible', 'en service', 'en maintenance'], { message: 'Statut invalide.' }),
 })
 
+/**
+ * Creation d'un compte : le mot de passe est obligatoire cote API.
+ *
+ * Les regles de robustesse du serveur (8 caracteres minimum, 72 octets maximum
+ * car bcrypt tronque au-dela) sont reprises ici pour ne pas faire subir au
+ * usuario un aller-retour reseau sur une erreur predictable.
+ */
 export const utilisateurSchema = z.object({
   nom: required('Le nom').max(64, 'Nom trop long.'),
   prenom: required('Le prenom').max(64, 'Prenom trop long.'),
@@ -157,11 +219,15 @@ export const utilisateurSchema = z.object({
     .optional()
     .or(z.literal('')),
   role: z.enum(['admin', 'magasinier', 'caissier'], { message: 'Role invalide.' }),
+  motDePasse: z
+    .string({ message: 'Le mot de passe est requis.' })
+    .min(8, 'Le mot de passe doit contenir au moins 8 caracteres.')
+    .max(72, 'Mot de passe trop long (72 caracteres maximum).'),
 })
 
 export const livraisonSchema = z.object({
-  commandeId: required('Le numero de commande').max(64, 'Numero trop long.'),
-  transporteur: z.string().trim().min(1, 'Le transporteur est requis.'),
+  commandeId: requiredRef('Le numero de commande'),
+  transporteur: z.string().trim().min(1, 'Le transporteur est requis.').max(128, 'Transporteur trop long.'),
   dateExpedition: dateISO("La date d'expedition"),
   dateLivraisonPrevue: dateISO('La date de livraison prevue'),
   adresseLivraison: required("L'adresse de livraison").max(255, 'Adresse trop longue.'),
@@ -169,12 +235,42 @@ export const livraisonSchema = z.object({
   tracking: optionalText('Le numero de suivi', 64),
 })
 
+/** Commande client : l'entete seule ne suffit pas, il faut des lignes. */
+export const commandeSchema = z.object({
+  clientId: requiredRef('Le client'),
+  dateCommande: dateISO('La date de commande'),
+  statut: z.enum(['en attente', 'validée', 'expédiée', 'livrée', 'annulée'], { message: 'Statut invalide.' }),
+  dateLivraisonPrevue: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim() === '' ? '' : value),
+    dateISO('La date de livraison prevue').optional().or(z.literal('')),
+  ),
+  articles: z
+    .array(documentLineSchema)
+    .min(1, 'Ajoutez au moins un article a la commande.')
+    .max(200, 'Maximum 200 lignes par document.'),
+})
+
+/** Retour : la vente d'origine est facultative (retour fournisseur, avoir...). */
+export const retourSchema = z.object({
+  venteId: optionalRef('La vente'),
+  clientId: requiredRef('Le client'),
+  dateRetour: dateISO('La date de retour'),
+  motif: required('Le motif').max(255, 'Motif trop long.'),
+  articles: z
+    .array(documentLineSchema)
+    .min(1, 'Ajoutez au moins un article au retour.')
+    .max(200, 'Maximum 200 lignes par document.'),
+})
+
 /** Types deduits des schemas : source de verite pour les formulaires. */
 export type ArticleFormValues = z.input<typeof articleSchema>
 export type ArticleFormOutput = z.output<typeof articleSchema>
 export type ReceptionFormValues = z.input<typeof receptionSchema>
-export type ReceptionLineFormValues = z.input<typeof receptionLineSchema>
+export type DocumentLineFormValues = z.input<typeof documentLineSchema>
+export type CartLineFormValues = z.input<typeof cartLineSchema>
 export type ClientFormValues = z.input<typeof clientSchema>
 export type VehiculeFormValues = z.input<typeof vehiculeSchema>
 export type UtilisateurFormValues = z.input<typeof utilisateurSchema>
 export type LivraisonFormValues = z.input<typeof livraisonSchema>
+export type CommandeFormValues = z.input<typeof commandeSchema>
+export type RetourFormValues = z.input<typeof retourSchema>
