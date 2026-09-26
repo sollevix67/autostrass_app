@@ -17,7 +17,7 @@
  *   (cf. les notes : un DECIMAL lu en `number` peut perdre en precision).
  */
 
-import { relations, sql } from 'drizzle-orm'
+import { relations } from 'drizzle-orm'
 import {
   mysqlTable,
   varchar,
@@ -33,17 +33,17 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/mysql-core'
 
-/** Horodatage de creation standard, partage par toutes les tables. */
-const createdAt = (name = 'created_at') =>
-  timestamp(name, { mode: 'date', default: sql`CURRENT_TIMESTAMP` })
+/**
+ * Horodatage de creation, partage par toutes les tables.
+ *
+ * Drizzle expose `defaultNow()` / `onUpdateNow()` comme methodes du builder,
+ * pas comme cles de configuration : `timestamp(name, { default: sql\`...\` })`
+ * est rejete par le typage de la version 0.45.
+ */
+const createdAt = (name = 'created_at') => timestamp(name, { mode: 'date' }).defaultNow()
 
-/** Horodatage de mise a jour. */
-const updatedAt = (name = 'updated_at') =>
-  timestamp(name, {
-    mode: 'date',
-    default: sql`CURRENT_TIMESTAMP`,
-    onUpdate: sql`CURRENT_TIMESTAMP`,
-  })
+/** Horodatage de mise a jour, rafraichi automatiquement par MariaDB. */
+const updatedAt = (name = 'updated_at') => timestamp(name, { mode: 'date' }).defaultNow().onUpdateNow()
 
 // ---------------------------------------------------------------------------
 // Utilisateurs
