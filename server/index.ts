@@ -7,6 +7,7 @@ import { notFound, sendValidationError, validateArticleBody, validateDelta } fro
 import { errorHandler } from './middleware/crud.js'
 import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
+import { securityHeaders } from './middleware/security.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -38,6 +39,10 @@ const emptyDashboard = {
 }
 
 app.use(express.json({ limit: '1mb' }))
+
+// En-tetes de securite appliques AVANT toute route : ils doivent previsible
+// figer les premieres reponses, y compris les 404 et les erreurs.
+app.use(securityHeaders)
 
 /**
  * Retourne le repository si la base est configuree, sinon repond 503.

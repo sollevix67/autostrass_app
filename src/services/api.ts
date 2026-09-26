@@ -20,6 +20,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
  * repart du cookie.
  */
 let sessionToken: string | null = null
+let csrfToken: string | null = null
 
 /** Memorise le jeton pour les requetes suivantes. */
 export function setSessionToken(token: string | null): void {
@@ -29,6 +30,23 @@ export function setSessionToken(token: string | null): void {
 /** Jeton courant, s'il y en a un en memoire. */
 export function getSessionToken(): string | null {
   return sessionToken
+}
+
+/**
+ * Memorise le jeton CSRF renvoye a la connexion.
+ *
+ * Il est aussi pose dans un cookie lisible par le JavaScript : le serveur
+ * compare l'en-tete au cookie. Un site tiers ne peut lire ni l'un ni l'autre.
+ */
+export function setCsrfToken(token: string | null): void {
+  csrfToken = token
+}
+
+/** Relit le jeton CSRF dans le cookie, au demarrage de l'application. */
+export function readCsrfCookie(): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(/(?:^|;\s*)autostrass_csrf=([^;]+)/)
+  return match?.[1] ? decodeURIComponent(match[1]) : null
 }
 
 export class ApiError extends Error {
@@ -67,6 +85,10 @@ export class ApiError extends Error {
         return 'Vos droits ont change. Reconnectez-vous.'
       case 'FORBIDDEN':
         return "Vous n'avez pas les droits necessaires pour cette operation."
+      case 'CSRF_INVALID':
+        return 'Verificite de securite echouee : rechargez la page puis reessayez.'
+      case 'TOO_MANY_ATTEMPTS':
+        return this.message
       case 'SELF_LOCKOUT':
         return this.message
       case 'IN_USE':
@@ -127,6 +149,9 @@ async function request<T>(method: string, path: string, options: RequestOptions 
         Accept: 'application/json',
         ...(rest.body ? { 'Content-Type': 'application/json' } : {}),
         ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
+        // Le jeton CSRF n'est pertinent que sur les ecritures ; l'envoyer sur
+        // un GET gonflerait inutilement chaque requete.
+        ...(csrfToken && method !== 'GET' && method !== 'HEAD' ? { 'X-CSRF-Token': csrfToken } : {}),
         ...headers,
       },
     })

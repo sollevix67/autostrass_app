@@ -10,6 +10,11 @@ import type { UserRole } from '../types'
 /** Reponse de `POST /api/auth/login`. */
 export type LoginResponse = {
   token: string
+  /**
+   * Jeton CSRF, a renvoyer dans `X-CSRF-Token` sur chaque ecriture.
+   * Egalement pose dans un cookie lisible par le JavaScript.
+   */
+  csrfToken: string
   user: {
     id: number
     email: string
@@ -22,6 +27,8 @@ export type LoginResponse = {
 /** Reponse de `GET /api/auth/me`. */
 export type MeResponse = {
   user: LoginResponse['user']
+  /** Jeton CSFR renouvele a chaque verification de session. */
+  csrfToken: string
 }
 
 /** Ligne de document telle que renvoyee par l'API (receptions, ventes, ...). */

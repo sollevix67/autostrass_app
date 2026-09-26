@@ -9,7 +9,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { api, setSessionToken, toErrorMessage, isAbortError } from '../services/api'
+import { api, setSessionToken, setCsrfToken, toErrorMessage, isAbortError } from '../services/api'
 import { AuthContext, type SessionUser, type AuthStatus } from './authContext'
 import type { LoginResponse, MeResponse } from '../services/contracts'
 
@@ -33,6 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .get<MeResponse>('/auth/me', { signal: controller.signal })
       .then((response) => {
         setUser(response.user)
+        // Le serveur renouvelle le jeton CSRF a chaque `/me` : on le prend.
+        setCsrfToken(response.csrfToken)
         setStatus('authenticated')
         setError(null)
       })
@@ -53,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Le serveur pose aussi un cookie httpOnly ; on garde le jeton en
       // memoire pour ne pas dependre d'un stockage persistant lisible.
       setSessionToken(response.token)
+      setCsrfToken(response.csrfToken)
       setUser(response.user)
       setStatus('authenticated')
       setError(null)
@@ -71,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // peut-etre deja arretee, et l'utilisateur veut justement sortir.
     }
     setSessionToken(null)
+    setCsrfToken(null)
     setUser(null)
     setStatus('anonymous')
   }, [])

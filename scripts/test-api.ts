@@ -22,6 +22,11 @@ const DEMO_PASSWORD = 'demo1234'
 let passed = 0
 let failed = 0
 
+/** Cookies renvoyes par l'API (session + CSRF), reproduits a chaque appel. */
+let cookie = ''
+/** Jeton CSRF courant, lu dans le cookie. */
+let csrf: string | null = null
+
 function check(label: string, condition: boolean, detail?: unknown): void {
   if (condition) {
     passed += 1
@@ -39,6 +44,10 @@ async function call(
   const headers: Record<string, string> = {}
   if (options.body !== undefined) headers['content-type'] = 'application/json'
   if (options.token) headers.authorization = `Bearer ${options.token}`
+  // Le serveur lit l 'authentification dans l 'en-tete Bearer, mais verifie
+  // aussi le jeton CSRF par double soumission : cookie + en-tete.
+  if (cookie) headers.cookie = cookie
+  if (csrf && options.method !== undefined && options.method !== 'GET') headers['x-csrf-token'] = csrf
 
   const response = await fetch(`${BASE}${path}`, {
     method: options.method ?? 'GET',
@@ -61,13 +70,34 @@ async function call(
 /**
  * Connexion. Le mot de passe est un parametre : les comptes de demonstration
  * partagent `demo1234`, mais un compte cree par ce script en a un autre.
+ *
+ * La connexion fournit aussi le couple de jetons CSRF : le serveur pose un
+ * cookie lisible (`autostrass_csrf`) et renvoie la meme valeur dans le corps.
+ * Toute ecriture ulterieure doit renvoyer ce couple, sans quoi l'API repond
+ * 403 `CSRF_INVALID` — c'est le comportement attendu, pas une panne.
  */
 async function login(email: string, password: string = DEMO_PASSWORD): Promise<string | null> {
-  const { status, body } = await call('/api/auth/login', {
+  const response = await fetch(`${BASE}/api/auth/login`, {
     method: 'POST',
-    body: { email, motDePasse: password },
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email, motDePasse: password }),
   })
-  return status === 200 ? (body.token as string) : null
+  if (response.status !== 200) return null
+  const payload = (await response.json()) as { token?: string }
+  // Les deux cookies sont necessaires : session pour l 'authentification,
+  // CSRF pour la verification de double soumission.
+  cookie = (response.headers.getSetCookie?.() ?? [])
+    .map((value) => value.split(';')[0])
+    .filter((value) => value.length > 0)
+    .join('; ')
+  csrf = csrfFromCookie(cookie) ?? null
+  return payload.token ?? null
+}
+
+/** Extrait le jeton CSRF du couple de cookies. */
+function csrfFromCookie(value: string): string | null {
+  const match = value.match(/autostrass_csrf=([^;]+)/)
+  return match?.[1] ? decodeURIComponent(match[1]) : null
 }
 
 console.log(`Test de l'API sur ${BASE}\n`)

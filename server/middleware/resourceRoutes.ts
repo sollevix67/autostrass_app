@@ -15,6 +15,7 @@
 import { Router, type Request } from 'express'
 import { requireAuth, requireRole, hashPassword, validatePasswordStrength, AuthError } from './auth.js'
 import { crudRoutes, handler, parseBody, requireDb, requireId, type CrudRepository } from './crud.js'
+import { requireCsrf } from './csrf.js'
 import { documentRoutes } from './documentRoutes.js'
 import {
   clientBodySchema,
@@ -68,6 +69,13 @@ export function createApiRouter(): Router {
   // Toute la surface metier exige un jeton valide.
   router.use(requireAuth)
 
+  // `SameSite=Lax` sur le cookie de session n'interdit pas les requetes
+  // emanant du meme site. Le double-soumission CSRF ferme ce reste : toute
+  // ecriture doit aussi porter un `X-CSRF-Token` egal au cookie. Montre
+  // apres `requireAuth` : inutile de verifier un jeton sur une requete qui va
+  // de toute facon etre refusee.
+  router.use(requireCsrf)
+
   // --- Clients ------------------------------------------------------------
   // `Router()` doit etre cree dans une variable puis monte : `router.use()`
   // renvoie le routeur PARENT, pas le sous-routeur. Passer sa valeur a
@@ -96,7 +104,8 @@ export function createApiRouter(): Router {
   crudRoutes<ClientInput, ClientPatch>({
     resource: 'Client',
     router: clientsRouter,
-    factory: (client) => new ClientRepository(client),
+    factory: (client) =>
+      new ClientRepository(client) as unknown as CrudRepository<ClientInput, ClientPatch>,
     createSchema: clientBodySchema,
     patchSchema: clientPatchSchema,
     // Le referentiel client est gere par le depot, pas par la caisse.
@@ -109,7 +118,8 @@ export function createApiRouter(): Router {
   crudRoutes<VehiculeInput, VehiculePatch>({
     resource: 'Vehicule',
     router: vehiculesRouter,
-    factory: (client) => new VehiculeRepository(client),
+    factory: (client) =>
+      new VehiculeRepository(client) as unknown as CrudRepository<VehiculeInput, VehiculePatch>,
     createSchema: vehiculeBodySchema,
     patchSchema: vehiculePatchSchema,
     rolesWrite: DEPOT_WRITE,

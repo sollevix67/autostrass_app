@@ -98,6 +98,15 @@ export function errorHandler(error: unknown, request: Request, response: Respons
     return
   }
 
+  // Erreurs porteuses d'un `code` par nos propres middlewares (CSRF, limite
+  // de tentatives). Elles ne sont ni des `AuthError` ni des `RepositoryError`,
+  // mais elles sont intentionnellement structurees.
+  const coded = error as { code?: unknown; status?: unknown; message?: unknown }
+  if (typeof coded.code === 'string' && typeof coded.status === 'number' && typeof coded.message === 'string') {
+    response.status(coded.status).json({ error: coded.code, message: coded.message })
+    return
+  }
+
   if (error instanceof RepositoryError) {
     response.status(error.status).json({ error: error.code, message: error.message })
     return
