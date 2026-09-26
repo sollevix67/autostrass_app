@@ -10,6 +10,27 @@
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
+/**
+ * Jeton de session, detenu en memoire par le module.
+ *
+ * On ne lit pas `localStorage` : un jeton lisible par un script injecte est
+ * vole sans effort. Le cookie `httpOnly` pose par l'API est envoye
+ * automatiquement par le navigateur, et cet en-tete ne sert qu'a la lecture
+ * immediate de la reponse de connexion. Une fois la page rechargee, la session
+ * repart du cookie.
+ */
+let sessionToken: string | null = null
+
+/** Memorise le jeton pour les requetes suivantes. */
+export function setSessionToken(token: string | null): void {
+  sessionToken = token
+}
+
+/** Jeton courant, s'il y en a un en memoire. */
+export function getSessionToken(): string | null {
+  return sessionToken
+}
+
 export class ApiError extends Error {
   readonly status: number
   readonly code: string
@@ -36,6 +57,24 @@ export class ApiError extends Error {
         return this.message
       case 'NETWORK_ERROR':
         return "Impossible de joindre le serveur. Verifiez que l'API est demarree."
+      case 'UNAUTHENTICATED':
+        return 'Votre session a expire. Reconnectez-vous.'
+      case 'ACCOUNT_DISABLED':
+        return 'Ce compte est desactive. Contactez un administrateur.'
+      case 'ACCOUNT_MISSING':
+        return "Ce compte n'existe plus. Reconnectez-vous."
+      case 'ROLE_CHANGED':
+        return 'Vos droits ont change. Reconnectez-vous.'
+      case 'FORBIDDEN':
+        return "Vous n'avez pas les droits necessaires pour cette operation."
+      case 'SELF_LOCKOUT':
+        return this.message
+      case 'IN_USE':
+        return 'Cet element est utilise ailleurs et ne peut pas etre supprime.'
+      case 'ALREADY_EXISTS':
+        return 'Cette valeur existe deja.'
+      case 'UNKNOWN_REFERENCE':
+        return 'Reference inconnue : verifyz les donnees saisies.'
       default:
         return this.status === 0
           ? "Impossible de joindre le serveur."
@@ -87,6 +126,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
       headers: {
         Accept: 'application/json',
         ...(rest.body ? { 'Content-Type': 'application/json' } : {}),
+        ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
         ...headers,
       },
     })
@@ -94,7 +134,6 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     if (error instanceof DOMException && error.name === 'AbortError') throw error
     throw new ApiError(0, 'NETWORK_ERROR', "Impossible de joindre le serveur.")
   }
-
   const body = await parseBody(response)
 
   if (!response.ok) {

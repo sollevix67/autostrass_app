@@ -31,6 +31,15 @@ export type ApiDashboard = Partial<DashboardData> & {
 
 export type ApiMode = 'loading' | 'connected' | 'error'
 
+/**
+ * Roles applicatifs, alignes sur l'enum `users.role` du schema Drizzle.
+ *
+ * Exporte ici pour que le frontend n'ait pas a importer le schema serveur :
+ * `src` et `server` sont deux projets TypeScript distincts.
+ */
+export const USER_ROLES = ['admin', 'magasinier', 'caissier'] as const
+export type UserRole = (typeof USER_ROLES)[number]
+
 export interface Article {
   reference: string
   designation: string

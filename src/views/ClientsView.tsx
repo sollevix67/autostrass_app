@@ -1,49 +1,32 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { FormInput, FormSelect } from '../components/forms/FormFields'
+/**
+ * Vue clients : liste, creation et suppression.
+ *
+ * Branchee sur l'API (`/api/clients`). Le formulaire suit le meme patron que
+ * le catalogue : React Hook Form + Zod, resume d'erreurs focusable, et
+ * suppression confirmee via `ConfirmDialog` plutot que `window.confirm`.
+ *
+ * L'ecriture est reservee au depot : un caissier voit la liste mais pas le
+ * formulaire de creation. Le bouton reste visible et desactive plutot que
+ * masque, pour que la limite de droits soit lisible sans deviner.
+ */
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { PageLayout } from '../components/PageLayout'
+import { DataTable, type ColumnDef } from '../components/DataTable'
+import { ConfirmDialog } from '../components/ConfirmDialog'
+import { useConfirm } from '../components/useConfirm'
+import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
-import { pickEnum } from '../utils/coerce'
-import type { Client } from '../types'
+import { ErrorSummary } from '../components/forms/ErrorSummary'
+import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
+import { useResource } from '../hooks/useResource'
+import { useAuth, canWrite } from '../components/useAuth'
+import { clientSchema, type ClientFormValues } from '../schemas'
+import type { ApiClient } from '../services/contracts'
 
-const CLIENT_TYPES = ['particulier', 'professionnel'] as const
-type ClientType = (typeof CLIENT_TYPES)[number]
-
-const types = [
-  { value: 'particulier', label: 'Particulier' },
-  { value: 'professionnel', label: 'Professionnel' },
-]
-
-const SEED_CLIENTS: Client[] = [
-  {
-    id: 'C-10482',
-    numeroClient: 'C-10482',
-    nom: 'Dupont',
-    prenom: 'Jean',
-    telephone: '0612345678',
-    email: 'jean@exemple.fr',
-    adresse: '12 Rue de Paris',
-    ville: 'Paris',
-    codePostal: '75001',
-    type: 'particulier',
-  },
-  {
-    id: 'C-10501',
-    numeroClient: 'C-10501',
-    nom: 'Martin',
-    prenom: 'Marie',
-    telephone: '0698765432',
-    email: 'marie@exemple.fr',
-    adresse: '5 Avenue de la Republique',
-    ville: 'Lyon',
-    codePostal: '69001',
-    type: 'professionnel',
-  },
-]
-
-/** Draft completement type : plus aucun `as` necessaire a la creation. */
-const DEFAULT_CLIENT_TYPE: ClientType = 'particulier'
-
-const EMPTY_CLIENT = {
+/** Valeurs initiales du formulaire : jamais de champ `undefined`. */
+const EMPTY_CLIENT: ClientFormValues = {
   nom: '',
   prenom: '',
   telephone: '',
@@ -51,97 +34,189 @@ const EMPTY_CLIENT = {
   adresse: '',
   ville: '',
   codePostal: '',
-  type: DEFAULT_CLIENT_TYPE,
-} satisfies Omit<Client, 'id' | 'numeroClient'>
+  type: 'particulier',
+}
 
-type ClientDraft = typeof EMPTY_CLIENT
+const TYPES = [
+  { value: 'particulier', label: 'Particulier' },
+  { value: 'professionnel', label: 'Professionnel' },
+]
+
+/** Tri alphabétique, l'ordre naturel de lecture d'un annuaire. */
+const byNom = (rows: ApiClient[]) => [...rows].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 
 export default function ClientsView() {
-  const [clients, setClients] = useState<Client[]>(SEED_CLIENTS)
-  const [draft, setDraft] = useState<ClientDraft>(EMPTY_CLIENT)
-  const [message, setMessage] = useState<string | null>(null)
+  const { user } = useAuth()
+  const toast = useToast()
+  const { dialogProps, confirm } = useConfirm()
+  const { rows, loading, saving, error, offline, reload, create, remove } = useResource<ApiClient>({
+    path: '/clients',
+    sort: byNom,
+  })
 
-  const setField = (field: keyof ClientDraft, value: string) => {
-    setDraft((prev) => ({
-      ...prev,
-      [field]: field === 'type' ? pickEnum(value, CLIENT_TYPES, 'particulier') : value,
-    }))
-    setMessage(null)
+  // `register` de RHF est contravariant sur le nom de champ : on elargit
+  // l'instance pour que `FormInput` reste reutilisable.
+  const form = useForm<ClientFormValues>({
+    resolver: zodResolver(clientSchema),
+    defaultValues: EMPTY_CLIENT,
+    mode: 'onSubmit',
+  })
+  const register = form.register as unknown as FieldRegister
+
+  const canEdit = canWrite(user?.role, 'depot')
+
+  async function handleSubmit(values: ClientFormValues) {
+    const created = await create(values)
+    if (created === null) return
+    form.reset(EMPTY_CLIENT)
+    toast.success(`Client ${created.numeroClient} enregistre.`)
   }
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    const numero = `C-${10483 + clients.length}`
-    const client: Client = { ...draft, id: numero, numeroClient: numero }
-    setClients((prev) => [...prev, client])
-    setDraft(EMPTY_CLIENT)
-    setMessage(`Client ${numero} enregistre.`)
+  async function handleDelete(client: ApiClient) {
+    confirm(
+      'Supprimer ce client ?',
+      <>
+        Le client <strong>{client.prenom} {client.nom}</strong> ({client.numeroClient}) sera
+        supprime definitivement. Les commandes qui le referencent doivent d'abord etre closes.
+      </>,
+      () => {
+        // La suppression est asynchrone : on la declenche dans le callback du
+        // dialogue, qui se ferme aussitot.
+        void remove(client.id).then((deleted) => {
+          if (deleted) toast.success(`Client ${client.numeroClient} supprime.`)
+        })
+      },
+    )
   }
 
-  const handleDelete = (client: Client) => {
-    if (!window.confirm(`Supprimer ${client.prenom} ${client.nom} ?`)) return
-    setClients((prev) => prev.filter((item) => item.id !== client.id))
-    setMessage(`Client ${client.numeroClient} supprime.`)
-  }
+  const columns: ColumnDef<ApiClient>[] = [
+    {
+      key: 'numero',
+      header: 'N°',
+      sortable: true,
+      sortValue: (row) => row.numeroClient,
+      render: (row) => <span className="reference">{row.numeroClient}</span>,
+    },
+    {
+      key: 'nom',
+      header: 'NOM',
+      sortable: true,
+      sortValue: (row) => `${row.nom} ${row.prenom}`,
+      render: (row) => <b>{row.nom} {row.prenom}</b>,
+    },
+    { key: 'telephone', header: 'TELEPHONE', sortable: true, sortValue: (row) => row.telephone, render: (row) => row.telephone },
+    { key: 'email', header: 'EMAIL', sortable: true, sortValue: (row) => row.email, render: (row) => row.email },
+    {
+      key: 'ville',
+      header: 'VILLE',
+      sortable: true,
+      sortValue: (row) => row.ville,
+      render: (row) => (
+        <span>
+          {row.ville} ({row.codePostal})
+        </span>
+      ),
+    },
+    {
+      key: 'type',
+      header: 'TYPE',
+      sortable: true,
+      sortValue: (row) => row.type,
+      render: (row) => <span className={`type-badge ${row.type}`}>{row.type}</span>,
+    },
+    {
+      key: 'actions',
+      header: 'ACTIONS',
+      render: (row) => (
+        <button
+          type="button"
+          className="action-btn delete"
+          onClick={() => handleDelete(row)}
+          disabled={saving}
+          title="Supprimer"
+          aria-label={`Supprimer ${row.prenom} ${row.nom}`}
+        >
+          <Icon name="trash" size="sm" />
+        </button>
+      ),
+    },
+  ]
 
   return (
-    <div className="page-view">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">CLIENTS</p>
-          <h1>Gestion des clients</h1>
-          <p className="heading-copy">Consultez et gérez votre base de clients.</p>
-        </div>
-      </div>
+    <PageLayout
+      eyebrow="CLIENTS"
+      title="Gestion des clients"
+      description="Consultez et gérez votre base de clients."
+      actions={
+        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+          <Icon name="rotate-ccw" size="sm" /> Actualiser
+        </button>
+      }
+    >
+      {offline && (
+        <p className="info-banner" role="status">
+          API clients indisponible : affichage local uniquement, les modifications ne sont pas
+          enregistrees.
+        </p>
+      )}
+      {error !== null && <p className="error-banner" role="alert">{error}</p>}
 
-      <form className="form-card" onSubmit={handleSubmit}>
-        <h2>Nouveau client</h2>
-        <div className="form-grid-2">
-          <FormInput label="Nom" name="nom" value={draft.nom} onChange={(_name, value) => setField('nom', value)} required />
-          <FormInput label="Prénom" name="prenom" value={draft.prenom} onChange={(_name, value) => setField('prenom', value)} required />
-          <FormInput label="Téléphone" name="telephone" type="tel" value={draft.telephone} onChange={(_name, value) => setField('telephone', value)} required />
-          <FormInput label="Email" name="email" type="email" value={draft.email} onChange={(_name, value) => setField('email', value)} required />
-          <FormInput label="Adresse" name="adresse" value={draft.adresse} onChange={(_name, value) => setField('adresse', value)} required />
-          <FormInput label="Ville" name="ville" value={draft.ville} onChange={(_name, value) => setField('ville', value)} required />
-          <FormInput label="Code postal" name="codePostal" value={draft.codePostal} onChange={(_name, value) => setField('codePostal', value)} required />
-          <FormSelect label="Type" name="type" value={draft.type} options={types} onChange={(_name, value) => setField('type', value)} required />
-        </div>
-        <div className="form-actions">
-          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Ajouter le client</button>
-          {message && <span className="form-success" role="status"><Icon name="check" size="sm" /> {message}</span>}
-          <button type="button" className="secondary-button" onClick={() => { setDraft(EMPTY_CLIENT); setMessage(null) }}>Effacer</button>
-        </div>
-      </form>
+      {canEdit ? (
+        <form className="form-card" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
+          <h2>Nouveau client</h2>
 
-      <div className="form-card">
-        <h2>Liste des clients</h2>
-        {clients.length === 0 ? (
-          <p className="empty-state">Aucun client enregistre.</p>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>N°</th><th>NOM</th><th>TÉLÉPHONE</th><th>EMAIL</th><th>VILLE</th><th>TYPE</th><th>ACTIONS</th></tr></thead>
-              <tbody>
-                {clients.map((c) => (
-                  <tr key={c.id}>
-                    <td>{c.numeroClient}</td>
-                    <td><strong>{c.nom} {c.prenom}</strong></td>
-                    <td>{c.telephone}</td>
-                    <td>{c.email}</td>
-                    <td>{c.ville} ({c.codePostal})</td>
-                    <td><span className={`type-badge ${c.type}`}>{c.type}</span></td>
-                    <td className="actions-cell">
-                      <button type="button" className="action-btn delete" onClick={() => handleDelete(c)} title="Supprimer"><Icon name="trash" size="sm" /></button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <ErrorSummary
+            errors={form.formState.errors}
+            labels={{
+              nom: 'Nom',
+              prenom: 'Prenom',
+              telephone: 'Telephone',
+              email: 'Email',
+              adresse: 'Adresse',
+              ville: 'Ville',
+              codePostal: 'Code postal',
+              type: 'Type',
+            }}
+          />
+
+          <div className="form-grid-2">
+            <FormInput label="Nom" name="nom" register={register} required />
+            <FormInput label="Prenom" name="prenom" register={register} required />
+            <FormInput label="Telephone" name="telephone" type="tel" register={register} required />
+            <FormInput label="Email" name="email" type="email" register={register} required />
+            <FormInput label="Adresse" name="adresse" register={register} required />
+            <FormInput label="Ville" name="ville" register={register} required />
+            <FormInput label="Code postal" name="codePostal" register={register} required />
+            <FormSelect label="Type" name="type" register={register} options={TYPES} required />
           </div>
-        )}
-      </div>
 
-      <Link className="back-link" to="/">← Retour au dashboard</Link>
-    </div>
+          <div className="form-actions">
+            <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
+              <Icon name="plus" size="sm" /> Ajouter le client
+            </button>
+            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_CLIENT)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      ) : (
+        <p className="info-banner" role="note">
+          <Icon name="alert" size="sm" /> La saisie de nouveaux clients est reservee au depot.
+          Consultez la liste ci-dessous.
+        </p>
+      )}
+
+      <DataTable
+        columns={columns}
+        rows={rows}
+        rowKey={(row) => String(row.id)}
+        caption="Liste des clients"
+        loading={loading}
+        emptyMessage="Aucun client enregistre."
+        defaultSort={{ key: 'nom', direction: 'asc' }}
+      />
+
+      <ConfirmDialog {...dialogProps} confirmLabel="Supprimer" destructive />
+    </PageLayout>
   )
 }

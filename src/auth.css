@@ -1,0 +1,107 @@
+/* =============================================================================
+   Semaine 3 : authentification
+   -----------------------------------------------------------------------------
+   Ecran de connexion et etat de verification de session.
+   ========================================================================== */
+
+/* Attente de la verification de session au chargement. Evite l'affichage
+   du formulaire de connexion avant de savoir si une session existe. */
+.boot-screen {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 100vh;
+  background: var(--color-surface-sunken);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.boot-spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--color-muted);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: boot-spin .7s linear infinite;
+}
+@keyframes boot-spin { to { transform: rotate(360deg); } }
+
+/* Carte de connexion : largeur bornee, centree verticalement. */
+.login-screen {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 18px;
+  background: var(--color-surface-sunken);
+}
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 30px 26px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  box-shadow: var(--shadow-lg);
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  color: var(--text-strong);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 2.2px;
+}
+.login-card h1 {
+  margin: 0 0 6px;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 500;
+}
+.login-card .heading-copy { margin: 0 0 20px; color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+.login-card .form-group { margin-bottom: 14px; }
+.login-submit { width: 100%; justify-content: center; margin-top: 6px; }
+.login-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Rappel des comptes de demonstration. Utile en developpement, a retirer
+   ou a remplacer par un texte d'aide en production. */
+.login-demo {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+.login-demo p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 9px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.login-demo code {
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.login-demo ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.login-demo button {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-muted);
+  text-align: left;
+  font-size: 10px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.login-demo button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.login-demo button b { color: var(--text-strong); font-weight: 600; }

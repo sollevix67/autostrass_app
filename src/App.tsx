@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import './App.css'
+import './auth.css'
 import { useDashboard } from './hooks/useDashboard'
 import { ToastProvider } from './components/Toast'
 import { Icon, type IconName } from './components/Icon'
+import { AuthProvider } from './components/AuthProvider'
+import { useAuth } from './components/useAuth'
+import { LoginView } from './views/LoginView'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
@@ -29,10 +33,40 @@ const navigation = [
   { label: 'Vehicules', path: '/vehicules', icon: 'car' }
 ] as const satisfies ReadonlyArray<{ label: string; path: string; icon: IconName }>
 
+/** Initiales pour l'avatar : premiere lettre du prenom et du nom. */
+function initials(prenom: string, nom: string): string {
+  return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase()
+}
+
+/** Libelle lisible du role, pour le pied de la barre laterale. */
+function roleLabel(role: string): string {
+  if (role === 'admin') return 'Administrateur'
+  if (role === 'magasinier') return 'Magasinier'
+  if (role === 'caissier') return 'Caissier'
+  return role
+}
+
 function AppContent() {
   const { dashboard, apiMode, error, lastUpdated, refresh } = useDashboard()
+  const { user, status, signOut } = useAuth()
   const [mobileNav, setMobileNav] = useState(false)
   const location = useLocation()
+
+  // Tant que la session n'est pas verifiee, on n'affiche ni le depot ni
+  // l'ecran de connexion : sans cette attente, un rechargement de page fait
+  // clignoter le formulaire de connexion avant de retrouver la session.
+  if (status === 'checking') {
+    return (
+      <div className="boot-screen" role="status" aria-live="polite">
+        <span className="boot-spinner" aria-hidden="true" />
+        <p>Verification de la session...</p>
+      </div>
+    )
+  }
+
+  if (status === 'anonymous' || user === null) {
+    return <LoginView />
+  }
 
   return (
     <div className="app-shell">
@@ -63,13 +97,13 @@ function AppContent() {
             <span>Utilisateurs & droits</span>
           </NavLink>
         </nav>
-        <div className="sidebar-footer"><div className="profile-avatar">ML</div><div><b>Marie Laurent</b><small>Responsable depot</small></div><button className="more-button" aria-label="Options du profil"><Icon name="more" size="lg" /></button></div>
+        <div className="sidebar-footer"><div className="profile-avatar">{initials(user.prenom, user.nom)}</div><div><b>{user.prenom} {user.nom}</b><small>{roleLabel(user.role)}</small></div><button className="more-button" aria-label="Se deconnecter" onClick={() => void signOut()}><Icon name="chevron-right" size="lg" /></button></div>
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">ML</span><span>Marie Laurent</span><Icon name="chevron-down" size="sm" /></div></div></header>
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
-          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour Marie <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle operation <Icon name="chevron-down" size="sm" /></button></div>
+          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle operation <Icon name="chevron-down" size="sm" /></button></div>
           <div className="status-line">
             <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : ''}`}></span>
             {apiMode === 'connected'
@@ -133,9 +167,11 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }
