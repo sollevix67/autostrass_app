@@ -5,6 +5,7 @@ import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
+import { Icon } from '../components/Icon'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { FormInput, FormSelect, FormTextarea, type FieldRegister } from '../components/forms/FormFields'
 import { EMPTY_ARTICLE, useCatalogue } from '../hooks/useCatalogue'
@@ -269,7 +270,7 @@ export default function CatalogueView() {
 
         <div className="form-actions">
           <button type="submit" className="primary-button" disabled={isSubmitting || saving}>
-            <span>＋</span> {isSubmitting || saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
+            <Icon name="plus" size="sm" /> {isSubmitting || saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
           </button>
           <button type="button" className="secondary-button" onClick={() => reset(EMPTY_ARTICLE)}>
             Effacer

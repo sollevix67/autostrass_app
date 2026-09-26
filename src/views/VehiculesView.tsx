@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { pickEnum, toNumber } from '../utils/coerce'
 import { nextId } from '../utils/ids'
 import type { Vehicule } from '../types'
@@ -92,7 +93,7 @@ export default function VehiculesView() {
           <FormSelect label="Statut" name="statut" value={draft.statut} options={statuts} onChange={(_name, value) => setField('statut', value)} required />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Ajouter le véhicule</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Ajouter le véhicule</button>
           <button type="button" className="secondary-button" onClick={() => setDraft(EMPTY_VEHICLE())}>Effacer</button>
         </div>
       </form>
@@ -117,7 +118,7 @@ export default function VehiculesView() {
                   <td>{v.kilometrage.toLocaleString('fr-FR')} km</td>
                   <td><span className={`status-badge status-${v.statut.replace(/\s/g, '')}`}>{v.statut}</span></td>
                   <td className="actions-cell">
-                    <button type="button" className="action-btn delete" onClick={() => handleDelete(v.id)} title="Supprimer">🗑</button>
+                    <button type="button" className="action-btn delete" onClick={() => handleDelete(v.id)} title="Supprimer"><Icon name="trash" size="sm" /></button>
                   </td>
                 </tr>
               ))}

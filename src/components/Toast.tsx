@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ToastContext, type Toast, type ToastApi } from './toastContext'
+import { Icon } from './Icon'
 
 const AUTO_DISMISS_MS = 5000
 const MAX_VISIBLE = 3
@@ -70,7 +71,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               onClick={() => dismiss(toast.id)}
               aria-label="Fermer la notification"
             >
-              ✕
+              <Icon name="close" size="sm" />
             </button>
           </div>
         ))}

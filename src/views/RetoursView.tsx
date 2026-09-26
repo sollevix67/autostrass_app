@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { toNumber } from '../utils/coerce'
 import { nextId } from '../utils/ids'
 import type { Retour } from '../types'
@@ -52,7 +53,7 @@ export default function RetoursView() {
           <FormInput label="Montant rembourse (€)" name="montantRembourse" type="number" step="0.01" value={String(draft.montantRembourse)} onChange={(_name, value) => setField('montantRembourse', value)} required />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Enregistrer le retour</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Enregistrer le retour</button>
           <button type="button" className="secondary-button" onClick={() => setDraft(EMPTY_RETOUR())}>Effacer</button>
         </div>
       </form>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { pickEnum } from '../utils/coerce'
 import { nextId } from '../utils/ids'
 import type { Livraison } from '../types'
@@ -77,7 +78,7 @@ export default function LivraisonsView() {
           <FormInput label="N° de suivi" name="tracking" value={draft.tracking} onChange={(_name, value) => setField('tracking', value)} placeholder="Optionnel" />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Enregistrer</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Enregistrer</button>
           <button type="button" className="secondary-button" onClick={() => setDraft(EMPTY_LIVRAISON())}>Effacer</button>
         </div>
       </form>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { pickEnum } from '../utils/coerce'
 import { nextId } from '../utils/ids'
 import type { CommandeClient } from '../types'
@@ -68,7 +69,7 @@ export default function CommandesClientsView() {
           <FormInput label="Date livraison prévue" name="dateLivraisonPrevue" type="date" value={draft.dateLivraisonPrevue} onChange={(_name, value) => setField('dateLivraisonPrevue', value)} />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Créer la commande</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Créer la commande</button>
           <button type="button" className="secondary-button" onClick={() => setDraft(EMPTY_COMMANDE())}>Effacer</button>
         </div>
       </form>
@@ -91,7 +92,7 @@ export default function CommandesClientsView() {
                     </select>
                   </td>
                   <td>{cmd.dateLivraisonPrevue || '-'}</td>
-                  <td><button className="action-btn">✎</button></td>
+                  <td><button className="action-btn"><Icon name="edit" size="sm" /></button></td>
                 </tr>
               ))}
             </tbody>

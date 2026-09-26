@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { useCatalogue } from '../hooks/useCatalogue'
 import { pickEnum } from '../utils/coerce'
 import { createLineId } from '../utils/ids'
@@ -160,7 +161,7 @@ export default function VentesComptoirView() {
               </div>
               <div className="form-group"><label>Montant</label><span className="static-value">{formatEuros(article.quantite * article.prixUnitaire)}</span></div>
             </div>
-            <button type="button" className="action-btn delete" onClick={() => removeArticle(article.lineId)} aria-label={`Retirer ${article.reference} du panier`}>✕</button>
+            <button type="button" className="action-btn delete" onClick={() => removeArticle(article.lineId)} aria-label={`Retirer ${article.reference} du panier`}><Icon name="close" size="sm" /></button>
           </div>
         ))}
 
@@ -181,7 +182,7 @@ export default function VentesComptoirView() {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Valider la vente</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Valider la vente</button>
         </div>
       </form>
 

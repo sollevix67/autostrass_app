@@ -1,5 +1,14 @@
 import { Link } from 'react-router-dom'
 import type { ApiMode, DashboardData } from '../types'
+import { Icon, type IconName } from '../components/Icon'
+
+/** Iconographie du journal d'activite, indexee par type de mouvement. */
+const ACTIVITY_ICONS: Record<string, IconName> = {
+  RECEPTION: 'download',
+  VENTE: 'cart',
+  TRANSFERT: 'truck',
+  INVENTAIRE: 'arrow-down',
+}
 
 type DashboardViewProps = {
   dashboard: DashboardData
@@ -58,7 +67,7 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
           </div>
         </section>
         <section className="panel activity-panel">
-          <div className="panel-heading"><div><p className="panel-kicker">En direct</p><h2>Activite recente</h2></div><Link className="icon-button" to="/receptions">↗</Link></div>
+          <div className="panel-heading"><div><p className="panel-kicker">En direct</p><h2>Activite recente</h2></div><Link className="icon-button" to="/receptions" aria-label="Voir les réceptions"><Icon name="chevron-right" size="sm" /></Link></div>
           <div className="activity-list">
             {dashboard.activity.length === 0 ? (
               <p className="empty-state">
@@ -68,15 +77,19 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
                     ? 'Activite indisponible.'
                     : 'Aucune activite recente.'}
               </p>
-            ) : dashboard.activity.map((item) => (
-              <div className="activity-item" key={`${item.type}-${item.title}-${item.time}`}>
-                <span className={`activity-icon activity-${item.type.toLowerCase()}`}>{item.type === 'VENTE' ? '€' : item.type === 'RECEPTION' ? '↓' : '⇄'}</span>
+            ) : dashboard.activity.map((item, index) => (
+              // Deux mouvements du meme article a la meme seconde partagent
+              // type/title/time : l'index est necessaire pour une cle unique.
+              <div className="activity-item" key={`${item.type}-${item.title}-${item.time}-${index}`}>
+                <span className={`activity-icon activity-${item.type.toLowerCase()}`}>
+                  <Icon name={ACTIVITY_ICONS[item.type] ?? 'arrow-down'} size="sm" />
+                </span>
                 <div><b>{item.title}</b><p>{item.detail}</p></div>
                 <time>{item.time}</time>
               </div>
             ))}
           </div>
-          <button className="activity-link">Ouvrir le journal d activite <span>→</span></button>
+          <button className="activity-link">Ouvrir le journal d activite <Icon name="chevron-right" size="sm" /></button>
         </section>
       </div>
 
@@ -84,7 +97,7 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
         <div><p className="panel-kicker">Acces rapide</p><h2>Que souhaitez-vous faire ?</h2></div>
         <div className="quick-action-list">
           <Link to="/catalogue">
-            <span className="quick-icon coral">＋</span>
+            <span className="quick-icon coral"><Icon name="plus" size="sm" /></span>
             <span><b>Ajouter une reference</b><small>Creer un article au catalogue</small></span>
             <span>→</span>
           </Link>

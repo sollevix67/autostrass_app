@@ -1,16 +1,29 @@
+/* Polices du design system : Fira Sans (texte) + Fira Code (titres, donnees).
+   Import Google Fonts, puis les tokens de couleur/espacement. */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import './tokens.css';
+
 :root {
-  font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
-  color: #26323d;
-  background: #f5f6f3;
+  font-family: var(--font-sans);
+  color: var(--text-strong);
+  background: var(--color-surface-sunken);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --ink: #26323d;
-  --muted: #7d8790;
-  --line: #e4e8e5;
+  --ink: var(--text-strong);
+  --muted: var(--text-muted);
+  --line: var(--color-border);
 }
 
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 button { font: inherit; }
 #root { min-height: 100vh; }
+
+/* Les icones SVG sont alignees sur la ligne de base du texte et se
+   contractent pour ne jamais augmenter la hauteur d'un bouton. */
+.icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: -0.125em;
+}

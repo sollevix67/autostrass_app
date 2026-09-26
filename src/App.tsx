@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router
 import './App.css'
 import { useDashboard } from './hooks/useDashboard'
 import { ToastProvider } from './components/Toast'
+import { Icon, type IconName } from './components/Icon'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
@@ -16,17 +17,17 @@ import VehiculesView from './views/VehiculesView'
 import UtilisateursView from './views/UtilisateursView'
 
 const navigation = [
-  { label: 'Vue d ensemble', path: '/' },
-  { label: 'Catalogue', path: '/catalogue' },
-  { label: 'Stock', path: '/stock' },
-  { label: 'Receptions', path: '/receptions' },
-  { label: 'Ventes comptoir', path: '/ventes-comptoir' },
-  { label: 'Commandes clients', path: '/commandes-clients' },
-  { label: 'Livraisons', path: '/livraisons' },
-  { label: 'Retours', path: '/retours' },
-  { label: 'Clients', path: '/clients' },
-  { label: 'Vehicules', path: '/vehicules' }
-] as const
+  { label: 'Vue d’ensemble', path: '/', icon: 'grid' },
+  { label: 'Catalogue', path: '/catalogue', icon: 'clipboard' },
+  { label: 'Stock', path: '/stock', icon: 'box' },
+  { label: 'Receptions', path: '/receptions', icon: 'download' },
+  { label: 'Ventes comptoir', path: '/ventes-comptoir', icon: 'cart' },
+  { label: 'Commandes clients', path: '/commandes-clients', icon: 'layers' },
+  { label: 'Livraisons', path: '/livraisons', icon: 'truck' },
+  { label: 'Retours', path: '/retours', icon: 'rotate-ccw' },
+  { label: 'Clients', path: '/clients', icon: 'users' },
+  { label: 'Vehicules', path: '/vehicules', icon: 'car' }
+] as const satisfies ReadonlyArray<{ label: string; path: string; icon: IconName }>
 
 function AppContent() {
   const { dashboard, apiMode, error, lastUpdated, refresh } = useDashboard()
@@ -40,14 +41,14 @@ function AppContent() {
         <div className="workspace-switcher"><span className="workspace-dot"></span><span><b>Depot principal</b><small>Ouvert aujourd hui</small></span><span className="chevron">⌄</span></div>
         <nav aria-label="Navigation principale">
           <p className="nav-label">ESPACE DE TRAVAIL</p>
-          {navigation.map((item, index) => (
+          {navigation.map((item) => (
             <NavLink
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               to={item.path}
               key={item.label}
               end
             >
-              <span className={`nav-icon nav-icon-${index}`}></span>
+              <Icon name={item.icon} size="sm" />
               <span>{item.label}</span>
               {item.label === 'Stock' && <span className="nav-badge">12</span>}
             </NavLink>
@@ -58,17 +59,17 @@ function AppContent() {
             to="/utilisateurs"
             end
           >
-            <span className="nav-icon nav-icon-settings"></span>
+            <Icon name="settings" size="sm" />
             <span>Utilisateurs & droits</span>
           </NavLink>
         </nav>
-        <div className="sidebar-footer"><div className="profile-avatar">ML</div><div><b>Marie Laurent</b><small>Responsable depot</small></div><button className="more-button" aria-label="Options du profil">•••</button></div>
+        <div className="sidebar-footer"><div className="profile-avatar">ML</div><div><b>Marie Laurent</b><small>Responsable depot</small></div><button className="more-button" aria-label="Options du profil"><Icon name="more" size="lg" /></button></div>
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu">☰</button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher">⌕</button><button className="icon-button notification" aria-label="Notifications">♢<i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">ML</span><span>Marie Laurent</span><span className="chevron">⌄</span></div></div></header>
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">ML</span><span>Marie Laurent</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
-          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour Marie <span className="wave">✦</span></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><span>＋</span> Nouvelle operation <span className="button-chevron">⌄</span></button></div>
+          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour Marie <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle operation <Icon name="chevron-down" size="sm" /></button></div>
           <div className="status-line">
             <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : ''}`}></span>
             {apiMode === 'connected'

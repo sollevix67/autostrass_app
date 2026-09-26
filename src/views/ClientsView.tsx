@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { pickEnum } from '../utils/coerce'
 import type { Client } from '../types'
 
@@ -106,8 +107,8 @@ export default function ClientsView() {
           <FormSelect label="Type" name="type" value={draft.type} options={types} onChange={(_name, value) => setField('type', value)} required />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Ajouter le client</button>
-          {message && <span className="form-success" role="status">✓ {message}</span>}
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Ajouter le client</button>
+          {message && <span className="form-success" role="status"><Icon name="check" size="sm" /> {message}</span>}
           <button type="button" className="secondary-button" onClick={() => { setDraft(EMPTY_CLIENT); setMessage(null) }}>Effacer</button>
         </div>
       </form>
@@ -130,7 +131,7 @@ export default function ClientsView() {
                     <td>{c.ville} ({c.codePostal})</td>
                     <td><span className={`type-badge ${c.type}`}>{c.type}</span></td>
                     <td className="actions-cell">
-                      <button type="button" className="action-btn delete" onClick={() => handleDelete(c)} title="Supprimer">🗑</button>
+                      <button type="button" className="action-btn delete" onClick={() => handleDelete(c)} title="Supprimer"><Icon name="trash" size="sm" /></button>
                     </td>
                   </tr>
                 ))}

@@ -1,0 +1,98 @@
+/* =============================================================================
+   Design tokens Autostrass
+   -----------------------------------------------------------------------------
+   Source de verite : design-system/autostrass/MASTER.md
+   Palette : bleu #1E40AF (primaire) + ambre #D97706 (accent), fond clair.
+   Typo : Fira Code (titres / donnees) + Fira Sans (texte).
+   Densite 9/10 : echelle d'espacement 2 -> 32 px.
+
+   Regle de maintenance : toute couleur ecrite en dur dans App.css doit
+   progressivement etre remplacee par une variable de ce fichier. Les
+   variables ci-dessous couvrent les roles, pas les teintes : App.css conserve
+   encore des nuances historiques (coral, ambre) en dur, volontairement
+   inchangees pour ne pas casser les contrastes deja valides.
+   ========================================================================== */
+
+:root {
+  /* --- Roles de couleur ------------------------------------------------ */
+  --color-primary: #1e40af;
+  --color-on-primary: #ffffff;
+  --color-secondary: #3b82f6;
+  --color-accent: #d97706;
+  --color-on-accent: #1a1200;
+  --color-background: #f8fafc;
+  --color-foreground: #1e293b;
+  --color-card: #ffffff;
+  --color-card-foreground: #1e293b;
+  --color-muted: #e9eef6;
+  --color-muted-foreground: #475569;
+  --color-border: #dbeafe;
+  --color-destructive: #dc2626;
+  --color-on-destructive: #ffffff;
+  --color-ring: #1e40af;
+
+  /* --- Surfaces et lateral (theme sombre existant) ---------------------- */
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f5f6f3;
+  --color-sidebar: #1f2a34;
+  --color-sidebar-hover: #33424b;
+  --color-sidebar-text: #aeb9be;
+  --color-sidebar-text-strong: #ffffff;
+  --color-sidebar-muted: #84929a;
+  --color-sidebar-border: #3b4750;
+  --color-sidebar-divider: #35434d;
+
+  /* --- Texte ------------------------------------------------------------ */
+  --text-strong: #26323d;
+  --text-body: #3f4b53;
+  --text-muted: #6b7679;
+  --text-faint: #96a0a3;
+  --text-on-dark: #d7e0e4;
+
+  /* --- Semantique de statut --------------------------------------------- */
+  --status-success: #5caa82;
+  --status-success-bg: #eaf6ef;
+  --status-warning: #ce9840;
+  --status-warning-bg: #fff5dd;
+  --status-info: #5c9bd7;
+  --status-info-bg: #eaf3fb;
+  --status-danger: #d1624a;
+  --status-danger-bg: #fdf1ef;
+  --status-danger-border: #f3cec7;
+  --status-neutral: #788a8e;
+
+  /* --- Accents d'icones (cards, badges) --------------------------------- */
+  --accent-blue: #5c9bd7;
+  --accent-coral: #ee806c;
+  --accent-yellow: #e2b34e;
+  --accent-green: #6aaf91;
+  --accent-coral-soft: #fcece8;
+
+  /* --- Typographie ------------------------------------------------------ */
+  --font-sans: 'Fira Sans', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --font-display: 'Fira Code', Georgia, serif;
+
+  /* --- Espacement (densite 9/10) ---------------------------------------- */
+  --space-xs: 2px;
+  --space-sm: 4px;
+  --space-md: 8px;
+  --space-lg: 12px;
+  --space-xl: 16px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* --- Rayons ----------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 5px;
+  --radius-pill: 20px;
+
+  /* --- Ombres ----------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-brand: 0 5px 14px rgba(38, 50, 61, 0.16);
+  --shadow-danger: 0 5px 14px rgba(184, 69, 47, 0.18);
+  --shadow-toast: 0 8px 22px rgba(38, 50, 61, 0.14);
+  --shadow-sidebar-open: 8px 0 24px rgba(31, 42, 52, 0.18);
+}

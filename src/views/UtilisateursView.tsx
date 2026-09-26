@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FormInput, FormSelect } from '../components/forms/FormFields'
+import { Icon } from '../components/Icon'
 import { pickEnum } from '../utils/coerce'
 import { nextId } from '../utils/ids'
 import type { Utilisateur } from '../types'
@@ -66,7 +67,7 @@ export default function UtilisateursView() {
           <FormSelect label="Rôle" name="role" value={draft.role} options={roles} onChange={(_name, value) => setField('role', value)} required />
         </div>
         <div className="form-actions">
-          <button type="submit" className="primary-button">✓ Ajouter l'utilisateur</button>
+          <button type="submit" className="primary-button"><Icon name="check" size="sm" /> Ajouter l'utilisateur</button>
         </div>
       </form>
 
@@ -83,8 +84,8 @@ export default function UtilisateursView() {
                   <td>{u.email}</td>
                   <td>{u.telephone || '-'}</td>
                   <td><span className="role-badge">{u.role}</span></td>
-                  <td><button className={`toggle-btn ${u.actif ? 'active' : ''}`} onClick={() => toggleActive(u.id!)}>{u.actif ? '✓ Oui' : '✕ Non'}</button></td>
-                  <td><button className="action-btn">✎</button></td>
+                  <td><button className={`toggle-btn ${u.actif ? 'active' : ''}`} onClick={() => toggleActive(u.id!)}>{u.actif ? 'Oui' : 'Non'}</button></td>
+                  <td><button className="action-btn"><Icon name="edit" size="sm" /></button></td>
                 </tr>
               ))}
             </tbody>

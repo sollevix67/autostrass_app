@@ -6,6 +6,7 @@ import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
+import { Icon } from '../components/Icon'
 import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
 import { receptionSchema, type ReceptionFormValues } from '../schemas'
 import type { Reception } from '../types'
@@ -145,7 +146,7 @@ export default function ReceptionsView() {
             title="Supprimer"
             aria-label={`Supprimer la reception ${row.id}`}
           >
-            🗑
+            <Icon name="trash" size="sm" />
           </button>
         </div>
       ),
@@ -243,7 +244,7 @@ export default function ReceptionsView() {
                 disabled={fields.length === 1}
                 title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
               >
-                ✕
+                <Icon name="close" size="sm" />
               </button>
             </div>
           )
@@ -254,7 +255,7 @@ export default function ReceptionsView() {
           className="secondary-button"
           onClick={() => append({ reference: '', designation: '', quantiteRecue: 0, prixUnitaire: 0 })}
         >
-          ＋ Ajouter un article
+          <Icon name="plus" size="sm" /> Ajouter un article
         </button>
 
         <div className="reception-total">
@@ -263,7 +264,7 @@ export default function ReceptionsView() {
 
         <div className="form-actions">
           <button type="submit" className="primary-button" disabled={savingReception}>
-            ✓ {savingReception ? 'Enregistrement...' : 'Enregistrer la réception'}
+            <Icon name="check" size="sm" /> {savingReception ? 'Enregistrement...' : 'Enregistrer la réception'}
           </button>
         </div>
       </form>

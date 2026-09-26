@@ -4,6 +4,7 @@ import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
+import { Icon } from '../components/Icon'
 import { FormInput } from '../components/forms/FormFields'
 import { useStock, type StockFilter } from '../hooks/useStock'
 import { toNumber } from '../utils/coerce'
@@ -132,10 +133,10 @@ export default function StockView() {
             -1
           </button>
           <button className="action-btn edit" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
-            ✎
+            <Icon name="edit" size="sm" />
           </button>
           <button className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
-            🗑
+            <Icon name="trash" size="sm" />
           </button>
         </div>
       ),
@@ -156,13 +157,13 @@ export default function StockView() {
 
       <section className="metric-grid" aria-label="Indicateurs du stock">
         <article className="metric-card accent-yellow">
-          <div className="metric-icon">!</div>
+          <div className="metric-icon"><Icon name="alert" size="sm" /></div>
           <p>Articles en rupture</p>
           <strong>{metrics.lowStock}</strong>
           <span className="metric-trend warning">Action requise</span>
         </article>
         <article className="metric-card accent-green">
-          <div className="metric-icon">✓</div>
+          <div className="metric-icon"><Icon name="check" size="sm" /></div>
           <p>Articles OK</p>
           <strong>{metrics.healthy}</strong>
           <span className="metric-trend positive">Tout est OK</span>
