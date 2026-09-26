@@ -1,9 +1,12 @@
 import 'dotenv/config'
-import express, { type Request, type Response, type NextFunction } from 'express'
+import express, { type Request, type Response } from 'express'
 import mysql from 'mysql2/promise'
 import type { RowDataPacket } from 'mysql2'
 import { ArticleRepository } from './repositories/articleRepository.js'
 import { notFound, sendValidationError, validateArticleBody, validateDelta } from './middleware/validation.js'
+import { errorHandler } from './middleware/crud.js'
+import { createAuthRouter } from './middleware/authRoutes.js'
+import { createApiRouter } from './middleware/resourceRoutes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -298,13 +301,19 @@ app.delete('/api/articles/:reference', async (request: Request, response: Respon
   }
 })
 
+// --- Schema v2 : authentification et metiers -------------------------------
+// `/api/auth` est monte avant `requireAuth` : la connexion ne peut pas
+// exiger un jeton qu'elle n'a pas encore.
+app.use('/api/auth', createAuthRouter())
+app.use('/api', createApiRouter())
+
+// 404 puis gestionnaire d'erreurs : l'ordre compte, les routes `/api/*` sont
+// toutes tryees. Le gestionnaire traduit les erreurs en JSON homogene.
 app.use((_request: Request, response: Response) => {
   response.status(404).json({ error: 'NOT_FOUND', message: 'Route inconnue.' })
 })
 
-app.use((_error: unknown, _request: Request, response: Response, _next: NextFunction) => {
-  response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Une erreur interne est survenue.' })
-})
+app.use(errorHandler)
 
 app.listen(port, () => {
   console.log(`Autostrass API listening on http://localhost:${port}`)

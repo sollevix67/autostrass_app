@@ -111,16 +111,22 @@ export class DocumentRepository<TRow extends { id: number }> {
 
   /** Cree l'entete et ses lignes dans une seule transaction. */
   async create(head: Record<string, unknown>, lines: LineInput[]): Promise<TRow> {
-    return this.db.transaction(async (tx) => {
-      const [result] = await tx.insert(this.headTable).values(head as never)
-      const id = result.insertId
-      await this.mapping.insertLines(tx, lines, id)
-      const created = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
-      return this.mapping.mapRow(
-        created[0] as unknown as Record<string, unknown>,
-        lines.map(toLine),
-      )
-    })
+    try {
+      return await this.db.transaction(async (tx) => {
+        const [result] = await tx.insert(this.headTable).values(head as never)
+        const id = result.insertId
+        await this.mapping.insertLines(tx, lines, id)
+        const created = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
+        return this.mapping.mapRow(
+          created[0] as unknown as Record<string, unknown>,
+          lines.map(toLine),
+        )
+      })
+    } catch (error) {
+      // Sans cette traduction, une cle etrangere inexistante remonte en 500
+      // « erreur interne » au lieu de 422 « reference inconnue ».
+      throw toRepositoryError(error)
+    }
   }
 
   /**
@@ -130,21 +136,25 @@ export class DocumentRepository<TRow extends { id: number }> {
    * suppression viderait la table des lignes de *tous* les documents.
    */
   async replaceLines(id: number, lines: LineInput[]): Promise<TRow | null> {
-    return this.db.transaction(async (tx) => {
-      const heads = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
-      if (!heads[0]) return null
+    try {
+      return await this.db.transaction(async (tx) => {
+        const heads = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
+        if (!heads[0]) return null
 
-      // Suppression puis reinsertion : le rang est la cle primaire composite,
-      // on ne peut pas faire de mise a jour positionnelle.
-      await tx.delete(this.mapping.linesTable as never).where(eq(this.mapping.lineFk, id))
-      await this.mapping.insertLines(tx, lines, id)
+        // Suppression puis reinsertion : le rang est la cle primaire composite,
+        // on ne peut pas faire de mise a jour positionnelle.
+        await tx.delete(this.mapping.linesTable as never).where(eq(this.mapping.lineFk, id))
+        await this.mapping.insertLines(tx, lines, id)
 
-      const refreshed = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
-      return this.mapping.mapRow(
-        refreshed[0] as unknown as Record<string, unknown>,
-        lines.map(toLine),
-      )
-    })
+        const refreshed = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
+        return this.mapping.mapRow(
+          refreshed[0] as unknown as Record<string, unknown>,
+          lines.map(toLine),
+        )
+      })
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
   }
 
   /** Met a jour l'entete sans toucher aux lignes. */

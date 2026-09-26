@@ -17,7 +17,7 @@
  *   (cf. les notes : un DECIMAL lu en `number` peut perdre en precision).
  */
 
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import {
   mysqlTable,
   varchar,
@@ -36,14 +36,25 @@ import {
 /**
  * Horodatage de creation, partage par toutes les tables.
  *
- * Drizzle expose `defaultNow()` / `onUpdateNow()` comme methodes du builder,
- * pas comme cles de configuration : `timestamp(name, { default: sql\`...\` })`
- * est rejete par le typage de la version 0.45.
+ * Drizzle 0.45 expose `defaultNow()` / `onUpdateNow()` comme methodes du
+ * builder, pas comme cles de configuration. Mais `defaultNow()` produit
+ * `DEFAULT (now())`, que le serialiseur MariaDB de drizzle-kit abandonne :
+ * la colonne est creee sans defaut, donc tout INSERT — Drizzle compris, qui
+ * passe par `DEFAULT` — laisse `created_at` a NULL. On ecrit donc
+ * `DEFAULT CURRENT_TIMESTAMP` explicitement, seule forme que le dialecte
+ * MariaDB restitue.
  */
-const createdAt = (name = 'created_at') => timestamp(name, { mode: 'date' }).defaultNow()
+const createdAt = (name = 'created_at') => timestamp(name, { mode: 'date' }).default(sql`CURRENT_TIMESTAMP`)
 
-/** Horodatage de mise a jour, rafraichi automatiquement par MariaDB. */
-const updatedAt = (name = 'updated_at') => timestamp(name, { mode: 'date' }).defaultNow().onUpdateNow()
+/**
+ * Horodatage de mise a jour. `ON UPDATE CURRENT_TIMESTAMP` exige une
+ * colonne `TIMESTAMP` (pas `DATETIME`) et une valeur par defaut, d'ou le
+ * `CURRENT_TIMESTAMP` sur les deux.
+ */
+const updatedAt = (name = 'updated_at') =>
+  timestamp(name, { mode: 'date' })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .onUpdateNow()
 
 // ---------------------------------------------------------------------------
 // Utilisateurs

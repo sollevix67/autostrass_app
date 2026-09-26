@@ -38,15 +38,40 @@ export function parseId(value: unknown): number | null {
 }
 
 /**
+ * Extrait le code d'erreur mysql2 whatever soit l'enveloppe.
+ *
+ * Drizzle emballe les echecs de requete dans une `DrizzleQueryError` qui
+ * porte `cause` : sans decomposer cette chaine, une violation de cle
+ * etrangere arrive en 500 « erreur interne » au lieu de 422 « reference
+ * inconnue », et le diagnostic est impossible cote client.
+ */
+function unwrap(error: unknown): Record<string, unknown> | null {
+  let current: unknown = error
+  for (let depth = 0; depth < 5; depth += 1) {
+    if (typeof current !== 'object' || current === null) return null
+    const record = current as Record<string, unknown>
+    if (typeof record.code === 'string') return record
+    current = record.cause
+  }
+  return null
+}
+
+/**
  * Transforme une erreur mysql2 en code metier exploitable.
  * `ER_DUP_ENTRY` (1062) devient 409, `ER_ROW_IS_REFERENCED_2` (1451) 409 aussi.
  */
 export function toHttpError(error: unknown): { status: number; code: string } {
-  const code = typeof error === 'object' && error !== null ? (error as { code?: string }).code : undefined
+  const record = unwrap(error)
+  const code = typeof record?.code === 'string' ? record.code : undefined
+
   if (code === 'ER_DUP_ENTRY') return { status: 409, code: 'ALREADY_EXISTS' }
   if (code === 'ER_ROW_IS_REFERENCED_2') return { status: 409, code: 'IN_USE' }
   if (code === 'ER_NO_REFERENCED_ROW_2' || code === 'ER_NO_REFERENCED_ROW') {
     return { status: 422, code: 'UNKNOWN_REFERENCE' }
+  }
+  if (code === 'ER_DATA_TOO_LONG') return { status: 422, code: 'VALUE_TOO_LONG' }
+  if (code === 'WARN_DATA_TRUNCATED' || code === 'WARN_DATA_OUT_OF_RANGE') {
+    return { status: 422, code: 'VALUE_OUT_OF_RANGE' }
   }
   return { status: 500, code: 'INTERNAL_ERROR' }
 }

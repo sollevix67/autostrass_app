@@ -12,17 +12,22 @@ USE autostrass;
 -- ---------------------------------------------------------------------------
 -- Utilisateurs (mots de passe de demonstration, hash bcrypt)
 -- ---------------------------------------------------------------------------
--- mot de passe commun : `demo1234` (bcrypt cost 10, 64 octets).
+-- mot de passe commun : `demo1234` (bcrypt cost 10, 60 caracteres).
 -- Ces comptes sont des jeux de test : ils doivent etre supprimes ou changes
 -- avant toute mise en production.
-SET @pwd := '$2b$10$mAwKLaKjH59dC.XnRA9qa.SDQ.soY1wz3Inr5n.1YlaX6TqNFmWXq';
-
+--
+-- Le hash est repete litteralement dans chaque ligne plutot que passe par une
+-- variable `SET @pwd`. Une variable de session n'est pas substituee de facon
+-- fiable par tous les pilotes (mysql2 en mode multi-instructions execute le
+-- script sans garantir le meme contexte), et l'echec est silencieux :
+-- `password_hash` arrive NULL, la contrainte NOT NULL rejette la ligne, et
+-- aucun compte n'est cree sans que l'erreur remonte clairement.
 INSERT INTO users (nom, prenom, email, telephone, role, actif, password_hash)
 VALUES
-  ('Laurent',  'Marie',    'marie.laurent@autostrass.fr',  '0612000001', 'admin',      1, @pwd),
-  ('Moreau',   'Karim',    'karim.moreau@autostrass.fr',   '0612000002', 'magasinier', 1, @pwd),
-  ('Bernard',  'Sophie',   'sophie.bernard@autostrass.fr', '0612000003', 'caissier',   1, @pwd),
-  ('Petit',    'Luc',      'luc.petit@autostrass.fr',     '0612000004', 'magasinier', 0, @pwd)
+  ('Laurent',  'Marie',    'marie.laurent@autostrass.fr',  '0612000001', 'admin',      1, '$2b$10$mAwKLaKjH59dC.XnRA9qa.SDQ.soY1wz3Inr5n.1YlaX6TqNFmWXq'),
+  ('Moreau',   'Karim',    'karim.moreau@autostrass.fr',   '0612000002', 'magasinier', 1, '$2b$10$mAwKLaKjH59dC.XnRA9qa.SDQ.soY1wz3Inr5n.1YlaX6TqNFmWXq'),
+  ('Bernard',  'Sophie',   'sophie.bernard@autostrass.fr', '0612000003', 'caissier',   1, '$2b$10$mAwKLaKjH59dC.XnRA9qa.SDQ.soY1wz3Inr5n.1YlaX6TqNFmWXq'),
+  ('Petit',    'Luc',      'luc.petit@autostrass.fr',     '0612000004', 'magasinier', 0, '$2b$10$mAwKLaKjH59dC.XnRA9qa.SDQ.soY1wz3Inr5n.1YlaX6TqNFmWXq')
 ON DUPLICATE KEY UPDATE nom = VALUES(nom), role = VALUES(role), actif = VALUES(actif);
 
 -- ---------------------------------------------------------------------------

@@ -13,7 +13,10 @@
     "uipro:node": "node scripts/uipro-search.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx scripts/seed.ts",
+    "test:api": "tsx scripts/test-api.ts",
+    "test:repos": "tsx scripts/verify-repositories.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
