@@ -645,3 +645,26 @@ export const retourLinesRelations = relations(retourLines, ({ one }) => ({
  * Type d'appui : les lignes stockent la reference en texte, pas l'id.
  */
 export type ArticleRef = { id: number; reference: string }
+
+// ---------------------------------------------------------------------------
+// Étape 2 — injection manuelle des exports attendus par drizzle-kit
+// ---------------------------------------------------------------------------
+
+export {
+  LOCATION_LEVELS,
+  type LocationLevel,
+  emplacements,
+  tva,
+  DELIVERY_MODES,
+  type DeliveryMode,
+  fournisseurs,
+  SUPPLIER_ORDER_STATUSES,
+  type SupplierOrderStatus,
+  commandesFournisseurs,
+  commandeFournisseurLines,
+  AUDIT_ACTIONS,
+  type AuditAction,
+  journalActions,
+  stockParEmplacements,
+} from './schema_step2.js'
+

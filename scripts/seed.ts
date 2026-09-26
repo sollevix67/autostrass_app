@@ -1,7 +1,12 @@
 /**
- * Applique le jeu de donnees de demonstration `database/seed_v2.sql`.
+ * Applique les jeux de donnees de demonstration.
  *
  * Usage : `npm run db:seed`
+ *
+ * Deux fichiers, appliques dans l'ordre : `seed_v2.sql` couvre les 8 metiers
+ * de la v2, `seed_v3.sql` les entites ajoutees a l'etape 2 (emplacements, TVA,
+ * fournisseurs, stock par emplacement). L'ordre compte : le stock par
+ * emplacement du v3 reference les articles du v2.
  *
  * Le SQL est replayee instruction par instruction plutot que d'un bloc, car
  * le mode multi-instructions de mysql2 ne renvoie que le dernier jeu de
@@ -13,8 +18,10 @@
 import 'dotenv/config'
 import mysql from 'mysql2/promise'
 import { readFileSync } from 'node:fs'
+import { splitStatements } from './lib/sql.js'
 
-const SEED_FILE = 'database/seed_v2.sql'
+/** Fichiers appliques dans l'ordre ; le second depend du premier. */
+const SEED_FILES = ['database/seed_v2.sql', 'database/seed_v3.sql'] as const
 
 const hasDatabaseConfig = Boolean(process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER && process.env.DB_PASSWORD)
 
@@ -23,21 +30,9 @@ if (!hasDatabaseConfig) {
   process.exit(1)
 }
 
-const sql = readFileSync(SEED_FILE, 'utf8').replace(/^USE .*?;\s*$/m, '')
+const sql = SEED_FILES.map((file) => readFileSync(file, 'utf8')).join('\n').replace(/^USE .*?;\s*$/gm, '')
 
-/** Retire les lignes de commentaire pour ne garder que les instructions. */
-function statements(source: string): string[] {
-  return source
-    .split(';')
-    .map((part) =>
-      part
-        .split('\n')
-        .filter((line) => !line.trim().startsWith('--'))
-        .join('\n')
-        .trim(),
-    )
-    .filter((part) => part.length > 0)
-}
+const list = splitStatements(sql)
 
 const connection = await mysql.createConnection({
   host: process.env.DB_HOST,
@@ -47,7 +42,6 @@ const connection = await mysql.createConnection({
   database: process.env.DB_NAME,
 })
 
-const list = statements(sql)
 let failures = 0
 
 for (const [index, statement] of list.entries()) {
@@ -77,6 +71,13 @@ const SEEDED_TABLES = [
   'livraisons',
   'retours',
   'retour_lines',
+  'tva',
+  'emplacements',
+  'stock_par_emplacements',
+  'fournisseurs',
+  'commandes_fournisseurs',
+  'commande_four_lines',
+  'journal_actions',
 ] as const
 
 // Comptage reel table par table : `information_schema.TABLE_ROWS` est une

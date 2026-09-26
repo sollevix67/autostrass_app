@@ -163,9 +163,87 @@ html[data-theme='dark'] .filter-bar input[type='text']:focus,
 html[data-theme='dark'] .status-select:focus,
 html[data-theme='dark'] .secondary-button:focus,
 html[data-theme='dark'] .primary-button:focus,
-html[data-theme='dark'] .link-button:focus {
+html[data-theme='dark'] .link-button:focus,
+html[data-theme='dark'] .form-group input:focus,
+html[data-theme='dark'] .form-group select:focus,
+html[data-theme='dark'] .form-group textarea:focus {
   border-color: var(--accent-coral);
   box-shadow: 0 0 0 2px rgba(238, 128, 108, 0.2);
+}
+
+html[data-theme='dark'] .form-group label,
+html[data-theme='dark'] .required,
+html[data-theme='dark'] .form-group .form-hint,
+html[data-theme='dark'] .form-group .form-error-text,
+html[data-theme='dark'] .login-card .heading-copy,
+html[data-theme='dark'] .login-card .form-group label,
+html[data-theme='dark'] .login-demo p,
+html[data-theme='dark'] .login-demo code,
+html[data-theme='dark'] .login-demo button,
+html[data-theme='dark'] .login-demo button b {
+  color: var(--text-body);
+}
+
+html[data-theme='dark'] .form-group input,
+html[data-theme='dark'] .form-group select,
+html[data-theme='dark'] .form-group textarea,
+html[data-theme='dark'] .login-demo button {
+  background: #0f172a;
+  color: var(--text-strong);
+  border-color: var(--color-border);
+}
+
+html[data-theme='dark'] .login-screen,
+html[data-theme='dark'] .boot-screen {
+  background: var(--color-surface-sunken);
+}
+
+html[data-theme='dark'] .login-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-brand);
+}
+
+html[data-theme='dark'] .login-demo {
+  border-top-color: var(--color-border);
+}
+
+html[data-theme='dark'] .login-demo code {
+  background: var(--color-muted);
+}
+
+html[data-theme='dark'] .login-demo button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+html[data-theme='dark'] .status-line .link-button,
+html[data-theme='dark'] .quick-action-list button,
+html[data-theme='dark'] .filter-tab,
+html[data-theme='dark'] .secondary-button,
+html[data-theme='dark'] .primary-button,
+html[data-theme='dark'] .danger-button,
+html[data-theme='dark'] .action-btn,
+html[data-theme='dark'] .toggle-btn {
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+html[data-theme='dark'] .table-wrap td,
+html[data-theme='dark'] .table-wrap th,
+html[data-theme='dark'] .activity-item,
+html[data-theme='dark'] .workspace-switcher,
+html[data-theme='dark'] .status-line .link-button,
+html[data-theme='dark'] .filter-tab,
+html[data-theme='dark'] .quick-action-list button,
+html[data-theme='dark'] .status-select,
+html[data-theme='dark'] .filter-bar input[type='search'],
+html[data-theme='dark'] .filter-bar input[type='text'],
+html[data-theme='dark'] .filter-bar input[type='search']::placeholder,
+html[data-theme='dark'] .filter-bar input[type='text']::placeholder,
+html[data-theme='dark'] .form-group input::placeholder,
+html[data-theme='dark'] .form-group textarea::placeholder,
+html[data-theme='dark'] .login-demo button {
+  color: var(--text-body);
 }
 
 .app-shell { min-height: 100vh; display: flex; background: #f5f6f3; }

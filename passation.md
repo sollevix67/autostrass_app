@@ -7,6 +7,10 @@
 > reçu un thème sombre/clair automatique avec prise en charge de
 > `prefers-color-scheme` et bascule manuelle.
 >
+> 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
+> emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
+> journal d'audit. Travail en cours sur la versionnage/ordre des migrations.
+>
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
 > d'exécution proposé.

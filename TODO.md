@@ -42,6 +42,7 @@ J'aimerais créer une application en Typescript/ViteJS (frontend/backend, avec s
 	- Livraisons
         - Edition automatique des bons de livraison dès lorsque la commande est complète,
         - Numérotation unique sous la forme yyymmdd-L-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [az-AZ])
+        - Gestion des secteurs et des tournées
 
 	- Retours client 
         - Edition des avoirs
@@ -54,5 +55,17 @@ J'aimerais créer une application en Typescript/ViteJS (frontend/backend, avec s
         - Suivi des devis, commandes, livraisons
         - Suivi des factures payées et à payer
         - Suspension, limitation du compte (blocage livraison, paiement direct uniquement)
+        - Attribution à un secteur de tournée
 
 	- Carnet d'adresses des fournisseurs
+        - Suivi des commandes par fournisseurs
+    
+    - Véhicules
+        - Suivi kilométriques
+        - Suivi des entretiens et réparation
+        - Suivi des pleins en carburant
+    
+    Personnel
+        - Gestion des plannings et des horaires de travail
+        - Gestion des accès au différents modules
+        - Gestion des profils utilisateur
