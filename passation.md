@@ -1,6 +1,8 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-25 — **Semaines 1 et 2 terminées**. Build ✅, lint ✅ (0 warning), parcours UI validés au navigateur.
+> État du projet au 2026-09-26 — **Semaines 1, 2 et 3 (backend) terminées**.
+> Build ✅, lint ✅ 0 warning, **69/69 tests API** ✅, parcours de connexion
+> et vue Clients validés au navigateur.
 
 ---
 
@@ -92,6 +94,78 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 - Formatage monétaire FR homogénéisé (`Intl.NumberFormat`)
 - Hiérarchie des titres : un seul `<h1>` par page (shell global), titres de vue en `<h2>`
 
+### ✅ 9. Semaine 3 (partie 1) — Checklist UX(ui-ux-pro-max) terminée
+
+| Element | Realisation |
+|---------|-------------|
+| `src/components/Icon.tsx` | Jeu d'icones SVG inline (25 icones), `currentColor`, `aria-hidden` quand decoratif. Remplace tous les emojis. |
+| `src/tokens.css` | Tokens centralisés : palette, typo, espacement 2→32 px, rayons, ombres. |
+| `src/index.css` | Import Fira Sans + Fira Code, police de base sur les tokens. |
+| `src/App.css` | `Georgia`/`monospace` remplacés par les tokens, breakpoints alignés sur **375 / 768 / 1024 / 1440**, styles manquants pour `.action-btn` / `.secondary-button` / `.form-success`. |
+
+> Un emoji n'a pas de rendu fiable : il change selon la police du systeme et
+> s'affiche en couleur sur Windows. `Icon` est un SVG qui herite de la
+> couleur du texte et reste invisible au lecteur d'écran s'il est décoratif.
+
+### ✅ 10. Semaine 3 (partie 2) — Backend : Drizzle, migrations, API REST, JWT
+
+**Dépendances** : `drizzle-orm`, `drizzle-kit`, `jose`, `bcryptjs`
+
+| Fichier | Role |
+|---------|------|
+| `server/db/schema.ts` | 12 tables Drizzle (8 metiers + tables de lignes), contraintes uniques, index, relations |
+| `server/db/client.ts` | Pool MariaDB + instance Drizzle, `null` si `DB_*` absent |
+| `drizzle.config.ts` | Config `drizzle-kit` (dialecte MySQL/MariaDB) |
+| `server/repositories/mapping.ts` | `toNumber` (DECIMAL → `number`), `toDateString` (DATE sans décalage), `toHttpError` (déballage de `DrizzleQueryError`) |
+| `server/repositories/simpleRepositories.ts` | `SimpleRepository` : CRUD générique + `RepositoryError` |
+| `server/repositories/referentielRepositories.ts` | Clients (numéro de dossier dérivé de l'id) et vehicules |
+| `server/repositories/utilisateurRepository.ts` | Isolé : `password_hash` ne sort jamais |
+| `server/repositories/documentRepositories.ts` | Réceptions, ventes, commandes, retours (entête + lignes en transaction) |
+| `server/repositories/livraisonRepository.ts` | Livraisons (sans lignes) |
+| `server/middleware/auth.ts` | JWT HS256, `requireAuth`, `requireRole` |
+| `server/middleware/schemas.ts` | 8 schemas Zod, messages utilisateur en français |
+| `server/middleware/crud.ts` | Fabrique CRUD + `errorHandler` global |
+| `server/middleware/documentRoutes.ts` | Routes CRUD de documents (avec `/:id/lignes`) |
+| `server/middleware/resourceRoutes.ts` | Montage des 8 metiers + RBAC |
+| `server/middleware/authRoutes.ts` | `/api/auth/login`, `/logout`, `/me` |
+| `scripts/seed.ts` | Applique `database/seed_v2.sql` instruction par instruction |
+| `scripts/test-api.ts` | **69 assertions** de bout en bout |
+| `scripts/verify-repositories.ts` | Lecture de la base réelle par repository |
+
+**Migrations** (`database/drizzle/`) :
+- `0000_faithful_sway.sql` — 12 tables + FK + index
+- `0001_timestamps_defaults.sql` — `DEFAULT CURRENT_TIMESTAMP` sur `created_at` / `updated_at`
+
+#### 🔐 Authentification et RBAC
+
+| Role | Lecture | Ecriture depot (clients, vehicules, receptions) | Caisse (ventes, commandes, livraisons, retours) | Utilisateurs |
+|------|---------|------------------|------------------|--------------|
+| `admin` | ✅ | ✅ | ✅ | ✅ |
+| `magasinier` | ✅ | ✅ | ❌ | ❌ |
+| `caissier` | ✅ | ❌ | ✅ | ❌ |
+
+- Jeton HS256 12 h, renvoyé dans le corps **et** dans un cookie `httpOnly` / `sameSite=lax`
+- `JWT_SECRET` refusé s'il fait moins de 32 caractères
+- Le compte est relu en base à **chaque** requête : désactiver un utilisateur invalide ses jetons sans attendre l'expiration
+- Message identique pour « email inconnu » et « mot de passe erroné » (pas d'énumération de comptes)
+- Un administrateur ne peut ni se supprimer, ni se désactiver, ni se retirer ses propres droits (409 `SELF_LOCKOUT`)
+- `password_hash` n'apparaît dans aucune réponse (vérifié par assertion)
+
+#### Frontend connecté
+
+| Fichier | Rôle |
+|---------|------|
+| `src/services/api.ts` | Envoi du jeton `Bearer`, messages d'erreur 401/403/409/422 |
+| `src/components/authContext.ts` / `AuthProvider.tsx` / `useAuth.ts` | Session restaurée via `GET /auth/me`, états `checking` / `authenticated` / `anonymous` |
+| `src/views/LoginView.tsx` + `src/auth.css` | Écran de connexion accessible + rappel des comptes de démo |
+| `src/hooks/useResource.ts` | CRUD générique (annulation, mode dégradé, tri) |
+| `src/services/contracts.ts` | Formes des payloads API |
+| `src/views/ClientsView.tsx` | Vue pilote branchée sur l'API (RHF + Zod + DataTable + ConfirmDialog) |
+
+> **Choix de sécurité** : le jeton n'est pas écrit dans `localStorage`. Il est
+> tenu en mémoire par le module et le cookie `httpOnly` fait le reste. Un jeton
+> dans `localStorage` est lisible par n'importe quel script injecté.
+
 ---
 
 ## 3. Fichiers importants
@@ -107,20 +181,31 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/utils/coerce.ts` | `pickEnum`, `toNumber` | ✅ |
 | `src/types/index.ts` | **Source of truth** — types métier | ✅ |
 | `src/App.tsx` | Routing, layout, statut connexion | ✅ |
-| `src/views/CatalogueView.tsx` | CRUD complet + mode local | ✅ |
-| `src/views/StockView.tsx` | Filtres, recherche, tri, modale | ✅ |
-| `src/views/VentesComptoirView.tsx` | Panier, paiement, monnaie | ✅ |
-| `src/views/ReceptionsView.tsx` | Lignes dynamiques (clés stables) | ✅ |
-| `src/views/ClientsView.tsx` | CRUD clients typé | ✅ |
-| `src/views/VehiculesView.tsx` | Parc véhicules typé | ✅ |
-| `src/views/UtilisateursView.tsx` | Rôles, activation | ✅ |
-| `src/views/CommandesClientsView.tsx` | Statuts via `pickEnum` | ✅ |
-| `src/views/LivraisonsView.tsx` | Statuts éditables inline | ✅ |
-| `src/views/RetoursView.tsx` | Retours + remboursement | ✅ |
-| `server/repositories/articleRepository.ts` | Accès MariaDB transactions | ✅ |
-| `server/middleware/validation.ts` | Validation 422 | ✅ |
+| `src/views/CatalogueView.tsx` | CRUD complet + mode local | ✅ || `src/views/ClientsView.tsx` | **Pilote branché API** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
+| `src/views/StockView.tsx` | Filtres, recherche, tri, modale — données locales | ✅ |
+| `src/views/VentesComptoirView.tsx` | Panier, paiement, monnaie — données locales | ✅ |
+| `src/views/ReceptionsView.tsx` | Lignes dynamiques (clés stables) — données locales | ✅ |
+| `src/views/VehiculesView.tsx` | Parc véhicules typé — données locales | ⚠️ à migrer |
+| `src/views/UtilisateursView.tsx` | Rôles, activation — données locales | ⚠️ à migrer |
+| `src/views/CommandesClientsView.tsx` | Statuts via `pickEnum` — données locales | ⚠️ à migrer |
+| `src/views/LivraisonsView.tsx` | Statuts éditables inline — données locales | ⚠️ à migrer |
+| `src/views/RetoursView.tsx` | Retours + remboursement — données locales | ⚠️ à migrer |
+| `src/components/Icon.tsx` | Jeu d'icônes SVG (remplace les emojis) | ✅ |
+| `src/tokens.css` | Tokens de design (palette, typo, espacement) | ✅ |
+| `src/hooks/useResource.ts` | CRUD générique sur l'API | ✅ |
+| `src/services/contracts.ts` | Formes des payloads API | ✅ |
+| `src/components/AuthProvider.tsx` | Session, connexion, déconnexion | ✅ |
+| `src/views/LoginView.tsx` | Écran de connexion | ✅ |
+| `server/db/schema.ts` | Schéma Drizzle des 12 tables | ✅ |
+| `server/repositories/articleRepository.ts` | Accès MariaDB transactions (v1) | ✅ |
+| `server/middleware/validation.ts` | Validation 422 (v1) | ✅ |
+| `server/middleware/auth.ts` | JWT + `requireRole` | ✅ |
+| `server/middleware/resourceRoutes.ts` | Routes des 8 métiers + RBAC | ✅ |
 | `database/schema.sql` | Schéma v1 + seed | ✅ |
 | `database/migrate_v1.sql` | Migration v0.1 → v1 (préserve les données) | ✅ |
+| `database/drizzle/0000_*.sql` | Migration v2 : 12 tables | ✅ |
+| `database/drizzle/0001_*.sql` | Timestamps `DEFAULT CURRENT_TIMESTAMP` | ✅ |
+| `database/seed_v2.sql` | Jeu de démonstration v2 (idempotent) | ✅ |
 | `server/index.ts` | Routes Express | ✅ |
 
 ---
@@ -139,11 +224,20 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | Champs `type="number"` + Zod `z.number()` | RHF renvoie une **chaîne** par défaut → validation « champ requis » alors que le champ est rempli. Passer `{ valueAsNumber: true }` en 2e argument de `register` |
 | `containerRef.current?.focus()` dans un `useEffect` | React réattribue le focus au bouton déclencheur après l'effet. Solution retenue : `ref` callback sur un nœud rendu conditionnellement + `key` incrémenté par cycle d'erreurs |
 | `setState` synchrone dans un effet de composant | Warning oxlint `react(set-state-in-effect)`. Utiliser une `ref` de signature pour détecter un nouveau cycle sans état |
-| Fichiers `.tsx` exportant hooks **et** composants | `react(only-export-components)` casse le fast refresh. Séparer : `Toast.tsx` (composant) / `toastContext.ts` (types) / `useToast.ts` (hook) |
+| Fichiers `.tsx` exportant hooks **et** composants | `react(only-export-components)` casse le fast refresh. Séparer : `Toast.tsx` (composant) / `toastContext.ts` (types) / `useToast.ts` (hook). Même règle pour l'auth : `AuthProvider.tsx` / `authContext.ts` / `useAuth.ts` |
+| `UseFormRegister<T>` de RHF passé tel quel | Réflexion : le composant générique `FormInput` déclare `(name: string)`, l'instance typée est **contravariante**. Élargir côté vue : `register as unknown as FieldRegister` |
+| `node bcrypt` (natif) | Son script d'installation `node-gyp` est bloqué par la politique npm de ce poste. Utiliser `bcryptjs` (JavaScript pur) |
 | Alias SQL `AS references` | `references` est un **mot-clé réservé** en MariaDB : la requête échoue silencieusement côté 503. Utiliser `total_references` |
 | Colonne `unit_price_ht` lue depuis `v_stock` | La vue l'expose sous **`prix_unitaire_ht`** (alias explicite dans le `CREATE VIEW`) |
 | `JSON_ARRAYAGG` pour filtrer le stock bas | MariaDB ne supporte pas de `FILTER` : agréger tout puis filtrer côté TypeScript (moins coûteux qu'une sous-requête corrélée) |
 | `ALTER TABLE ... MODIFY COLUMN` pour recoder un ENUM | Valeurs existantes hors du nouvel ENUM = data loss. Passer par une table tampon + `RENAME TABLE` |
+| `router.use('/x', sub)` | Renvoie le **routeur parent**, pas `sub`. Passer la valeur à une fabrique de routes enregistre les routes à la racine → 400 « Identifiant invalide » sur `GET /api/clients` |
+| Route enregistrée 2 fois sur la même URL | La **première** sertie l'emporte. Un garde-fou ajouté « après » une route générique est contourné → écrire explicitement les routes sensibles |
+| Fabrique CRUD sans RBAC | Toute écriture passait pour tout utilisateur authentifié. `rolesWrite` est désormais **obligatoire** dans `crudRoutes` |
+| `DrizzleQueryError` masquant le code SQL | Le vrai code mysql2 est dans `.cause`. Sans déballage, `ER_NO_REFERENCED_ROW_2` répond 500 au lieu de 422 |
+| `defaultNow()` en Drizzle 0.45 | Émet `DEFAULT (now())`, que le dialecte MariaDB de `drizzle-kit` **abandonne** → colonnes sans défaut, `created_at` toujours `NULL`. Écrire `.default(sql\`CURRENT_TIMESTAMP\`)` |
+| `SET @var` + `multipleStatements` | `mysql2` ne renvoie que le **dernier** jeu de résultats : une erreur sur la 1ʳᵉ instruction passe silencieusement. Répéter le littéral, ou exécuter instruction par instruction |
+| Test qui supprime un compte de démo | Casse les runs suivants (les identifiants séquentiels changent). Viser un compte créé par le test et rejouer le seed en ouverture |
 
 ---
 
@@ -166,10 +260,30 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 > - [x] Anneau de focus visible au clavier (`:focus-visible`)
 > - [x] `prefers-reduced-motion` respecté
 > - [x] Contraste des libellés d'état ≥ 4.5:1
-> - [ ] Remplacer les emojis utilisés comme icônes (`✎ 🗑 ☰ ⌕ ♢ ＋ ✕`) par des SVG
-> - [ ] Vérifier les breakpoints 375 / 768 / 1024 / 1440 px
-> - [ ] Appliquer la typographie Fira Code / Fira Sans
-> - [ ] Migrer la palette vers les variables du design system
+- [x] Remplacer les emojis utilisés comme icônes par des SVG (`src/components/Icon.tsx`)
+- [x] Vérifier les breakpoints 375 / 768 / 1024 / 1440 px
+- [x] Appliquer la typographie Fira Code / Fira Sans
+- [x] Migrer la palette vers les variables du design system (`src/tokens.css`)
+
+### 🚀 Semaine 4 — Intégration frontend & qualité
+
+1. **Migrer les 7 vues restantes vers `useResource`** : `VehiculesView`,
+   `UtilisateursView`, `CommandesClientsView`, `LivraisonsView`, `RetoursView`,
+   `VentesComptoirView`, `ReceptionsView`. `ClientsView` sert de pilote.
+2. **Conditionner l'interface au rôle** : masquer ou désactiver les actions
+   d'écriture quand `canWrite(user.role, metier)` est faux.
+3. **Tests** : Vitest pour les hooks et les schemas Zod, Playwright pour les
+   parcours de connexion et de saisie.
+4. **Performance** : `React.lazy` + `Suspense` sur les routes, `useMemo` sur les vues lourdes.
+5. **Observabilité** : logs structurés (pino), Sentry.
+6. **CI/CD** : GitHub Actions → lint + typecheck + test + build.
+
+### Rappel : ce qui reste de la semaine 3
+
+- Les 7 vues ci-dessus tournent encore sur des données en mémoire
+  (`SEED_*`) : elles nepersistent rien tant qu'elles ne sont pas migrées.
+- La déconnexion invalide le cookie mais pas le jeton : un stockage de
+  jetons révocables serait nécessaire pour une déconnexion définitive.
 
 1. **React Hook Form + Zod** — schémas dans `src/schemas/`
 2. **Composants partagés** :
@@ -180,9 +294,9 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 4. **Toast/snackbar** pour remplacer les feedbacks inline dispersés
 
 ### 🔧 Semaine 3 — Backend & Persistance
-5. Endpoints REST pour les 9 entités restantes (réceptions, ventes, commandes, livraisons, retours, clients, véhicules, utilisateurs)
-6. Migrations versionnées (Knex ou Drizzle)
-7. Auth JWT + RBAC — `requireRole('admin' | 'magasinier' | 'caissier')`
+5. ~~Endpoints REST pour les 9 entités restantes~~ ✅
+6. ~~Migrations versionnées (Drizzle)~~ ✅
+7. ~~Auth JWT + RBAC — `requireRole`~~ ✅
 
 ### 🚀 Semaine 4 — Qualité & Production
 8. Tests : 20 unitaires (Vitest) + 5 intégration (MSW) + 3 E2E (Playwright)
@@ -200,6 +314,16 @@ npm run dev:api    # API seule (port 3001)
 npm run build      # tsc -b + tsc server + vite build
 npm run lint       # oxlint
 npm run preview    # prévisualiser le build
+
+# Base de données (Drizzle)
+npm run db:generate # génère une migration depuis server/db/schema.ts
+npm run db:migrate  # applique les migrations en attente
+npm run db:seed     # jeu de démonstration (idempotent)
+npm run db:studio   # interface d'exploration
+
+# Tests
+npm run test:api    # 69 assertions de bout en bout (API demarrée requise)
+npm run test:repos  # lecture de la base réelle par repository
 ```
 
 ### Recherche design (UI/UX Pro Max)
@@ -256,7 +380,7 @@ Le vocabulaire marketing attire les palettes editorial/serif. Nommer le **type d
 ## Variables d'environnement requises
 
 ```env
-# .env (non versionné)
+# .env (non versionné — voir .env.example)
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=autostrass
@@ -264,25 +388,37 @@ DB_USER=autostrass
 DB_PASSWORD=***
 PORT=3001
 FRONTEND_URL=http://localhost:5173
+
+# Signature des jetons JWT — 32 caractères minimum, sinon l'API refuse de démarrer
+# Générer : node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 JWT_SECRET=***
 ```
 
 ### Initialisation de la base
 
 ```bash
-# Schema v1 (base vierge)
+# 1. Schéma v1 (articles / stock) — base vierge
 mysql -h HOST -u USER -p < database/schema.sql
 
-# Migration depuis le schema v0.1 (stock_items / activities)
-mysql -h HOST -u USER -p autostrass_test < database/migrate_v1.sql
+# 2. Schema v2 (8 metiers) — 12 tables supplementaires
+npm run db:migrate
+
+# 3. Jeu de demonstration (optionnel)
+npm run db:seed
 ```
 
-> `migrate_v1.sql` est idempotente : sauvegardes les tables d'origine dans
+> `database/seed_v2.sql` est idempotent (4 utilisateurs, 4 clients,
+> 4 vehicules, 1 commande + livraison, 1 reception, 1 vente + retour).
+> Mot de passe des comptes de démonstration : `demo1234`.
+> ⚠️ `migrate_v1.sql` est idempotente : sauvegardes les tables d'origine dans
 > `stock_items_backup_v1` et `activities_backup_v1` avant de les supprimer.
 > ⚠️ `v_stock` expose le prix sous le nom **`prix_unitaire_ht`** (et non `unit_price_ht`).
-> ⚠️ `references` est un **mot-clé réservé MariaDB** : ne jamais l'utiliser comme alias de colonne.
+> ⚠️ `references` est un **mot-clé réservé** MariaDB : ne jamais l'utiliser comme alias de colonne.
 
-> Sans ces variables, l'API démarre quand même : `/api/health` répond `database: "unconfigured"` et les autres routes renvoient **503**. Le frontend bascule automatiquement en mode local (bandeau d'information + données de démonstration).
+> Sans ces variables, l'API démarre quand même : `/api/health` répond
+> `database: "unconfigured"` et les autres routes renvoient **503**. Le
+> frontend bascule automatiquement en mode local (bandeau d'information +
+> données de démonstration).
 
 ---
 
