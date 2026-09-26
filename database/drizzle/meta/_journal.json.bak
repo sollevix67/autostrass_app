@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1790409229198,
+      "tag": "0000_faithful_sway",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1790411041426,
+      "tag": "0001_timestamps_defaults",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1790420132047,
+      "tag": "0002_lucky_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1790421974873,
+      "tag": "0003_wakeful_exiles",
+      "breakpoints": true
+    }
+  ]
+}
