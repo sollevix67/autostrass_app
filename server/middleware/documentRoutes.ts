@@ -13,7 +13,7 @@ import { handler, parseBody, requireDb, requireId, type Db } from './crud.js'
 import type { DocumentRepository, DocumentLine, Transaction } from '../repositories/documentRepositories.js'
 import type { UserRole } from '../db/schema.js'
 import { requireRole } from './auth.js'
-import type { Request, RequestHandler, Router } from 'express'
+import type { Request, RequestHandler, Response, Router } from 'express'
 
 /** Ligne de document telle que le formulaire l'emet, sans le rang. */
 export type LinePayload = {
@@ -71,8 +71,37 @@ export function documentRoutes<TRow extends { id: number }>(options: {
     before: (tx: Transaction) => Promise<Record<string, unknown>>
     after: (tx: Transaction, headId: number) => Promise<void>
   }
+  /**
+   * NF525 : bloque la modification et la suppression apres validation.
+   *
+   * Une vente enregistree ne s'ecrit plus : une correction passe par un avoir
+   * puis une nouvelle vente. Sans cette regle, la memoire de vente pourrait
+   * etre reecrite a posteriori, ce que la norme qualifie d'alteration.
+   *
+   * Le renvoi explicite de `true` n'est pas necessaire : tout document passe
+   * par defaut a `false`, seuls les documents proteges activent la regle.
+   */
+  frozen?: boolean
 }): void {
   const { router, path, resource, repository, createSchema, headPatch, toHead, toHeadPatch } = options
+
+  /**
+   * Refuse toute ecriture sur un document fige.
+   *
+   * Le code 409 `VENTE_FROME` distingue ce refus d'une erreur de droits (403)
+   * ou de validation (422) : ce n'est pas l'utilisateur qui a tort, c'est la
+   * regle metier. La reponse part sur la promesse : le verrou est pose avant
+   * toute lecture, donc deux requetes concurrentes ne peuvent pas passer
+   * entre elles.
+   */
+  const refuseIfFrozen = (response: Response): boolean => {
+    if (!options.frozen) return false
+    response.status(409).json({
+      error: 'VENTE_FROME',
+      message: `${resource} validee : elle ne peut plus etre modifiee. Passez par un avoir.`,
+    })
+    return true
+  }
 
   router.get(
     path,
@@ -120,6 +149,8 @@ export function documentRoutes<TRow extends { id: number }>(options: {
     `${path}/:id`,
     requireRole(...options.rolesWrite),
     handler(async (request, response) => {
+      // NF525 : refus avant toute lecture de la base.
+      if (refuseIfFrozen(response)) return
       const client = requireDb(response)
       if (!client) return
       const id = requireId(request, response)
@@ -142,6 +173,7 @@ export function documentRoutes<TRow extends { id: number }>(options: {
     `${path}/:id/lignes`,
     requireRole(...options.rolesWrite),
     handler(async (request, response) => {
+      if (refuseIfFrozen(response)) return
       const client = requireDb(response)
       if (!client) return
       const id = requireId(request, response)
@@ -160,6 +192,7 @@ export function documentRoutes<TRow extends { id: number }>(options: {
     `${path}/:id`,
     requireRole(...options.rolesWrite),
     handler(async (request, response) => {
+      if (refuseIfFrozen(response)) return
       const client = requireDb(response)
       if (!client) return
       const id = requireId(request, response)
@@ -191,3 +224,4 @@ export function toDocumentLines(articles: readonly LinePayload[]): DocumentLine[
 
 export type { DocumentValue }
 export type { Request } from 'express'
+

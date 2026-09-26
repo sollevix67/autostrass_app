@@ -640,8 +640,101 @@ const clotureDeficit = await call(`/api/caisse/${sessionDeficitId}/cloturer`, {
 })
 check('un deficit est calcule et signe negativement', clotureDeficit.body?.ecart === -10, clotureDeficit.body?.ecart)
 
-if (vente.body?.id) await call(`/api/ventes/${vente.body.id}`, { method: 'DELETE', token: adminToken! })
-if (venteEspeces.body?.id) await call(`/api/ventes/${venteEspeces.body.id}`, { method: 'DELETE', token: adminToken! })
+// --- Conformite NF525 : inalterabilite et mode degrade ---------------------
+console.log('\nConformite NF525')
+
+const controle = await call('/api/nf525/controle', { token: adminToken! })
+check(
+  'le controle d inalterabilite passe',
+  controle.status === 200 || controle.status === 409,
+  { status: controle.status, body: controle.body },
+)
+check(
+  'aucune vente n est declaree rompue',
+  controle.status === 200,
+  { rupture: controle.body?.details?.rupture, etat: controle.body?.etat ?? controle.body?.details?.etat },
+)
+
+// La regle centrale de la norme : une vente validee ne s'ecrit plus.
+const modifVente = await call(`/api/ventes/${vente.body.id}`, {
+  method: 'PUT',
+  token: adminToken!,
+  body: { caissier: 'Autre caissier' },
+})
+check(
+  'une vente validee ne peut pas etre modifiee (409)',
+  modifVente.status === 409 && modifVente.body?.error === 'VENTE_FROME',
+  { status: modifVente.status, body: modifVente.body },
+)
+
+const lignesVente = await call(`/api/ventes/${vente.body.id}/lignes`, {
+  method: 'PUT',
+  token: adminToken!,
+  body: { articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 99, prixUnitaire: 1 }] },
+})
+check(
+  'les lignes d une vente validee ne peuvent pas etre remplacees (409)',
+  lignesVente.status === 409 && lignesVente.body?.error === 'VENTE_FROME',
+  { status: lignesVente.status, body: lignesVente.body },
+)
+
+const suppressionVente = await call(`/api/ventes/${vente.body.id}`, { method: 'DELETE', token: adminToken! })
+check(
+  'une vente validee ne peut pas etre supprimee (409)',
+  suppressionVente.status === 409 && suppressionVente.body?.error === 'VENTE_FROME',
+  { status: suppressionVente.status, body: suppressionVente.body },
+)
+
+// La correction passe donc par un avoir : c'est le chemin prevu par la norme.
+// Le client est relu a partir de l'API : `clientId` a ete supprime plus haut
+// dans le script, et un client inexistant serait refuse en 422 pour une
+// raison sans rapport avec l'avoir.
+const clientsPourAvoir = await call('/api/clients', { token: caissierToken! })
+const clientPourAvoir = clientsPourAvoir.body?.[0]?.id as number
+check('un client est disponible pour l avoir', Number.isInteger(clientPourAvoir), clientsPourAvoir.status)
+
+const avoir = await call('/api/retours', {
+  method: 'POST',
+  token: caissierToken!,
+  body: {
+    venteId: vente.body.id,
+    clientId: clientPourAvoir,
+    dateRetour: '2026-09-26',
+    motif: 'Erreur de saisie',
+    articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 2, prixUnitaire: 15.5 }],
+  },
+})
+check('la correction passe par un avoir (201)', avoir.status === 201, avoir.body)
+if (avoir.body?.id) await call(`/api/retours/${avoir.body.id}`, { method: 'DELETE', token: adminToken! })
+
+// Mode degrade : evenement systeme et file de rejeu.
+const degradation = await call('/api/nf525/mode-degrade/ouvrir', {
+  method: 'POST',
+  token: caissierToken!,
+  body: { motif: 'Coupure reseau simulee' },
+})
+check('le mode degrade peut etre ouvert (201)', degradation.status === 201, degradation.body)
+
+const file = await call('/api/nf525/mode-degrade/file', { token: adminToken! })
+check('la file hors ligne est consultable', file.status === 200 && Array.isArray(file.body), file.status)
+
+const retour = await call('/api/nf525/mode-degrade/fermer', { method: 'POST', token: caissierToken! })
+check('le retour nominal est enregistre (201)', retour.status === 201, retour.body)
+
+const evenements = await call('/api/nf525/evenements', { token: adminToken! })
+const typesEvenements = (evenements.body as Array<{ type: string }> | null)?.map((e) => e.type) ?? []
+check("le journal systeme contient la coupure", typesEvenements.includes('mode dégradé'), typesEvenements)
+check('le journal systeme contient le retour nominal', typesEvenements.includes('retour nominal'), typesEvenements)
+
+check(
+  'un magasinier n actionne pas le mode degrade (403)',
+  (await call('/api/nf525/mode-degrade/ouvrir', { method: 'POST', token: magasinierToken!, body: {} })).status === 403,
+)
+
+check(
+  'le controle exige une authentification (401)',
+  (await call('/api/nf525/controle')).status === 401,
+)
 
 await call(`/api/receptions/${receptionId}`, { method: 'DELETE', token: adminToken! })
 

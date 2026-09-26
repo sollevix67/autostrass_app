@@ -128,6 +128,9 @@ export class DocumentRepository<TRow extends { id: number }> {
    * `session_id`). Resoudre la session ici, et non dans `toHead`, ferme la
    * fenetre entre la lecture et l'ecriture : une session fermee entre les deux
    * ferait echouer la vente plutot que de l'imputer a un tiroir deja cloture.
+   *
+   * `after` recoit l'id insere : c'est ce qu'il faut pour l'empreinte NF525,
+   * qui depend de l'identifiant de la vente.
    */
   async create(
     head: Record<string, unknown>,

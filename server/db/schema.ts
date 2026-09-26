@@ -197,6 +197,83 @@ export const receptionLines = mysqlTable(
 // Ventes comptoir
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Journal des evenements systeme (NF525)
+// ---------------------------------------------------------------------------
+
+/**
+ * Evenements du **systeme** de caisse, distincts des ventes.
+ *
+ * La NF525 impose de pouvoir expliquer ce que faisait la machine a un instant
+ * donne : elle a demarre, elle s'est arretee normalement, elle est passee en
+ * mode degrade, elle s'est reconnectee. Ces evenements se produisent meme
+ * quand aucune vente n'a lieu, donc ils ne peuvent pas vivre dans le journal
+ * des ventes.
+ *
+ * Distinct du `journal_actions` prevu plus tard (qui retrace les actions
+ * metier des utilisateurs) : ici, on trace la machine, pas l'utilisateur.
+ */
+export const SYSTEM_EVENT_TYPES = [
+  'démarrage',
+  'arrêt',
+  'mode dégradé',
+  'retour nominal',
+  'ouverture',
+  'clôture',
+  'alarme',
+] as const
+export type SystemEventType = (typeof SYSTEM_EVENT_TYPES)[number]
+
+export const systemEvents = mysqlTable(
+  'system_events',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    type: varchar('type', { length: 32, enum: SYSTEM_EVENT_TYPES }).notNull(),
+    /** Detail libre : version, cause de l'alarme, compte rendu de reconnexion. */
+    detail: varchar('detail', { length: 255 }),
+    /**
+     * Mode degrade actif a cet instant. Un evenement de coupure porte
+     * `degrade = 1`, ce qui permet d'identifier la periode hors service sans
+     * reconstruire une chronologie.
+     */
+    degrade: boolean('degrade').notNull().default(false),
+    createdAt: createdAt(),
+  },
+  (table) => [index('idx_system_events_type').on(table.type)],
+)
+
+/**
+ * Ventes accumulees en mode degrade, a rejouer au retour du service.
+ *
+ * Le poste de caisse continue a encaisser pendant une coupure reseau. Ces
+ * ventes sont d'abord ecrites **localement** par le poste, puis transmises
+ * ici : les deux moities doivent se rapprocher, sinon le total de la journee
+ * ne correspond pas au tiroir.
+ */
+export const offlineVenteQueue = mysqlTable(
+  'offline_vente_queue',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    /**
+     * Identifiant attribue par le poste de caisse. La cle d'unicite impose
+     * au serveur est sa protection contre un rejeu : la meme vente ne peut
+     * pas etre enregistree deux fois.
+     */
+    reference: varchar('reference', { length: 64 }).notNull(),
+    /** Charge JSON exacte de la vente, telle que le poste l'a enregistree. */
+    payload: text('payload').notNull(),
+    /** Empreinte calculee par le poste : permet de detecter un envoi altere. */
+    fingerprint: varchar('fingerprint', { length: 64 }).notNull(),
+    /** `false` tant que la vente n'a pas ete integree a `ventes`. */
+    integree: boolean('integree').notNull().default(false),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    uniqueIndex('uq_offline_vente_reference').on(table.reference),
+    index('idx_offline_vente_integree').on(table.integree),
+  ],
+)
+
 export const PAYMENT_MODES = ['espèces', 'carte', 'chèque'] as const
 export type PaymentMode = (typeof PAYMENT_MODES)[number]
 
@@ -342,11 +419,30 @@ export const ventes = mysqlTable(
     /** Monnaie rendue, calcule par le client. */
     monnaie: decimal('monnaie', { precision: 12, scale: 2 }).notNull().default('0.00'),
     mode_paiement: varchar('mode_paiement', { length: 16, enum: PAYMENT_MODES }).notNull().default('espèces'),
+    /**
+     * Empreinte NF525 : SHA-256 de la vente, liee a l'empreinte de la vente
+     * precedente. Modifier une vente ancienne invalide toute la suite de la
+     * chaine, ce qui rend l'alteration detectable.
+     *
+     * Nullable pour l'historique anterieur a la mise en conformite : ces
+     * ventes n'ont pas d'empreinte, et le controle les signale comme
+     * « anterieures » plutot que comme une rupture.
+     */
+    fingerprint: varchar('fingerprint', { length: 64 }),
+    /**
+     * Vente enregistree hors ligne, en mode degrade NF525.
+     *
+     * Une vente de ce type a ete sous reserve de la cle de securite
+     * applicable pendant la coupure de la liaison : elle doit etre
+     * identifiable apres coup, ce qu'un simple horodatage ne garantit pas.
+     */
+    degrade: boolean('degrade').notNull().default(false),
     createdAt: createdAt(),
   },
   (table) => [
     index('idx_ventes_date').on(table.date_vente),
     index('idx_ventes_session').on(table.session_id),
+    index('idx_ventes_fingerprint').on(table.fingerprint),
   ],
 )
 

@@ -225,70 +225,82 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
    * `response.status`. Ce dernier est remplace, dans le middleware retour, par
    * un wrapper qui rappelle `registerFailure` sur tout code >= 400 : y passer
    * ferait boucler `status(429)` -> `registerFailure` -> `status(429)` jusqu'a
-   * la ligne de pile. C'etait le crash observe sur la sonde de test de
-   * limitation : la reponse 429 elle-meme se comptait comme un nouvel echec.
+  /**
+   * Enregistre un echec et indique si le compteur vient d'etre epuise.
+   *
+   * Cette fonction n'envoie **jamais** de reponse : elle ne fait que tenir le
+   * compteur. Deux raisons, l'une et l'autre un bug observe :
+   *
+   * 1. Appeler `response.status(429)` ici repassait par le remplacement de
+   *    `status` installe plus bas, qui rappelle `registerFailure` : la boucle
+   *    `status(429)` -> `registerFailure` -> `status(429)` allait jusqu'a la
+   *    ligne de pile.
+   * 2. Envoyer la reponse ici **et** laisser le handler continuer produisait
+   *    un double envoi (`ERR_HTTP_HEADERS_SENT`) : le 429 partait, puis le
+   *    handler tentait sa propre reponse.
+   *
+   * Le handler laisse faire : c'est lui qui repond, une seule fois, apres avoir
+   * consulte le retour de cette fonction.
    */
-  function registerFailure(request: Request, response: Response, originalStatus: (code: number) => Response): void {
+  function registerFailure(request: Request): boolean {
     const key = bucketKey(request)
     const now = Date.now()
     const bucket = buckets.get(key) ?? { hits: [], blockedUntil: 0 }
     prune(bucket, now, windowMs)
 
-    if (bucket.blockedUntil > now) {
-      const retryAfter = Math.ceil((bucket.blockedUntil - now) / 1000)
-      response.setHeader('Retry-After', String(retryAfter))
-      originalStatus(429)
-      response.json({
-        error: 'TOO_MANY_ATTEMPTS',
-        message: `Trop de tentatives. Reessayez dans ${Math.ceil(retryAfter / 60)} minute(s).`,
-      })
-      return
-    }
+    if (bucket.blockedUntil > now) return true
 
     bucket.hits.push(now)
     if (bucket.hits.length >= limit) {
       bucket.blockedUntil = now + block
       buckets.set(key, bucket)
-      const retryAfter = Math.ceil(block / 1000)
-      response.setHeader('Retry-After', String(retryAfter))
-      originalStatus(429)
-      response.json({
-        error: 'TOO_MANY_ATTEMPTS',
-        message: `Trop de tentatives. Reessayez dans ${Math.ceil(retryAfter / 60)} minute(s).`,
-      })
-      return
+      return true
     }
 
     buckets.set(key, bucket)
+    return false
   }
 
-  return (request: Request, response: Response, next: NextFunction): void => {
-    // Blocage deja actif : on refuse sans meme consulter la base.
-    const current = buckets.get(bucketKey(request))
-    if (current !== undefined && current.blockedUntil > Date.now()) {
-      const retryAfter = Math.ceil((current.blockedUntil - Date.now()) / 1000)
+  /** Pose le 429 : un seul point de sortie dans tout le middleware. */
+  function tooManyAttempts(response: Response, blockedUntil: number): void {
+    const retryAfter = Math.max(1, Math.ceil((blockedUntil - Date.now()) / 1000))
+    if (!response.headersSent) {
       response.setHeader('Retry-After', String(retryAfter))
       response.status(429).json({
         error: 'TOO_MANY_ATTEMPTS',
-        message: `Trop de tentatives. Reessayez dans ${Math.ceil(retryAfter / 60)} minute(s).`,
+        message: `Trop de tentatives. Reessayez dans ${Math.max(1, Math.ceil(retryAfter / 60))} minute(s).`,
       })
+    }
+  }
+
+  return (request: Request, response: Response, next: NextFunction): void => {
+    // Blocage deja actif : on refuse sans meme consulter la base. Ce chemin
+    // n'installe pas le remplacement de `status` : il repond et s'arrete.
+    const current = buckets.get(bucketKey(request))
+    if (current !== undefined && current.blockedUntil > Date.now()) {
+      tooManyAttempts(response, current.blockedUntil)
       return
     }
 
     // La reponse est interceptee pour compter l'echec apres coup : on ne peut
     // pas le savoir avant, et un middleware ne voit pas l'issue du handler.
     const originalStatus = response.status.bind(response)
+    const originalJson = response.json.bind(response)
+
     response.status = ((code: number) => {
-      // 2xx et 3xx : la requete a abouti. Un succes purge le compteur.
-      if (code < 400) {
-        buckets.delete(bucketKey(request))
-      } else if (code !== 429) {
-        // 429 est exclu : c'est la *consequence* d'un epuisement, pas un
-        // nouvel essai. Le compter allongerait le blocage a chaque refus.
-        registerFailure(request, response, originalStatus)
-      }
+      if (code >= 400 && code !== 429) registerFailure(request)
       return originalStatus(code)
     }) as typeof response.status
+
+    // Un succes purge le compteur. Le point d'observation est `json` et non
+    // `status` : un handler peut poser un 401 puis renvoyer autre chose, et on
+    // ne veut effacer le compteur que sur une reponse **reellement** envoyee.
+    response.json = ((body?: unknown) => {
+      if (!response.headersSent && response.statusCode < 400) {
+        buckets.delete(bucketKey(request))
+      }
+      return originalJson(body)
+    }) as typeof response.json
 
     next()
   }

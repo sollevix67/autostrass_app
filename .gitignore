@@ -30,3 +30,6 @@ dist-ssr
 # Python (skill ui-ux-pro-max)
 __pycache__
 *.pyc
+
+# Archives fiscales NF525 : donnees de production, jamais versionnees
+archives/

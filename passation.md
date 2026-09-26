@@ -1,8 +1,9 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-26 — **Étape 1 de la feuille de route terminée :
-> les 7 vues restantes sont branchées sur l'API**. Build ✅, lint ✅ 0 warning,
-> **69/69 tests API** + **58/58 tests sécurité** ✅.
+> État du projet au 2026-09-26 — **étapes 1 et 4 de la feuille de route
+> terminées** : les 7 vues sont branchées sur l'API, et la gestion de caisse
+> est complète **avec conformité NF525**. Build ✅, lint ✅ 0 warning,
+> **111/111 tests API** + **58/58 tests sécurité** ✅.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -265,6 +266,11 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | Cache module typé par `T` | Fige le type de la **première** réponse pour toutes les vues suivantes. Stocker `unknown[]` dans le cache, typer à la lecture |
 | `setState` synchrone dans un effet de hook | Warning `react(set-state-in-effect)`. Relire le cache **pendant le rendu** et ne garder que la réponse réseau dans l'état : la lecture est pure |
 | Classes CSS utilisées mais jamais déclarées | `.status-badge`, `.status-select`, `.toggle-btn`… présentes dans les vues depuis la semaine 1, absentes de `App.css` : les statuts s'affichaient en texte nu. Vérifier qu'un `className` a une règle |
+| Middleware qui remplace `response.status` | `registerFailure` appelait `status(429)`, qui **est** le remplacement : récursion infinie. Corrigé en séparant les responsabilités — le compteur ne répond plus, seul le handler répond |
+| Deux sorties sur la même réponse | Envoyer un 429 depuis le middleware **et** laisser le handler répondre donne `ERR_HTTP_HEADERS_SENT`. Un seul point de sortie, toujours |
+| `after` qui lit « la dernière ligne » | Le hook s'exécute **après** l'insertion : `ORDER BY id DESC LIMIT 1` renvoie la ligne qu'on vient d'écrire. Filtrer explicitement (`WHERE id < venteId`) |
+| mysql2 et les fuseaux | `Date` → chaîne **locale** au fuseau du serveur : la valeur relue diffère de celle écrite. Hacher un horodatage rend l'empreinte non reproductible. Ne hacher que ce qui est stable (date civile) |
+| Chaîne de hachage et historique | Une vente sans empreinte (avant la mise en conformité) **ne doit pas être filtrée** : le chainon se décalerait sur la mauvaise vente. Compter ces ventes à part, et repartir du géniné |
 
 ---
 
@@ -289,7 +295,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | Gestion de stock | ✅ API | Emplacement en texte libre, pas allée → étagère → place |
 | Catalogues HT/TTC | ✅ API (v1) | Prix **HT seul** : ni TVA, ni prix TTC |
 | Réception fournisseurs | ✅ API | Fournisseur en texte libre, **pas de carnet** (étape 2) |
-| Vente au comptoir | ✅ API | Caisse **non modélisée** : ni session, ni fond de caisse, ni journal des mouvements (étape 4) |
+| Vente au comptoir | ✅ API | **Caisse complète + NF525** (section 13). Reste les documents PDF |
 | Commande client | ✅ API | **Pas de bon de commande PDF** (étape 3) |
 | Livraisons clients pro | ✅ API | **Pas de bon de livraison PDF** (étape 3) |
 | Gestion des retours | ✅ API | **Pas d'avoir PDF** (étape 3) |
@@ -371,9 +377,11 @@ Choix d'architecture : génération **côté serveur** (`pdfmake` ou `puppeteer`
 plutôt que côté client — un numéro de facture doit être immuable et
 imprimable depuis n'importe quel poste.
 
-**Étape 4 — Caisse**
-Ouverture / fermeture de session, fond de caisse, clôture avec écart,
-journal des mouvements.
+**Étape 4 — Caisse** ✅ **FAITE**
+Sessions d'ouverture/fermeture, fond de caisse, comptage billet par billet,
+clôture avec écart, et **conformité NF525** (ventes figées, empreinte
+SHA-256 chaînée, journal des événements système, mode dégradé, archivage 7 ans).
+> Détail dans la section 13.
 
 **Étape 5 — Intégrations**
 - Autocomplétion d'adresses (Google Places, ou alternative sans quota ni clé
@@ -631,6 +639,111 @@ corrigé plutôt que conservé :
 Build ✅ · lint ✅ 0 warning · **69/69** tests API · **58/58** tests sécurité.
 Contrôle visuel des 4 vues les plus sensibles (véhicules, réceptions, ventes,
 clients) : les données affichées proviennent bien de MariaDB.
+
+---
+
+## 13. ✅ Étape 4 — Gestion de caisse et conformité NF525
+
+> Arbitrage utilisateur : « gestion de caisse » = **sessions
+> d'ouverture/fermeture, fond de caisse et clôture avec écart**. Puis, en
+> réponse à la précision apportée au cahier des charges : **caisse conforme
+> NF525**, et **une vente validée est figée**.
+
+### 13.1 Le modèle de caisse (migration `0002`)
+
+| Table | Rôle |
+|---|---|
+| `cash_sessions` | Session, fond de caisse, total théorique, total réel, écart, ouverture/fermeture |
+| `cash_session_breaks` | Comptage **billet par billet** |
+| `cash_movements` | Journal des mouvements, montants **signés** |
+| `ventes.session_id` | Rattache chaque vente à un tiroir |
+
+Le comptage billet par billet n'est pas un détail : « il manque 12 € » et
+« il manque 7 € » ne se traitent pas de la même façon, et un écart global
+ne permet pas de rétro-animer le déficit.
+
+Les montants sont journalisés **signés** (`+` entrée, `−` sortie) : le solde
+du tiroir se déduit par simple somme, sans cas particulier à l'ouverture ou
+à la clôture.
+
+### 13.2 Les règles appliquées
+
+- **Une seule session ouverte par caissier** (409 `SESSION_DEJA_OUVERTE`) :
+  deux tiroirs ouverts sur le même poste rendraient la clôture ambiguë.
+- **Une vente sans session ouverte est refusée** (409 `CAISSE_FERMEE`) : elle
+  ne serait imputable à aucun tiroir, et son montant n'entrerait dans aucun
+  comptage.
+- **Le total théorique n'est jamais saisi** : il vaut
+  `fonds + espèces encaissées − monnaie rendue`, recalculé par le serveur.
+- **Seules les ventes en espèces touchent le tiroir.** Le filtre sur
+  `mode_paiement` est indispensable : sans lui, une vente par carte
+  gonflerait le solde et produirait un excédent systématique à chaque clôture,
+  sans qu'aucune erreur soit visible dans les ventes. *Ce bug a été trouvé par
+  les tests, pas à la lecture.*
+- **La session fige la vente en même transaction** que son mouvement
+  d'encaissement, via un crochet `before`/`after` sur `DocumentRepository`.
+  Deux transactions séparées laisseraient une vente sans mouvement, donc un
+  écart inventé à la clôture.
+- **Le comptage remplace le total réel** : c'est un comptage physique, pas un
+  montant saisi.
+- **Clôture figée** : re-clôture refusée (409), et plus aucune vente acceptée.
+
+### 13.3 Conformité NF525 (migration `0003`)
+
+| Exigence NF525 | Réalisation |
+|---|---|
+| Vente **inaltérable** après validation | `PUT /ventes/:id`, `PUT /ventes/:id/lignes` et `DELETE /ventes/:id` → **409 `VENTE_FROME`**. La correction passe par un avoir puis une nouvelle vente |
+| **Séquence inaltérable** | Chaîne de hachage SHA-256 : chaque vente porte l'empreinte de la précédente. Modifier une vente ancienne invalide toute la suite |
+| **Journal des événements système** | `system_events` : démarrage, arrêt, coupure, retour nominal |
+| **Mode dégradé** | `offline_vente_queue` : file des ventes encaissées hors ligne, à rejouer au retour du service |
+| **Conservation 7 ans** | `scripts/archive-fiscal.ts` → export JSONL hors base, avec empreinte SHA-256 d'accompagnement |
+
+**Ce qui reste hors périmètre logiciel**, à traiter au déploiement :
+clés de scellement opérées par l'État, et certification du matériel par
+l'ADEME. Ces deux points dépendent de l'acheteur, pas du code.
+
+### 13.4 Fichiers
+
+| Fichier | Rôle |
+|---|---|
+| `server/repositories/cashRegisterRepository.ts` | Sessions, comptage, écart. Volontairement **pas** un CRUD générique : trois règles sont transactionnelles |
+| `server/middleware/compliance.ts` | `fingerprintVente` / `verifyFingerprints`, chaînage SHA-256 |
+| `server/middleware/complianceRoutes.ts` | `/api/nf525/controle`, `/evenements`, `/mode-degrade/*` |
+| `src/views/CaisseView.tsx` | Ouverture, suivi, comptage, clôture. Trois états successifs : pas de session → ouverte → clôturée |
+| `src/hooks/useCashSession.ts` | Session courante, ouverture, clôture, journal |
+| `scripts/verify-caisse.ts` | Vérification de bout en bout du cycle complet |
+| `scripts/archive-fiscal.ts` | Archivage annuel **et** relecture hors base (`--verifier`) |
+| `scripts/reset-fingerprints.ts` | À n'utiliser que si la règle d'empreinte change |
+
+### 13.5 Quatre bugs trouvés et corrigés
+
+Aucun n'était visible à la lecture du code ; tous sont sortis en exécutant.
+
+1. **Récursion infinie du rate limiter** — `registerFailure` appelait
+   `response.status(429)`, qui *est* le monkey-patch appelant
+   `registerFailure`. La boucle allait jusqu'à la ligne de pile.
+2. **Double envoi de réponse** — le 429 partait du rate limiter, puis le
+   handler envoyait la sienne (`ERR_HTTP_HEADERS_SENT`). Corrigé en
+   séparant les responsabilités : `registerFailure` ne répond plus jamais, il
+   ne fait que tenir le compteur.
+3. **Vente par carte comptée dans le tiroir** — l'agrégat de recette ne
+   filtrait pas sur `mode_paiement`. Détecté par le test « une vente par carte
+   ne touche pas le tiroir ».
+4. **Empreinte non reproductible** — `after` s'exécutant *après* l'insertion,
+   `ORDER BY id DESC LIMIT 1` renvoyait **la vente elle-même** : elle se
+   signait avec sa propre empreinte. Corrigé par `WHERE id < venteId`.
+
+Et un cinquième, plus subtil : **le fuseau horaire**. mysql2 convertit un
+`Date` en chaîne locale, donc la valeur relue diffère de celle écrite. Hasher
+l'horodatage rendait l'empreinte non reproductible et le contrôle signalait
+une rupture inexistante. L'empreinte ne retient désormais que la **date
+civile** — l'ordre exact est déjà garanti par `id`.
+
+### 13.6 Vérification
+
+Build ✅ · lint ✅ 0 warning · **111/111** tests API (+ 42 sur la caisse et
+NF525) · **58/58** tests sécurité. Cycle d'archivage validé de bout en bout :
+export → relecture hors base → vérification de chaîne intacte.
 
 ---
 

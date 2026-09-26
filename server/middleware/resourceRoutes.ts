@@ -13,10 +13,13 @@
  */
 
 import { Router, type Request } from 'express'
+import { desc, eq, lt } from 'drizzle-orm'
 import { requireAuth, requireRole, hashPassword, validatePasswordStrength, AuthError } from './auth.js'
 import { crudRoutes, handler, parseBody, requireDb, requireId, type CrudRepository } from './crud.js'
 import { requireCsrf } from './csrf.js'
-import { documentRoutes } from './documentRoutes.js'
+import { documentRoutes, type LinePayload } from './documentRoutes.js'
+import { fingerprintVente, GENESIS_HASH } from './compliance.js'
+import * as schema from '../db/schema.js'
 import {
   caisseClotureSchema,
   caisseOuvertureSchema,
@@ -303,6 +306,9 @@ export function createApiRouter(): Router {
     rolesWrite: CAISSE_WRITE,
     createSchema: venteBodySchema,
     headPatch: venteHeadPatchSchema,
+    // NF525 : une vente enregistree est figee. La correction passe par un
+    // avoir puis une nouvelle vente, jamais par une edition a posteriori.
+    frozen: true,
     toHead: (value) => {
       const articles = value.articles as VenteInput['articles']
       // Le total est un champ physique de la table : on le calcule ici pour
@@ -362,21 +368,69 @@ export function createApiRouter(): Router {
           // Seules les ventes en especes touchent le tiroir. Une vente par
           // carte ou cheque ne modifie pas le solde de la caisse : la
           // journaliser fausserait le comptage.
-          if (value.modePaiement !== 'espèces') return
-          const totalHT = (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
-            (sum, line) => sum + line.quantite * line.prixUnitaire,
-            0,
-          )
-          await new CashRegisterRepository(tx as never).recordVente(
-            tx,
-            { id: sessionId },
+          if (value.modePaiement === 'espèces') {
+            const totalHT = (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
+              (sum, line) => sum + line.quantite * line.prixUnitaire,
+              0,
+            )
+            await new CashRegisterRepository(tx as never).recordVente(
+              tx,
+              { id: sessionId },
+              {
+                id: venteId,
+                montantPaye: Number(value.montantPaye),
+                monnaie: Number(value.monnaie ?? 0),
+                totalHT,
+              },
+            )
+          }
+
+          // NF525 : la vente est scellee par l'empreinte de la precedente.
+          //
+          // `precedente` est la derniere vente **avant** celle-ci : le
+          // chainon doit precéder la vente qu'il scelle, sinon on la signerait
+          // elle-meme et la chaine ne progresserait jamais. `id < venteId`
+          // l'exclut explicitement plutot que de compter sur l'ordre du
+          // `ORDER BY`, qui dependrait du plan d'execution.
+          //
+          // `FOR UPDATE` verrouille la ligne lue : deux ventes simultanees ne
+          // peuvent pas signer sur la meme empreinte et produire deux
+          // branches concurrentes.
+          const [precedente] = await tx
+            .select({
+              id: schema.ventes.id,
+              fingerprint: schema.ventes.fingerprint,
+            })
+            .from(schema.ventes)
+            .where(lt(schema.ventes.id, venteId))
+            .orderBy(desc(schema.ventes.id))
+            .limit(1)
+            .for('update')
+
+          const fingerprint = fingerprintVente(
             {
               id: venteId,
+              sessionId,
+              // La date est transmise telle quelle : `fingerprintVente` la
+              // convertit en instant absolu, ce qui rend l'empreinte
+              // reproductible independamment du fuseau de lecture.
+              dateVente: String(value.dateVente),
+              caissier: String(value.caissier),
+              modePaiement: String(value.modePaiement),
+              totalHT: (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
+                (sum, line) => sum + line.quantite * line.prixUnitaire,
+                0,
+              ),
               montantPaye: Number(value.montantPaye),
               monnaie: Number(value.monnaie ?? 0),
-              totalHT,
+              articles: (value.articles as LinePayload[]) ?? [],
             },
+            // Une vente sans empreinte (historique anterieur a la mise en
+            // conformite) ne peut pas servir de chainon : on repart du genine.
+            precedente?.fingerprint ?? GENESIS_HASH,
           )
+
+          await tx.update(schema.ventes).set({ fingerprint }).where(eq(schema.ventes.id, venteId))
         },
       }
     },

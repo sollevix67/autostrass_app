@@ -19,6 +19,9 @@
     "test:security": "tsx scripts/test-security.ts",
     "test:caisse": "tsx scripts/verify-caisse.ts",
     "caisse:fermer": "tsx scripts/close-open-sessions.ts",
+    "nf525:controle": "tsx scripts/archive-fiscal.ts --verifier archives/2026/ventes-2026.jsonl",
+    "nf525:archive": "tsx scripts/archive-fiscal.ts",
+    "nf525:reset": "tsx scripts/reset-fingerprints.ts",
     "test:repos": "tsx scripts/verify-repositories.ts"
   },
   "dependencies": {

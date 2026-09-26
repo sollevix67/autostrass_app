@@ -4,7 +4,7 @@ J'aimerais créer une application en Typescript/ViteJS en plusieurs modules :
 	- Catalogues de références avec prix ht/ttc,
 	- Création de devis en PDF
 	- Réception fournisseurs,
-	- Vente au comptoir avec gestion de caisse et édition de facture en PDF (le module de caisse doit être conforme à la norme NF525),
+	- Vente au comptoir avec gestion de plusieurs caisses et édition de facture en PDF (le module de caisse doit être conforme à la norme NF525),
 	- Commande client avec édition des bons de commande en PDF (voir si il est possible d'avoir les détails d'un véhicule via son numéro d'immatriculation ou son VIN), 
 	- Commande fournisseurs,
 	- Livraisons à des clients professionnels avec édition des bons de livraison,

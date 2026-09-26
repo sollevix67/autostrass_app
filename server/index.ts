@@ -7,6 +7,7 @@ import { notFound, sendValidationError, validateArticleBody, validateDelta } fro
 import { errorHandler } from './middleware/crud.js'
 import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
+import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
 
 const app = express()
@@ -310,6 +311,9 @@ app.delete('/api/articles/:reference', async (request: Request, response: Respon
 // `/api/auth` est monte avant `requireAuth` : la connexion ne peut pas
 // exiger un jeton qu'elle n'a pas encore.
 app.use('/api/auth', createAuthRouter())
+// Conformite NF525 : le routeur porte lui-meme `requireAuth`, ce qui evite de
+// dependre de l'ordre de montage de `createApiRouter`.
+app.use('/api', createComplianceRouter())
 app.use('/api', createApiRouter())
 
 // 404 puis gestionnaire d'erreurs : l'ordre compte, les routes `/api/*` sont
