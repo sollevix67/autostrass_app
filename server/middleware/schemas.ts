@@ -314,7 +314,7 @@ export const receptionHeadPatchSchema = z.object({
 export const venteBodySchema = z
   .object({
     clientId: z.number({ message: 'Le client est requis.' }).int().positive().nullable().optional(),
-    dateVente: dateTimeISO('La date de vente'),
+    dateVente: dateTimeISO('La date de la vente'),
     caissier: required('Le caissier', 128),
     modePaiement: z.enum(PAYMENT_MODES, { message: 'Mode de paiement invalide.' }),
     montantPaye: nonNegative('Le montant paye'),
@@ -398,6 +398,57 @@ export const statutPatchSchema = z.object({
 })
 
 // ---------------------------------------------------------------------------
+// Caisse : sessions, comptage, journal
+// ---------------------------------------------------------------------------
+
+/**
+ * Ouverture de session.
+ *
+ * Le fond de caisse est borne : au-dela de 10 000 €, il ne s'agit plus d'un
+ * fond de caisse mais d'une remise de tresorerie, qui releve d'une autre
+ * procedure. Sans cette borne, une faute de frappe creerait un ecart de
+ * plusieurs milliers d'euros a la cloture.
+ */
+export const caisseOuvertureSchema = z.object({
+  fondsCaisse: nonNegative('Le fond de caisse').refine(
+    (value) => value <= 10_000,
+    'Le fond de caisse ne peut pas depasser 10 000 EUR.',
+  ),
+  notes: optionalText('Les notes'),
+})
+
+/**
+ * Ligne de comptage : combien de billets ou pieces d'une denomination.
+ *
+ * `denomination` est un montant en euros, et non un indice : la base stocke
+ * `DECIMAL(8,2)`, donc `10` et `10.00` sont le meme billet et non deux
+ * denominations. Le nom de la colonne le dit, `coupures` l'evite.
+ */
+const comptageLineSchema = z.object({
+  denomination: z
+    .number({ message: 'La denomination est requise.' })
+    .finite('La denomination doit etre un nombre.')
+    .positive('La denomination doit etre strictement positive.'),
+  quantite: z
+    .number({ message: 'La quantite est requise.' })
+    .int('La quantite doit etre un entier.')
+    .min(0, 'La quantite ne peut pas etre negative.')
+    .max(10_000, 'Quantite maximale : 10 000 billets par denomination.'),
+})
+
+/**
+ * Cloture de session.
+ *
+ * Le comptage peut etre vide : une session sans especes (tout paye par carte)
+ * se clot legitiment avec un comptage vide. C'est le schema qui refuse les
+ * quantites negatives, pas la cloture sans billet.
+ */
+export const caisseClotureSchema = z.object({
+  comptage: z.array(comptageLineSchema).max(20, 'Maximum 20 denominations comptees.'),
+  notes: optionalText('Les notes'),
+})
+
+// ---------------------------------------------------------------------------
 // Types de sortie
 //
 // La fabrique CRUD impose que le schema Zod produise exactement la forme
@@ -414,6 +465,8 @@ export type UtilisateurInput = z.output<typeof utilisateurBodySchema>
 export type UtilisateurPatch = z.output<typeof utilisateurPatchSchema>
 export type LivraisonInput = z.output<typeof livraisonBodySchema>
 export type LivraisonPatch = z.output<typeof livraisonPatchSchema>
+export type CaisseOuverture = z.output<typeof caisseOuvertureSchema>
+export type CaisseCloture = z.output<typeof caisseClotureSchema>
 
 /** Valeurs d'un document apres validation complete (entete + lignes). */
 export type ReceptionInput = z.output<typeof receptionBodySchema>

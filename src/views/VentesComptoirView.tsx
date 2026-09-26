@@ -9,9 +9,15 @@
  * Le total et la monnaie ne sont jamais saisis : ils sont recalcules par le
  * serveur a partir des lignes et du montant encaisse, ce qui empeche un total
  * incoherent avec le detail.
+ *
+ * Une vente ne peut etre enregistree que dans une **session de caisse
+ * ouverte** : le serveur la refuse en 409 sinon. L'ecran renvoie donc vers la
+ * page Caisse plutot que de laisser l'utilisateur decouvrir le refus apres
+ * avoir rempli un panier.
  */
 
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PageLayout } from '../components/PageLayout'
@@ -24,6 +30,7 @@ import { FormInput, FormSelect, type FieldRegister } from '../components/forms/F
 import { useCatalogue } from '../hooks/useCatalogue'
 import { useResource } from '../hooks/useResource'
 import { useClientOptions } from '../hooks/useReferentials'
+import { useCashSession } from '../hooks/useCashSession'
 import { useAuth, canWrite } from '../components/useAuth'
 import { venteSchema, type DocumentLineFormValues } from '../schemas'
 import { PAYMENT_MODE_OPTIONS, formatEuros } from '../options'
@@ -47,6 +54,7 @@ export default function VentesComptoirView() {
   const toast = useToast()
   const { articles: catalogue } = useCatalogue()
   const clients = useClientOptions()
+  const { session: cashSession } = useCashSession()
   const { rows, loading, saving, error, offline, reload, create } = useResource<ApiVente>({
     path: '/ventes',
     sort: byDateDesc,
@@ -209,7 +217,14 @@ export default function VentesComptoirView() {
         resource="ventes"
       />
 
-      {canEdit && (
+      {canEdit && cashSession === null && (
+        <p className="info-banner" role="note">
+          <Icon name="alert" size="sm" /> Aucune caisse ouverte : le serveur refusera
+          d'enregistrer une vente. <Link to="/caisse">Ouvrir la caisse</Link> pour continuer.
+        </p>
+      )}
+
+      {canEdit && cashSession !== null && (
         <section className="form-card">
           <h2>Vente en cours</h2>
           <form onSubmit={submit} noValidate>

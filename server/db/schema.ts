@@ -200,12 +200,141 @@ export const receptionLines = mysqlTable(
 export const PAYMENT_MODES = ['espèces', 'carte', 'chèque'] as const
 export type PaymentMode = (typeof PAYMENT_MODES)[number]
 
+/**
+ * Sessions de caisse : ouverture, fond de caisse, cloture.
+ *
+ * Modelise le « tiroir » du depot. Une session est ouverte par un caissier a un
+ * instant donne, le ferme apres comptage, et porte le resultat de ce comptage.
+ * Toute vente doit se rattacher a une session **ouverte** : sans cela, on ne
+ * sait jamais a quel encaissement rattacher un ticket, ni qui detient la caisse
+ * a un instant donne.
+ */
+export const CASH_SESSION_STATUSES = ['ouverte', 'clôturée'] as const
+export type CashSessionStatus = (typeof CASH_SESSION_STATUSES)[number]
+
+/**
+ * Monnaies followees au comptage. `especes` est denomme `fonds_caisse` : c'est
+ * le fond remis au caissier a l'ouverture, et non la recette du jour.
+ */
+export const CASH_BREAK_DENOMINATIONS = ['0.50', '1.00', '2.00', '5.00', '10.00', '20.00', '50.00'] as const
+export type CashBreakDenomination = (typeof CASH_BREAK_DENOMINATIONS)[number]
+
+export const cashSessions = mysqlTable(
+  'cash_sessions',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    /** Caissier proprietaire : la personne qui detient reellement le tiroir. */
+    caissier: varchar('caissier', { length: 128 }).notNull(),
+    /**
+     * Session deja ouverte par ce caissier. Une session par caissier : deux
+     * tiroirs ouverts sur le meme poste rendraient la cloture ambigue.
+     */
+    utilisateur_id: int('utilisateur_id', { unsigned: true })
+      .notNull()
+      .references(() => users.id, { onDelete: 'restrict' }),
+    statut: varchar('statut', { length: 16, enum: CASH_SESSION_STATUSES }).notNull().default('ouverte'),
+    /** Fond de caisse remis a l'ouverture, en euros. */
+    fonds_caisse: decimal('fonds_caisse', { precision: 12, scale: 2 }).notNull().default('0.00'),
+    /**
+     * Total **theorique** en especes : `fonds_caisse + somme(ventes especes) -
+     * (monnaie rendue)`. Compare au comptage reel pour degager l'ecart.
+     */
+    total_theorique: decimal('total_theorique', { precision: 12, scale: 2 }),
+    /** Total **reel** compte en especes au moment de la cloture. */
+    total_reel: decimal('total_reel', { precision: 12, scale: 2 }),
+    /**
+     * Ecart = `total_reel - total_theorique`. Nul tant que la session est
+     * ouverte : un ecart calcule avant le comptage n'aurait aucun sens.
+     */
+    ecart: decimal('ecart', { precision: 12, scale: 2 }),
+    opened_at: datetime('opened_at', { mode: 'date' }).notNull(),
+    closed_at: datetime('closed_at', { mode: 'date' }),
+    /** Commentaire libre : motif de l'ecart, incident de comptage. */
+    notes: text('notes'),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    index('idx_cash_sessions_statut').on(table.statut),
+    index('idx_cash_sessions_caissier').on(table.utilisateur_id),
+  ],
+)
+
+/**
+ * Detail du comptage de la caisse, billet par billet.
+ *
+ * Indispensable pour comprendre un ecart : « il manque 12 € » ne se traite pas
+ * comme « il manque 7 € », le premier est un billet de 10 et le second une
+ * combinaison. Un seul ecart global ne permet pas de retro-animer le deficit.
+ */
+export const cashSessionBreaks = mysqlTable(
+  'cash_session_breaks',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    session_id: int('session_id', { unsigned: true })
+      .notNull()
+      .references(() => cashSessions.id, { onDelete: 'cascade' }),
+    denomination: decimal('denomination', { precision: 8, scale: 2 }).notNull(),
+    /** Nombre de billets ou pieces comptes. */
+    quantite: int('quantite').notNull().default(0),
+  },
+  (table) => [index('idx_cash_breaks_session').on(table.session_id)],
+)
+
+/**
+ * Journal des mouvements de caisse.
+ *
+ * Une entree par evenement : ouverture, encaissement, rendu, cloture. Sert a
+ * expliquer un ecart ligne a ligne — le fond seul ne dit pas *quand* l'argent
+ * a disparu, la sequence le dit.
+ */
+export const CASH_MOVEMENT_TYPES = [
+  'ouverture',
+  'encaissement',
+  'rendu',
+  'clôture',
+  'ajustement',
+] as const
+export type CashMovementType = (typeof CASH_MOVEMENT_TYPES)[number]
+
+export const cashMovements = mysqlTable(
+  'cash_movements',
+  {
+    id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    session_id: int('session_id', { unsigned: true })
+      .notNull()
+      .references(() => cashSessions.id, { onDelete: 'cascade' }),
+    type: varchar('type', { length: 16, enum: CASH_MOVEMENT_TYPES }).notNull(),
+    /**
+     * Montant **signe** : positif = entree de liquide, negatif = sortie.
+     * L'ouverture (fond) et la cloture (comptage) sont donc des mouvements
+     * comme les autres, et le solde se deduit par simple somme.
+     */
+    montant: decimal('montant', { precision: 12, scale: 2 }).notNull().default('0.00'),
+    /** Renvoie la vente a l'origine d'un encaissement ou d'un rendu. */
+    vente_id: int('vente_id', { unsigned: true }).references(() => ventes.id, { onDelete: 'set null' }),
+    libelle: varchar('libelle', { length: 255 }).notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    index('idx_cash_movements_session').on(table.session_id),
+    index('idx_cash_movements_type').on(table.type),
+  ],
+)
+
 export const ventes = mysqlTable(
   'ventes',
   {
     id: int('id', { unsigned: true }).primaryKey().autoincrement(),
     client_id: int('client_id', { unsigned: true })
       .references(() => clients.id, { onDelete: 'set null' }),
+    /**
+     * Session de caisse ayant enregistre la vente. Nullable pour rester
+     * compatible avec l'historique deja present, mais toute nouvelle vente
+     * l'exige : la route la refuse s'il est absent (422).
+     */
+    session_id: int('session_id', { unsigned: true })
+      .references(() => cashSessions.id, { onDelete: 'set null' }),
     date_vente: datetime('date_vente', { mode: 'date' }).notNull(),
     caissier: varchar('caissier', { length: 128 }).notNull(),
     total_ht: decimal('total_ht', { precision: 12, scale: 2 }).notNull().default('0.00'),
@@ -215,7 +344,10 @@ export const ventes = mysqlTable(
     mode_paiement: varchar('mode_paiement', { length: 16, enum: PAYMENT_MODES }).notNull().default('espèces'),
     createdAt: createdAt(),
   },
-  (table) => [index('idx_ventes_date').on(table.date_vente)],
+  (table) => [
+    index('idx_ventes_date').on(table.date_vente),
+    index('idx_ventes_session').on(table.session_id),
+  ],
 )
 
 export const venteLines = mysqlTable(
@@ -358,8 +490,28 @@ export const receptionLinesRelations = relations(receptionLines, ({ one }) => ({
   reception: one(receptions, { fields: [receptionLines.reception_id], references: [receptions.id] }),
 }))
 
+export const cashSessionsRelations = relations(cashSessions, ({ one, many }) => ({
+  utilisateur: one(users, { fields: [cashSessions.utilisateur_id], references: [users.id] }),
+  comptage: many(cashSessionBreaks),
+  mouvements: many(cashMovements),
+  ventes: many(ventes),
+}))
+
+export const cashSessionBreaksRelations = relations(cashSessionBreaks, ({ one }) => ({
+  session: one(cashSessions, {
+    fields: [cashSessionBreaks.session_id],
+    references: [cashSessions.id],
+  }),
+}))
+
+export const cashMovementsRelations = relations(cashMovements, ({ one }) => ({
+  session: one(cashSessions, { fields: [cashMovements.session_id], references: [cashSessions.id] }),
+  vente: one(ventes, { fields: [cashMovements.vente_id], references: [ventes.id] }),
+}))
+
 export const ventesRelations = relations(ventes, ({ one, many }) => ({
   client: one(clients, { fields: [ventes.client_id], references: [clients.id] }),
+  session: one(cashSessions, { fields: [ventes.session_id], references: [cashSessions.id] }),
   lignes: many(venteLines),
   retours: many(retours),
 }))

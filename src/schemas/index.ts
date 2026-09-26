@@ -250,7 +250,9 @@ export const commandeSchema = z.object({
     .max(200, 'Maximum 200 lignes par document.'),
 })
 
-/** Retour : la vente d'origine est facultative (retour fournisseur, avoir...). */
+/**
+ * Retours : la vente d'origine est facultative (retour fournisseur, avoir...).
+ */
 export const retourSchema = z.object({
   venteId: optionalRef('La vente'),
   clientId: requiredRef('Le client'),
@@ -260,6 +262,47 @@ export const retourSchema = z.object({
     .array(documentLineSchema)
     .min(1, 'Ajoutez au moins un article au retour.')
     .max(200, 'Maximum 200 lignes par document.'),
+})
+
+/** Ouverture de caisse : le fond remise au caissier. */
+export const caisseOuvertureSchema = z.object({
+  fondsCaisse: nonNegative('Le fond de caisse').refine(
+    (value) => value <= 10_000,
+    'Le fond de caisse ne peut pas depasser 10 000 EUR.',
+  ),
+  notes: optionalText('Les notes'),
+})
+
+/**
+ * Ligne de comptage.
+ *
+ * La denomination est un **montant en euros**, pas un indice de coupure :
+ * `10` vaut un billet de 10 EUR. Le message le dit explicitement, parce que
+ * la confusion inverse (lire `10` comme « coupure n° 10 ») donnerait un
+ * comptage aberrant sans lever la moindre erreur.
+ */
+export const comptageLineSchema = z.object({
+  denomination: z
+    .number({ message: 'La denomination est requise.' })
+    .finite('La denomination doit etre un nombre.')
+    .positive('La denomination doit etre strictement positive.'),
+  quantite: z
+    .number({ message: 'La quantite est requise.' })
+    .int('La quantite doit etre un entier.')
+    .min(0, 'La quantite ne peut pas etre negative.')
+    .max(10_000, 'Quantite maximale : 10 000.'),
+})
+
+/**
+ * Cloture apres comptage.
+ *
+ * Un comptage vide est legitime : une session entierement payee par carte se
+ * clot sans un seul billet. C'est la quantite negative qui est refusee, pas
+ * l'absence de comptage.
+ */
+export const caisseClotureSchema = z.object({
+  comptage: z.array(comptageLineSchema).max(20, 'Maximum 20 denominations comptees.'),
+  notes: optionalText('Les notes'),
 })
 
 /** Types deduits des schemas : source de verite pour les formulaires. */
@@ -274,3 +317,6 @@ export type UtilisateurFormValues = z.input<typeof utilisateurSchema>
 export type LivraisonFormValues = z.input<typeof livraisonSchema>
 export type CommandeFormValues = z.input<typeof commandeSchema>
 export type RetourFormValues = z.input<typeof retourSchema>
+export type CaisseOuvertureFormValues = z.input<typeof caisseOuvertureSchema>
+export type ComptageLineFormValues = z.input<typeof comptageLineSchema>
+export type CaisseClotureFormValues = z.input<typeof caisseClotureSchema>

@@ -10,10 +10,10 @@
 
 import type { z } from 'zod'
 import { handler, parseBody, requireDb, requireId, type Db } from './crud.js'
-import type { DocumentRepository, DocumentLine } from '../repositories/documentRepositories.js'
+import type { DocumentRepository, DocumentLine, Transaction } from '../repositories/documentRepositories.js'
 import type { UserRole } from '../db/schema.js'
 import { requireRole } from './auth.js'
-import type { RequestHandler, Router } from 'express'
+import type { Request, RequestHandler, Router } from 'express'
 
 /** Ligne de document telle que le formulaire l'emet, sans le rang. */
 export type LinePayload = {
@@ -56,6 +56,21 @@ export function documentRoutes<TRow extends { id: number }>(options: {
   toHead: (value: DocumentValue) => Record<string, unknown>
   toHeadPatch: (value: HeadPatch) => Record<string, unknown>
   rolesWrite: readonly UserRole[]
+  /**
+   * Crochets de transaction pour une entete dont la creation depend d'un etat
+   * externe.
+   *
+   * `beforeCreate` s'execute **dans la transaction**, avant l'insertion, et
+   * renvoie les colonnes supplementaires a ecrire. C'est ce crochet qui permet
+   * a une vente de resoudre sa session de caisse et d'ecrire le mouvement
+   * d'encaissement : les deux doivent etre atomiques, sinon une vente sans
+   * mouvement de caisse inventerait un ecart a la cloture. Lever une erreur
+   * metier ici annule la vente entiere, session et mouvements compris.
+   */
+  createHooks?: (value: DocumentValue, request: Request) => {
+    before: (tx: Transaction) => Promise<Record<string, unknown>>
+    after: (tx: Transaction, headId: number) => Promise<void>
+  }
 }): void {
   const { router, path, resource, repository, createSchema, headPatch, toHead, toHeadPatch } = options
 
@@ -91,7 +106,8 @@ export function documentRoutes<TRow extends { id: number }>(options: {
       const client = requireDb(response)
       if (!client) return
       const value = parseBody(createSchema, request.body) as DocumentValue
-      const created = await repository(client).create(toHead(value), value.articles)
+      const hooks = options.createHooks?.(value, request)
+      const created = await repository(client).create(toHead(value), value.articles, hooks)
       response.status(201).json(created)
     }),
   ]

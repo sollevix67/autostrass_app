@@ -15,6 +15,13 @@
       "when": 1790411041426,
       "tag": "0001_timestamps_defaults",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1790420132047,
+      "tag": "0002_lucky_silver_centurion",
+      "breakpoints": true
     }
   ]
 }

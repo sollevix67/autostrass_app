@@ -18,6 +18,8 @@ import { crudRoutes, handler, parseBody, requireDb, requireId, type CrudReposito
 import { requireCsrf } from './csrf.js'
 import { documentRoutes } from './documentRoutes.js'
 import {
+  caisseClotureSchema,
+  caisseOuvertureSchema,
   clientBodySchema,
   clientPatchSchema,
   commandeBodySchema,
@@ -45,6 +47,8 @@ import {
 import { ClientRepository, VehiculeRepository } from '../repositories/referentielRepositories.js'
 import { UtilisateurRepository } from '../repositories/utilisateurRepository.js'
 import { LivraisonRepository } from '../repositories/livraisonRepository.js'
+import { CashRegisterRepository } from '../repositories/cashRegisterRepository.js'
+import { RepositoryError } from '../repositories/simpleRepositories.js'
 import {
   createCommandeRepository,
   createReceptionRepository,
@@ -283,6 +287,14 @@ export function createApiRouter(): Router {
   })
 
   // --- Ventes ------------------------------------------------------------
+  // Seule entete dont la creation est conditionnee a un etat externe : une
+  // vente sans session de caisse ouverte ne serait pas imputable a un tiroir,
+  // et son montant n'entrerait dans aucun comptage. Le controle est fait dans
+  // `beforeCreate`, donc dans la meme transaction que l'insertion.
+  //
+  // `session_id` est pose par le repository a partir de la session trouvee,
+  // et non transmis par le client : on n'accepte pas qu une vente se
+  // rattache a la session d'un autre poste.
   documentRoutes({
     router,
     path: '/ventes',
@@ -315,6 +327,59 @@ export function createApiRouter(): Router {
       ...(value.montantPaye !== undefined && { montant_paye: Number(value.montantPaye).toFixed(2) }),
       ...(value.monnaie !== undefined && { monnaie: Number(value.monnaie).toFixed(2) }),
     }),
+    /**
+     * Rattache la vente a la session de caisse du caissier authentifie et
+     * journalise l'encaissement, dans la meme transaction que l'insertion.
+     *
+     * Une vente sans session ouverte est refusee en 409 : elle ne serait
+     * imputable a aucun tiroir, et son montant n'entrerait dans aucun
+     * comptage. Une session fermee presente aussi le meme risque, d'ou le
+     * `FOR UPDATE` dans `findOpenForUpdate`.
+     */
+    createHooks: (value, request) => {
+      // Resolue dans la transaction de creation : c'est elle qui doit ecrire
+      // le mouvement d'encaissement, pas une transaction separee.
+      let sessionId = 0
+
+      return {
+        before: async (tx) => {
+          const user = (request as Request & { user?: { id: number } }).user
+          if (!user) {
+            throw new RepositoryError(401, 'UNAUTHENTICATED', 'Session expiree.')
+          }
+          const session = await new CashRegisterRepository(tx as never).findOpenForUpdate(tx, user.id)
+          if (!session) {
+            throw new RepositoryError(
+              409,
+              'CAISSE_FERMEE',
+              'Aucune caisse ouverte. Ouvrez votre caisse avant d\'enregistrer une vente.',
+            )
+          }
+          sessionId = session.id
+          return { session_id: sessionId }
+        },
+        after: async (tx, venteId) => {
+          // Seules les ventes en especes touchent le tiroir. Une vente par
+          // carte ou cheque ne modifie pas le solde de la caisse : la
+          // journaliser fausserait le comptage.
+          if (value.modePaiement !== 'espèces') return
+          const totalHT = (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
+            (sum, line) => sum + line.quantite * line.prixUnitaire,
+            0,
+          )
+          await new CashRegisterRepository(tx as never).recordVente(
+            tx,
+            { id: sessionId },
+            {
+              id: venteId,
+              montantPaye: Number(value.montantPaye),
+              monnaie: Number(value.monnaie ?? 0),
+              totalHT,
+            },
+          )
+        },
+      }
+    },
   })
 
   // --- Commandes clients -------------------------------------------------
@@ -392,6 +457,110 @@ export function createApiRouter(): Router {
       ...(value.motif !== undefined && { motif: value.motif }),
     }),
   })
+
+  // --- Caisse : sessions, comptage, journal --------------------------------
+  // Ecrit explicitement plutot que via une fabrique : l'ouverture et la
+  // cloture sont des operations metier, pas un CRUD. `GET /actuelle` est
+  // enregistre AVANT `GET /:id` — sans cela, `requireId` recevrait la chaine
+  // « actuelle » et repondrait 400 au lieu de renvoyer la session ouverte.
+  const caisseRouter = Router()
+  router.use('/caisse', caisseRouter)
+
+  /** Session ouverte du caissier connecte, ou `null` s'il n'en a pas. */
+  caisseRouter.get(
+    '/actuelle',
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const user = (request as Request & { user?: { id: number } }).user
+      if (!user) return
+      response.json(await new CashRegisterRepository(client).findOpenByUser(user.id))
+    }),
+  )
+
+  caisseRouter.get(
+    '/',
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const limit = Number.parseInt(String(request.query.limit ?? '100'), 10)
+      response.json(await new CashRegisterRepository(client).list(Number.isInteger(limit) ? limit : 100))
+    }),
+  )
+
+  caisseRouter.get(
+    '/:id',
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const id = requireId(request, response)
+      if (id === null) return
+      const found = await new CashRegisterRepository(client).findById(id)
+      if (found === null) {
+        response.status(404).json({ error: 'NOT_FOUND', message: 'Session de caisse introuvable.' })
+        return
+      }
+      response.json(found)
+    }),
+  )
+
+  /** Journal des mouvements d'une session. */
+  caisseRouter.get(
+    '/:id/mouvements',
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const id = requireId(request, response)
+      if (id === null) return
+      response.json(await new CashRegisterRepository(client).listMovements(id))
+    }),
+  )
+
+  /**
+   * Ouvre la caisse du caissier connecte.
+   *
+   * Le caissier est pris du jeton, pas du corps : un client ne choisit pas
+   * l'identite de la personne qui detient reellement le tiroir.
+   */
+  caisseRouter.post(
+    '/ouvrir',
+    requireRole('caissier'),
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const user = (request as Request & { user?: { id: number; nom: string; prenom: string } }).user
+      if (!user) return
+      const value = parseBody(caisseOuvertureSchema, request.body)
+
+      const opened = await new CashRegisterRepository(client).open({
+        utilisateurId: user.id,
+        caissier: `${user.prenom} ${user.nom}`.trim(),
+        fondsCaisse: value.fondsCaisse,
+        notes: value.notes,
+      })
+      response.status(201).json(opened)
+    }),
+  )
+
+  /** Cloture apres comptage : calcule le total theorique et l'ecart. */
+  caisseRouter.post(
+    '/:id/cloturer',
+    requireRole('caissier'),
+    handler(async (request, response) => {
+      const client = requireDb(response)
+      if (!client) return
+      const id = requireId(request, response)
+      if (id === null) return
+      const value = parseBody(caisseClotureSchema, request.body)
+
+      const closed = await new CashRegisterRepository(client).close({
+        sessionId: id,
+        comptage: value.comptage,
+        notes: value.notes,
+      })
+      response.json(closed)
+    }),
+  )
 
   return router
 }

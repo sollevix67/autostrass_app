@@ -24,6 +24,12 @@ type Tables = typeof schema
 /** Type de transaction Drizzle, deduit pour eviter de le redeclarer. */
 type Tx = Parameters<Parameters<MySql2Database<Tables>['transaction']>[0]>[0]
 
+/**
+ * Transaction exportee : les routes ont besoin de ce type pour ecrire dans la
+ * meme transaction que la creation du document (journal de caisse).
+ */
+export type Transaction = Tx
+
 /** Ligne de document exposee par l'API (forme commune a tous les metiers). */
 export type DocumentLine = {
   /** Rang de la ligne, 1-based : sert de cle React cote client. */
@@ -109,13 +115,35 @@ export class DocumentRepository<TRow extends { id: number }> {
     return this.hydrate(head as unknown as Record<string, unknown>)
   }
 
-  /** Cree l'entete et ses lignes dans une seule transaction. */
-  async create(head: Record<string, unknown>, lines: LineInput[]): Promise<TRow> {
+  /**
+   * Cree l'entete et ses lignes dans une seule transaction.
+   *
+   * `before` et `after` s'executent **dans la transaction**, l'un avant
+   * l'insertion, l'autre apres. C'est le seul moyen de garantir qu'une
+   * ecriture liee au document (le journal de caisse pour une vente) est
+   * atomique avec lui : deux transactions separes laisseraient une vente sans
+   * mouvement de caisse, donc un ecart de caisse invente a la cloture.
+   *
+   * `before` renvoie les colonnes supplementaires a inserer (par exemple
+   * `session_id`). Resoudre la session ici, et non dans `toHead`, ferme la
+   * fenetre entre la lecture et l'ecriture : une session fermee entre les deux
+   * ferait echouer la vente plutot que de l'imputer a un tiroir deja cloture.
+   */
+  async create(
+    head: Record<string, unknown>,
+    lines: LineInput[],
+    hooks?: {
+      before?: (tx: Tx) => Promise<Record<string, unknown>>
+      after?: (tx: Tx, headId: number) => Promise<void>
+    },
+  ): Promise<TRow> {
     try {
       return await this.db.transaction(async (tx) => {
-        const [result] = await tx.insert(this.headTable).values(head as never)
+        const extra = hooks?.before ? await hooks.before(tx) : {}
+        const [result] = await tx.insert(this.headTable).values({ ...head, ...extra } as never)
         const id = result.insertId
         await this.mapping.insertLines(tx, lines, id)
+        if (hooks?.after) await hooks.after(tx, id)
         const created = await tx.select().from(this.headTable).where(eq(this.headId, id)).limit(1)
         return this.mapping.mapRow(
           created[0] as unknown as Record<string, unknown>,
@@ -244,6 +272,8 @@ export function createReceptionRepository(db: MySql2Database<Tables>): DocumentR
 export type VenteRow = {
   id: number
   clientId: number | null
+  /** Session de caisse ayant enregistre la vente. */
+  sessionId: number | null
   dateVente: string
   caissier: string
   articles: DocumentLine[]
@@ -262,6 +292,7 @@ export function createVenteRepository(db: MySql2Database<Tables>): DocumentRepos
     mapRow: (raw, lines) => ({
       id: Number(raw.id),
       clientId: raw.client_id === null || raw.client_id === undefined ? null : Number(raw.client_id),
+      sessionId: raw.session_id === null || raw.session_id === undefined ? null : Number(raw.session_id),
       dateVente: toIsoString(raw.date_vente as Date | null),
       caissier: String(raw.caissier ?? ''),
       articles: lines,

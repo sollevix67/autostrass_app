@@ -199,13 +199,6 @@ export function rateLimitState(request: Request): { attempts: number; blocked: b
  * Applique a `/api/auth/login` : c'est la seule action par laquelle un
  * attaquant peut obtenir un acces, et la seule ou un mot de passe peut etre
  * devine. Le reste de l'API est derriere un jeton deja obtenu.
- */
-/**
- * Limite les tentatives par adresse IP sur la fenetre glissante.
- *
- * Applique a `/api/auth/login` : c'est la seule action par laquelle un
- * attaquant peut obtenir un acces, et la seule ou un mot de passe peut etre
- * devine. Le reste de l'API est derriere un jeton deja obtenu.
  *
  * ## Seules les tentatives ECHOUEES sont comptees
  *
@@ -225,8 +218,17 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
   const windowMs = options.windowMs ?? WINDOW_MS
   const block = options.blockMs ?? BLOCK_MS
 
-  /** Enregistre un echec ; repond 429 si le compteur est epuise. */
-  function registerFailure(request: Request, response: Response): void {
+  /**
+   * Enregistre un echec ; repond 429 si le compteur est epuise.
+   *
+   * `emitTooMany` repond via la fonction d'origine, **jamais** via
+   * `response.status`. Ce dernier est remplace, dans le middleware retour, par
+   * un wrapper qui rappelle `registerFailure` sur tout code >= 400 : y passer
+   * ferait boucler `status(429)` -> `registerFailure` -> `status(429)` jusqu'a
+   * la ligne de pile. C'etait le crash observe sur la sonde de test de
+   * limitation : la reponse 429 elle-meme se comptait comme un nouvel echec.
+   */
+  function registerFailure(request: Request, response: Response, originalStatus: (code: number) => Response): void {
     const key = bucketKey(request)
     const now = Date.now()
     const bucket = buckets.get(key) ?? { hits: [], blockedUntil: 0 }
@@ -235,7 +237,8 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
     if (bucket.blockedUntil > now) {
       const retryAfter = Math.ceil((bucket.blockedUntil - now) / 1000)
       response.setHeader('Retry-After', String(retryAfter))
-      response.status(429).json({
+      originalStatus(429)
+      response.json({
         error: 'TOO_MANY_ATTEMPTS',
         message: `Trop de tentatives. Reessayez dans ${Math.ceil(retryAfter / 60)} minute(s).`,
       })
@@ -248,7 +251,8 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
       buckets.set(key, bucket)
       const retryAfter = Math.ceil(block / 1000)
       response.setHeader('Retry-After', String(retryAfter))
-      response.status(429).json({
+      originalStatus(429)
+      response.json({
         error: 'TOO_MANY_ATTEMPTS',
         message: `Trop de tentatives. Reessayez dans ${Math.ceil(retryAfter / 60)} minute(s).`,
       })
@@ -278,8 +282,10 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
       // 2xx et 3xx : la requete a abouti. Un succes purge le compteur.
       if (code < 400) {
         buckets.delete(bucketKey(request))
-      } else {
-        registerFailure(request, response)
+      } else if (code !== 429) {
+        // 429 est exclu : c'est la *consequence* d'un epuisement, pas un
+        // nouvel essai. Le compter allongerait le blocage a chaque refus.
+        registerFailure(request, response, originalStatus)
       }
       return originalStatus(code)
     }) as typeof response.status

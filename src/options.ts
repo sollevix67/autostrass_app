@@ -91,11 +91,40 @@ export const SUPPLIER_OPTIONS: SelectOption[] = [
   { value: 'Huile Max', label: 'Huile Max' },
 ]
 
+/**
+ * Denominations du comptage de caisse, de la plus forte a la plus faible.
+ *
+ * Ce sont des **montants en euros**, pas des indices : `100` represente un
+ * billet de 100 EUR. Le comptage part de cette liste, ce qui garantit qu'un
+ * depot en France ne compte pas de billet de 200 EUR ni de piece de 3 EUR.
+ */
+export const CASH_DENOMINATIONS = [100, 50, 20, 10, 5, 2, 1, 0.5] as const
+
+/** Libelles des mouvements de caisse, pour le journal et les badges. */
+export const CASH_MOVEMENT_LABELS: Record<string, string> = {
+  ouverture: 'Ouverture',
+  encaissement: 'Encaissement',
+  rendu: 'Monnaie rendue',
+  'clôture': 'Cloture',
+  ajustement: 'Ajustement',
+}
+
 /** Formate un montant en euros, format francais. */
 const euros = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export function formatEuros(value: number): string {
   return `${euros.format(value)} €`
+}
+
+/**
+ * Formate une coupure sans decimale inutile : « 100 € » et non « 100,00 € »,
+ * « 0,50 € » restant avec ses deux decimales. Le comptage se lit d'un coup
+ * d'oeil, et aligner « 100,00 » sur toutes les lignes noierait l'information.
+ */
+const denomination = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 })
+
+export function formatDenomination(value: number): string {
+  return `${denomination.format(value)} €`
 }
 
 /** Formate un entier avec separateur de milliers (kilometrage). */

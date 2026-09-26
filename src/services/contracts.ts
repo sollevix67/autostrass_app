@@ -101,6 +101,8 @@ export type ApiReception = {
 export type ApiVente = {
   id: number
   clientId: number | null
+  /** Session de caisse ayant enregistre la vente. `null` sur l'historique anterieur. */
+  sessionId: number | null
   dateVente: string
   caissier: string
   articles: ApiLine[]
@@ -108,6 +110,56 @@ export type ApiVente = {
   montantPaye: number
   monnaie: number
   modePaiement: 'espèces' | 'carte' | 'chèque'
+  createdAt: string
+}
+
+/**
+ * Ligne de comptage d'une session cloturee.
+ *
+ * `denomination` est un montant en euros : `10.00` represente un billet de
+ * 10 EUR, pas un indice de coupure.
+ */
+export type ApiCashCountLine = {
+  denomination: number
+  quantite: number
+  sousTotal: number
+}
+
+/** Session de caisse renvoyee par `GET /api/caisse`. */
+export type ApiCashSession = {
+  id: number
+  caissier: string
+  utilisateurId: number
+  statut: 'ouverte' | 'clôturée'
+  /** Fond remis au caissier a l'ouverture. */
+  fondsCaisse: number
+  /** Somme des ventes en especes de la session (encaissements moins monnaie). */
+  totalEspeces: number
+  /** `fondsCaisse + totalEspeces`. `null` tant que la session est ouverte. */
+  totalTheorique: number | null
+  /** Total compte au comptage final. `null` tant que la session est ouverte. */
+  totalReel: number | null
+  /** `totalReel - totalTheorique`. Positif = excédent. `null` si ouverte. */
+  ecart: number | null
+  openedAt: string
+  closedAt: string | null
+  notes: string | null
+  nombreVentes: number
+  /** Vide tant que la session est ouverte. */
+  comptage: ApiCashCountLine[]
+  createdAt: string
+  updatedAt: string
+}
+
+/** Mouvement de caisse renvoye par `GET /api/caisse/:id/mouvements`. */
+export type ApiCashMovement = {
+  id: number
+  sessionId: number
+  type: 'ouverture' | 'encaissement' | 'rendu' | 'clôture' | 'ajustement'
+  /** Montant signe : positif = entree de liquide, negatif = sortie. */
+  montant: number
+  venteId: number | null
+  libelle: string
   createdAt: string
 }
 

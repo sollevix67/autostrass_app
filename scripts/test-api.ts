@@ -462,6 +462,63 @@ check('une vente sous-encaissée est refusee (422)', venteInsuffisante.status ==
   details: venteInsuffisante.body?.details,
 })
 
+// --- Caisse : ouverture, rattachement des ventes, comptage ------------------
+// Une vente n'existe pas hors d'une session de caisse : sans tiroir auquel
+// l'imputer, son montant n'entrerait dans aucun comptage. Le test verifie donc
+// le refus **et** la levee, dans cet ordre.
+console.log('\nCaisse')
+
+const venteSansCaisse = await call('/api/ventes', {
+  method: 'POST',
+  token: caissierToken!,
+  body: {
+    dateVente: '2026-09-26T10:00:00.000Z',
+    caissier: 'Sophie Bernard',
+    modePaiement: 'carte',
+    montantPaye: 31,
+    articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 2, prixUnitaire: 15.5 }],
+  },
+})
+check(
+  'une vente sans caisse ouverte est refusee (409)',
+  venteSansCaisse.status === 409 && venteSansCaisse.body?.error === 'CAISSE_FERMEE',
+  { status: venteSansCaisse.status, body: venteSansCaisse.body },
+)
+
+const ouverture = await call('/api/caisse/ouvrir', {
+  method: 'POST',
+  token: caissierToken!,
+  body: { fondsCaisse: 200 },
+})
+check('POST /api/caisse/ouvrir repond 201', ouverture.status === 201, ouverture.body)
+check('la session est ouverte', ouverture.body?.statut === 'ouverte', ouverture.body?.statut)
+check('le fond de caisse est conserve', ouverture.body?.fondsCaisse === 200, ouverture.body?.fondsCaisse)
+const sessionId = ouverture.body?.id as number
+
+check(
+  'un magasinier n ouvre pas de caisse (403)',
+  (await call('/api/caisse/ouvrir', { method: 'POST', token: magasinierToken!, body: { fondsCaisse: 10 } }))
+    .status === 403,
+)
+
+const doubleOuverture = await call('/api/caisse/ouvrir', {
+  method: 'POST',
+  token: caissierToken!,
+  body: { fondsCaisse: 10 },
+})
+check(
+  'deux sessions ouvertes pour le meme caissier sont refusees (409)',
+  doubleOuverture.status === 409 && doubleOuverture.body?.error === 'SESSION_DEJA_OUVERTE',
+  { status: doubleOuverture.status, body: doubleOuverture.body },
+)
+
+const fondTropEleve = await call('/api/caisse/ouvrir', {
+  method: 'POST',
+  token: adminToken!,
+  body: { fondsCaisse: 99999 },
+})
+check('un fond de caisse hors bornes est refuse (422)', fondTropEleve.status === 422, fondTropEleve.status)
+
 const vente = await call('/api/ventes', {
   method: 'POST',
   token: caissierToken!,
@@ -475,7 +532,116 @@ const vente = await call('/api/ventes', {
 })
 check('POST /api/ventes (caissier) repond 201', vente.status === 201, vente.body)
 check('le total de la vente est correct', vente.body?.totalHT === 31, vente.body?.totalHT)
+check('la vente est rattachee a la session', vente.body?.sessionId === sessionId, vente.body?.sessionId)
+
+// Vente especes de 31 EUR payes en 40 : 31 au tiroir, 9 de monnaie rendue.
+const venteEspeces = await call('/api/ventes', {
+  method: 'POST',
+  token: caissierToken!,
+  body: {
+    dateVente: '2026-09-26T10:05:00.000Z',
+    caissier: 'Sophie Bernard',
+    modePaiement: 'espèces',
+    montantPaye: 40,
+    monnaie: 9,
+    articles: [{ reference: 'FIL-0920', designation: 'Filtre a huile', quantite: 1, prixUnitaire: 31 }],
+  },
+})
+check('une vente en especes est acceptee', venteEspeces.status === 201, venteEspeces.body)
+
+const courante = await call('/api/caisse/actuelle', { token: caissierToken! })
+check('la session ouverte est retrouvee', courante.body?.id === sessionId, courante.body?.id)
+check(
+  'la recette especes exclut la carte et deduit la monnaie',
+  courante.body?.totalEspeces === 31,
+  courante.body?.totalEspeces,
+)
+check(
+  'le total theorique n est pas calcule avant la cloture',
+  courante.body?.totalTheorique === null,
+  courante.body?.totalTheorique,
+)
+
+const mouvements = await call(`/api/caisse/${sessionId}/mouvements`, { token: caissierToken! })
+const types = (mouvements.body as Array<{ type: string }> | null)?.map((m) => m.type) ?? []
+check("le journal contient l'ouverture", types.includes('ouverture'), types)
+check("le journal contient l'encaissement especes", types.includes('encaissement'), types)
+check('le journal contient le rendu de monnaie', types.includes('rendu'), types)
+check(
+  'une vente par carte ne touche pas le tiroir',
+  (mouvements.body as Array<{ venteId: number | null }> | null)?.filter((m) => m.type === 'encaissement').length === 1,
+)
+
+// Comptage exact : fond 200 + recette especes 31 = 231.
+const cloture = await call(`/api/caisse/${sessionId}/cloturer`, {
+  method: 'POST',
+  token: caissierToken!,
+  body: { comptage: [{ denomination: 200, quantite: 1 }, { denomination: 20, quantite: 1 }, { denomination: 10, quantite: 1 }, { denomination: 1, quantite: 1 }] },
+})
+check('POST /api/caisse/:id/cloturer repond 200', cloture.status === 200, cloture.body)
+check('le total reel est la somme des billets', cloture.body?.totalReel === 231, cloture.body?.totalReel)
+check('le total theorique vaut fond + recettes', cloture.body?.totalTheorique === 231, cloture.body?.totalTheorique)
+check('un comptage conforme donne un ecart nul', cloture.body?.ecart === 0, cloture.body?.ecart)
+check('le detail du comptage est conserve', (cloture.body?.comptage as unknown[])?.length === 4, cloture.body?.comptage)
+check('la session est cloturee', cloture.body?.statut === 'clôturée', cloture.body?.statut)
+
+const reCloture = await call(`/api/caisse/${sessionId}/cloturer`, {
+  method: 'POST',
+  token: caissierToken!,
+  body: { comptage: [] },
+})
+check(
+  'une session deja cloturee ne se recloture pas (409)',
+  reCloture.status === 409 && reCloture.body?.error === 'SESSION_DEJA_CLOTUREE',
+  { status: reCloture.status, body: reCloture.body },
+)
+
+const venteApresCloture = await call('/api/ventes', {
+  method: 'POST',
+  token: caissierToken!,
+  body: {
+    dateVente: '2026-09-26T11:00:00.000Z',
+    caissier: 'Sophie Bernard',
+    modePaiement: 'espèces',
+    montantPaye: 10,
+    articles: [{ reference: 'HUI-5400', designation: 'Huile', quantite: 1, prixUnitaire: 10 }],
+  },
+})
+check(
+  'une vente apres cloture est refusee (409)',
+  venteApresCloture.status === 409 && venteApresCloture.body?.error === 'CAISSE_FERMEE',
+  { status: venteApresCloture.status, body: venteApresCloture.body },
+)
+
+const apresCloture = await call('/api/caisse/actuelle', { token: caissierToken! })
+check('aucune session ouverte apres cloture', apresCloture.body === null, apresCloture.body)
+
+// Ecart : session a fond 100 sans vente, comptee 125 -> excedant de +25.
+const sessionEcart = await call('/api/caisse/ouvrir', { method: 'POST', token: caissierToken!, body: { fondsCaisse: 100 } })
+const sessionEcartId = sessionEcart.body?.id as number
+const clotureEcart = await call(`/api/caisse/${sessionEcartId}/cloturer`, {
+  method: 'POST',
+  token: caissierToken!,
+  body: {
+    comptage: [{ denomination: 100, quantite: 1 }, { denomination: 20, quantite: 1 }, { denomination: 5, quantite: 1 }],
+    notes: 'Billet en trop',
+  },
+})
+check('un excedant est calcule et signe positivement', clotureEcart.body?.ecart === 25, clotureEcart.body?.ecart)
+check('le motif de l ecart est conserve', clotureEcart.body?.notes === 'Billet en trop', clotureEcart.body?.notes)
+
+// Deficit : meme fond, comptage a 90 -> -10.
+const sessionDeficit = await call('/api/caisse/ouvrir', { method: 'POST', token: caissierToken!, body: { fondsCaisse: 100 } })
+const sessionDeficitId = sessionDeficit.body?.id as number
+const clotureDeficit = await call(`/api/caisse/${sessionDeficitId}/cloturer`, {
+  method: 'POST',
+  token: caissierToken!,
+  body: { comptage: [{ denomination: 50, quantite: 1 }, { denomination: 20, quantite: 1 }, { denomination: 20, quantite: 1 }] },
+})
+check('un deficit est calcule et signe negativement', clotureDeficit.body?.ecart === -10, clotureDeficit.body?.ecart)
+
 if (vente.body?.id) await call(`/api/ventes/${vente.body.id}`, { method: 'DELETE', token: adminToken! })
+if (venteEspeces.body?.id) await call(`/api/ventes/${venteEspeces.body.id}`, { method: 'DELETE', token: adminToken! })
 
 await call(`/api/receptions/${receptionId}`, { method: 'DELETE', token: adminToken! })
 

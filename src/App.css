@@ -194,3 +194,30 @@ th.align-center, td.align-center { text-align: center; }
 .static-value { display: block; padding: 9px 0; color: var(--text-strong); font-size: 12px; }
 .muted { color: var(--text-muted); }
 
+/* --- Caisse : etat de session et comptage --------------------------------- */
+/* Quatre cartes alignees : le solde theorique est mis en avant (classe
+   `accent`) parce que c'est la valeur a confronter au comptage, pas une
+   donnee parmi d'autres. */
+.caisse-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 16px; }
+.caisse-card { display: flex; flex-direction: column; gap: 4px; padding: 15px 16px; border: 1px solid var(--color-border); border-radius: 5px; background: #fff; }
+.caisse-card.accent { border-color: var(--accent-coral); background: #fdf6f4; }
+.caisse-card-label { color: var(--text-muted); font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.caisse-card-value { color: var(--text-strong); font-family: var(--font-display); font-size: 21px; font-weight: 500; }
+.caisse-card.accent .caisse-card-value { color: #b8452f; }
+.caisse-card-note { color: var(--text-muted); font-size: 10px; }
+@media (max-width: 1024px) { .caisse-summary { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 375px) { .caisse-summary { grid-template-columns: 1fr; } }
+
+/* Comptage : la coupure est fixee a gauche, la quantite saisissable a droite.
+   Une grille de deux colonnes alignees permet de compter ligne par ligne sans
+   que la coupure bouge d'une ligne a l'autre. */
+.comptage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; margin-bottom: 14px; }
+.comptage-row { display: flex; align-items: end; gap: 8px; }
+.comptage-coupure { flex: 0 0 74px; padding-bottom: 9px; color: var(--text-strong); font-family: var(--font-mono); font-size: 12px; }
+.comptage-row .form-group { flex: 1; margin: 0; }
+@media (max-width: 768px) { .comptage-grid { grid-template-columns: 1fr; } }
+
+/* Journal de caisse : le signe porte l'information, la couleur la confirme. */
+.amount-in { color: #2f7d55; }
+.amount-out { color: #b2543f; }
+

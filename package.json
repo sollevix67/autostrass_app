@@ -17,6 +17,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "test:api": "tsx scripts/test-api.ts",
     "test:security": "tsx scripts/test-security.ts",
+    "test:caisse": "tsx scripts/verify-caisse.ts",
+    "caisse:fermer": "tsx scripts/close-open-sessions.ts",
     "test:repos": "tsx scripts/verify-repositories.ts"
   },
   "dependencies": {

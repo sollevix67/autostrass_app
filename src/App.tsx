@@ -13,6 +13,7 @@ import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
 import ReceptionsView from './views/ReceptionsView'
 import VentesComptoirView from './views/VentesComptoirView'
+import CaisseView from './views/CaisseView'
 import CommandesClientsView from './views/CommandesClientsView'
 import LivraisonsView from './views/LivraisonsView'
 import RetoursView from './views/RetoursView'
@@ -26,6 +27,7 @@ const navigation = [
   { label: 'Stock', path: '/stock', icon: 'box' },
   { label: 'Receptions', path: '/receptions', icon: 'download' },
   { label: 'Ventes comptoir', path: '/ventes-comptoir', icon: 'cart' },
+  { label: 'Caisse', path: '/caisse', icon: 'clipboard' },
   { label: 'Commandes clients', path: '/commandes-clients', icon: 'layers' },
   { label: 'Livraisons', path: '/livraisons', icon: 'truck' },
   { label: 'Retours', path: '/retours', icon: 'rotate-ccw' },
@@ -130,6 +132,8 @@ function AppContent() {
             <Route path="/stock" element={<StockView />} />
             <Route path="/receptions" element={<ReceptionsView />} />
             <Route path="/ventes-comptoir" element={<VentesComptoirView />} />
+            <Route path="/caisse" element={<CaisseView />} />
+            <Route path="/caisse" element={<CaisseView />} />
             <Route path="/commandes-clients" element={<CommandesClientsView />} />
             <Route path="/livraisons" element={<LivraisonsView />} />
             <Route path="/retours" element={<RetoursView />} />
