@@ -34,6 +34,8 @@ export type IconName =
   | 'settings'
   | 'more'
   | 'arrow-down'
+  | 'moon'
+  | 'sun'
 
 /**
  * Traces au format 24x24 (viewBox) : `d` est le chemin ou le groupe de
@@ -66,6 +68,8 @@ const PATHS = {
   settings: { d: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2' },
   more: { d: 'M6 12h.01M12 12h.01M18 12h.01' },
   'arrow-down': { d: 'M12 5v14M6 13l6 6 6-6' },
+  moon: { d: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z' },
+  sun: { d: 'M12 3v2.5M12 18.5V21M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M3 12h2.5M18.5 12H21M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77M12 7.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z' },
 } as const satisfies Record<IconName, { d: string }>
 
 /** Tailles usuelles : le SVG reste dans la grille de flux du parent. */

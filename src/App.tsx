@@ -1,5 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
+
+type ThemeMode = 'light' | 'dark' | 'auto'
+
+function getSystemTheme(): 'light' | 'dark' {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function getStoredTheme(): ThemeMode {
+  const stored = window.localStorage.getItem('autostrass-theme')
+  if (stored === 'light' || stored === 'dark' || stored === 'auto') {
+    return stored
+  }
+  return 'auto'
+}
 import './App.css'
 import './auth.css'
 import { useDashboard } from './hooks/useDashboard'
@@ -52,7 +66,37 @@ function AppContent() {
   const { dashboard, apiMode, error, lastUpdated, refresh } = useDashboard()
   const { user, status, signOut } = useAuth()
   const [mobileNav, setMobileNav] = useState(false)
+  const [theme, setTheme] = useState<ThemeMode>(() => getStoredTheme())
   const location = useLocation()
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const syncTheme = () => {
+      const resolvedTheme = theme === 'auto' ? getSystemTheme() : theme
+      document.documentElement.dataset.theme = resolvedTheme
+    }
+
+    syncTheme()
+    window.localStorage.setItem('autostrass-theme', theme)
+
+    if (typeof media.addEventListener === 'function') {
+      media.addEventListener('change', syncTheme)
+      return () => media.removeEventListener('change', syncTheme)
+    }
+
+    media.addListener(syncTheme)
+    return () => media.removeListener(syncTheme)
+  }, [theme])
+
+  const cycleTheme = () => {
+    setTheme((current) => {
+      const order: ThemeMode[] = ['light', 'dark', 'auto']
+      const currentIndex = order.indexOf(current)
+      return order[(currentIndex + 1) % order.length]
+    })
+  }
+
+  const themeLabel = theme === 'auto' ? 'Mode : automatique (système)' : theme === 'dark' ? 'Mode : sombre' : 'Mode : clair'
 
   // Tant que la session n'est pas verifiee, on n'affiche ni le depot ni
   // l'ecran de connexion : sans cette attente, un rechargement de page fait
@@ -103,7 +147,7 @@ function AppContent() {
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
           <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle operation <Icon name="chevron-down" size="sm" /></button></div>
           <div className="status-line">
@@ -132,7 +176,6 @@ function AppContent() {
             <Route path="/stock" element={<StockView />} />
             <Route path="/receptions" element={<ReceptionsView />} />
             <Route path="/ventes-comptoir" element={<VentesComptoirView />} />
-            <Route path="/caisse" element={<CaisseView />} />
             <Route path="/caisse" element={<CaisseView />} />
             <Route path="/commandes-clients" element={<CommandesClientsView />} />
             <Route path="/livraisons" element={<LivraisonsView />} />

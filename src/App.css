@@ -1,3 +1,173 @@
+html[data-theme='dark'] {
+  background: #0b1220;
+}
+
+html[data-theme='dark'] body {
+  background: #0b1220;
+  color: var(--text-body);
+}
+
+html[data-theme='dark'] .app-shell {
+  background: var(--color-surface-sunken);
+}
+
+html[data-theme='dark'] .sidebar {
+  background: var(--color-sidebar);
+  color: var(--text-on-dark);
+}
+
+html[data-theme='dark'] .topbar,
+html[data-theme='dark'] .app-footer,
+html[data-theme='dark'] .metric-card,
+html[data-theme='dark'] .panel,
+html[data-theme='dark'] .quick-actions,
+html[data-theme='dark'] .toast,
+html[data-theme='dark'] .caisse-card,
+html[data-theme='dark'] .status-line .link-button,
+html[data-theme='dark'] .filter-bar input[type='search'],
+html[data-theme='dark'] .filter-bar input[type='text'],
+html[data-theme='dark'] .status-select,
+html[data-theme='dark'] .secondary-button,
+html[data-theme='dark'] .quick-action-list button,
+html[data-theme='dark'] .filter-tab,
+html[data-theme='dark'] .primary-button,
+html[data-theme='dark'] .link-button,
+html[data-theme='dark'] .topbar-actions .icon-button,
+html[data-theme='dark'] .mobile-menu,
+html[data-theme='dark'] .more-button,
+html[data-theme='dark'] .action-btn,
+html[data-theme='dark'] .toggle-btn {
+  background: var(--color-card);
+  color: var(--text-body);
+  border-color: var(--color-border);
+}
+
+html[data-theme='dark'] .topbar,
+html[data-theme='dark'] .app-footer,
+html[data-theme='dark'] .metric-card,
+html[data-theme='dark'] .panel,
+html[data-theme='dark'] .quick-actions,
+html[data-theme='dark'] .caisse-card,
+html[data-theme='dark'] .toast {
+  box-shadow: none;
+}
+
+html[data-theme='dark'] .page-heading h1,
+html[data-theme='dark'] .panel-heading h2,
+html[data-theme='dark'] .quick-actions h2,
+html[data-theme='dark'] .metric-card strong,
+html[data-theme='dark'] .caisse-card-value,
+html[data-theme='dark'] .breadcrumbs strong,
+html[data-theme='dark'] .item-name,
+html[data-theme='dark'] .reference,
+html[data-theme='dark'] .status-select,
+html[data-theme='dark'] .static-value,
+html[data-theme='dark'] .table-wrap td,
+html[data-theme='dark'] .table-wrap th {
+  color: var(--text-strong);
+}
+
+html[data-theme='dark'] .panel-heading,
+html[data-theme='dark'] .metric-card,
+html[data-theme='dark'] .panel,
+html[data-theme='dark'] .quick-actions,
+html[data-theme='dark'] .caisse-card,
+html[data-theme='dark'] .topbar,
+html[data-theme='dark'] .app-footer,
+html[data-theme='dark'] .filter-bar input,
+html[data-theme='dark'] .status-select,
+html[data-theme='dark'] .primary-button,
+html[data-theme='dark'] .secondary-button,
+html[data-theme='dark'] .danger-button,
+html[data-theme='dark'] .link-button,
+html[data-theme='dark'] .filter-tab,
+html[data-theme='dark'] .quick-action-list button {
+  border-color: var(--color-border);
+}
+
+html[data-theme='dark'] th,
+html[data-theme='dark'] td,
+html[data-theme='dark'] .location-tag,
+html[data-theme='dark'] .heading-copy,
+html[data-theme='dark'] .nav-label,
+html[data-theme='dark'] .status-line,
+html[data-theme='dark'] .table-state,
+html[data-theme='dark'] .saving-indicator,
+html[data-theme='dark'] .muted,
+html[data-theme='dark'] .panel-kicker,
+html[data-theme='dark'] .eyebrow,
+html[data-theme='dark'] .caisse-card-label,
+html[data-theme='dark'] .activity-item time,
+html[data-theme='dark'] .status-time,
+html[data-theme='dark'] .workspace-switcher small,
+html[data-theme='dark'] .sidebar-footer small,
+html[data-theme='dark'] .breadcrumbs,
+html[data-theme='dark'] .topbar-profile,
+html[data-theme='dark'] .topbar-actions .icon-button,
+html[data-theme='dark'] .footer-version {
+  color: var(--text-muted);
+}
+
+html[data-theme='dark'] .table-wrap table,
+html[data-theme='dark'] .table-wrap th,
+html[data-theme='dark'] .table-wrap td,
+html[data-theme='dark'] .activity-item,
+html[data-theme='dark'] .workspace-switcher,
+html[data-theme='dark'] .status-line .link-button,
+html[data-theme='dark'] .filter-tab,
+html[data-theme='dark'] .quick-action-list button,
+html[data-theme='dark'] .status-select,
+html[data-theme='dark'] .filter-bar input[type='search'],
+html[data-theme='dark'] .filter-bar input[type='text'] {
+  background: var(--color-card);
+}
+
+html[data-theme='dark'] .app-footer { background: rgba(11, 18, 32, 0.9); }
+html[data-theme='dark'] .topbar { background: rgba(17, 24, 39, 0.82); }
+html[data-theme='dark'] .nav-item:hover, html[data-theme='dark'] .nav-item.active {
+  background: var(--color-sidebar-hover);
+  color: var(--color-sidebar-text-strong);
+}
+
+html[data-theme='dark'] .primary-button {
+  background: #0f172a;
+  box-shadow: 0 5px 14px rgba(2, 6, 23, 0.4);
+}
+
+html[data-theme='dark'] .button-chevron,
+html[data-theme='dark'] .icon-button,
+html[data-theme='dark'] .mobile-menu,
+html[data-theme='dark'] .more-button {
+  color: var(--text-muted);
+}
+
+html[data-theme='dark'] .form-error-text,
+html[data-theme='dark'] .error-banner,
+html[data-theme='dark'] .error-summary,
+html[data-theme='dark'] .error-summary-title,
+html[data-theme='dark'] .error-summary li,
+html[data-theme='dark'] .error-summary a {
+  color: #f3b7aa;
+}
+
+html[data-theme='dark'] .status-badge,
+html[data-theme='dark'] .type-badge,
+html[data-theme='dark'] .role-badge,
+html[data-theme='dark'] .toggle-btn {
+  background: var(--color-muted);
+  color: var(--text-strong);
+}
+
+html[data-theme='dark'] .filter-bar input[type='search']:focus,
+html[data-theme='dark'] .filter-bar input[type='text']:focus,
+html[data-theme='dark'] .status-select:focus,
+html[data-theme='dark'] .secondary-button:focus,
+html[data-theme='dark'] .primary-button:focus,
+html[data-theme='dark'] .link-button:focus {
+  border-color: var(--accent-coral);
+  box-shadow: 0 0 0 2px rgba(238, 128, 108, 0.2);
+}
+
 .app-shell { min-height: 100vh; display: flex; background: #f5f6f3; }
 .sidebar { width: 254px; flex: 0 0 254px; min-height: 100vh; box-sizing: border-box; padding: 28px 14px 18px; background: #1f2a34; color: #d7e0e4; display: flex; flex-direction: column; }
 .brand { display: flex; align-items: center; gap: 11px; padding: 0 14px 30px; color: #fff; font-weight: 800; letter-spacing: 2.2px; font-size: 15px; }

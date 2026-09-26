@@ -3,7 +3,9 @@
 > État du projet au 2026-09-26 — **étapes 1 et 4 de la feuille de route
 > terminées** : les 7 vues sont branchées sur l'API, et la gestion de caisse
 > est complète **avec conformité NF525**. Build ✅, lint ✅ 0 warning,
-> **111/111 tests API** + **58/58 tests sécurité** ✅.
+> **111/111 tests API** + **58/58 tests sécurité** ✅. Le shell UI a aussi
+> reçu un thème sombre/clair automatique avec prise en charge de
+> `prefers-color-scheme` et bascule manuelle.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -193,7 +195,9 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/utils/ids.ts` | `createLineId`, `nextId` | ✅ |
 | `src/utils/coerce.ts` | `pickEnum`, `toNumber` | ✅ |
 | `src/types/index.ts` | **Source of truth** — types métier | ✅ |
-| `src/App.tsx` | Routing, layout, statut connexion | ✅ |
+| `src/App.tsx` | Routing, layout, statut connexion, thème clair/sombre/auto | ✅ |
+| `src/App.css` | Polices, layout, tablettes, responsive et thème sombre | ✅ |
+| `src/tokens.css` | Tokens et variables de thème | ✅ |
 | `src/views/CatalogueView.tsx` | CRUD complet branché API + mode local | ✅ |
 | `src/views/ClientsView.tsx` | **Modele de reference** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
 | `src/views/StockView.tsx` | Filtres, recherche, tri, modale — branché API (emplacement en texte libre) | ⚠️ |
