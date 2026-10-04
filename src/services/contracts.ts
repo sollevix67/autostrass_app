@@ -189,6 +189,24 @@ export type ApiLivraison = {
   updatedAt: string
 }
 
+/** Article renvoye par `GET /api/articles`. */
+export type ApiArticle = {
+  id: number
+  reference: string
+  designation: string
+  category: string
+  prixUnitaireHT: number
+  tvaId: number
+  ean13: string | null
+  emplacement: string | null
+  description: string | null
+  delaiDisponibilite: number
+  forcerSurCommande: boolean
+  prixUnitaireTTC: number
+  createdAt: string
+  updatedAt: string
+}
+
 /** Retour renvoye par `GET /api/retours`. */
 export type ApiRetour = {
   id: number

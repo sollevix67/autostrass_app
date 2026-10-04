@@ -41,6 +41,26 @@ export default function CatalogueView() {
   const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
+  const [tvaList, setTvaList] = useState([])
+
+  useEffect(() => {
+    api.get('/tva').then((res) => setTvaList(res))
+  }, [])
+
+  const FIELD_LABELS = {
+    reference: 'Référence',
+    designation: 'Désignation',
+    category: 'Catégorie',
+    prixUnitaireHT: 'Prix unitaire HT',
+    tvaId: 'TVA',
+    ean13: 'EAN13',
+    delaiDisponibilite: 'Délai de disponibilité (jours)',
+    forcerSurCommande: 'Forcer sur commande',
+    emplacement: 'EMPLACEMENT',
+    description: 'Description',
+  } as const
+
+  const FIELD_ORDER = Object.keys(FIELD_LABELS)
 
   const {
     register: rhfRegister,
@@ -138,6 +158,45 @@ export default function CatalogueView() {
       render: (row) => `${currency.format(row.prixUnitaireHT)} €`,
     },
     {
+      key: 'prixUnitaireTTC',
+      header: 'PRIX TTC',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.prixUnitaireTTC,
+      render: (row) => `${currency.format(row.prixUnitaireTTC)} €`,
+    },
+    {
+      key: 'tvaId',
+      header: 'TVA',
+      align: 'center',
+      sortable: true,
+      sortValue: (row) => row.tvaId,
+      render: (row) => <span>TVA {row.tvaId}</span>,
+    },
+    {
+      key: 'ean13',
+      header: 'EAN13',
+      sortable: true,
+      sortValue: (row) => row.ean13 ?? '',
+      render: (row) => row.ean13 ?? '',
+    },
+    {
+      key: 'delaiDisponibilite',
+      header: 'DISPO (J)',
+      align: 'center',
+      sortable: true,
+      sortValue: (row) => row.delaiDisponibilite,
+      render: (row) => row.delaiDisponibilite,
+    },
+    {
+      key: 'forcerSurCommande',
+      header: 'FORCER SC',
+      align: 'center',
+      sortable: true,
+      sortValue: (row) => row.forcerSurCommande ? 1 : 0,
+      render: (row) => (row.forcerSurCommande ? 'Oui' : 'Non'),
+    },
+    {
       key: 'quantite',
       header: 'STOCK',
       align: 'right',
@@ -220,6 +279,36 @@ export default function CatalogueView() {
             register={register}
             error={errors.category?.message}
             required
+          />
+          <FormSelect
+            label="TVA"
+            name="tvaId"
+            options={tvaList.map(tva => ({ value: tva.id, label: `TVA ${tva.taux}%` }))}
+            register={register}
+            error={errors.tvaId?.message}
+            required
+          />
+          <FormInput
+            label="EAN13"
+            name="ean13"
+            register={register}
+            error={errors.ean13?.message}
+            placeholder="ex: 3663456008006"
+          />
+          <FormInput
+            label="Délai de disponibilité (jours)"
+            name="delaiDisponibilite"
+            type="number"
+            min="0"
+            register={register}
+            error={errors.delaiDisponibilite?.message}
+            required
+          />
+          <FormInput
+            label="Forcer sur commande"
+            name="forcerSurCommande"
+            type="checkbox"
+            register={register}
           />
           <FormInput
             label="Emplacement"

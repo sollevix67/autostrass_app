@@ -61,6 +61,13 @@ export type UserRole = (typeof USER_ROLES)[number]
  * `emplacement` est aujourd'hui un texte libre (« A-03 / E-02 / P-14 »). Le
  * cahier des charges demande une hierarchie allee -> etagere -> place ; le
  * passage a une cle etrangere fait partie de l'etape 2 de la feuille de route.
+ *
+ * Les champs suivants sont ajoutes dans le cadre de l'etape 2 :
+ * - tva_id : reference vers la table tva
+ * - ean13 : code EAN13 de l'article
+ * - delaiDisponibilite : nombre de jours pour un article non en stock
+ * - forcerSurCommande : booleen pour forcer l'etat "Sur commande"
+ * - prixUnitaireTTC : prix incluant les taxes
  */
 export interface Article {
   reference: string
@@ -71,4 +78,11 @@ export interface Article {
   minimum: number
   emplacement: string
   description?: string
+  
+  // Nouveaux champs catalogue (etape 2)
+  tvaId: number
+  ean13?: string | null
+  delaiDisponibilite: number
+  forcerSurCommande: boolean
+  prixUnitaireTTC: number
 }

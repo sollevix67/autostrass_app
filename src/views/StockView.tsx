@@ -5,7 +5,6 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
-import { FormInput } from '../components/forms/FormFields'
 import { useStock, type StockFilter } from '../hooks/useStock'
 import { toNumber } from '../utils/coerce'
 import type { Article } from '../types'
@@ -60,7 +59,7 @@ export default function StockView() {
       `Retirer ${article.reference} du stock ?`,
       <>
         L'article <strong>{article.designation}</strong> sera supprime du catalogue.
-        L'operation est irreversible.
+        L'operation est irreversible.
       </>,
       async () => {
         const ok = await remove(article.reference)

@@ -9,6 +9,21 @@ CREATE DATABASE IF NOT EXISTS autostrass
 USE autostrass;
 
 -- ---------------------------------------------------------------------------
+-- Referentiel taux de TVA
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS tva (
+  id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  taux           DECIMAL(5,2) NOT NULL,
+  libelle        VARCHAR(64) NOT NULL,
+  defaut         BOOLEAN NOT NULL DEFAULT FALSE,
+  actif          BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_tva_taux (taux)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------------
 -- Referentiel articles
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS articles (
@@ -18,15 +33,41 @@ CREATE TABLE IF NOT EXISTS articles (
   category       VARCHAR(64)  NOT NULL DEFAULT '',
   unit_price_ht  DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   location       VARCHAR(64)  NOT NULL DEFAULT '',
-    emplacement_id INT UNSIGNED          NULL,
-    description    TEXT         NULL,
-    created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    UNIQUE KEY uq_articles_reference (reference),
-    CONSTRAINT fk_articles_emplacement
-      FOREIGN KEY (emplacement_id) REFERENCES emplacements (id) ON DELETE SET NULL
-  ) ENGINE=InnoDB;
+  emplacement_id INT UNSIGNED          NULL,
+  description    TEXT         NULL,
+  -- Nouveaux champs catalogue (etape 2)
+  tva_id         INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Foreign key to tva',
+  ean13          VARCHAR(16) NULL,
+  delai_disponibilite INT UNSIGNED NOT NULL DEFAULT 0,
+  forcer_sur_commande BOOLEAN NOT NULL DEFAULT FALSE,
+  prix_unitaire_ttc DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_articles_reference (reference),
+  CONSTRAINT fk_articles_emplacement
+    FOREIGN KEY (emplacement_id) REFERENCES emplacements (id) ON DELETE SET NULL,
+  CONSTRAINT fk_articles_tva
+    FOREIGN KEY (tva_id) REFERENCES tva(id) ON DELETE RESTRICT,
+  INDEX idx_articles_ean13 (ean13)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------------
+-- Compatibilite articles (immatriculation, VIN)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS article_compatibilite (
+  id             INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  article_id     INT UNSIGNED NOT NULL,
+  type           ENUM('immatriculation', 'VIN') NOT NULL,
+  valeur         VARCHAR(32) NOT NULL,
+  compatible     BOOLEAN NOT NULL,
+  created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+  INDEX idx_article_compatibilite_article_id (article_id),
+  INDEX idx_article_compatibilite_type_valeur (type, valeur)
+) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------------
 -- Soldes par emplacement (1 ligne minimum par article)

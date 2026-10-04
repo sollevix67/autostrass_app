@@ -9,6 +9,7 @@
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et journal d'audit. **Migration des emplacements des articles terminée**.
+> **Catalogue v2 complété** : ajout des champs TVA, EAN13, délai de disponibilité, forcer sur commande et prix TTC aux articles, ainsi que la table de compatibilité (immatriculation/VIN).
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
 > journal d'audit. Travail en cours sur la versionnage/ordre des migrations.
 >

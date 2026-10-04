@@ -13,6 +13,11 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 12,
     minimum: 6,
     emplacement: 'A-03 / E-02 / P-14',
+    tvaId: 1, // TVA normale 20%
+    ean13: '3663456008006',
+    delaiDisponibilite: 0,
+    forcerSurCommande: false,
+    prixUnitaireTTC: 18.60 // 15.50 * 1.20
   },
   {
     reference: 'FIL-0920',
@@ -22,6 +27,11 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 3,
     minimum: 8,
     emplacement: 'B-01 / E-04 / P-02',
+    tvaId: 1, // TVA normale 20%
+    ean13: '3663456008013',
+    delaiDisponibilite: 0,
+    forcerSurCommande: false,
+    prixUnitaireTTC: 9.84 // 8.20 * 1.20
   },
   {
     reference: 'BAT-7710',
@@ -31,6 +41,11 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 6,
     minimum: 4,
     emplacement: 'C-02 / E-01 / P-08',
+    tvaId: 1, // TVA normale 20%
+    ean13: '3663456008020',
+    delaiDisponibilite: 0,
+    forcerSurCommande: false,
+    prixUnitaireTTC: 54.00 // 45.00 * 1.20
   },
   {
     reference: 'HUI-5400',
@@ -40,6 +55,11 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 14,
     minimum: 10,
     emplacement: 'D-05 / E-03 / P-21',
+    tvaId: 1, // TVA normale 20%
+    ean13: '3663456008037',
+    delaiDisponibilite: 0,
+    forcerSurCommande: false,
+    prixUnitaireTTC: 26.40 // 22.00 * 1.20
   },
 ]
 
@@ -52,6 +72,11 @@ export const EMPTY_ARTICLE: Article = {
   minimum: 0,
   emplacement: '',
   description: '',
+  tvaId: 1,
+  ean13: null,
+  delaiDisponibilite: 0,
+  forcerSurCommande: false,
+  prixUnitaireTTC: 0
 }
 
 type UseCatalogueResult = {

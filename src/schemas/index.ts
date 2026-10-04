@@ -96,10 +96,31 @@ export const articleSchema = z.object({
     (value) => value <= 1_000_000,
     'Prix trop eleve.',
   ),
+  tvaId: z.number({ message: 'La TVA est requise.' }).int().positive(),
+  ean13: z
+    .string()
+    .trim()
+    .max(16, 'EAN13 trop long.')
+    .regex(/^[0-9]+$/, 'EAN13 doit contenir uniquement des chiffres')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => val === '' ? null : val),
+  emplacement: z
+    .string()
+    .trim()
+    .max(64, 'Emplacement trop long.')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => val === '' ? null : val),
+  description: optionalText('La description'),
+  delaiDisponibilite: z.number({ message: 'Le délai de disponibilité est requis.' }).int().nonnegative(),
+  forcerSurCommande: z.boolean(),
+  prixUnitaireTTC: nonNegative('Le prix unitaire TTC').refine(
+    (value) => value <= 1_000_000,
+    'Prix TTC trop eleve.',
+  ),
   quantite: nonNegative('La quantite').refine((value) => Number.isInteger(value), 'La quantite doit etre un entier.'),
   minimum: nonNegative('Le seuil minimum').refine((value) => Number.isInteger(value), 'Le seuil doit etre un entier.'),
-  emplacement: required("L'emplacement").max(64, 'Emplacement trop long.'),
-  description: optionalText('La description'),
 })
 
 /**
