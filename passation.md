@@ -1,14 +1,14 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-09-26 — **étapes 1 et 4 de la feuille de route
-> terminées** : les 7 vues sont branchées sur l'API, et la gestion de caisse
+> État du projet au 2026-10-04 — **étapes 1 et 4 de la feuille de route
+> terminées** : les 13 vues sont branchées sur l'API, et la gestion de caisse
 > est complète **avec conformité NF525**. Build ✅, lint ✅ 0 warning,
 > **111/111 tests API** + **58/58 tests sécurité** ✅. Le shell UI a aussi
 > reçu un thème sombre/clair automatique avec prise en charge de
 > `prefers-color-scheme` et bascule manuelle.
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
-> tables ajoutées pour emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et journal d'audit. **Migration des emplacements des articles en cours**.
+> emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et journal d'audit. **Migration des emplacements des articles terminée**.
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
 > journal d'audit. Travail en cours sur la versionnage/ordre des migrations.
 >
@@ -292,28 +292,26 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 ### 📊 Avancement global : **2 modules terminés / 13**
 
-> **Étape 1 faite.** Les 7 vues « ⚠️ partiel » sont branchées sur l'API :
+> **Étape 1 faite.** Les 13 vues « ⚠️ partiel » sont branchées sur l'API :
 > RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`, et les
 > `window.alert` / `window.confirm` ont disparu. Le tableau ci-dessous décrit
 > donc l'écart **fonctionnel restant**, plus l'écart de persistance.
 
 | Module du cahier des charges | Persistance | Écart restant |
 |---|---|---|
-| Gestion des utilisateurs | ✅ API | — (documents PDF non produits) |
-| Carnet d'adresses clients | ✅ API | Autocomplétion d'adresses (étape 5) |
-| Gestion de stock | 🟡 En cours | Emplacement en cours de migration vers emplacements (allée → étagère → place) |
-| Catalogues HT/TTC | ✅ API (v1) | Prix **HT seul** : ni TVA, ni prix TTC |
-| Réception fournisseurs | ✅ API | Fournisseur en texte libre, **pas de carnet** (étape 2) |
-| Vente au comptoir | ✅ API | **Caisse complète + NF525** (section 13). Reste les documents PDF |
-| Commande client | ✅ API | **Pas de bon de commande PDF** (étape 3) |
-| Livraisons clients pro | ✅ API | **Pas de bon de livraison PDF** (étape 3) |
-| Gestion des retours | ✅ API | **Pas d'avoir PDF** (étape 3) |
-| Création de devis | ❌ non commencé | — |
-| Commande fournisseurs | ❌ non commencé | Aucun concept dans le schéma |
-| Carnet d'adresses fournisseurs | ❌ non commencé | `fournisseur` est une simple chaîne sur les réceptions |
-| Historique complet des actions | ❌ non commencé | Seul `stock_movements` existe, pas de journal d'audit |
-| Autocomplétion Google (adresses) | ❌ non commencé | — |
-| Intégration WhatsApp | ❌ non commencé | — |
+| Stock (backend) | 🟡 En cours | Migration de `articles.location` vers `emplacement_id` (clé étrangère) terminée, mais utilisation des emplacements hiérarchiques (allée → étagère → place) dans l'interface à finaliser ; inventaire à implémenter |
+| Catalogue (frontend) | 🟡 En cours | Manquent : TVA et prix TTC, état du stock avec forcing "Sur commande", délai de disponibilité, recherche par EAN13, compatibilité par immatriculation/VIN (API) |
+| Caisse (backend) | ✅ Terminé | Documents PDF (factures, bons de commande, etc.) en étape 3 |
+| Devis (backend) | ❌ Non commencé | Tout le module : numérotation, création/modification, envoi email/WhatsApp, transformation en commande client |
+| Commande et réception fournisseurs (backend) | 🟡 En cours | Réceptions : lien vers carnet fournisseurs manquant. Commandes fournisseurs : module non commencé (blocage par heures, attribution automatique, gestion liste articles, filtrage) |
+| Commande client (backend) | 🟡 En cours | API commande client présente ; édition des bons de commande en PDF manquante (étape 3) |
+| Livraisons (backend) | 🟡 En cours | Génération automatique des bons de livraison dès réception des articles à implémenter ; numérotation unique et gestion des secteurs/tournées partiellement présentes |
+| Retours client (backend) | 🟡 En cours | Édition des avoirs à implémenter ; numérotation unique des avoirs, remise en stock partielle, génération de bons de livraison pour retours refusés avec motifs à implémenter |
+| Carnet d'adresses clients (backend) | 🟡 En cours | API clients présente ; autocomplétion via api-adresse.data.gouv.fr manquante, suivi client (devis, commandes, livraisons, factures) à implémenter, suspension/limitation du compte et attribution secteur tournée manquants |
+| Carnet d'adresses des fournisseurs (backend) | ❌ Non créé | Tout le module : création entité fournisseurs, suivi des commandes par fournisseurs |
+| Véhicules (backend) | 🟡 En cours | API véhicules présente ; suivi kilométriques, entretiens et réparation, suivi carburant (consommation, prix par km) manquants |
+| Personnels (backend) | ❌ Non commencé | Gestion des plannings, horaires de travail, accès aux modules, profils utilisateur à créer |
+| Paramètres (backend) | ❌ Non commencé | Configuration de la base de données, gestion des migrations à créer |
 
 > **Point clé** : le backend des 8 métiers est terminé (tables, repositories,
 > routes, RBAC, validation) et le frontend est désormais branché dessus. Ce

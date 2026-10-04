@@ -1,4 +1,4 @@
-J'aimerais créer une application en Typescript/ViteJS/ReactJS (frontend/backend, avec support https et d'une future application androïd sur un PDA Zebra TC22) en plusieurs modules :
+J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/backend, avec support https et d'une future application androïd sur un PDA Zebra TC22) en plusieurs modules :
 
     - Stock (backend)
         - Gestion des emplacements (allée -> étagère -> place)
@@ -15,7 +15,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS (frontend/backend
         - Affichage de la compatibilité (paramétrable) par immatriculation ou VIN (API)
     
     - Caisse (backend)
-        - Conforme à la norme NF525
+        - Conforme aux normes NF203 et NF525
         - Ajout des articles au panier depuis le catalogue ou par saisie de la référence, de la désignation (autocompletion) ou du code EAN13
         - Edition de facture en cas de vente au comptoir
         - Ouverture de plusieurs sessions de caisse (maximum 1 session par utilisateur)
@@ -23,7 +23,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS (frontend/backend
         - Clôture
     
     - Devis (backend)
-        - Numérotation unique sous la forme yyymmdd-D-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [az-AZ])
+        - Numérotation unique sous la forme yyyymmdd-D-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [a-zA-Z])
         - Création, modification et envoi par email ou watsapp
         - Transformation d'un devis en commande client et ajout à la liste des références à commander aux fournisseurs, si pas en stock
 
@@ -36,23 +36,23 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS (frontend/backend
 
     - Commande client (backend) 
         - Edition des bons de commande en PDF
-        - Numérotation unique sous la forme yyymmdd-C-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [az-AZ])
+        - Numérotation unique sous la forme yyyymmdd-C-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [a-zA-Z])
 
     - Livraisons (backend)
         - Edition automatique des bons de livraison dès lorsque les articles constituant une commande ont étés réceptionnés
-        - Numérotation unique des bons de livraisons sous la forme yyymmdd-L-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [az-AZ])
+        - Numérotation unique des bons de livraisons sous la forme yyyymmdd-L-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [a-zA-Z])
         - Gestion des secteurs et des tournées, départs par jour 
 
     - Retours client (backend)
         - Edition des avoirs
-        - Numérotation unique des avoirs sous la forme yyymmdd-A-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [az-AZ])
+        - Numérotation unique des avoirs sous la forme yyyymmdd-A-xxxxxx (xxxxxx sera une suite de caractères alphabétique aléatoire [a-zA-Z])
         - Remise en stock des articles retournés
         - Génération de bons de livraison pour les retours refusés avec motifs du refus
 
     - Carnet d'adresses clients (backend)
-        - Autocompletion via api google
-        - Suivi des devis, commandes, livraisons
-        - Suivi des factures payées et à payer
+        - Autocompletion via api-adresse.data.gouv.fr
+        - Suivi par client des devis, commandes, livraisons
+        - Suivi par client des factures payées et à payer
         - Suspension, limitation du compte (blocage livraison, paiement direct uniquement)
         - Attribution à un secteur de tournée
 
@@ -64,7 +64,10 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS (frontend/backend
         - Suivi des entretiens et réparation
         - Suivi carburant (consommation, prix par kilomètres)
     
-    Personnels (backend)
+    - Personnels (backend)
         - Gestion des plannings et des horaires de travail
         - Gestion des accès au différents modules
         - Gestion des profils utilisateur
+
+    - Paramères
+        - Base de données
