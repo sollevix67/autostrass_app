@@ -565,10 +565,11 @@ npm run db:seed
 > `stock_items_backup_v1` et `activities_backup_v1` avant de les supprimer.
 > ⚠️ `v_stock` expose le prix sous le nom **`prix_unitaire_ht`** (et non `unit_price_ht`).
 > ⚠️ `references` est un **mot-clé réservé** MariaDB : ne jamais l'utiliser comme alias de colonne.
+> ✅ **Correctif appliqué** : La colonne `emplacement_id` manquait dans la table `articles`, empêchant la migration 0005 de s'appliquer. Cette colonne a été ajoutée manuellement puis la migration a été exécutée avec succès.
 
 > Sans ces variables, l'API démarre quand même : `/api/health` répond
 > `database: "unconfigured"` et les autres routes renvoient **503**. Le
-> frontend bascule automatiquement en mode local (bandeau d'information +
+> frontend bascule automatiquement en mode local (bandeau d'information + 
 > données de démonstration).
 
 ---
