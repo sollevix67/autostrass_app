@@ -18,12 +18,15 @@ CREATE TABLE IF NOT EXISTS articles (
   category       VARCHAR(64)  NOT NULL DEFAULT '',
   unit_price_ht  DECIMAL(12,2) NOT NULL DEFAULT 0.00,
   location       VARCHAR(64)  NOT NULL DEFAULT '',
-  description    TEXT         NULL,
-  created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY uq_articles_reference (reference)
-) ENGINE=InnoDB;
+    emplacement_id INT UNSIGNED          NULL,
+    description    TEXT         NULL,
+    created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_articles_reference (reference),
+    CONSTRAINT fk_articles_emplacement
+      FOREIGN KEY (emplacement_id) REFERENCES emplacements (id) ON DELETE SET NULL
+  ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------------
 -- Soldes par emplacement (1 ligne minimum par article)
@@ -60,17 +63,15 @@ CREATE TABLE IF NOT EXISTS stock_movements (
 -- ---------------------------------------------------------------------------
 -- Vues de lecture utilisees par l'API
 -- ---------------------------------------------------------------------------
-CREATE OR REPLACE VIEW v_stock AS
-SELECT
-  a.reference,
-  a.designation,
-  a.category,
-  a.unit_price_ht  AS prix_unitaire_ht,
-  a.location       AS emplacement,
+  emplacements AS emplacement,
+  ep.niveau,
+  ep.parent_id,
   s.quantity,
   s.minimum_quantity AS minimum
 FROM articles a
-JOIN stock_balances s ON s.reference_id = a.id;
+JOIN stock_balances s ON s.reference_id = a.id
+LEFT JOIN stock_par_emplacements spe ON spe.reference_id = a.id
+LEFT JOIN emplacements ep ON ep.id = spe.emplacement_id;
 
 -- ---------------------------------------------------------------------------
 -- Jeu de donnees de demonstration
@@ -93,3 +94,49 @@ FROM (
 ) s
 JOIN articles a ON a.reference = s.reference
 ON DUPLICATE KEY UPDATE quantity = VALUES(quantity), minimum_quantity = VALUES(minimum_quantity);
+
+-- ---------------------------------------------------------------------------
+-- Données de démo pour les emplacements hiérarchiques
+-- ---------------------------------------------------------------------------
+
+-- Allées (niveau 1)
+INSERT INTO emplacements (niveau, parent_id, code, libelle, capacite) VALUES
+  ('allee', NULL, 'A-01', 'Allée A-01', 100),
+  ('allee', NULL, 'A-02', 'Allée A-02', 100),
+  ('allee', NULL, 'A-03', 'Allée A-03', 100),
+  ('allee', NULL, 'A-04', 'Allée A-04', 100),
+  ('allee', NULL, 'A-05', 'Allée A-05', 100),
+  ('allee', NULL, 'B-01', 'Allée B-01', 100),
+  ('allee', NULL, 'B-02', 'Allée B-02', 100),
+  ('allee', NULL, 'C-01', 'Allée C-01', 100),
+  ('allee', NULL, 'C-02', 'Allée C-02', 100),
+  ('allee', NULL, 'D-01', 'Allée D-01', 100),
+  ('allee', NULL, 'D-02', 'Allée D-02', 100),
+  ('allee', NULL, 'D-03', 'Allée D-03', 100),
+  ('allee', NULL, 'D-04', 'Allée D-04', 100),
+  ('allee', NULL, 'D-05', 'Allée D-05', 100)
+ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
+
+-- Étagères (niveau 2) - sous allées
+INSERT INTO emplacements (niveau, parent_id, code, libelle, capacite)
+SELECT 'etagere', a.id, CONCAT(a.code, ' / E-', LPAD(e.num, 2, '0')), CONCAT('Étagère ', a.code, ' / E-', LPAD(e.num, 2, '0')), 20
+FROM emplacements a
+JOIN (SELECT 1 AS num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) e ON 1=1
+WHERE a.niveau = 'allee'
+ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
+
+-- Places (niveau 3) - sous étagères
+INSERT INTO emplacements (niveau, parent_id, code, libelle, capacite)
+SELECT 'place', e.id, CONCAT(e.code, ' / P-', LPAD(p.num, 2, '0')), CONCAT('Place ', e.code, ' / P-', LPAD(p.num, 2, '0')), 5
+FROM emplacements e
+JOIN (SELECT 1 AS num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20) p ON 1=1
+WHERE e.niveau = 'etagere'
+ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
+
+-- Stock par emplacement (exemple de quelques lignes)
+INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
+SELECT a.id, ep.id, sb.quantity
+FROM articles a
+JOIN stock_balances sb ON sb.reference_id = a.id
+JOIN emplacements ep ON ep.code = a.location
+ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);

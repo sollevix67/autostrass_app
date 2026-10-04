@@ -1,9 +1,8 @@
 // Étape 2 — schéma de données (emplacements, TVA, fournisseurs, audit, stock par emplacement)
 // Ce fichier est injecté dans `schema.ts` (manuel) pour éviter la perte d'exports.
 
-import { relations, sql } from 'drizzle-orm'
-import { mysqlTable, varchar, text, int, decimal, date, datetime, timestamp, boolean, primaryKey, index, uniqueIndex } from 'drizzle-orm/mysql-core'
-import type { UserRole } from './schema.js'
+import { sql } from 'drizzle-orm'
+import { mysqlTable, varchar, text, int, decimal, date, timestamp, boolean, primaryKey, index, uniqueIndex } from 'drizzle-orm/mysql-core'
 
 // NOTE: on réutilise `createdAt/updatedAt` définis dans schema.ts.
 // Ce fichier ne doit pas être importé directement dans drizzle-kit.

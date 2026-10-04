@@ -11,7 +11,7 @@ export type ArticleRow = {
   prixUnitaireHT: number
   quantite: number
   minimum: number
-  emplacement: string
+  emplacement: string  // Code hiérarchique "A-xx / E-xx / P-xx" (emprunte depuis stock_par_emplacements)
   description: string | null
 }
 
@@ -23,10 +23,11 @@ export type ArticleInput = {
   prixUnitaireHT: number
   quantite: number
   minimum: number
-  emplacement: string
+  emplacement?: string  // Optionnel: code hiérarchique si connu à la création
   description?: string
 }
 
+/** Contenu brut depuis MySQL (snake_case). */
 type ArticleRowPacket = RowDataPacket & {
   reference: string
   designation: string
@@ -34,10 +35,12 @@ type ArticleRowPacket = RowDataPacket & {
   unit_price_ht: number | string
   quantity: number
   minimum: number
-  location: string
+  location: string      // ancienne colonne (texte libre)
   description: string | null
+  emplacement_id: number | null  // nouvelle FK vers emplacements.id
 }
 
+/** Colonnes lues depuis la vue v_stock. */
 const SELECT_COLUMNS = `
   SELECT
     a.reference,
@@ -46,10 +49,16 @@ const SELECT_COLUMNS = `
     a.unit_price_ht,
     s.quantity,
     s.minimum_quantity AS minimum,
-    a.location,
-    a.description
+    a.location,               -- conservé pour compatibilité (texte libre)
+    a.description,
+    COALESCE(ep.code, a.location) AS emplacement, -- hiérarchique "A-xx / E-xx / P-xx"
+    ep.niveau,
+    ep.parent_id,
+    spe.emplacement_id
   FROM articles a
   JOIN stock_balances s ON s.reference_id = a.id
+  LEFT JOIN stock_par_emplacements spe ON spe.reference_id = a.id
+  LEFT JOIN emplacements ep ON ep.id = spe.emplacement_id
 `
 
 function toNumber(value: number | string | null | undefined): number {
@@ -58,6 +67,11 @@ function toNumber(value: number | string | null | undefined): number {
 }
 
 function mapRow(row: ArticleRowPacket): ArticleRow {
+  // Déduire le code hiérarchique : utiliser ep.code si présent, sinon la location texte libre
+  const codeHierarchique = row.emplacement_id !== null
+    ? row.code ?? row.location ?? ''
+    : row.location ?? ''
+
   return {
     reference: row.reference,
     designation: row.designation,
@@ -65,7 +79,7 @@ function mapRow(row: ArticleRowPacket): ArticleRow {
     prixUnitaireHT: toNumber(row.unit_price_ht),
     quantite: toNumber(row.quantity),
     minimum: toNumber(row.minimum),
-    emplacement: row.location,
+    emplacement: codeHierarchique,
     description: row.description,
   }
 }
@@ -91,7 +105,14 @@ export class ArticleRepository {
       const [result] = await connection.execute<ResultSetHeader>(
         `INSERT INTO articles (reference, designation, category, unit_price_ht, location, description)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [input.reference, input.designation, input.category, input.prixUnitaireHT, input.emplacement, input.description ?? null],
+        [
+          input.reference,
+          input.designation,
+          input.category,
+          input.prixUnitaireHT,
+          input.emplacement ?? '',
+          input.description ?? null,
+        ],
       )
 
       await connection.execute(
@@ -119,9 +140,17 @@ export class ArticleRepository {
 
       const [result] = await connection.execute<ResultSetHeader>(
         `UPDATE articles
-            SET designation = ?, category = ?, unit_price_ht = ?, location = ?, description = ?
+            SET designation = ?, category = ?, unit_price_ht = ?, location = ?, emplacement_id = ?, description = ?
           WHERE reference = ?`,
-        [input.designation, input.category, input.prixUnitaireHT, input.emplacement, input.description ?? null, reference],
+        [
+          input.designation,
+          input.category,
+          input.prixUnitaireHT,
+          input.emplacement ?? '',
+          null,
+          input.description ?? null,
+          reference,
+        ],
       )
 
       if (result.affectedRows === 0) {
