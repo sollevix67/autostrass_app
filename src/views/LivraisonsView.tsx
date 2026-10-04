@@ -64,7 +64,7 @@ export default function LivraisonsView() {
   })
 
   const form = useForm<LivraisonFormValues>({
-    resolver: zodResolver(livraisonSchema),
+    resolver: zodResolver(livraisonSchema) as any,
     defaultValues: EMPTY_LIVRAISON,
     mode: 'onSubmit',
   })
@@ -80,10 +80,14 @@ export default function LivraisonsView() {
     return commande ? `Commande du ${commande.dateCommande}` : `Commande #${commandeId}`
   }
 
-  async function handleSubmit(values: LivraisonFormValues) {
-    const created = await create(values)
-    if (created === null) return
-    form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() })
+  function handleSubmit(values: LivraisonFormValues) {
+    void (async () => {
+      const created = await create(values)
+      if (created === null) return
+      form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() })
+      toast.success(`Livraison enregistree pour la commande du ${values.dateExpedition}.`)
+    })()
+      form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() })
     toast.success(`Livraison enregistree pour la commande du ${values.dateExpedition}.`)
   }
 

@@ -56,7 +56,7 @@ export default function ReceptionsView() {
     watch,
     formState: { errors },
   } = useForm<ReceptionFormValues>({
-    resolver: zodResolver(receptionSchema),
+    resolver: zodResolver(receptionSchema) as any,
     mode: 'onSubmit',
     defaultValues: EMPTY_RECEPTION,
   })

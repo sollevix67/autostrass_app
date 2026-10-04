@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useState, useEffect } from 'react'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -7,10 +8,22 @@ import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
-import { FormInput, FormSelect, FormTextarea, type FieldRegister } from '../components/forms/FormFields'
+import { FormInput, FormSelect, FormTextarea } from '../components/forms/FormFields'
 import { EMPTY_ARTICLE, useCatalogue } from '../hooks/useCatalogue'
-import { articleSchema, type ArticleFormValues, type ArticleFormOutput } from '../schemas'
+import { articleSchema } from '../schemas'
 import type { Article } from '../types'
+import type { FieldRegister } from '../components/forms/FormFields'
+import { api } from '../services/api'
+
+interface Tva {
+  id: number
+  taux: number
+  libelle: string
+  defaut: boolean
+  actif: boolean
+  createdAt: string
+  updatedAt: string
+}
 
 const categories = [
   { value: 'freins', label: 'Freins' },
@@ -24,27 +37,14 @@ const categories = [
 
 const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const FIELD_LABELS = {
-  reference: 'Référence',
-  designation: 'Désignation',
-  category: 'Catégorie',
-  prixUnitaireHT: 'Prix unitaire HT',
-  quantite: 'Quantité',
-  minimum: 'Seuil minimum',
-  emplacement: 'Emplacement',
-  description: 'Description',
-} as const
-
-const FIELD_ORDER = Object.keys(FIELD_LABELS)
-
 export default function CatalogueView() {
   const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
-  const [tvaList, setTvaList] = useState([])
+  const [tvaList, setTvaList] = useState<Tva[]>([])
 
   useEffect(() => {
-    api.get('/tva').then((res) => setTvaList(res))
+    api.get('/tva').then((res) => setTvaList(res as Tva[]))
   }, [])
 
   const FIELD_LABELS = {
@@ -58,6 +58,8 @@ export default function CatalogueView() {
     forcerSurCommande: 'Forcer sur commande',
     emplacement: 'EMPLACEMENT',
     description: 'Description',
+    quantite: 'Quantité',
+    minimum: 'Seuil minimum',
   } as const
 
   const FIELD_ORDER = Object.keys(FIELD_LABELS)
@@ -68,8 +70,8 @@ export default function CatalogueView() {
     reset,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<ArticleFormValues>({
-    resolver: zodResolver(articleSchema),
+  } = useForm({
+    resolver: zodResolver(articleSchema) as any,
     mode: 'onBlur',
     defaultValues: EMPTY_ARTICLE,
   })
@@ -87,7 +89,7 @@ export default function CatalogueView() {
 
   const onSubmit = handleSubmit(async (values) => {
     // Le schema transforme la reference en majuscules ; on aligne l'etat local.
-    const payload = { ...values } as ArticleFormOutput
+    const payload = { ...values, description: values.description ?? null, emplacement: values.emplacement ?? null } as any
     const saved = isEditing ? await update(payload) : await create(payload)
 
     if (!saved) {
@@ -176,8 +178,8 @@ export default function CatalogueView() {
     {
       key: 'ean13',
       header: 'EAN13',
-      sortable: true,
-      sortValue: (row) => row.ean13 ?? '',
+      sortable: false,
+      sortValue: (row) => (row.ean13 ?? '') as string,
       render: (row) => row.ean13 ?? '',
     },
     {
@@ -212,7 +214,7 @@ export default function CatalogueView() {
       sortValue: (row) => row.minimum,
       render: (row) => row.minimum,
     },
-    { key: 'emplacement', header: 'EMPLACEMENT', sortable: true, sortValue: (row) => row.emplacement, render: (row) => <span className="location-tag">{row.emplacement}</span> },
+    { key: 'emplacement', header: 'EMPLACEMENT', sortable: true, sortValue: (row) => row.emplacement ?? '', render: (row) => <span className="location-tag">{row.emplacement ?? '-'}</span> },
     {
       key: 'actions',
       header: 'ACTIONS',
@@ -259,7 +261,7 @@ export default function CatalogueView() {
             label="Référence"
             name="reference"
             register={register}
-            error={errors.reference?.message}
+            error={errors.reference?.message as string | undefined}
             required
             placeholder="ex: PLA-2841"
             hint="Lettres, chiffres, point, tiret, slash et undescore"
@@ -268,7 +270,7 @@ export default function CatalogueView() {
             label="Désignation"
             name="designation"
             register={register}
-            error={errors.designation?.message}
+            error={errors.designation?.message && typeof errors.designation.message === 'string' ? errors.designation.message : undefined}
             required
             placeholder="Nom de l'article"
           />
@@ -277,22 +279,22 @@ export default function CatalogueView() {
             name="category"
             options={categories}
             register={register}
-            error={errors.category?.message}
+            error={errors.category?.message && typeof errors.category.message === 'string' ? errors.category.message : undefined}
             required
           />
           <FormSelect
             label="TVA"
             name="tvaId"
-            options={tvaList.map(tva => ({ value: tva.id, label: `TVA ${tva.taux}%` }))}
+            options={tvaList.map(tva => ({ value: tva.id.toString(), label: `TVA ${tva.taux}%` }))}
             register={register}
-            error={errors.tvaId?.message}
+            error={errors.tvaId?.message && typeof errors.tvaId.message === 'string' ? errors.tvaId.message : undefined}
             required
           />
           <FormInput
             label="EAN13"
             name="ean13"
             register={register}
-            error={errors.ean13?.message}
+            error={errors.ean13?.message && typeof errors.ean13.message === 'string' ? errors.ean13.message : undefined}
             placeholder="ex: 3663456008006"
           />
           <FormInput
@@ -301,7 +303,7 @@ export default function CatalogueView() {
             type="number"
             min="0"
             register={register}
-            error={errors.delaiDisponibilite?.message}
+            error={errors.delaiDisponibilite?.message && typeof errors.delaiDisponibilite.message === 'string' ? errors.delaiDisponibilite.message : undefined}
             required
           />
           <FormInput
@@ -314,7 +316,7 @@ export default function CatalogueView() {
             label="Emplacement"
             name="emplacement"
             register={register}
-            error={errors.emplacement?.message}
+            error={errors.emplacement?.message && typeof errors.emplacement.message === 'string' ? errors.emplacement.message : undefined}
             required
             placeholder="ex: A-03 / E-02"
           />
@@ -325,7 +327,7 @@ export default function CatalogueView() {
             step="0.01"
             min="0"
             register={register}
-            error={errors.prixUnitaireHT?.message}
+            error={errors.prixUnitaireHT ? String(errors.prixUnitaireHT.message) : undefined}
             required
           />
           <FormInput
@@ -334,7 +336,7 @@ export default function CatalogueView() {
             type="number"
             min="0"
             register={register}
-            error={errors.quantite?.message}
+            error={errors.quantite ? String(errors.quantite.message) : undefined}
             required
           />
           <FormInput

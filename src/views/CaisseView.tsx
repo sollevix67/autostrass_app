@@ -32,8 +32,6 @@ import { useAuth, canWrite } from '../components/useAuth'
 import {
   caisseClotureSchema,
   caisseOuvertureSchema,
-  type CaisseClotureFormValues,
-  type CaisseOuvertureFormValues,
 } from '../schemas'
 import { CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, formatDenomination, formatEuros } from '../options'
 import type { ApiCashMovement } from '../services/contracts'
@@ -60,17 +58,17 @@ export default function CaisseView() {
   const canEdit = canWrite(user?.role, 'caisse')
 
   // --- Formulaire d'ouverture ----------------------------------------------
-  const opening = useForm<CaisseOuvertureFormValues>({
+  const opening = useForm({
     resolver: zodResolver(caisseOuvertureSchema),
     defaultValues: { fondsCaisse: 150, notes: '' },
     mode: 'onSubmit',
   })
-  const openingRegister = opening.register as unknown as FieldRegister
+  const openingRegister = opening.register
 
   // --- Formulaire de cloture ------------------------------------------------
   // Le comptage est pre-rempli avec les coupures courantes a quantite nulle :
   // le caissier remplit ce qu'il compte, il n'a pas a construire une liste.
-  const closing = useForm<CaisseClotureFormValues>({
+  const closing = useForm({
     resolver: zodResolver(caisseClotureSchema),
     defaultValues: {
       comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
@@ -82,10 +80,10 @@ export default function CaisseView() {
   const { fields: countFields } = useFieldArray({ control: closing.control, name: 'comptage' })
 
   const watchedCount = closing.watch('comptage')
-  const totalComptage = useMemo(
-    () => (watchedCount ?? []).reduce((sum, line) => sum + (line.denomination || 0) * (line.quantite || 0), 0),
-    [watchedCount],
-  )
+  const totalComptage = useMemo(() => {
+    const safe = watchedCount ?? []
+    return safe.reduce((acc, line) => acc + (line.denomination ?? 0) * (line.quantite ?? 0), 0)
+  }, [watchedCount])
 
   // Le solde theorique du tiroir, tant que la session est ouverte : fond
   // remis + especes encaissees. La monnaie rendue est deja deduite par le
@@ -205,7 +203,7 @@ export default function CaisseView() {
                 type="number"
                 step="0.01"
                 min="0"
-                register={openingRegister}
+                register={openingRegister as FieldRegister}
                 error={opening.formState.errors.fondsCaisse?.message}
                 hint="Montant remis dans le tiroir a l'ouverture."
                 required
@@ -214,7 +212,7 @@ export default function CaisseView() {
                 label="Notes"
                 name="notes"
                 rows={3}
-                register={openingRegister}
+                register={openingRegister as FieldRegister}
                 error={opening.formState.errors.notes?.message}
                 placeholder="Optionnel : consigne de depot, particularite..."
               />

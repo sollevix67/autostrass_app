@@ -8,6 +8,8 @@ import { Icon } from '../components/Icon'
 import { useStock, type StockFilter } from '../hooks/useStock'
 import { toNumber } from '../utils/coerce'
 import type { Article } from '../types'
+import { FormInput } from '../components/forms/FormFields'
+// import type { FieldRegister } from '../components/forms/FormFields'
 
 const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -86,8 +88,7 @@ export default function StockView() {
       render: (row) => <b className="reference">{row.reference}</b>,
     },
     { key: 'designation', header: 'DESIGNATION', sortable: true, sortValue: (row) => row.designation, render: (row) => row.designation },
-    { key: 'emplacement', header: 'EMPLACEMENT', sortable: true, sortValue: (row) => row.emplacement, render: (row) => <span className="location-tag">{row.emplacement}</span> },
-    {
+    { key: 'emplacement', header: 'EMPLACEMENT', sortable: true,     sortValue: (row) => row.emplacement ?? '', render: (row) => <span className="location-tag">{row.emplacement}</span> },    {
       key: 'quantite',
       header: 'DISPONIBLE',
       align: 'right',
@@ -239,7 +240,7 @@ export default function StockView() {
               type="number"
               min="0"
               value={String(editing.quantite)}
-              onChange={(_name, value) => updateEditing({ quantite: Math.max(0, toNumber(value)) })}
+              onChange={(_, value: string) => updateEditing({ quantite: Math.max(0, toNumber(value)) })}
             />
             <FormInput
               label="Seuil minimum"
@@ -247,7 +248,7 @@ export default function StockView() {
               type="number"
               min="0"
               value={String(editing.minimum)}
-              onChange={(_name, value) => updateEditing({ minimum: Math.max(0, toNumber(value)) })}
+              onChange={(_, value: string) => updateEditing({ minimum: Math.max(0, toNumber(value)) })}
             />
             <div className="form-actions">
               <button className="primary-button" onClick={() => void handleSaveEdit()} disabled={savingEdit || saving}>

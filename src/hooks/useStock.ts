@@ -107,7 +107,7 @@ export function useStock(): UseStockResult {
       return (
         item.reference.toLowerCase().includes(needle) ||
         item.designation.toLowerCase().includes(needle) ||
-        item.emplacement.toLowerCase().includes(needle)
+        (item.emplacement ?? '').toLowerCase().includes(needle)
       )
     })
   }, [articles, filter, query])

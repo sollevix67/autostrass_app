@@ -76,12 +76,12 @@ export interface Article {
   prixUnitaireHT: number
   quantite: number
   minimum: number
-  emplacement: string
-  description?: string
+  emplacement: string | null
+  description: string | null
   
   // Nouveaux champs catalogue (etape 2)
   tvaId: number
-  ean13?: string | null
+  ean13: string | null
   delaiDisponibilite: number
   forcerSurCommande: boolean
   prixUnitaireTTC: number

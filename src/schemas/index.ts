@@ -19,8 +19,7 @@ const optionalText = (label: string, max = 2000) =>
     .string()
     .trim()
     .max(max, `${label} ne doit pas depasser ${max} caracteres.`)
-    .optional()
-    .or(z.literal(''))
+    .transform((val) => (val === '' ? undefined : val))
 
 const nonNegative = (label: string) =>
   z
@@ -110,8 +109,7 @@ export const articleSchema = z.object({
     .trim()
     .max(64, 'Emplacement trop long.')
     .optional()
-    .or(z.literal(''))
-    .transform((val) => val === '' ? null : val),
+    .transform((val) => (val === '' || val === undefined) ? null : val),
   description: optionalText('La description'),
   delaiDisponibilite: z.number({ message: 'Le délai de disponibilité est requis.' }).int().nonnegative(),
   forcerSurCommande: z.boolean(),
@@ -330,14 +328,26 @@ export const caisseClotureSchema = z.object({
 export type ArticleFormValues = z.input<typeof articleSchema>
 export type ArticleFormOutput = z.output<typeof articleSchema>
 export type ReceptionFormValues = z.input<typeof receptionSchema>
+export type ReceptionFormOutput = z.output<typeof receptionSchema>
 export type DocumentLineFormValues = z.input<typeof documentLineSchema>
+export type DocumentLineFormOutput = z.output<typeof documentLineSchema>
 export type CartLineFormValues = z.input<typeof cartLineSchema>
+export type CartLineFormOutput = z.output<typeof cartLineSchema>
 export type ClientFormValues = z.input<typeof clientSchema>
+export type ClientFormOutput = z.output<typeof clientSchema>
 export type VehiculeFormValues = z.input<typeof vehiculeSchema>
+export type VehiculeFormOutput = z.output<typeof vehiculeSchema>
 export type UtilisateurFormValues = z.input<typeof utilisateurSchema>
+export type UtilisateurFormOutput = z.output<typeof utilisateurSchema>
 export type LivraisonFormValues = z.input<typeof livraisonSchema>
+export type LivraisonFormOutput = z.output<typeof livraisonSchema>
 export type CommandeFormValues = z.input<typeof commandeSchema>
+export type CommandeFormOutput = z.output<typeof commandeSchema>
 export type RetourFormValues = z.input<typeof retourSchema>
+export type RetourFormOutput = z.output<typeof retourSchema>
 export type CaisseOuvertureFormValues = z.input<typeof caisseOuvertureSchema>
+export type CaisseOuvertureFormOutput = z.output<typeof caisseOuvertureSchema>
 export type ComptageLineFormValues = z.input<typeof comptageLineSchema>
+export type ComptageLineFormOutput = z.output<typeof comptageLineSchema>
 export type CaisseClotureFormValues = z.input<typeof caisseClotureSchema>
+export type CaisseClotureFormOutput = z.output<typeof caisseClotureSchema>

@@ -13,6 +13,7 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 12,
     minimum: 6,
     emplacement: 'A-03 / E-02 / P-14',
+    description: null,
     tvaId: 1, // TVA normale 20%
     ean13: '3663456008006',
     delaiDisponibilite: 0,
@@ -27,6 +28,7 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 3,
     minimum: 8,
     emplacement: 'B-01 / E-04 / P-02',
+    description: null,
     tvaId: 1, // TVA normale 20%
     ean13: '3663456008013',
     delaiDisponibilite: 0,
@@ -41,6 +43,7 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 6,
     minimum: 4,
     emplacement: 'C-02 / E-01 / P-08',
+    description: null,
     tvaId: 1, // TVA normale 20%
     ean13: '3663456008020',
     delaiDisponibilite: 0,
@@ -55,6 +58,7 @@ export const SEED_ARTICLES: Article[] = [
     quantite: 14,
     minimum: 10,
     emplacement: 'D-05 / E-03 / P-21',
+    description: null,
     tvaId: 1, // TVA normale 20%
     ean13: '3663456008037',
     delaiDisponibilite: 0,
@@ -70,8 +74,8 @@ export const EMPTY_ARTICLE: Article = {
   prixUnitaireHT: 0,
   quantite: 0,
   minimum: 0,
-  emplacement: '',
-  description: '',
+  emplacement: null,
+  description: null,
   tvaId: 1,
   ean13: null,
   delaiDisponibilite: 0,
