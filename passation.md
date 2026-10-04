@@ -8,6 +8,7 @@
 > `prefers-color-scheme` et bascule manuelle.
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
+> tables ajoutées pour emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et journal d'audit. **Migration des emplacements des articles en cours**.
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
 > journal d'audit. Travail en cours sur la versionnage/ordre des migrations.
 >
@@ -300,7 +301,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 |---|---|---|
 | Gestion des utilisateurs | ✅ API | — (documents PDF non produits) |
 | Carnet d'adresses clients | ✅ API | Autocomplétion d'adresses (étape 5) |
-| Gestion de stock | ✅ API | Emplacement en texte libre, pas allée → étagère → place |
+| Gestion de stock | 🟡 En cours | Emplacement en cours de migration vers emplacements (allée → étagère → place) |
 | Catalogues HT/TTC | ✅ API (v1) | Prix **HT seul** : ni TVA, ni prix TTC |
 | Réception fournisseurs | ✅ API | Fournisseur en texte libre, **pas de carnet** (étape 2) |
 | Vente au comptoir | ✅ API | **Caisse complète + NF525** (section 13). Reste les documents PDF |
