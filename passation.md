@@ -484,12 +484,12 @@ npm run preview    # prévisualiser le build
 # Base de données (Drizzle)
 npm run db:generate # génère une migration depuis server/db/schema.ts
 npm run db:migrate  # applique les migrations en attente
-npm run db:seed     # jeu de démonstration (idempotent)
+npm run db:seed     # jeu de démonstration ; contrôle la conservation du stock
 npm run db:studio   # interface d'exploration
 
 # Tests
-npm run test:api      # 69 assertions de bout en bout (API démarrée requise)
-npm run test:security # 58 assertions d'injection / CSRF / en-têtes
+npm run test:api      # suite de bout en bout (API démarrée requise ; 121 vérifications au dernier passage)
+npm run test:security # tests d'injection / CSRF / en-têtes (58 vérifications au dernier passage)
 npm run test:repos    # lecture de la base réelle par repository
 ```
 
@@ -825,6 +825,11 @@ réussis. `npm run db:migrate` confirme un journal Drizzle aligné jusqu'à
 quatre articles portent chacun cinq allocations préexistantes, chacune égale
 au stock catalogue complet. Le seed conserve ces affectations et n'a pas été
 autorisé à redistribuer du stock automatiquement.
+
+**À poursuivre** : déterminer les affectations voulues pour ces données
+fictives, corriger les allocations de test de façon explicite, puis relancer
+`npm run db:seed` et vérifier que le contrôle de conservation passe. Ne pas
+masquer l'écart ni supprimer les allocations sans établir leur origine.
 
 ---
 
