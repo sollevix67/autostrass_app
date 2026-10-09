@@ -19,13 +19,14 @@
 > pas dans le journal Drizzle. Ne pas réappliquer ni modifier cet historique
 > avant d'avoir vérifié son état sur les bases concernées.
 >
-> 🔎 Revue complète du code effectuée le 2026-10-09 : 4 constats de sévérité
-> haute et 4 de sévérité moyenne consignés dans
-> [SECURITY-REVIEW.md](./SECURITY-REVIEW.md). Les correctifs restent à faire.
+> 🔐 Correctifs de la revue : 7 constats corrigés dans le code et le bootstrap ;
+> la réconciliation du journal des migrations `0005`/`0006` reste bloquée tant
+> que l'état des bases existantes n'est pas établi. Voir
+> [SECURITY-REVIEW.md](./SECURITY-REVIEW.md).
 >
-> ✅ Build validé le 2026-10-09. Le lint signale deux avertissements
-> préexistants dans `src/App.tsx`. Les tests API n'ont pas été lancés, car
-> leur script manipule la base réelle et sa configuration n'a pas été vérifiée.
+> ✅ Build et lint relancés après les correctifs : voir le bilan de validation
+> en section 14. Les tests qui écrivent en base n'ont pas été lancés, leur
+> configuration n'étant pas confirmée comme isolée.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -566,9 +567,22 @@ mysql -h HOST -u USER -p < database/schema.sql
 # 2. Schema v2 (8 metiers) — 12 tables supplementaires
 npm run db:migrate
 
-# 3. Jeu de demonstration (optionnel)
+# 3. Initialiser le taux de TVA requis par la migration 0006
+mysql -h HOST -u USER -p autostrass -e "INSERT INTO tva (taux, libelle, defaut, actif) VALUES (20.00, 'TVA normale 20 %', TRUE, TRUE) ON DUPLICATE KEY UPDATE defaut = TRUE, actif = TRUE"
+
+# 4. Migrations catalogue historiques (base neuve uniquement)
+mysql -h HOST -u USER -p autostrass < database/drizzle/0005_migrate_articles_location_to_emplacement.sql
+grep -v '^--> statement-breakpoint$' database/drizzle/0006_add_catalogue_fields_and_compatibilite.sql | mysql -h HOST -u USER -p autostrass
+
+# 5. Jeu de demonstration (optionnel)
 npm run db:seed
 ```
+
+> ⚠️ Ce chemin manuel ne doit pas être appliqué à une base existante avant
+> d'avoir vérifié l'état des migrations `0005` et `0006` et effectué une
+> sauvegarde. Ces deux fichiers restent absents du journal Drizzle.
+> `database/schema.sql` crée uniquement le socle catalogue v1, pas le schéma
+> complet de l'application.
 
 > `database/seed_v2.sql` est idempotent (4 utilisateurs, 4 clients,
 > 4 vehicules, 1 commande + livraison, 1 reception, 1 vente + retour).
@@ -577,7 +591,8 @@ npm run db:seed
 > `stock_items_backup_v1` et `activities_backup_v1` avant de les supprimer.
 > ⚠️ `v_stock` expose le prix sous le nom **`prix_unitaire_ht`** (et non `unit_price_ht`).
 > ⚠️ `references` est un **mot-clé réservé** MariaDB : ne jamais l'utiliser comme alias de colonne.
-> ✅ **Correctif appliqué** : La colonne `emplacement_id` manquait dans la table `articles`, empêchant la migration 0005 de s'appliquer. Cette colonne a été ajoutée manuellement puis la migration a été exécutée avec succès.
+> ℹ️ La colonne `emplacement_id` est dans le schéma catalogue v1 pour permettre
+> à la migration historique `0005` de migrer les emplacements existants.
 
 > Sans ces variables, l'API démarre quand même : `/api/health` répond
 > `database: "unconfigured"` et les autres routes renvoient **503**. Le
@@ -765,44 +780,43 @@ Build ✅ · lint ✅ 0 warning · **111/111** tests API (+ 42 sur la caisse et
 NF525) · **58/58** tests sécurité. Cycle d'archivage validé de bout en bout :
 export → relecture hors base → vérification de chaîne intacte.
 
-## 14. 🔎 Revue complète du code — 2026-10-09
+## 14. 🔎 Revue complète du code et correctifs — 2026-10-09
 
 La revue statique détaillée est consignée dans
-[SECURITY-REVIEW.md](./SECURITY-REVIEW.md). Aucun correctif n'a été appliqué
-pendant la revue. Actions prioritaires restantes :
+[SECURITY-REVIEW.md](./SECURITY-REVIEW.md). Correctifs appliqués :
 
-1. **À faire — Protéger les mutations articles/stock** : dans
-   `server/index.ts`, exiger authentification, validation CSRF et rôle
-   d'écriture sur les routes de création, modification, ajustement et
-   suppression ; ajouter des tests de non-régression pour les appels anonymes.
-2. **À faire — Restreindre la clôture de caisse au propriétaire** :
-   vérifier l'appartenance de la session avant clôture ; définir et auditer
-   explicitement toute dérogation administrateur.
-3. **À faire — Sérialiser clôture et ventes** : verrouiller la ligne de session
-   dès le début de la transaction de clôture afin que le calcul inclue toute
-   vente concurrente.
-4. **À faire — Rendre le bootstrap SQL exécutable** : créer les dépendances
-   dans le bon ordre et corriger les définitions de vues de `database/schema.sql`,
-   ou documenter un chemin d'installation unique et vérifié.
-5. **À faire — Réconcilier les migrations 0005/0006** : établir l'état de
-   chaque base et le chemin versionné à suivre ; ne pas appliquer ces scripts
-   à l'aveugle.
-6. **À faire — Garantir la conservation du stock dans le seed** :
-   contraindre les jointures par parent hiérarchique et vérifier que les
-   allocations par emplacement égalent le solde catalogue.
-7. **À faire — Corriger le mapping de l'emplacement article** : renvoyer
-   l'alias hiérarchique sélectionné par la requête plutôt que l'ancien texte.
-8. **À faire — Sécuriser le script de clôture des sessions** :
-   `scripts/close-open-sessions.ts` ne doit pas clôturer toutes les sessions
-   en écrivant des totaux et écarts à zéro ; limiter son périmètre et préserver
-   les valeurs financières.
+1. **Corrigé** — Les mutations d'articles exigent maintenant authentification,
+   CSRF et rôle magasinier (les administrateurs gardent le privilège prévu par
+   `requireRole`). Des tests de refus anonyme, sans CSRF et pour un caissier
+   ont été ajoutés.
+2. **Corrigé** — La clôture vérifie le propriétaire de la session, y compris
+   pour un administrateur, et refuse une session étrangère.
+3. **Corrigé** — La clôture verrouille la session avant de calculer les
+   recettes ; elle se sérialise ainsi avec les ventes verrouillant la même
+   session.
+4. **Corrigé** — `database/schema.sql` initialise un socle catalogue v1
+   cohérent. Le chemin de déploiement est documenté, avec les prérequis des
+   migrations historiques.
+5. **Bloqué / à réconcilier** — `0005` et `0006` ne sont toujours pas dans le
+   journal Drizzle. Leur état varie potentiellement selon les bases ; aucune
+   modification du journal ni réexécution automatique n'a été faite.
+6. **Corrigé** — Le seed borne les emplacements par parent et alloue le stock
+   sans le multiplier. `scripts/seed.ts` vérifie que les sommes allouées
+   correspondent aux soldes catalogue ; il signale les écarts préexistants
+   sans les écraser.
+7. **Corrigé** — Le mapper d'article utilise désormais l'alias `emplacement`
+   sélectionné par la requête.
+8. **Corrigé** — `scripts/close-open-sessions.ts` est devenu un diagnostic en
+   lecture seule ; il ne ferme plus de session et n'écrit pas de faux totaux.
+   La commande correspondante s'appelle maintenant `npm run caisse:diagnostic`.
 
-**Validation de la revue** : le build et le lint ont réussi ; le lint conserve
-deux avertissements `react(purity)` dans `src/App.tsx`. Les tests API, sécurité
-et base de données n'ont pas été lancés, car ils peuvent modifier la base
-réelle. L'état des migrations appliquées sur les bases déployées n'a pas été
-vérifié. Les 111 tests API et 58 tests sécurité cités à la section 13.6
-correspondent à la dernière campagne documentée antérieure, pas à cette revue.
+**Validation** : `npm run build` réussi. `npm run lint` réussi avec deux
+avertissements `react(purity)` préexistants dans `src/App.tsx` (lignes
+201–202). Le build signale aussi un bundle JavaScript principal légèrement
+supérieur à 500 kB. Les tests API/sécurité et les scripts de migration/seed
+n'ont pas été exécutés : ils peuvent écrire en base, et aucune base isolée n'a
+été confirmée. L'état réel des migrations des bases existantes reste à établir
+avant tout changement du journal.
 
 ---
 

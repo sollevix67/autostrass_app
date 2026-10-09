@@ -36,6 +36,7 @@ type ArticleRowPacket = RowDataPacket & {
   quantity: number
   minimum: number
   location: string      // ancienne colonne (texte libre)
+  emplacement: string | null
   description: string | null
   emplacement_id: number | null  // nouvelle FK vers emplacements.id
 }
@@ -67,11 +68,6 @@ function toNumber(value: number | string | null | undefined): number {
 }
 
 function mapRow(row: ArticleRowPacket): ArticleRow {
-  // Déduire le code hiérarchique : utiliser ep.code si présent, sinon la location texte libre
-  const codeHierarchique = row.emplacement_id !== null
-    ? row.code ?? row.location ?? ''
-    : row.location ?? ''
-
   return {
     reference: row.reference,
     designation: row.designation,
@@ -79,7 +75,7 @@ function mapRow(row: ArticleRowPacket): ArticleRow {
     prixUnitaireHT: toNumber(row.unit_price_ht),
     quantite: toNumber(row.quantity),
     minimum: toNumber(row.minimum),
-    emplacement: codeHierarchique,
+    emplacement: row.emplacement ?? row.location ?? '',
     description: row.description,
   }
 }

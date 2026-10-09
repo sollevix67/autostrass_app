@@ -39,7 +39,7 @@ function check(label: string, condition: boolean, detail?: unknown): void {
 
 async function call(
   path: string,
-  options: { method?: string; body?: unknown; token?: string } = {},
+  options: { method?: string; body?: unknown; token?: string; includeCsrf?: boolean } = {},
 ): Promise<{ status: number; body: any }> {
   const headers: Record<string, string> = {}
   if (options.body !== undefined) headers['content-type'] = 'application/json'
@@ -47,7 +47,9 @@ async function call(
   // Le serveur lit l 'authentification dans l 'en-tete Bearer, mais verifie
   // aussi le jeton CSRF par double soumission : cookie + en-tete.
   if (cookie) headers.cookie = cookie
-  if (csrf && options.method !== undefined && options.method !== 'GET') headers['x-csrf-token'] = csrf
+  if (options.includeCsrf !== false && csrf && options.method !== undefined && options.method !== 'GET') {
+    headers['x-csrf-token'] = csrf
+  }
 
   const response = await fetch(`${BASE}${path}`, {
     method: options.method ?? 'GET',
@@ -114,6 +116,17 @@ for (const path of ['/api/clients', '/api/vehicules', '/api/utilisateurs', '/api
 }
 check('le refus 401 est type', (await call('/api/clients')).body?.error === 'UNAUTHENTICATED')
 
+const anonymousArticleReference = `__anonymous_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+for (const [method, path, body] of [
+  ['POST', '/api/articles', {}],
+  ['PUT', `/api/articles/${anonymousArticleReference}`, {}],
+  ['PATCH', `/api/articles/${anonymousArticleReference}/quantite`, {}],
+  ['DELETE', `/api/articles/${anonymousArticleReference}`, undefined],
+] as const) {
+  const response = await call(path, { method, body })
+  check(`${method} ${path} sans authentification repond 401`, response.status === 401, response)
+}
+
 // --- Connexion -------------------------------------------------------------
 console.log('\nAuthentification')
 const adminToken = await login('marie.laurent@autostrass.fr')
@@ -124,6 +137,21 @@ check('connexion magasinier', magasinierToken !== null)
 
 const caissierToken = await login('sophie.bernard@autostrass.fr')
 check('connexion caissier', caissierToken !== null)
+
+const articleSansCsrf = await call('/api/articles', {
+  method: 'POST',
+  token: adminToken!,
+  body: {},
+  includeCsrf: false,
+})
+check('une mutation article sans jeton CSRF est refusee (403)', articleSansCsrf.status === 403, articleSansCsrf)
+
+const articleParCaissier = await call('/api/articles', {
+  method: 'POST',
+  token: caissierToken!,
+  body: {},
+})
+check('un caissier ne modifie pas le catalogue (403)', articleParCaissier.status === 403, articleParCaissier)
 
 console.log('\nEmplacements de stock')
 const locations = await call('/api/emplacements', { token: adminToken ?? undefined })
@@ -508,6 +536,17 @@ check('POST /api/caisse/ouvrir repond 201', ouverture.status === 201, ouverture.
 check('la session est ouverte', ouverture.body?.statut === 'ouverte', ouverture.body?.statut)
 check('le fond de caisse est conserve', ouverture.body?.fondsCaisse === 200, ouverture.body?.fondsCaisse)
 const sessionId = ouverture.body?.id as number
+
+const clotureParUnAutreUtilisateur = await call(`/api/caisse/${sessionId}/cloturer`, {
+  method: 'POST',
+  token: adminToken!,
+  body: { comptage: [] },
+})
+check(
+  'un utilisateur ne cloture pas la caisse d un autre (404)',
+  clotureParUnAutreUtilisateur.status === 404,
+  clotureParUnAutreUtilisateur,
+)
 
 check(
   'un magasinier n ouvre pas de caisse (403)',

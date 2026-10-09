@@ -57,6 +57,22 @@ for (const [index, statement] of list.entries()) {
   }
 }
 
+const [stockMismatchRows] = await connection.query(`
+  SELECT sb.reference_id, sb.quantity, COALESCE(SUM(spe.quantite), 0) AS allocated
+  FROM stock_balances sb
+  LEFT JOIN stock_par_emplacements spe ON spe.reference_id = sb.reference_id
+  GROUP BY sb.reference_id, sb.quantity
+  HAVING allocated <> sb.quantity
+`)
+const stockMismatches = stockMismatchRows as Array<{ reference_id: number; quantity: number; allocated: number }>
+if (stockMismatches.length > 0) {
+  failures += 1
+  console.error('\nEcart entre le stock catalogue et les allocations par emplacement :')
+  for (const row of stockMismatches) {
+    console.error(`  article #${row.reference_id}: catalogue=${row.quantity}, emplacements=${row.allocated}`)
+  }
+}
+
 /** Tables peuplees par le seed, dans l'ordre d'affichage. */
 const SEEDED_TABLES = [
   'users',

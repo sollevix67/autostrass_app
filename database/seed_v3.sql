@@ -74,8 +74,9 @@ ON DUPLICATE KEY UPDATE libelle = VALUES(libelle), capacite = VALUES(capacite);
 -- Stock reparti par emplacement.
 --
 -- Repartition **derivee de la base**, pas de references codees en dur : chaque
--- article existant est place sur la premiere place de la premiere allee, et la
--- moitie de son stock sur une deuxieme place quand il y en a une.
+-- article sans affectation est affecte a une seule place deterministe. Les
+-- affectations existantes sont conservees ; les codes courts (P-01, E-01) se
+-- repetent sous plusieurs parents et ne sont pas des cles.
 --
 -- Deux raisons a cette ecriture. La premiere est la robustesse : un jeu de
 -- demonstration qui nomme `PLA-2841` produit silencieusement zero ligne sur une
@@ -86,23 +87,22 @@ ON DUPLICATE KEY UPDATE libelle = VALUES(libelle), capacite = VALUES(capacite);
 -- deux nombres saisis a la main.
 -- ---------------------------------------------------------------------------
 INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
-SELECT a.id, p.id, CEIL(s.quantity / 2)
+SELECT a.id, p.id, s.quantity
 FROM articles a
 JOIN stock_balances s ON s.reference_id = a.id
-JOIN emplacements p ON p.niveau = 'place' AND p.code = 'P-01'
+JOIN (
+  SELECT id
+  FROM emplacements
+  WHERE niveau = 'place'
+  ORDER BY id
+  LIMIT 1
+) p ON 1 = 1
 WHERE s.quantity > 0
-ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);
-
--- Seconde place : le reliquat. `quantity - CEIL(quantity/2)` vaut `FLOOR`,
--- et les deux moities redonnent exactement le total. Ligne volontairement
--- absente pour les articles dont le stock tient sur une seule place.
-INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
-SELECT a.id, p.id, s.quantity - CEIL(s.quantity / 2)
-FROM articles a
-JOIN stock_balances s ON s.reference_id = a.id
-JOIN emplacements e ON e.niveau = 'etagere' AND e.code = 'E-01'
-JOIN emplacements p ON p.parent_id = e.id AND p.niveau = 'place' AND p.code = 'P-02'
-WHERE s.quantity >= 2
+  AND NOT EXISTS (
+    SELECT 1
+    FROM stock_par_emplacements existing
+    WHERE existing.reference_id = a.id
+  )
 ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);
 
 -- ---------------------------------------------------------------------------

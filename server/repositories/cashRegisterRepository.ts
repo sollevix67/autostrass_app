@@ -382,6 +382,7 @@ export class CashRegisterRepository {
    */
   async close(input: {
     sessionId: number
+    utilisateurId: number
     comptage: CashBreak[]
     notes?: string
   }): Promise<CashSessionRow> {
@@ -389,12 +390,18 @@ export class CashRegisterRepository {
       const rows = await tx
         .select()
         .from(schema.cashSessions)
-        .where(eq(schema.cashSessions.id, input.sessionId))
+        .where(
+          and(
+            eq(schema.cashSessions.id, input.sessionId),
+            eq(schema.cashSessions.utilisateur_id, input.utilisateurId),
+          ),
+        )
         .limit(1)
+        .for('update')
       const session = rows[0]
 
       if (!session) {
-        throw new RepositoryError(404, 'NOT_FOUND', 'Session de caisse introuvable.')
+        throw new RepositoryError(404, 'NOT_FOUND', 'Session de caisse introuvable ou non attribuee a cet utilisateur.')
       }
       if (session.statut === 'clôturée') {
         throw new RepositoryError(409, 'SESSION_DEJA_CLOTUREE', 'Cette session de caisse est deja cloturee.')

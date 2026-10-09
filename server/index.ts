@@ -9,7 +9,8 @@ import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
 import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
-import { requireAuth } from './middleware/auth.js'
+import { requireAuth, requireRole } from './middleware/auth.js'
+import { requireCsrf } from './middleware/csrf.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -295,7 +296,7 @@ app.get('/api/articles/:reference', async (request: Request, response: Response)
   }
 })
 
-app.post('/api/articles', async (request: Request, response: Response) => {
+app.post('/api/articles', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
   const validation = validateArticleBody(request.body)
   if (!validation.ok) {
     sendValidationError(response, validation.errors)
@@ -316,7 +317,7 @@ app.post('/api/articles', async (request: Request, response: Response) => {
   }
 })
 
-app.put('/api/articles/:reference', async (request: Request, response: Response) => {
+app.put('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
   const reference = routeParam(request, 'reference')
   if (reference === null) {
     notFound(response, 'Article')
@@ -348,7 +349,7 @@ app.put('/api/articles/:reference', async (request: Request, response: Response)
   }
 })
 
-app.patch('/api/articles/:reference/quantite', async (request: Request, response: Response) => {
+app.patch('/api/articles/:reference/quantite', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
   const reference = routeParam(request, 'reference')
   if (reference === null) {
     notFound(response, 'Article')
@@ -376,7 +377,7 @@ app.patch('/api/articles/:reference/quantite', async (request: Request, response
   }
 })
 
-app.delete('/api/articles/:reference', async (request: Request, response: Response) => {
+app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
   const reference = routeParam(request, 'reference')
   if (reference === null) {
     notFound(response, 'Article')

@@ -1,12 +1,10 @@
 /**
- * Ferme les sessions de caisse restees ouvertes, hors celle du caissier
- * connecte s'il en a une.
+ * Diagnostic en lecture seule des sessions de caisse restees ouvertes.
  *
- * Usage : npx tsx scripts/close-open-sessions.ts
+ * Usage : npm run caisse:diagnostic
  *
- * Utile apres une verification manuelle : une session laissee ouverte
- * empeche la suivante (409 `SESSION_DEJA_OUVERTE`) et fausse le controle de
- * caisse de la journee suivante.
+ * Une session doit etre cloturee depuis l'application, apres comptage
+ * physique. Ce script ne modifie jamais les totaux ni le statut d'une session.
  */
 
 import 'dotenv/config'
@@ -20,30 +18,24 @@ const connection = await mysql.createConnection({
   database: process.env.DB_NAME,
 })
 
-const [rows] = await connection.query(
-  'SELECT id, caissier, fonds_caisse FROM cash_sessions WHERE statut = ? ORDER BY id',
-  ['ouverte'],
-)
+try {
+  const [rows] = await connection.query(
+    'SELECT id, caissier, fonds_caisse, opened_at FROM cash_sessions WHERE statut = ? ORDER BY id',
+    ['ouverte'],
+  )
 
-if ((rows as unknown[]).length === 0) {
-  console.log('Aucune session ouverte.')
-} else {
-  for (const row of rows as Array<{ id: number; caissier: string; fonds_caisse: string }>) {
-    // Comptage deFermeture a blanc : le but est de liberer le poste, pas de
-    // simuler un controle. L'ecart resultant sera affiche tel quel.
-    const [result] = await connection.query(
-      `UPDATE cash_sessions
-          SET statut = 'clôturée',
-              total_reel = 0.00,
-              total_theorique = 0.00,
-              ecart = 0.00,
-              closed_at = NOW(),
-              notes = 'Fermeture administrative'
-        WHERE id = ?`,
-      [row.id],
-    )
-    console.log(`Session #${row.id} (${row.caissier}, fond ${row.fonds_caisse}) fermee — ${result}`)
+  const sessions = rows as Array<{ id: number; caissier: string; fonds_caisse: string; opened_at: Date }>
+  if (sessions.length === 0) {
+    console.log('Aucune session ouverte.')
+  } else {
+    console.log('Sessions ouvertes (aucune modification effectuee) :')
+    for (const session of sessions) {
+      console.log(
+        `Session #${session.id} (${session.caissier}, fond ${session.fonds_caisse}, ouverte ${session.opened_at.toISOString()})`,
+      )
+    }
+    console.log('Effectuez le comptage physique puis cloturez chaque session depuis l application.')
   }
+} finally {
+  await connection.end()
 }
-
-await connection.end()

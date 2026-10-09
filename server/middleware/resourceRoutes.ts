@@ -606,9 +606,12 @@ export function createApiRouter(): Router {
       const id = requireId(request, response)
       if (id === null) return
       const value = parseBody(caisseClotureSchema, request.body)
+      const user = (request as Request & { user?: { id: number } }).user
+      if (!user) throw new AuthError(401, 'UNAUTHENTICATED', 'Authentification requise.')
 
       const closed = await new CashRegisterRepository(client).close({
         sessionId: id,
+        utilisateurId: user.id,
         comptage: value.comptage,
         notes: value.notes,
       })
