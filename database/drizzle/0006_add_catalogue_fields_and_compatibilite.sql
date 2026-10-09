@@ -1,5 +1,10 @@
 -- Add catalogue fields to articles table and create compatibility table
 
+INSERT INTO tva (taux, libelle, defaut, actif)
+VALUES (20.00, 'TVA normale 20 %', TRUE, TRUE)
+ON DUPLICATE KEY UPDATE defaut = TRUE, actif = TRUE;
+--> statement-breakpoint
+
 -- Step 1: Add new columns to articles table
 ALTER TABLE articles
   ADD COLUMN tva_id INT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Foreign key to tva',
@@ -7,20 +12,24 @@ ALTER TABLE articles
   ADD COLUMN delai_disponibilite INT UNSIGNED NOT NULL DEFAULT 0,
   ADD COLUMN forcer_sur_commande BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN prix_unitaire_ttc DECIMAL(12,2) NOT NULL DEFAULT 0.00;
+--> statement-breakpoint
 
 -- Step 2: Update existing articles to set tva_id to the default tva (if exists, otherwise keep default 1)
 UPDATE articles
 SET tva_id = COALESCE((SELECT id FROM tva WHERE defaut = TRUE LIMIT 1), 1);
+--> statement-breakpoint
 
 -- Step 3: Update prix_unitaire_ttc based on tva and prix_unitaire_ht
 UPDATE articles a
 JOIN tva t ON t.id = a.tva_id
-SET a.prix_unitaire_ttc = a.prix_unitaire_ht * (1 + t.taux / 100);
+SET a.prix_unitaire_ttc = a.unit_price_ht * (1 + t.taux / 100);
+--> statement-breakpoint
 
 -- Step 4: Add index on ean13 and foreign key on tva_id (already not null, so we can add the key)
 ALTER TABLE articles
   ADD INDEX idx_articles_ean13 (ean13),
   ADD FOREIGN KEY (tva_id) REFERENCES tva(id) ON DELETE RESTRICT;
+--> statement-breakpoint
 
 -- Step 5: Create compatibility table
 CREATE TABLE IF NOT EXISTS article_compatibilite (

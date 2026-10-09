@@ -1,10 +1,9 @@
 /**
  * Applique une migration en affichant l'erreur reelle.
  *
- * `drizzle-kit migrate` echoue avec un code 1 sans message : le detail est
- * perdu. Ce script rejoue le fichier instruction par instruction et affiche
- * le code mysql2, ce qui est indispensable pour diagnostiquer une contrainte
- * MariaDB (les messages du serveur sont explicites, ceux de l'outillage non).
+ * Utilitaire ponctuel de diagnostic. L'application normale des migrations
+ * passe par `npm run db:migrate` et le migrateur Drizzle ORM.
+ * Ce script affiche les erreurs MariaDB avec leur code mysql2.
  *
  * Usage : `npx tsx scripts/apply-migration.ts database/drizzle/0004_xxx.sql`
  */

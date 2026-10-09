@@ -3,8 +3,9 @@
 > État du projet au 2026-10-09 — **étapes 1 et 4 de la feuille de route
 > terminées** : les 13 vues sont branchées sur l'API, et la gestion de caisse
 > est complète **avec conformité NF525**. Build ✅, lint ✅ (2 avertissements
-> existants dans `src/App.tsx`), **111/111 tests API** + **58/58 tests sécurité**
-> ✅ lors de la dernière campagne documentée. Le shell UI a aussi
+> `react(purity)` préexistants dans `src/App.tsx`), **121/121 tests API** +
+> **58/58 tests sécurité** ✅ lors de la dernière campagne.
+> Le shell UI a aussi
 > reçu un thème sombre/clair automatique avec prise en charge de
 > `prefers-color-scheme` et bascule manuelle.
 >
@@ -15,18 +16,20 @@
 > une lecture API authentifiée. La gestion des emplacements, les transferts et
 > l'inventaire physique restent à faire.
 >
-> ⚠️ Les migrations `0005` et `0006` existent dans le dépôt mais ne figurent
-> pas dans le journal Drizzle. Ne pas réappliquer ni modifier cet historique
-> avant d'avoir vérifié son état sur les bases concernées.
+> ✅ Les migrations `0005` et `0006` sont intégrées au journal Drizzle et
+> appliquées sur `autostrass_test` après vérification de son schéma. La commande
+> `db:migrate` utilise le migrateur MySQL de Drizzle ORM (la version de
+> `drizzle-kit` installée ne propose pas `migrate`). Avant de migrer une autre
+> base existante, vérifier son journal et ses colonnes.
 >
-> 🔐 Correctifs de la revue : 7 constats corrigés dans le code et le bootstrap ;
-> la réconciliation du journal des migrations `0005`/`0006` reste bloquée tant
-> que l'état des bases existantes n'est pas établi. Voir
-> [SECURITY-REVIEW.md](./SECURITY-REVIEW.md).
+> 🔐 Les 8 constats de la revue sont corrigés pour le code et la base de test.
+> La base utilisée contient des données fictives ; le seed a signalé des
+> allocations préexistantes qui dépassent les stocks catalogue. Elles n'ont pas
+> été réécrites automatiquement. Voir [SECURITY-REVIEW.md](./SECURITY-REVIEW.md).
 >
-> ✅ Build et lint relancés après les correctifs : voir le bilan de validation
-> en section 14. Les tests qui écrivent en base n'ont pas été lancés, leur
-> configuration n'étant pas confirmée comme isolée.
+> ✅ Build, lint et suites API/sécurité relancés après les correctifs : voir le
+> bilan de validation en section 14. La base de test est fictive et isolée de la
+> production.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -564,23 +567,17 @@ JWT_SECRET=***
 # 1. Schéma v1 (articles / stock) — base vierge
 mysql -h HOST -u USER -p < database/schema.sql
 
-# 2. Schema v2 (8 metiers) — 12 tables supplementaires
+# 2. Schémas v2 et catalogue — migrations Drizzle 0000 à 0006
 npm run db:migrate
 
-# 3. Initialiser le taux de TVA requis par la migration 0006
-mysql -h HOST -u USER -p autostrass -e "INSERT INTO tva (taux, libelle, defaut, actif) VALUES (20.00, 'TVA normale 20 %', TRUE, TRUE) ON DUPLICATE KEY UPDATE defaut = TRUE, actif = TRUE"
-
-# 4. Migrations catalogue historiques (base neuve uniquement)
-mysql -h HOST -u USER -p autostrass < database/drizzle/0005_migrate_articles_location_to_emplacement.sql
-grep -v '^--> statement-breakpoint$' database/drizzle/0006_add_catalogue_fields_and_compatibilite.sql | mysql -h HOST -u USER -p autostrass
-
-# 5. Jeu de demonstration (optionnel)
+# 3. Jeu de demonstration (optionnel)
 npm run db:seed
 ```
 
-> ⚠️ Ce chemin manuel ne doit pas être appliqué à une base existante avant
-> d'avoir vérifié l'état des migrations `0005` et `0006` et effectué une
-> sauvegarde. Ces deux fichiers restent absents du journal Drizzle.
+> ⚠️ Pour toute base existante, vérifier son journal Drizzle et la présence
+> effective des changements des migrations avant toute réconciliation ou
+> exécution. Ne pas insérer de lignes dans le journal sans avoir vérifié le
+> schéma réel et pris une sauvegarde.
 > `database/schema.sql` crée uniquement le socle catalogue v1, pas le schéma
 > complet de l'application.
 
@@ -797,9 +794,17 @@ La revue statique détaillée est consignée dans
 4. **Corrigé** — `database/schema.sql` initialise un socle catalogue v1
    cohérent. Le chemin de déploiement est documenté, avec les prérequis des
    migrations historiques.
-5. **Bloqué / à réconcilier** — `0005` et `0006` ne sont toujours pas dans le
-   journal Drizzle. Leur état varie potentiellement selon les bases ; aucune
-   modification du journal ni réexécution automatique n'a été faite.
+5. **Corrigé pour la base de test** — `0005` et `0006` sont enregistrées dans
+   le journal Drizzle. La base `autostrass_test` a été inspectée ; les
+   migrations `0003` et `0004` déjà appliquées mais absentes de son journal ont
+   été réconciliées, puis `0005` et `0006` ont été appliquées et vérifiées.
+   L'application utilise maintenant le migrateur MySQL de Drizzle ORM, car
+   `drizzle-kit` 0.18.1 ne fournit pas la commande `migrate` référencée
+   auparavant. L'exécution initiale de `0006` a révélé un nom de colonne HT
+   erroné ; la migration a été corrigée pour `unit_price_ht`, puis complétée
+   sans écraser les affectations d'emplacement existantes. Elle garantit aussi
+   le taux TVA par défaut avant la clé étrangère. Pour toute autre base
+   existante, vérifier l'état avant exécution.
 6. **Corrigé** — Le seed borne les emplacements par parent et alloue le stock
    sans le multiplier. `scripts/seed.ts` vérifie que les sommes allouées
    correspondent aux soldes catalogue ; il signale les écarts préexistants
@@ -813,10 +818,13 @@ La revue statique détaillée est consignée dans
 **Validation** : `npm run build` réussi. `npm run lint` réussi avec deux
 avertissements `react(purity)` préexistants dans `src/App.tsx` (lignes
 201–202). Le build signale aussi un bundle JavaScript principal légèrement
-supérieur à 500 kB. Les tests API/sécurité et les scripts de migration/seed
-n'ont pas été exécutés : ils peuvent écrire en base, et aucune base isolée n'a
-été confirmée. L'état réel des migrations des bases existantes reste à établir
-avant tout changement du journal.
+supérieur à 500 kB. Les suites API et sécurité ont été exécutées sur la base
+fictive `autostrass_test` : **121/121 tests API** et **58/58 tests sécurité**
+réussis. `npm run db:migrate` confirme un journal Drizzle aligné jusqu'à
+`0006`. Le seed s'est exécuté mais son contrôle de conservation a échoué :
+quatre articles portent chacun cinq allocations préexistantes, chacune égale
+au stock catalogue complet. Le seed conserve ces affectations et n'a pas été
+autorisé à redistribuer du stock automatiquement.
 
 ---
 

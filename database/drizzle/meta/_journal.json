@@ -36,6 +36,20 @@
       "when": 1790451430769,
       "tag": "0004_natural_senator_kelly",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1791576117729,
+      "tag": "0005_migrate_articles_location_to_emplacement",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1791576117730,
+      "tag": "0006_add_catalogue_fields_and_compatibilite",
+      "breakpoints": true
     }
   ]
 }
