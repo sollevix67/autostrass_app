@@ -108,7 +108,7 @@ const health = await call('/api/health')
 check('GET /api/health repond 200', health.status === 200, health.body)
 check('la base est declaree connectee', health.body?.database === 'connected', health.body?.database)
 
-for (const path of ['/api/clients', '/api/vehicules', '/api/utilisateurs', '/api/receptions', '/api/ventes']) {
+for (const path of ['/api/clients', '/api/vehicules', '/api/utilisateurs', '/api/receptions', '/api/ventes', '/api/emplacements']) {
   const { status, body } = await call(path)
   check(`GET ${path} sans jeton repond 401`, status === 401, { status, body })
 }
@@ -124,6 +124,20 @@ check('connexion magasinier', magasinierToken !== null)
 
 const caissierToken = await login('sophie.bernard@autostrass.fr')
 check('connexion caissier', caissierToken !== null)
+
+console.log('\nEmplacements de stock')
+const locations = await call('/api/emplacements', { token: adminToken ?? undefined })
+check('GET /api/emplacements authentifie repond 200', locations.status === 200, locations.body)
+check(
+  'les emplacements exposent leur hierarchie et leur stock',
+  Array.isArray(locations.body) && locations.body.every((item: Record<string, unknown>) =>
+    typeof item.id === 'number' &&
+    ['allee', 'etagere', 'place'].includes(String(item.niveau)) &&
+    typeof item.chemin === 'string' &&
+    typeof item.quantite === 'number' &&
+    typeof item.nombreReferences === 'number',
+  ),
+)
 
 const inactifToken = await login('luc.petit@autostrass.fr')
 check('un compte desactive est refuse (403)', inactifToken === null)

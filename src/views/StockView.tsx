@@ -6,6 +6,8 @@ import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
 import { useStock, type StockFilter } from '../hooks/useStock'
+import { api, isAbortError, toErrorMessage } from '../services/api'
+import type { ApiStockEmplacement } from '../services/contracts'
 import { toNumber } from '../utils/coerce'
 import type { Article } from '../types'
 import { FormInput } from '../components/forms/FormFields'
@@ -45,6 +47,26 @@ export default function StockView() {
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const [savingEdit, setSavingEdit] = useState(false)
+  const [emplacements, setEmplacements] = useState<ApiStockEmplacement[]>([])
+  const [emplacementsLoading, setEmplacementsLoading] = useState(true)
+  const [emplacementsError, setEmplacementsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    api
+      .get<ApiStockEmplacement[]>('/emplacements', { signal: controller.signal })
+      .then((data) => {
+        setEmplacements(data)
+        setEmplacementsError(null)
+      })
+      .catch((cause: unknown) => {
+        if (!isAbortError(cause)) setEmplacementsError(toErrorMessage(cause))
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setEmplacementsLoading(false)
+      })
+    return () => controller.abort()
+  }, [])
 
   // Raccourci clavier : `Escape` ferme la modale d'edition.
   useEffect(() => {
@@ -143,6 +165,50 @@ export default function StockView() {
     },
   ]
 
+  const emplacementColumns: ColumnDef<ApiStockEmplacement>[] = [
+    {
+      key: 'chemin',
+      header: 'EMPLACEMENT',
+      sortable: true,
+      sortValue: (row) => row.chemin,
+      render: (row) => <b>{row.chemin}</b>,
+    },
+    {
+      key: 'niveau',
+      header: 'NIVEAU',
+      render: (row) => row.niveau === 'allee' ? 'Allée' : row.niveau === 'etagere' ? 'Étagère' : 'Place',
+    },
+    {
+      key: 'quantite',
+      header: 'STOCK',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.quantite,
+      render: (row) => row.quantite,
+    },
+    {
+      key: 'nombreReferences',
+      header: 'RÉFÉRENCES',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.nombreReferences,
+      render: (row) => row.nombreReferences,
+    },
+    {
+      key: 'capacite',
+      header: 'CAPACITÉ',
+      align: 'right',
+      sortable: true,
+      sortValue: (row) => row.capacite,
+      render: (row) => row.capacite || '—',
+    },
+    {
+      key: 'actif',
+      header: 'ÉTAT',
+      render: (row) => row.actif ? 'Actif' : 'Inactif',
+    },
+  ]
+
   return (
     <PageLayout
       eyebrow="STOCK"
@@ -223,6 +289,20 @@ export default function StockView() {
           caption="Niveaux de stock par article"
         />
       </div>
+
+      <section className="form-card" aria-labelledby="stock-emplacements-title">
+        <h2 id="stock-emplacements-title">Stock par emplacement</h2>
+        {emplacementsError && <p className="error-banner" role="alert">{emplacementsError}</p>}
+        <DataTable
+          columns={emplacementColumns}
+          rows={emplacements}
+          rowKey={(row) => String(row.id)}
+          loading={emplacementsLoading}
+          loadingMessage="Chargement des emplacements..."
+          emptyMessage="Aucun emplacement disponible."
+          caption="Quantités cumulées par emplacement et ses descendants"
+        />
+      </section>
 
       {editing && (
         <div

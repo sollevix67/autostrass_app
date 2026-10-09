@@ -1,17 +1,27 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-04 — **étapes 1 et 4 de la feuille de route
+> État du projet au 2026-10-09 — **étapes 1 et 4 de la feuille de route
 > terminées** : les 13 vues sont branchées sur l'API, et la gestion de caisse
-> est complète **avec conformité NF525**. Build ✅, lint ✅ 0 warning,
-> **111/111 tests API** + **58/58 tests sécurité** ✅. Le shell UI a aussi
+> est complète **avec conformité NF525**. Build ✅, lint ✅ (2 avertissements
+> existants dans `src/App.tsx`), **111/111 tests API** + **58/58 tests sécurité**
+> ✅ lors de la dernière campagne documentée. Le shell UI a aussi
 > reçu un thème sombre/clair automatique avec prise en charge de
 > `prefers-color-scheme` et bascule manuelle.
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
-> emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et journal d'audit. **Migration des emplacements des articles terminée**.
-> **Catalogue v2 complété** : ajout des champs TVA, EAN13, délai de disponibilité, forcer sur commande et prix TTC aux articles, ainsi que la table de compatibilité (immatriculation/VIN).
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
-> journal d'audit. Travail en cours sur la versionnage/ordre des migrations.
+> journal d'audit. La migration des emplacements des articles est terminée ;
+> la vue Stock affiche maintenant les emplacements et leur stock cumulé via
+> une lecture API authentifiée. La gestion des emplacements, les transferts et
+> l'inventaire physique restent à faire.
+>
+> ⚠️ Les migrations `0005` et `0006` existent dans le dépôt mais ne figurent
+> pas dans le journal Drizzle. Ne pas réappliquer ni modifier cet historique
+> avant d'avoir vérifié son état sur les bases concernées.
+>
+> ✅ Build validé le 2026-10-09. Le lint signale deux avertissements
+> préexistants dans `src/App.tsx`. Les tests API n'ont pas été lancés, car
+> leur script manipule la base réelle et sa configuration n'a pas été vérifiée.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
@@ -300,7 +310,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 | Module du cahier des charges | Persistance | Écart restant |
 |---|---|---|
-| Stock (backend) | 🟡 En cours | Migration de `articles.location` vers `emplacement_id` (clé étrangère) terminée, mais utilisation des emplacements hiérarchiques (allée → étagère → place) dans l'interface à finaliser ; inventaire à implémenter |
+| Stock (backend) | 🟡 En cours | Migration de `articles.location` vers `emplacement_id` terminée ; lecture authentifiée et affichage du stock cumulé par allée → étagère → place ajoutés dans la première tranche. Gestion CRUD des emplacements, transferts et inventaire physique restent à implémenter |
 | Catalogue (frontend) | 🟡 En cours | Manquent : TVA et prix TTC, état du stock avec forcing "Sur commande", délai de disponibilité, recherche par EAN13, compatibilité par immatriculation/VIN (API) |
 | Caisse (backend) | ✅ Terminé | Documents PDF (factures, bons de commande, etc.) en étape 3 |
 | Devis (backend) | ❌ Non commencé | Tout le module : numérotation, création/modification, envoi email/WhatsApp, transformation en commande client |

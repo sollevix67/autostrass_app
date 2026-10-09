@@ -207,6 +207,20 @@ export type ApiArticle = {
   updatedAt: string
 }
 
+/** Emplacement et stock cumule de ses descendants (`GET /api/emplacements`). */
+export type ApiStockEmplacement = {
+  id: number
+  niveau: 'allee' | 'etagere' | 'place'
+  parentId: number | null
+  code: string
+  libelle: string | null
+  capacite: number
+  actif: boolean
+  chemin: string
+  quantite: number
+  nombreReferences: number
+}
+
 /** Retour renvoye par `GET /api/retours`. */
 export type ApiRetour = {
   id: number

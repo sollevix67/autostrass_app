@@ -9,6 +9,7 @@ import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
 import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
+import { requireAuth } from './middleware/auth.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -179,6 +180,96 @@ app.get('/api/stock', async (_request: Request, response: Response) => {
     response.json(await repository.list())
   } catch {
     response.status(503).json({ error: 'DATABASE_UNAVAILABLE', message: 'Impossible de lire le stock.' })
+  }
+})
+
+/**
+ * Emplacements et stock cumule de leurs descendants.
+ *
+ * Le CTE recursif somme le stock des descendants jusqu'au niveau place et
+ * limite la profondeur au schema metier allee → etagere → place.
+ */
+app.get('/api/emplacements', requireAuth, async (_request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  try {
+    const [rows] = await pool.query<Array<RowDataPacket & {
+      id: number | string
+      niveau: string
+      parent_id: number | string | null
+      code: string
+      libelle: string | null
+      capacite: number | string
+      actif: number | boolean | string
+      chemin: string
+      quantite: number | string | null
+      nombre_references: number | string
+    }>>(
+      `WITH RECURSIVE descendants AS (
+        SELECT id AS emplacement_racine, id AS emplacement_descendant, 0 AS profondeur
+         FROM emplacements
+         UNION ALL
+        SELECT descendants.emplacement_racine, enfant.id, descendants.profondeur + 1
+         FROM descendants
+        JOIN emplacements parent ON parent.id = descendants.emplacement_descendant
+        JOIN emplacements enfant
+          ON enfant.parent_id = parent.id
+         AND (
+           (parent.niveau = 'allee' AND enfant.niveau = 'etagere')
+           OR (parent.niveau = 'etagere' AND enfant.niveau = 'place')
+         )
+        WHERE descendants.profondeur < 2
+       ),
+       stock_agrege AS (
+         SELECT descendants.emplacement_racine,
+                COALESCE(SUM(stock.quantite), 0) AS quantite,
+                COUNT(DISTINCT stock.reference_id) AS nombre_references
+         FROM descendants
+         LEFT JOIN stock_par_emplacements stock
+           ON stock.emplacement_id = descendants.emplacement_descendant
+         GROUP BY descendants.emplacement_racine
+       )
+       SELECT emplacement.id,
+              emplacement.niveau,
+              emplacement.parent_id,
+              emplacement.code,
+              emplacement.libelle,
+              emplacement.capacite,
+              emplacement.actif,
+              CASE emplacement.niveau
+                WHEN 'allee' THEN emplacement.code
+                WHEN 'etagere' THEN CONCAT(parent.code, ' / ', emplacement.code)
+                WHEN 'place' THEN CONCAT_WS(' / ', grand_parent.code, parent.code, emplacement.code)
+                ELSE emplacement.code
+              END AS chemin,
+              stock_agrege.quantite,
+              stock_agrege.nombre_references
+       FROM emplacements emplacement
+       LEFT JOIN emplacements parent ON parent.id = emplacement.parent_id
+       LEFT JOIN emplacements grand_parent ON grand_parent.id = parent.parent_id
+       LEFT JOIN stock_agrege ON stock_agrege.emplacement_racine = emplacement.id
+       ORDER BY COALESCE(grand_parent.code, parent.code, emplacement.code),
+                COALESCE(parent.code, emplacement.code),
+                emplacement.code`,
+    )
+
+    response.json(rows.map((row) => ({
+      id: Number(row.id),
+      niveau: row.niveau,
+      parentId: row.parent_id === null ? null : Number(row.parent_id),
+      code: row.code,
+      libelle: row.libelle,
+      capacite: Number(row.capacite),
+      actif: row.actif === true || row.actif === 1 || row.actif === '1',
+      chemin: row.chemin,
+      quantite: Number(row.quantite ?? 0),
+      nombreReferences: Number(row.nombre_references),
+    })))
+  } catch {
+    response.status(503).json({ error: 'DATABASE_UNAVAILABLE', message: 'Impossible de lire les emplacements.' })
   }
 })
 
