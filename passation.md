@@ -19,6 +19,10 @@
 > pas dans le journal Drizzle. Ne pas réappliquer ni modifier cet historique
 > avant d'avoir vérifié son état sur les bases concernées.
 >
+> 🔎 Revue complète du code effectuée le 2026-10-09 : 4 constats de sévérité
+> haute et 4 de sévérité moyenne consignés dans
+> [SECURITY-REVIEW.md](./SECURITY-REVIEW.md). Les correctifs restent à faire.
+>
 > ✅ Build validé le 2026-10-09. Le lint signale deux avertissements
 > préexistants dans `src/App.tsx`. Les tests API n'ont pas été lancés, car
 > leur script manipule la base réelle et sa configuration n'a pas été vérifiée.
@@ -312,13 +316,13 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 |---|---|---|
 | Stock (backend) | 🟡 En cours | Migration de `articles.location` vers `emplacement_id` terminée ; lecture authentifiée et affichage du stock cumulé par allée → étagère → place ajoutés dans la première tranche. Gestion CRUD des emplacements, transferts et inventaire physique restent à implémenter |
 | Catalogue (frontend) | 🟡 En cours | Manquent : TVA et prix TTC, état du stock avec forcing "Sur commande", délai de disponibilité, recherche par EAN13, compatibilité par immatriculation/VIN (API) |
-| Caisse (backend) | ✅ Terminé | Documents PDF (factures, bons de commande, etc.) en étape 3 |
+| Caisse (backend) | ✅ Terminé | Contrôle du fond de caisse, comptage billet par billet, clôture avec écart et conformité NF525 terminés ; documents PDF (factures, bons de commande, etc.) en étape 3 |
 | Devis (backend) | ❌ Non commencé | Tout le module : numérotation, création/modification, envoi email/WhatsApp, transformation en commande client |
 | Commande et réception fournisseurs (backend) | 🟡 En cours | Réceptions : lien vers carnet fournisseurs manquant. Commandes fournisseurs : module non commencé (blocage par heures, attribution automatique, gestion liste articles, filtrage) |
 | Commande client (backend) | 🟡 En cours | API commande client présente ; édition des bons de commande en PDF manquante (étape 3) |
 | Livraisons (backend) | 🟡 En cours | Génération automatique des bons de livraison dès réception des articles à implémenter ; numérotation unique et gestion des secteurs/tournées partiellement présentes |
 | Retours client (backend) | 🟡 En cours | Édition des avoirs à implémenter ; numérotation unique des avoirs, remise en stock partielle, génération de bons de livraison pour retours refusés avec motifs à implémenter |
-| Carnet d'adresses clients (backend) | 🟡 En cours | API clients présente ; autocomplétion via api-adresse.data.gouv.fr manquante, suivi client (devis, commandes, livraisons, factures) à implémenter, suspension/limitation du compte et attribution secteur tournée manquants |
+| Carnet d'adresses clients (backend) | 🟡 En cours | API clients présente ; autocomplétion d'adresse via api-adresse.data.gouv.fr et recherche par numéro SIREN/SIRET manquantes, suivi client (devis, commandes, livraisons, factures) à implémenter, suspension/limitation du compte et attribution secteur tournée manquants |
 | Carnet d'adresses des fournisseurs (backend) | ❌ Non créé | Tout le module : création entité fournisseurs, suivi des commandes par fournisseurs |
 | Véhicules (backend) | 🟡 En cours | API véhicules présente ; suivi kilométriques, entretiens et réparation, suivi carburant (consommation, prix par km) manquants |
 | Personnels (backend) | ❌ Non commencé | Gestion des plannings, horaires de travail, accès aux modules, profils utilisateur à créer |
@@ -403,7 +407,8 @@ SHA-256 chaînée, journal des événements système, mode dégradé, archivage 
 
 **Étape 5 — Intégrations**
 - Autocomplétion d'adresses (Google Places, ou alternative sans quota ni clé
-  API comme `api-adresse.data.gouv.fr`)
+  API comme `api-adresse.data.gouv.fr`) et recherche d'entreprise par numéro
+  SIREN/SIRET pour le carnet d'adresses clients
 - WhatsApp Business Cloud API (webhook + messages sortants)
 
 **Étape 6 — Qualité et production**
@@ -411,7 +416,7 @@ Vitest + Playwright, `React.lazy`, logs structurés, CI/CD, CSP.
 
 ### ❓ Décisions en attente
 
-Deux points du cahier des charges demandent un arbitrage, pas une
+Un point du cahier des charges demande encore un arbitrage, pas une
 implémentation :
 
 1. **Immatriculation / VIN** — le TODO demande « voir si c'est possible ».
@@ -421,10 +426,6 @@ implémentation :
    pas les véhicules. **Question : intégrer l'API SIV derrière une
    abstraction (avec repli sur la saisie manuelle), ou rester en saisie
    manuelle ?**
-
-2. **Gestion de caisse** — « gestion de caisse » est ambigu : sessions
-   d'ouverture/fermeture, tiroir, fond de caisse, clôture avec comptage ?
-   **Question : quel niveau de détail est attendu ?**
 
 ### 🔐 Dette technique connue
 
@@ -763,6 +764,45 @@ civile** — l'ordre exact est déjà garanti par `id`.
 Build ✅ · lint ✅ 0 warning · **111/111** tests API (+ 42 sur la caisse et
 NF525) · **58/58** tests sécurité. Cycle d'archivage validé de bout en bout :
 export → relecture hors base → vérification de chaîne intacte.
+
+## 14. 🔎 Revue complète du code — 2026-10-09
+
+La revue statique détaillée est consignée dans
+[SECURITY-REVIEW.md](./SECURITY-REVIEW.md). Aucun correctif n'a été appliqué
+pendant la revue. Actions prioritaires restantes :
+
+1. **À faire — Protéger les mutations articles/stock** : dans
+   `server/index.ts`, exiger authentification, validation CSRF et rôle
+   d'écriture sur les routes de création, modification, ajustement et
+   suppression ; ajouter des tests de non-régression pour les appels anonymes.
+2. **À faire — Restreindre la clôture de caisse au propriétaire** :
+   vérifier l'appartenance de la session avant clôture ; définir et auditer
+   explicitement toute dérogation administrateur.
+3. **À faire — Sérialiser clôture et ventes** : verrouiller la ligne de session
+   dès le début de la transaction de clôture afin que le calcul inclue toute
+   vente concurrente.
+4. **À faire — Rendre le bootstrap SQL exécutable** : créer les dépendances
+   dans le bon ordre et corriger les définitions de vues de `database/schema.sql`,
+   ou documenter un chemin d'installation unique et vérifié.
+5. **À faire — Réconcilier les migrations 0005/0006** : établir l'état de
+   chaque base et le chemin versionné à suivre ; ne pas appliquer ces scripts
+   à l'aveugle.
+6. **À faire — Garantir la conservation du stock dans le seed** :
+   contraindre les jointures par parent hiérarchique et vérifier que les
+   allocations par emplacement égalent le solde catalogue.
+7. **À faire — Corriger le mapping de l'emplacement article** : renvoyer
+   l'alias hiérarchique sélectionné par la requête plutôt que l'ancien texte.
+8. **À faire — Sécuriser le script de clôture des sessions** :
+   `scripts/close-open-sessions.ts` ne doit pas clôturer toutes les sessions
+   en écrivant des totaux et écarts à zéro ; limiter son périmètre et préserver
+   les valeurs financières.
+
+**Validation de la revue** : le build et le lint ont réussi ; le lint conserve
+deux avertissements `react(purity)` dans `src/App.tsx`. Les tests API, sécurité
+et base de données n'ont pas été lancés, car ils peuvent modifier la base
+réelle. L'état des migrations appliquées sur les bases déployées n'a pas été
+vérifié. Les 111 tests API et 58 tests sécurité cités à la section 13.6
+correspondent à la dernière campagne documentée antérieure, pas à cette revue.
 
 ---
 
