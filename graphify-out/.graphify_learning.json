@@ -1,5 +1,201 @@
 {
-  "generated_at": "2026-10-09T19:21:26.730019+00:00",
-  "nodes": {},
+  "generated_at": "2026-10-10T09:32:45.651872+00:00",
+  "nodes": {
+    "package": {
+      "code_fingerprint": "e6c3aeabcdf85822b082476fdb3f124a854b0d9974655ff3ef1bd500ad26644e",
+      "label": "package.json",
+      "last": "2026-10-10T09:22:10.119233+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 1.986266859,
+      "source_file": "package.json",
+      "status": "preferred",
+      "uses": 2
+    },
+    "server_middleware_auth_requirerole": {
+      "code_fingerprint": "643033a88c07f22b039d9d44676a58ba3b9c8e15967548dd1bf54067731155ed",
+      "label": "requireRole()",
+      "last": "2026-10-10T09:23:31.032407+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:23:31.032407+00:00",
+          "outcome": "useful",
+          "q": "How do the backend Zod schemas connect to the protected CRUD and document routes?"
+        }
+      ],
+      "score": 0.999851696,
+      "source_file": "server/middleware/auth.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "server_middleware_crud": {
+      "code_fingerprint": "2c2d4fe55618e20d5611742aecf09bd985c6fbdb5c81b16db2d15e92d20699a0",
+      "label": "crud.ts",
+      "last": "2026-10-10T09:22:10.119233+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 1.986266859,
+      "source_file": "server/middleware/crud.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "server_middleware_crud_crudroutes": {
+      "code_fingerprint": "2c2d4fe55618e20d5611742aecf09bd985c6fbdb5c81b16db2d15e92d20699a0",
+      "label": "crudRoutes()",
+      "last": "2026-10-10T09:23:31.032407+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:23:31.032407+00:00",
+          "outcome": "useful",
+          "q": "How do the backend Zod schemas connect to the protected CRUD and document routes?"
+        }
+      ],
+      "score": 0.999851696,
+      "source_file": "server/middleware/crud.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "server_middleware_documentroutes": {
+      "code_fingerprint": "52be53ba344b4bde5b467e1f5d022d178dd2ebef35ab58f7cf92f50009b76379",
+      "label": "documentRoutes.ts",
+      "last": "2026-10-10T09:22:10.119233+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 1.986266859,
+      "source_file": "server/middleware/documentRoutes.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "server_middleware_documentroutes_documentroutes": {
+      "code_fingerprint": "52be53ba344b4bde5b467e1f5d022d178dd2ebef35ab58f7cf92f50009b76379",
+      "label": "documentRoutes()",
+      "last": "2026-10-10T09:23:31.032407+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:23:31.032407+00:00",
+          "outcome": "useful",
+          "q": "How do the backend Zod schemas connect to the protected CRUD and document routes?"
+        }
+      ],
+      "score": 0.999851696,
+      "source_file": "server/middleware/documentRoutes.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "server_middleware_resourceroutes": {
+      "code_fingerprint": "4817b6ebb8b810c8bfa03f3f5a7f9647f8d761dc3df153fcaa52d6fd67abf043",
+      "label": "resourceRoutes.ts",
+      "last": "2026-10-10T09:23:31.032407+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:23:31.032407+00:00",
+          "outcome": "useful",
+          "q": "How do the backend Zod schemas connect to the protected CRUD and document routes?"
+        }
+      ],
+      "score": 0.999851696,
+      "source_file": "server/middleware/resourceRoutes.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "server_middleware_schemas": {
+      "code_fingerprint": "1af73bd91efd0d2630fa1cb93f35fe3da65bfc8787d5a01305412a43ea9c3dff",
+      "label": "schemas.ts",
+      "last": "2026-10-10T09:23:31.032407+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:23:31.032407+00:00",
+          "outcome": "useful",
+          "q": "How do the backend Zod schemas connect to the protected CRUD and document routes?"
+        },
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 2.986118554,
+      "source_file": "server/middleware/schemas.ts",
+      "status": "preferred",
+      "uses": 3
+    },
+    "src_schemas_index": {
+      "code_fingerprint": "ee4da7c0440bf9185ba802ee596b17078c919d028492ddb3967a31a793ca7fd0",
+      "label": "schemas/index.ts",
+      "last": "2026-10-10T09:22:10.119233+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 1.986266859,
+      "source_file": "src/schemas/index.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "src_views_loginview": {
+      "code_fingerprint": "019d60d31b88b07ef4108fd5f617325c8670d870e7f9a4ff60bc2522f30818fc",
+      "label": "LoginView.tsx",
+      "last": "2026-10-10T09:22:10.119233+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-10T09:22:10.119233+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect Protected Resource Roles to Backend API Validation Schemas, Frontend Zod Form Schemas, Application Shell and Theme, Node Project Build Configuration?"
+        },
+        {
+          "date": "2026-10-09T19:21:39.422555+00:00",
+          "outcome": "useful",
+          "q": "Why does zod connect API Authentication Middleware to Backend Validation Security, Project Build Configuration, Form Input Type Schemas, and Application Shell and Theme?"
+        }
+      ],
+      "score": 1.986266859,
+      "source_file": "src/views/LoginView.tsx",
+      "status": "preferred",
+      "uses": 2
+    }
+  },
   "version": 1
 }

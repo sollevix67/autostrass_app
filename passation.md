@@ -27,6 +27,11 @@
 > allocations préexistantes qui dépassent les stocks catalogue. Elles n'ont pas
 > été réécrites automatiquement. Voir [SECURITY-REVIEW.md](./SECURITY-REVIEW.md).
 >
+> 🔎 Le graphe Graphify du dépôt a été actualisé le 2026-10-10 : 2 374 nœuds,
+> 4 513 liens et 157 communautés. Le rapport et la visualisation sont dans
+> `graphify-out/` ; les avertissements d'intégrité et les limites d'analyse
+> sont détaillés en section 15.
+>
 > ✅ Validation opérationnelle de la couche DB : génération + migration +
 > présence des tables et du journal `__drizzle_migrations` confirmées lors de la
 > dernière campagne technique.
@@ -830,6 +835,38 @@ autorisé à redistribuer du stock automatiquement.
 fictives, corriger les allocations de test de façon explicite, puis relancer
 `npm run db:seed` et vérifier que le contrôle de conservation passe. Ne pas
 masquer l'écart ni supprimer les allocations sans établir leur origine.
+
+## 15. 🔎 Graphe de connaissances Graphify — 2026-10-10
+
+Le graphe a été reconstruit à partir de **247 fichiers** (163 fichiers de code,
+79 documents et 5 images) : **2 374 nœuds**, **4 513 liens** et **157
+communautés**. La vue interactive, les données JSON et le rapport sont dans
+`graphify-out/` (`graph.html`, `graph.json`, `GRAPH_REPORT.md`). Les libellés
+des communautés et les résultats de requêtes sont également conservés dans ce
+dossier.
+
+Le graphe relie les imports de `zod` côté backend (`server/middleware/schemas.ts`,
+`crud.ts`, `documentRoutes.ts`) et côté frontend (`src/schemas/index.ts`,
+`src/views/LoginView.tsx`). Il montre également que `createApiRouter()` et
+`crudRoutes()` appellent `parseBody()`. Il ne décrit toutefois pas une liaison
+directe entre un schéma Zod précis et chaque route ; ces chemins ne prouvent
+donc pas le câblage runtime exact. L'association à « Node Package Overrides »
+vient du regroupement de métadonnées de `package.json`, pas d'un lien direct
+entre `zod` et une entrée d'override.
+
+**Limites à conserver visibles** :
+
+- Le diagnostic compte 283 liens à extrémité pendante, 5 boucles et 86 liens
+  fusionnés par paire d'extrémités en mode non dirigé. Aucun endpoint manquant
+  n'a été détecté. Le graphe reste exploitable, mais certaines relations peuvent
+  être incomplètes ou fusionnées.
+- `src/tokens.css` a été ignoré par le filtre de fichiers sensibles.
+- 11 fichiers SQL n'ont pas été analysés structurellement, car
+  `tree_sitter_sql` n'est pas installé.
+- L'extraction sémantique a été faite par agent ; ses métriques de tokens ne
+  sont pas disponibles. Le rapport indique donc « indisponible », et non zéro.
+- La version du CLI Graphify (0.9.74) est en retard sur la skill (0.9.80) ; les
+  commandes d'export affichent un avertissement de version.
 
 ---
 
