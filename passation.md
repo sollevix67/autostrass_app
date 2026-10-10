@@ -1,13 +1,13 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-09 — **étapes 1 et 4 de la feuille de route
-> terminées** : les 13 vues sont branchées sur l'API, et la gestion de caisse
-> est complète **avec conformité NF525**. Build ✅, lint ✅ (2 avertissements
-> `react(purity)` préexistants dans `src/App.tsx`), **121/121 tests API** +
-> **58/58 tests sécurité** ✅ lors de la dernière campagne.
-> Le shell UI a aussi
-> reçu un thème sombre/clair automatique avec prise en charge de
-> `prefers-color-scheme` et bascule manuelle.
+> État du projet au 2026-10-10 — **étapes 1 et 4 de la feuille de route
+> terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est
+> complète **avec conformité NF525**, et la couche de persistance MariaDB /
+> Drizzle est validée sur une base réelle.
+>
+> ✅ Build, lint et suites API/sécurité relancés après les correctifs ; le
+> dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests
+> sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
@@ -16,20 +16,20 @@
 > une lecture API authentifiée. La gestion des emplacements, les transferts et
 > l'inventaire physique restent à faire.
 >
-> ✅ Les migrations `0005` et `0006` sont intégrées au journal Drizzle et
-> appliquées sur `autostrass_test` après vérification de son schéma. La commande
-> `db:migrate` utilise le migrateur MySQL de Drizzle ORM (la version de
-> `drizzle-kit` installée ne propose pas `migrate`). Avant de migrer une autre
-> base existante, vérifier son journal et ses colonnes.
+> ✅ Les migrations Drizzle de la base projet sont désormais validées sur la
+> base `autostrass_test` : `npm run db:generate` est opérationnel avec la
+> version installée et `npm run db:migrate` applique bien les migrations
+> en attente. Le journal Drizzle est conforme au schéma réel et les tables sont
+> présentes dans la base cible.
 >
 > 🔐 Les 8 constats de la revue sont corrigés pour le code et la base de test.
 > La base utilisée contient des données fictives ; le seed a signalé des
 > allocations préexistantes qui dépassent les stocks catalogue. Elles n'ont pas
 > été réécrites automatiquement. Voir [SECURITY-REVIEW.md](./SECURITY-REVIEW.md).
 >
-> ✅ Build, lint et suites API/sécurité relancés après les correctifs : voir le
-> bilan de validation en section 14. La base de test est fictive et isolée de la
-> production.
+> ✅ Validation opérationnelle de la couche DB : génération + migration +
+> présence des tables et du journal `__drizzle_migrations` confirmées lors de la
+> dernière campagne technique.
 >
 > 📋 **La feuille de route est dans [TODO.md](./TODO.md).** La section 5 de
 > ce document en reprend chaque module avec l'écart restant et l'ordre
