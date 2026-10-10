@@ -916,6 +916,33 @@ compte valide. Les valeurs de `.env` ne doivent pas être copiées dans cette
 passation. L'API de diagnostic a été arrêtée ; le processus Vite existant n'a
 pas été arrêté.
 
+## 18. 📱 Refonte visuelle et Responsive Design — 2026-10-10
+
+L'interface de l'application a été mise à jour pour s'adapter à toutes les
+tailles d'écran de manière fluide, avec une refonte complète des styles dans
+`src/App.css`. Les dimensions fixes ont été remplacées par des dimensions
+fluides proportionnelles.
+
+**Améliorations apportées :**
+
+- **Breakpoints harmonisés** : L'ensemble des media queries a été refactoré
+  pour s'articuler autour de cinq points d'inflexion cohérents (1440px, 1100px,
+  900px, 768px, 480px, 375px), éliminant les conflits historiques (760 vs 768).
+- **Proportions fluides** : Utilisation de la fonction CSS `clamp()` pour
+  dimensionner la navigation latérale et les grandes marges selon la taille de
+  l'écran, évitant ainsi un effet d'escalier brutal lors du redimensionnement.
+- **Grilles de données adaptatives** : Mise en place systématique de conteneurs
+  avec `overflow-x: auto; -webkit-overflow-scrolling: touch;` protégeant les
+  gros tableaux. Ces tableaux préservent `white-space: nowrap` pour
+  conserver l'alignement des colonnes et génèrent simplement un défilement
+  horizontal ciblé plutôt que de disloquer la mise en page générale (`min-width: 500px` forcé pour les tables).
+- **Interface mobile** : Ajustement des espaces et polices sur petits écrans
+  pour conserver l'information utile maximale. La sidebar passe en mode d'accès par le
+  menu à gauche sans parasiter l'affichage des données.
+- **Tableau de bord de caisse (`CaisseView`)** : Sur mobile, les éléments du
+  compte par coupures (`comptage-grid`) ainsi que les panneaux récapitulatifs se
+  superposent fidèlement via des colonnes dynamiques.
+
 ---
 
 *Document mis à jour à chaque étape majeure.*
