@@ -7,7 +7,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
         - Inventaire
 	
     - Catalogue (frontend)
-        - Ajout, modification, retrait des articles via le backend (référence, code EAN13, désignation, prix d'achat fournisseur, prix de vente magasin, compatibilité)
+        - Ajout, modification, retrait des articles via le backend (référence, code EAN13, désignation, prix d'achat fournisseur, prix de vente magasin, compatibilité, photo du produit, description, caractéristiques techniques, marque, catégorie, sous-catégorie)
         - Affichage du prix ht/ttc
         - Affichage de l'état du stock d'une référence (En stock, Stock faible, Epuisé) avec possibilité de forcer "Sur commande" via le backend
         - Affichage d'un délai de disponibilité paramétrable dans le cas d'un article pas en stock
@@ -16,6 +16,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
     
     - Caisse (backend)
         - Conforme aux normes NF203 et NF525
+        - Contrôle du fond de caisse
         - Ajout des articles au panier depuis le catalogue ou par saisie de la référence, de la désignation (autocompletion) ou du code EAN13
         - Edition de facture en cas de vente au comptoir
         - Ouverture de plusieurs sessions de caisse (maximum 1 session par utilisateur)
@@ -50,7 +51,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
         - Génération de bons de livraison pour les retours refusés avec motifs du refus
 
     - Carnet d'adresses clients (backend)
-        - Autocompletion via api-adresse.data.gouv.fr
+        - Autocompletion via api-adresse.data.gouv.fr ou via numéro siren/siret
         - Suivi par client des devis, commandes, livraisons
         - Suivi par client des factures payées et à payer
         - Suspension, limitation du compte (blocage livraison, paiement direct uniquement)
