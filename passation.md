@@ -868,6 +868,18 @@ entre `zod` et une entrée d'override.
 - La version du CLI Graphify (0.9.74) est en retard sur la skill (0.9.80) ; les
   commandes d'export affichent un avertissement de version.
 
+## 16. 🔐 Correctif Dependabot — 2026-10-10
+
+L'alerte critique GitHub Dependabot sur `shell-quote` a été corrigée par la mise
+à jour du lockfile : `concurrently` passe de `10.0.5` à `10.0.6` et sa
+dépendance `shell-quote` de `1.9.0` à `1.12.0`. La plage déclarée
+`concurrently: ^10.0.5` dans `package.json` accepte ces versions ; aucune plage
+de dépendance n'a été élargie.
+
+**Vérification** : `npm audit` et `npm audit --omit=dev` ne rapportent aucune
+vulnérabilité (0 faible, modérée, élevée ou critique). L'audit complet a
+inspecté 228 dépendances résolues, dont les dépendances de développement.
+
 ---
 
 *Document mis à jour à chaque étape majeure.*
