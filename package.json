@@ -17,6 +17,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "test:api": "tsx scripts/test-api.ts",
     "test:security": "tsx scripts/test-security.ts",
+    "test:errors": "tsx scripts/test-error-mapping.ts",
     "test:caisse": "tsx scripts/verify-caisse.ts",
     "caisse:diagnostic": "tsx scripts/close-open-sessions.ts",
     "nf525:controle": "tsx scripts/archive-fiscal.ts --verifier archives/2026/ventes-2026.jsonl",

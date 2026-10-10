@@ -880,6 +880,42 @@ de dépendance n'a été élargie.
 vulnérabilité (0 faible, modérée, élevée ou critique). L'audit complet a
 inspecté 228 dépendances résolues, dont les dépendances de développement.
 
+## 17. 🔌 Diagnostic de connexion MariaDB — 2026-10-10
+
+La connexion depuis l'écran de login échouait avec « Une erreur interne est
+survenue ». Le diagnostic a établi que le serveur MariaDB est joignable, mais
+refuse l'utilisateur configuré depuis l'hôte de l'application
+(`ER_HOST_NOT_PRIVILEGED`, MariaDB errno 1130). Ce n'est pas une erreur de
+mot de passe de démonstration : l'accès SQL est refusé avant la lecture du
+compte utilisateur.
+
+**Correctifs appliqués** :
+
+- Les erreurs de connexion MariaDB usuelles, dont `ER_HOST_NOT_PRIVILEGED`,
+  sont mappées en `503 DATABASE_UNAVAILABLE` plutôt qu'en 500 générique.
+- Les routes authentifiées réutilisant les repositories remontent un message
+  explicite d'indisponibilité de la base, sans exposer les détails techniques
+  au client ; la cause reste journalisée côté serveur.
+- Le délai de connexion du pool est borné à cinq secondes dans les deux
+  configurations MySQL (`server/db/client.ts` et `server/index.ts`).
+- `scripts/test-error-mapping.ts` couvre les erreurs de connexion, leur
+  enveloppement Drizzle et les mappings d'erreurs SQL existants. Lancer avec
+  `npm run test:errors`.
+
+**Validation** : test ciblé et `npm run build` réussis. `npm run lint` réussit
+avec deux avertissements `react(purity)` préexistants dans `src/App.tsx`
+(lignes 201–202). Le contrôle HTTP après redémarrage confirme que `/api/health`
+répond et indique `database: unavailable` ; une tentative de login reçoit
+`503 DATABASE_UNAVAILABLE`.
+
+**À poursuivre** : autoriser dans MariaDB l'utilisateur applicatif à se
+connecter depuis l'hôte du serveur, ou configurer `DB_HOST` vers une instance
+qui accepte ce compte. Redémarrer ensuite l'API pour recharger `.env`, vérifier
+`GET /api/health` (`database: connected`), puis tester la connexion avec un
+compte valide. Les valeurs de `.env` ne doivent pas être copiées dans cette
+passation. L'API de diagnostic a été arrêtée ; le processus Vite existant n'a
+pas été arrêté.
+
 ---
 
 *Document mis à jour à chaque étape majeure.*

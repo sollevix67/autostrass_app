@@ -25,6 +25,7 @@ export const pool = hasDatabaseConfig
       password: process.env.DB_PASSWORD,
       connectionLimit: 10,
       waitForConnections: true,
+      connectTimeout: 5000,
     })
   : null
 

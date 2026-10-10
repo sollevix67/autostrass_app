@@ -56,11 +56,46 @@ function unwrap(error: unknown): Record<string, unknown> | null {
   return null
 }
 
+const DATABASE_CONNECTION_ERROR_CODES = new Set([
+  'ECONNREFUSED',
+  'ECONNRESET',
+  'EHOSTUNREACH',
+  'ENETUNREACH',
+  'EAI_AGAIN',
+  'ENOTFOUND',
+  'ETIMEDOUT',
+  'EPIPE',
+  'ER_CON_COUNT_ERROR',
+  'ER_HOST_NOT_PRIVILEGED',
+  'PROTOCOL_CONNECTION_LOST',
+  'PROTOCOL_ENQUEUE_AFTER_FATAL_ERROR',
+  'PROTOCOL_ENQUEUE_AFTER_QUIT',
+])
+
+/** Detecte les erreurs de connexion meme lorsqu'un ORM les enveloppe. */
+function isDatabaseUnavailable(error: unknown): boolean {
+  let current: unknown = error
+  const visited = new Set<object>()
+
+  for (let depth = 0; depth < 5; depth += 1) {
+    if (typeof current !== 'object' || current === null || visited.has(current)) return false
+    visited.add(current)
+
+    const record = current as Record<string, unknown>
+    if (typeof record.code === 'string' && DATABASE_CONNECTION_ERROR_CODES.has(record.code)) return true
+    current = record.cause
+  }
+
+  return false
+}
+
 /**
  * Transforme une erreur mysql2 en code metier exploitable.
  * `ER_DUP_ENTRY` (1062) devient 409, `ER_ROW_IS_REFERENCED_2` (1451) 409 aussi.
  */
 export function toHttpError(error: unknown): { status: number; code: string } {
+  if (isDatabaseUnavailable(error)) return { status: 503, code: 'DATABASE_UNAVAILABLE' }
+
   const record = unwrap(error)
   const code = typeof record?.code === 'string' ? record.code : undefined
 

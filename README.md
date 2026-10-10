@@ -8,7 +8,8 @@ Le schéma principal est défini dans `server/db/schema.ts` et la configuration 
 
 1. Copier `.env.example` vers `.env`.
 2. Renseigner les paramètres MariaDB (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
-3. Générer ou appliquer les migrations lorsqu’un schéma change :
+3. Démarrer MariaDB avant la connexion ; `GET /api/health` indique si la base est `connected`, `unavailable` ou `unconfigured`.
+4. Générer ou appliquer les migrations lorsqu’un schéma change :
 
 ```bash
 npm run db:generate

@@ -10,7 +10,7 @@
 import type { NextFunction, Request, RequestHandler, Response } from 'express'
 import type { z } from 'zod'
 import { db, hasDatabaseConfig } from '../db/client.js'
-import { parseId } from '../repositories/mapping.js'
+import { parseId, toHttpError } from '../repositories/mapping.js'
 import { AuthError, requireRole } from './auth.js'
 import { RepositoryError } from '../repositories/simpleRepositories.js'
 import type { UserRole } from '../db/schema.js'
@@ -109,6 +109,16 @@ export function errorHandler(error: unknown, request: Request, response: Respons
 
   if (error instanceof RepositoryError) {
     response.status(error.status).json({ error: error.code, message: error.message })
+    return
+  }
+
+  const mapped = toHttpError(error)
+  if (mapped.code === 'DATABASE_UNAVAILABLE') {
+    console.error(`[api] ${request.method} ${request.originalUrl} database unavailable`, error)
+    response.status(mapped.status).json({
+      error: mapped.code,
+      message: 'La base de donnees est injoignable. Verifiez la connexion MariaDB.',
+    })
     return
   }
 

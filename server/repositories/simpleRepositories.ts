@@ -50,6 +50,7 @@ export function toRepositoryError(error: unknown): RepositoryError {
     ALREADY_EXISTS: 'Cette valeur existe deja.',
     IN_USE: 'Element reference par un autre enregistrement : suppression impossible.',
     UNKNOWN_REFERENCE: 'Reference inconnue.',
+    DATABASE_UNAVAILABLE: 'La base de donnees est injoignable. Verifiez la connexion MariaDB.',
   }
   return new RepositoryError(mapped.status, mapped.code, messages[mapped.code] ?? "Echec de l'operation.")
 }
