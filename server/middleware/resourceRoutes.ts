@@ -48,6 +48,8 @@ import {
   type VehiculePatch,
 } from './schemas.js'
 import { ClientRepository, VehiculeRepository } from '../repositories/referentielRepositories.js'
+import { createVenteRepository } from '../repositories/documentRepositories.js'
+import { generateVentePdf } from '../services/pdfInvoice.js'
 import { UtilisateurRepository } from '../repositories/utilisateurRepository.js'
 import { LivraisonRepository } from '../repositories/livraisonRepository.js'
 import { CashRegisterRepository } from '../repositories/cashRegisterRepository.js'
@@ -56,7 +58,6 @@ import {
   createCommandeRepository,
   createReceptionRepository,
   createRetourRepository,
-  createVenteRepository,
 } from '../repositories/documentRepositories.js'
 import type { UserRole } from '../db/schema.js'
 
@@ -618,6 +619,41 @@ export function createApiRouter(): Router {
       response.json(closed)
     }),
   )
+
+  // --- Ventes : génération PDF de facture ---------------------------------
+    // Génère une facture PDF pour une vente existante.
+    // Le client est récupéré dynamiquement depuis la vente.
+    const ventesRouter = Router()
+    router.use('/ventes', ventesRouter)
+
+    // La route /ventes/:id/facture est enregistrée AVANT le CRUD standard.
+    ventesRouter.get(
+      '/:id/facture',
+      handler(async (request, response) => {
+        const client = requireDb(response)
+        if (!client) return
+        const id = requireId(request, response)
+        if (id === null) return
+
+        const repo = createVenteRepository(client)
+        const vente = await repo.findById(id)
+        if (!vente) {
+          response.status(404).json({ error: 'NOT_FOUND', message: 'Vente introuvable.' })
+          return
+        }
+
+        // Récupère le client s'il existe
+        let clientInfo: any = null
+        if (vente.clientId !== null) {
+          clientInfo = await new ClientRepository(client).findById(vente.clientId)
+        }
+
+        const pdfBuffer = await generateVentePdf(vente, clientInfo)
+        response.setHeader('Content-Type', 'application/pdf')
+        response.setHeader('Content-Disposition', `attachment; filename="facture-${vente.id}.pdf"`)
+        response.send(pdfBuffer)
+      }),
+    )
 
   return router
 }

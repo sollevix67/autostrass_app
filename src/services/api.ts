@@ -110,7 +110,7 @@ type RequestOptions = Omit<RequestInit, 'signal'> & {
   query?: Record<string, string | number | boolean | undefined | null>
 }
 
-function buildUrl(path: string, query?: RequestOptions['query']): string {
+export function buildUrl(path: string, query?: RequestOptions['query']): string {
   const normalized = path.startsWith('/') ? path : `/${path}`
   const search = new URLSearchParams()
 
