@@ -35,6 +35,7 @@ import { useAuth, canWrite } from '../components/useAuth'
 import { venteSchema, type DocumentLineFormValues } from '../schemas'
 import { PAYMENT_MODE_OPTIONS, formatEuros } from '../options'
 import type { ApiVente } from '../services/contracts'
+import { buildUrl } from '../services/api'
 
 /** Ligne du panier local. `lineId` est la cle React stable de la ligne. */
 type CartLine = DocumentLineFormValues & { lineId: string }
@@ -196,6 +197,22 @@ export default function VentesComptoirView() {
       sortable: true,
       sortValue: (row) => row.totalHT,
       render: (row) => <b>{formatEuros(row.totalHT)}</b>,
+    },
+    {
+      key: 'actions',
+      header: '',
+      align: 'center',
+      render: (row) => (
+        <a
+          href={buildUrl(`/ventes/${row.id}/facture`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="secondary-button small"
+          title="Telecharger la facture"
+        >
+          <Icon name="download" size="sm" /> Facture
+        </a>
+      ),
     },
   ]
 
