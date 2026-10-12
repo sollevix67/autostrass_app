@@ -1,4 +1,26 @@
+/* =============================================================================
+   Essai d'améliorations Modern CSS (branch modern-css-experiment)
+   -----------------------------------------------------------------------------
+   Règles du dépôt moderncss/skills (Modern CSS) appliquées de façon
+   progressive et non destructive : pas de changement de palette, pas de
+   refonte des media queries, pas de suppression du contrôle de thème.
+============================================================================= */
+
 @layer modern-enhancements {
+  /* --- alignement directionnel -------------------------------------------
+     Règle moderne : propriété logique au lieu de properties physiques.
+     En mode LTR (configuration actuelle), visuellement identique. */
+  .chevron,
+  .more-button,
+  .button-chevron,
+  .status-time,
+  .status-dot.connected {
+    margin-inline-start: auto;
+  }
+
+  /* --- retour à la ligne équilibré ---------------------------------------
+     text-wrap: balance → le texte des titres s'équilibre sur plusieurs
+     lignes au lieu d'être décalé, en préservant les sauts de ligne fixes. */
   @supports (text-wrap: balance) {
     .page-heading h1,
     .page-heading h2,
@@ -9,10 +31,76 @@
     }
   }
 
+  /* --- texte "joli" pour le corps ----------------------------------------
+     text-wrap: pretty → évite les lignes d'un seul mot en fin de bloc. */
   @supports (text-wrap: pretty) {
     .heading-copy,
     .login-card .heading-copy {
       text-wrap: pretty;
     }
+  }
+
+  /* --- mouvement : respecter prefers-reduced-motion ----------------------
+     Les animations ne sont activées que pour les utilisateurs qui le
+     souhaitent (règle moderne). */
+  @media (prefers-reduced-motion: no-preference) {
+    .boot-spinner {
+      animation: boot-spin .7s linear infinite;
+    }
+
+    @keyframes boot-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .nav-item,
+    .nav-badge,
+    .status-line .status-dot,
+    .metric-card:after,
+    .notification i,
+    .icon-button,
+    .mobile-menu,
+    .button-chevron {
+      transition:
+        background-color .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .1s ease,
+        opacity .15s ease;
+    }
+  }
+
+  /* --- layout moderne avec display multi-mots ----------------------------
+     grid/flow au lieu de flex, avec gap (le gap est déjà présent, mais
+     l'utilisation de grid ajoute un support sémantique et prépare l'avenir). */
+  @supports (display: grid) {
+    .metric-icon,
+    .workspace-switcher,
+    .chevron {
+      display: grid;
+      place-items: center;
+      gap: 9px;
+    }
+  }
+
+  /* --- espacement fluide -------------------------------------------------
+     clamp() déjà utilisé dans App.css; on l'étend ici aux marges de blocs
+     et aux paddings de cartes pour un espacement à l'échelle du viewport. */
+  .panel,
+  .quick-actions,
+  .metric-card {
+    margin: clamp(12px, 1.5vw, 16px) 0;
+    padding: clamp(16px, 2vw, 24px);
+  }
+
+  /* --- typographie à échelle fluide --------------------------------------
+     Des tailles de police qui s'adaptent au viewport, en gardant les
+     valeurs de base du design system comme minimum. */
+  h1 {
+    font-size: clamp(1.3rem, 3.5vw, 1.875rem);
+    line-height: 1.2;
+  }
+  h2 {
+    font-size: clamp(1.125rem, 3vw, 1.5rem);
+    line-height: 1.3;
   }
 }
