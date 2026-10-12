@@ -1,0 +1,18 @@
+@layer modern-enhancements {
+  @supports (text-wrap: balance) {
+    .page-heading h1,
+    .page-heading h2,
+    .panel-heading h2,
+    .quick-actions h2,
+    .login-card h1 {
+      text-wrap: balance;
+    }
+  }
+
+  @supports (text-wrap: pretty) {
+    .heading-copy,
+    .login-card .heading-copy {
+      text-wrap: pretty;
+    }
+  }
+}

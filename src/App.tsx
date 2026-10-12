@@ -16,6 +16,7 @@ function getStoredTheme(): ThemeMode {
 }
 import './App.css'
 import './auth.css'
+import './modern-enhancements.css'
 import { useDashboard } from './hooks/useDashboard'
 import { ToastProvider } from './components/Toast'
 import { Icon, type IconName } from './components/Icon'
