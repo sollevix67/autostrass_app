@@ -10,7 +10,7 @@
  * serveur a partir des lignes et du montant encaisse, ce qui empeche un total
  * incoherent avec le detail.
  *
- * Une vente ne peut etre enregistree que dans une **session de caisse
+ * Une vente ne peut être enregistrée que dans une **session de caisse
  * ouverte** : le serveur la refuse en 409 sinon. L'ecran renvoie donc vers la
  * page Caisse plutot que de laisser l'utilisateur decouvrir le refus apres
  * avoir rempli un panier.
@@ -70,7 +70,7 @@ export default function VentesComptoirView() {
 
   /**
    * Le resolver depend du total calcule : la regle « montant encaisse >=
-   * total » ne peut pas etre un schema statique. On garde un schema constant
+   * total » ne peut pas être un schéma statique. On garde un schéma constant
    * pour les types et on appelle `venteSchema` a chaque rendu.
    */
   const form = useForm({

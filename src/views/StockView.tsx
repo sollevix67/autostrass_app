@@ -82,7 +82,7 @@ export default function StockView() {
     confirm(
       `Retirer ${article.reference} du stock ?`,
       <>
-        L'article <strong>{article.designation}</strong> sera supprime du catalogue.
+        L'article <strong>{article.designation}</strong> sera supprimé du catalogue.
         L'operation est irreversible.
       </>,
       async () => {

@@ -1,7 +1,7 @@
 /**
- * Vue vehicules : parc automobile du depot.
+ * Vue véhicules : parc automobile du dépôt.
  *
- * Branchee sur l'API (`/api/vehicules`). Meme patron que `ClientsView` :
+ * Branche sur l'API (`/api/vehicules`). Même patron que `ClientsView` :
  * React Hook Form + Zod, resume d'erreurs focusable, tableau triable et
  * suppression confirmee par `ConfirmDialog`.
  *
@@ -86,7 +86,7 @@ export default function VehiculesView() {
 
   async function handleSubmit(values: VehiculeFormValues) {
     if (duplicateImmatriculation(values.immatriculation)) {
-      toast.error('Cette immatriculation est deja presente dans le parc.')
+      toast.error('Cette immatriculation est déjà présente dans le parc.')
       return
     }
     const created = await create(values)
@@ -111,7 +111,7 @@ export default function VehiculesView() {
   }
 
   /**
-   * Signale une immatriculation deja prise.
+   * Signale une immatriculation déjà prise.
    *
    * La base ne porte pas de contrainte d'unicite sur cette colonne : deux
    * lignes identiques y seraient acceptees et le parc deviendrait ambigu.
@@ -126,14 +126,14 @@ export default function VehiculesView() {
 
   const handleDelete = (vehicule: ApiVehicule) => {
     confirm(
-      'Supprimer ce vehicule ?',
+      'Supprimer ce véhicule ?',
       <>
-        Le vehicule <strong>{vehicule.immatriculation}</strong> ({vehicule.marque} {vehicule.modele})
+        Le véhicule <strong>{vehicule.immatriculation}</strong> ({vehicule.marque} {vehicule.modele})
         sera retire du parc.
       </>,
       () => {
         void remove(vehicule.id).then((deleted) => {
-          if (deleted) toast.success(`Vehicule ${vehicule.immatriculation} supprime.`)
+          if (deleted) toast.success(`Véhicule ${vehicule.immatriculation} supprimé.`)
         })
       },
     )
@@ -186,7 +186,7 @@ export default function VehiculesView() {
             className="status-select"
             value={row.statut}
             disabled={saving || patching === row.id}
-            aria-label={`Statut du vehicule ${row.immatriculation}`}
+            aria-label={`Statut du véhicule ${row.immatriculation}`}
             onChange={(event) => {
               const value = event.target.value as ApiVehicule['statut']
               void patchVehicle(row, { statut: value }, `${row.immatriculation} : statut mis a jour.`)
@@ -212,7 +212,7 @@ export default function VehiculesView() {
             onClick={() => handleDelete(row)}
             disabled={saving}
             title="Supprimer"
-            aria-label={`Supprimer le vehicule ${row.immatriculation}`}
+            aria-label={`Supprimer le véhicule ${row.immatriculation}`}
           >
             <Icon name="trash" size="sm" />
           </button>
@@ -223,7 +223,7 @@ export default function VehiculesView() {
   return (
     <PageLayout
       eyebrow="VEHICULES"
-      title="Gestion des vehicules"
+      title="Gestion des véhicules"
       description="Suivez le parc automobile du depot."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
@@ -234,13 +234,13 @@ export default function VehiculesView() {
       <ResourceBanners
         error={error}
         offline={offline}
-        readOnly={canEdit ? null : 'La saisie de vehicules est reservee au depot. Consultez le parc ci-dessous.'}
-        resource="vehicules"
+        readOnly={canEdit ? null : 'La saisie de véhicules est réservée au dépôt. Consultez le parc ci-dessous.'}
+        resource="véhicules"
       />
 
       {canEdit && (
         <section className="form-card">
-          <h2>Nouveau vehicule</h2>
+          <h2>Nouveau véhicule</h2>
           <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
             <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
 
@@ -314,7 +314,7 @@ export default function VehiculesView() {
                 className="primary-button"
                 disabled={saving || form.formState.isSubmitting}
               >
-                <Icon name="plus" size="sm" /> Ajouter le vehicule
+                <Icon name="plus" size="sm" /> Ajouter le véhicule
               </button>
               <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_VEHICULE)}>
                 Effacer
@@ -330,7 +330,7 @@ export default function VehiculesView() {
         rowKey={(row) => String(row.id)}
         caption="Parc automobile du depot"
         loading={loading}
-        emptyMessage="Aucun vehicule enregistre."
+        emptyMessage="Aucun véhicule enregistré."
         defaultSort={{ key: 'immatriculation', direction: 'asc' }}
       />
 

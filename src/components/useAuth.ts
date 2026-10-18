@@ -11,7 +11,7 @@ import { AuthContext, type AuthContextValue } from './authContext'
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext)
   if (context === null) {
-    throw new Error("useAuth doit etre utilise a l'interieur de <AuthProvider>.")
+    throw new Error("useAuth doit être utilisé à l'intérieur de <AuthProvider>.")
   }
   return context
 }

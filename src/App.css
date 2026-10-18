@@ -525,7 +525,7 @@ th.align-center, td.align-center { text-align: center; }
 .muted { color: var(--text-muted); }
 
 /* --- Caisse : etat de session et comptage --------------------------------- */
-/* Quatre cartes alignees : le solde theorique est mis en avant (classe
+/* Quatre cartes alignées : le solde théorique est mis en avant (classe
    `accent`) parce que c'est la valeur a confronter au comptage, pas une
    donnee parmi d'autres. */
 .caisse-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 16px; }

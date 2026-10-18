@@ -15,7 +15,7 @@ export function createLineId(prefix = 'line'): string {
 
 /**
  * Genere un identifiant sequentiel du type `L-004` a partir d'un prefixe
- * et du nombre d'elements deja presents.
+ * et du nombre d'éléments déjà présents.
  *
  * Reserve au mode local (donnees non persistes). Cote API, l'identifiant
  * est genere par la base.

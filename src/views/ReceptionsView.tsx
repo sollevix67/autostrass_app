@@ -1,7 +1,7 @@
 /**
- * Vue receptions : saisie des articles recus et historique.
+ * Vue réceptions : saisie des articles reçus et historique.
  *
- * Branchee sur l'API (`/api/receptions`). Le formulaire suit le meme patron que
+ * Branche sur l'API (`/api/receptions`). Le formulaire suit le même patron que
  * le catalogue : React Hook Form + Zod + `useFieldArray`, resume d'erreurs
  * focusable, et suppression confirmee par `ConfirmDialog`.
  *
@@ -96,9 +96,9 @@ export default function ReceptionsView() {
 
   const handleDeleteHistory = (reception: ApiReception) => {
     confirm(
-      `Supprimer la reception du ${reception.dateReception} ?`,
+      `Supprimer la réception du ${reception.dateReception} ?`,
       <>
-        La reception chez <strong>{reception.fournisseur}</strong> ({reception.articles.length}
+        La réception chez <strong>{reception.fournisseur}</strong> ({reception.articles.length}
         ligne(s), {formatEuros(reception.totalHT)}) sera retirees de l'historique.
       </>,
       () => {
@@ -151,7 +151,7 @@ export default function ReceptionsView() {
             onClick={() => handleDeleteHistory(row)}
             disabled={saving}
             title="Supprimer"
-            aria-label={`Supprimer la reception du ${row.dateReception}`}
+            aria-label={`Supprimer la réception du ${row.dateReception}`}
           >
             <Icon name="trash" size="sm" />
           </button>
@@ -162,7 +162,7 @@ export default function ReceptionsView() {
   return (
     <PageLayout
       eyebrow="RECEPTIONS"
-      title="Enregistrer une reception"
+      title="Enregistrer une réception"
       description="Ajoutez les articles recus de vos fournisseurs."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
@@ -173,13 +173,13 @@ export default function ReceptionsView() {
       <ResourceBanners
         error={error}
         offline={offline}
-        readOnly={canEdit ? null : 'La saisie des receptions est reservee au depot. Consultez l\'historique ci-dessous.'}
-        resource="receptions"
+        readOnly={canEdit ? null : 'La saisie des réceptions est réservée au dépôt. Consultez l\'historique ci-dessous.'}
+        resource="réceptions"
       />
 
       {canEdit && (
         <section className="form-card">
-          <h2>Nouvelle reception</h2>
+          <h2>Nouvelle réception</h2>
           <form onSubmit={onSubmit} noValidate>
             {/*
               Erreur de collection : Zod la place sur `articles`. On affiche un
@@ -204,7 +204,7 @@ export default function ReceptionsView() {
                 required
               />
               <FormInput
-                label="Date de reception"
+                label="Date de réception"
                 name="dateReception"
                 type="date"
                 register={reg}
@@ -285,7 +285,7 @@ export default function ReceptionsView() {
 
             <div className="form-actions">
               <button type="submit" className="primary-button" disabled={saving}>
-                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer la reception'}
+                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer la réception'}
               </button>
               <button type="button" className="secondary-button" onClick={() => reset(EMPTY_RECEPTION)}>
                 Effacer
@@ -299,10 +299,10 @@ export default function ReceptionsView() {
         columns={columns}
         rows={rows}
         rowKey={(row) => String(row.id)}
-        emptyMessage="Aucune reception enregistree."
+        emptyMessage="Aucune réception enregistrée."
         loading={loading}
         defaultSort={{ key: 'dateReception', direction: 'desc' }}
-        caption="Historique des receptions fournisseurs"
+        caption="Historique des réceptions fournisseurs"
       />
 
       <ConfirmDialog {...dialogProps} confirmLabel="Supprimer" destructive />

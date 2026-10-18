@@ -2,7 +2,7 @@
  * Listes de valeurs des `<select>`, partagees par les formulaires.
  *
  * Centralisees ici plutot que dupliquees dans chaque vue : les libelles et
- * l'ordre d'affichage doivent etre identiques partout, et une divergence
+ * l'ordre d'affichage doivent être identiques partout, et une divergence
  * ("Cheque" dans un module, "Chèque" dans un autre) se remarque sur la facture
  * comme sur l'ecran.
  *

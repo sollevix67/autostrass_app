@@ -77,7 +77,7 @@ export default function ClientsView() {
       'Supprimer ce client ?',
       <>
         Le client <strong>{client.prenom} {client.nom}</strong> ({client.numeroClient}) sera
-        supprime definitivement. Les commandes qui le referencent doivent d'abord etre closes.
+        supprimé définitivement. Les commandes qui le référencent doivent d'abord être closes.
       </>,
       () => {
         // La suppression est asynchrone : on la declenche dans le callback du

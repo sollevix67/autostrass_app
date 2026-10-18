@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   // Restauration de session au montage. L'annulation evite de mettre a jour
-  // l'etat sur un composant deja demonte (React 19 signale l'ecriture).
+  // l'état sur un composant déjà démonté (React 19 signale l'écriture).
   useEffect(() => {
     const controller = new AbortController()
 
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await api.post('/auth/logout')
     } catch {
       // La deconnexion locale doit aboutir meme si l'appel echoue : l'API est
-      // peut-etre deja arretee, et l'utilisateur veut justement sortir.
+      // peut-être déjà arrêtée, et l'utilisateur veut justement sortir.
     }
     setSessionToken(null)
     setCsrfToken(null)

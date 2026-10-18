@@ -106,7 +106,7 @@ export default function CommandesClientsView() {
       'Supprimer cette commande ?',
       <>
         La commande du <strong>{commande.dateCommande}</strong> ({commande.articles.length} ligne(s))
-        sera supprimee. Une livraison qui la reference doit d'abord etre supprimee.
+        sera supprimée. Une livraison qui la référence doit d'abord être supprimée.
       </>,
       () => {
         void remove(commande.id).then((deleted) => {

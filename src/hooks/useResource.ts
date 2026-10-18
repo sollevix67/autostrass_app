@@ -4,7 +4,7 @@
  * Les 8 metiers du schema v2 ont le meme contrat (liste, lecture, creation,
  * mise a jour, suppression). Factorise ici plutot que dans chaque vue :
  * annulation au demontage, etat de chargement, et surtout le comportement
- * « mode degrade » deja en place sur le catalogue.
+ * « mode dégradé » déjà en place sur le catalogue.
  *
  * Ce qui est specifique a un metier (validation Zod, transformation avant
  * envoi) reste dans la vue : le hook ne connait que le transport.
@@ -32,7 +32,7 @@ type Options<TRow> = {
   path: string
   /** Ligne de repli affichee si l'API est injoignable. */
   fallback?: TRow[]
-  /** Tri applique a la liste renvoyee. */
+  /** Tri appliqué à la liste renvoyée. */
   sort?: (rows: TRow[]) => TRow[]
 }
 

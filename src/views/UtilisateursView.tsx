@@ -88,13 +88,13 @@ export default function UtilisateursView() {
   /**
    * Bascule l'activation d'un compte.
    *
-   * Le serveur refuse (409 `SELF_LOCKOUT`) qu'un administrateur se desactive
+   * Le serveur refuse (409 `SELF_LOCKOUT`) qu'un administrateur se désactive
    * lui-meme : le depot resterait sans personne pour le gerer. L'etat du
-   * bouton reflecting desactive des le depart, et le refus remonte en toast.
+   * bouton reflétant désactivé dès le départ, et le refus remonte en toast.
    */
   async function toggleActive(utilisateur: ApiUtilisateur) {
     if (utilisateur.id === user?.id) {
-      toast.error('Vous ne pouvez pas desactiver votre propre compte.')
+      toast.error('Vous ne pouvez pas désactiver votre propre compte.')
       return
     }
     setPatching(utilisateur.id)
@@ -104,7 +104,7 @@ export default function UtilisateursView() {
     toast.success(
       updated.actif
         ? `Compte de ${updated.email} active.`
-        : `Compte de ${updated.email} desactive.`,
+        : `Compte de ${updated.email} désactivé.`,
     )
   }
 
@@ -117,7 +117,7 @@ export default function UtilisateursView() {
       'Supprimer ce compte ?',
       <>
         Le compte de <strong>{utilisateur.prenom} {utilisateur.nom}</strong> ({utilisateur.email})
-        sera supprime. Ses jetons de session deviennent invalides immediatement.
+        sera supprimé. Ses jetons de session deviennent invalides immédiatement.
       </>,
       () => {
         void remove(utilisateur.id).then((deleted) => {
@@ -159,7 +159,7 @@ export default function UtilisateursView() {
             className={`toggle-btn ${row.actif ? 'active' : ''}`}
             aria-pressed={row.actif}
             disabled={!isAdmin || isSelf || saving || patching === row.id}
-            title={isSelf ? 'Vous ne pouvez pas desactiver votre propre compte' : undefined}
+            title={isSelf ? 'Vous ne pouvez pas désactiver votre propre compte' : undefined}
             onClick={() => void toggleActive(row)}
           >
             {row.actif ? 'Oui' : 'Non'}

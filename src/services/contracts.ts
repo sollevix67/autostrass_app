@@ -31,7 +31,7 @@ export type MeResponse = {
   csrfToken: string
 }
 
-/** Ligne de document telle que renvoyee par l'API (receptions, ventes, ...). */
+/** Ligne de document telle que renvoyée par l'API (réceptions, ventes, ...). */
 export type ApiLine = {
   ligne: number
   reference: string
@@ -57,7 +57,7 @@ export type ApiClient = {
   updatedAt: string
 }
 
-/** Vehicule renvoye par `GET /api/vehicules`. */
+/** Véhicule renvoyé par `GET /api/vehicules`. */
 export type ApiVehicule = {
   id: number
   immatriculation: string
@@ -85,7 +85,7 @@ export type ApiUtilisateur = {
   updatedAt: string
 }
 
-/** Reception renvoyee par `GET /api/receptions`. */
+/** Réception renvoyée par `GET /api/receptions`. */
 export type ApiReception = {
   id: number
   fournisseur: string
@@ -97,7 +97,7 @@ export type ApiReception = {
   updatedAt: string
 }
 
-/** Vente renvoyee par `GET /api/ventes`. */
+/** Vente renvoyée par `GET /api/ventes`. */
 export type ApiVente = {
   id: number
   clientId: number | null
@@ -114,7 +114,7 @@ export type ApiVente = {
 }
 
 /**
- * Ligne de comptage d'une session cloturee.
+ * Ligne de comptage d'une session clôturée.
  *
  * `denomination` est un montant en euros : `10.00` represente un billet de
  * 10 EUR, pas un indice de coupure.
@@ -125,7 +125,7 @@ export type ApiCashCountLine = {
   sousTotal: number
 }
 
-/** Session de caisse renvoyee par `GET /api/caisse`. */
+/** Session de caisse renvoyée par `GET /api/caisse`. */
 export type ApiCashSession = {
   id: number
   caissier: string
@@ -163,7 +163,7 @@ export type ApiCashMovement = {
   createdAt: string
 }
 
-/** Commande renvoyee par `GET /api/commandes`. */
+/** Commande renvoyée par `GET /api/commandes`. */
 export type ApiCommande = {
   id: number
   clientId: number
@@ -175,7 +175,7 @@ export type ApiCommande = {
   updatedAt: string
 }
 
-/** Livraison renvoyee par `GET /api/livraisons`. */
+/** Livraison renvoyée par `GET /api/livraisons`. */
 export type ApiLivraison = {
   id: number
   commandeId: number

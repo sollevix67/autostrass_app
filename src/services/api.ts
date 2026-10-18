@@ -92,9 +92,9 @@ export class ApiError extends Error {
       case 'SELF_LOCKOUT':
         return this.message
       case 'IN_USE':
-        return 'Cet element est utilise ailleurs et ne peut pas etre supprime.'
+        return 'Cet élément est utilisé ailleurs et ne peut pas être supprimé.'
       case 'ALREADY_EXISTS':
-        return 'Cette valeur existe deja.'
+        return 'Cette valeur existe déjà.'
       case 'UNKNOWN_REFERENCE':
         return 'Reference inconnue : verifyz les donnees saisies.'
       default:

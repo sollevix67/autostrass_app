@@ -70,7 +70,7 @@ type EditableCardProps = {
 /**
  * Carte de formulaire masquee aux utilisateurs sans droits d'ecriture.
  *
- * Le formulaire disparait plutot que d'etre desactive champ par champ : un
+ * Le formulaire disparaît plutôt que d'être désactivé champ par champ : un
  * formulaire visible et inutilisable donne l'impression d'un bug. Le
  * permission d'afficher l'information utile (la liste) est preservee par la
  * vue.

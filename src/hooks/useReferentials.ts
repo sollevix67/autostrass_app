@@ -49,7 +49,7 @@ function fetchOnce(path: string, signal?: AbortSignal): Promise<unknown[]> {
     })
     .then((data) => {
       const entry = cache.get(path)
-      // La reference ne doit changer que si `invalidate` a ete appele entre-temps.
+      // La référence ne doit changer que si `invalidate` a été appelé entre-temps.
       if (entry?.promise === promise) cache.set(path, { data, promise: null })
       return data
     })
@@ -92,7 +92,7 @@ function useReferential<T>(path: string): T[] {
   }, [path])
 
   // Deux sources, dans l'ordre de fraicheur : la reponse de cette instance,
-  // sinon le cache partage (une autre vue a peut-etre deja charge la liste).
+  // sinon le cache partagé (une autre vue a peut-être déjà chargé la liste).
   if (fetched?.path === path) return fetched.rows
   return (cache.get(path)?.data as T[] | undefined) ?? []
 }

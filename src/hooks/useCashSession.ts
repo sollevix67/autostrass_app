@@ -1,5 +1,5 @@
 /**
- * Hook de la caisse : session courante, ouverture, cloture, journal.
+ * Hook de la caisse : session courante, ouverture, clôture, journal.
  *
  * Distinct de `useResource` parce que la caisse n'est pas une collection CRUD.
  * L'etat utile est **la session ouverte du caissier connecte**, qui peut
@@ -99,7 +99,7 @@ export function useCashSession(): CashState {
       write(
         () =>
           api.post<ApiCashSession>(`/caisse/${session?.id ?? 0}/cloturer`, { comptage, notes }),
-        // Apres cloture, le caissier n'a plus de session ouverte : on remet
+        // Après clôture, le caissier n'a plus de session ouverte : on remet
         // l'etat a `null` plutot que de garder une session fermee affichee
         // comme si elle l'etait encore.
         () => setSession(null),
@@ -114,7 +114,7 @@ export function useCashSession(): CashState {
  * Journal des mouvements d'une session.
  *
  * Charge a la demande : un depot n'a pas besoin de l'historique de caisse tant
- * qu'il ne consulte pas l'ecart d'une cloture. Un `useResource` ici
+ * qu'il ne consulte pas l'écart d'une clôture. Un `useResource` ici
  * declencherait une requete sur chaque poste a l'ouverture de la vue.
  */
 export function useCashMovements(sessionId: number | null): {
