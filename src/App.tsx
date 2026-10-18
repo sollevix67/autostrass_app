@@ -144,13 +144,13 @@ function AppContent() {
             <span>Utilisateurs & droits</span>
           </NavLink>
         </nav>
-        <div className="sidebar-footer"><div className="profile-avatar">{initials(user.prenom, user.nom)}</div><div><b>{user.prenom} {user.nom}</b><small>{roleLabel(user.role)}</small></div><button className="more-button" aria-label="Se deconnecter" onClick={() => void signOut()}><Icon name="chevron-right" size="lg" /></button></div>
+        <div className="sidebar-footer"><div className="profile-avatar">{initials(user.prenom, user.nom)}</div><div><b>{user.prenom} {user.nom}</b><small>{roleLabel(user.role)}</small></div><button className="more-button" aria-label="Se déconnecter" onClick={() => void signOut()}><Icon name="chevron-right" size="lg" /></button></div>
       </aside>
 
       <main className="main-content">
         <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
-          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre depot aujourd hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle operation <Icon name="chevron-down" size="sm" /></button></div>
+          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre dépôt aujourd’hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle opération <Icon name="chevron-down" size="sm" /></button></div>
           <div className="status-line">
             <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : ''}`}></span>
             {apiMode === 'connected'

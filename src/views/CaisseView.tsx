@@ -1,14 +1,14 @@
 /**
- * Vue caisse : ouverture, suivi et cloture.
+ * Vue caisse : ouverture, suivi et clôture.
  *
  * Une page, trois etats successifs — c'est le fil d'une journee de depot :
  * 1. **aucune session** : on compte le fond et on ouvre ;
  * 2. **session ouverte** : on encaisse, et on voit le solde du tiroir ;
- * 3. **session cloturee** : on compare le comptage au theorique et on clot.
+ * 3. **session clôturée** : on compare le comptage au théorique et on clôt.
  *
  * Le caissier n'a donc jamais à choisir son état : la page montre ce qu'il lui
  * reste a faire. Le bouton de validation porte l'action attendue
- * (« Ouvrir la caisse », « Cloturer la caisse »), jamais un libelle generique.
+ * (« Ouvrir la caisse », « Clôturer la caisse »), jamais un libellé générique.
  *
  * Le montant d'entree est **le comptage physique**. Il n'est jamais repris
  * d'un calcul : c'est tout le principe du controle de caisse, et un total
@@ -65,7 +65,7 @@ export default function CaisseView() {
   })
   const openingRegister = opening.register
 
-  // --- Formulaire de cloture ------------------------------------------------
+  // --- Formulaire de clôture ------------------------------------------------
   // Le comptage est pre-rempli avec les coupures courantes a quantite nulle :
   // le caissier remplit ce qu'il compte, il n'a pas a construire une liste.
   const closing = useForm({
@@ -110,14 +110,14 @@ export default function CaisseView() {
       comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
       notes: '',
     })
-    if (ecart === 0) toast.success(`Caisse cloturee : ${verdict.text.toLowerCase()}.`)
-    else toast.error(`Caisse cloturee avec un ecart : ${verdict.text.toLowerCase()}.`)
+    if (ecart === 0) toast.success(`Caisse clôturée : ${verdict.text.toLowerCase()}.`)
+    else toast.error(`Caisse clôturée avec un écart : ${verdict.text.toLowerCase()}.`)
   })
 
   const askClosing = () => {
     const ecart = totalComptage - soldeTheorique
     confirm(
-      'Cloturer la caisse ?',
+      'Clôturer la caisse ?',
       <>
         Vous comptez <strong>{formatEuros(totalComptage)}</strong> pour un theorique de{' '}
         <strong>{formatEuros(soldeTheorique)}</strong>
@@ -169,7 +169,7 @@ export default function CaisseView() {
     <PageLayout
       eyebrow="CAISSE"
       title="Gestion de caisse"
-      description="Ouverture, suivi et cloture de votre session de caisse."
+      description="Ouverture, suivi et clôture de votre session de caisse."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
           <Icon name="rotate-ccw" size="sm" /> Actualiser
@@ -214,7 +214,7 @@ export default function CaisseView() {
                 rows={3}
                 register={openingRegister as FieldRegister}
                 error={opening.formState.errors.notes?.message}
-                placeholder="Optionnel : consigne de depot, particularite..."
+                placeholder="Optionnel : consigne de dépôt, particularité..."
               />
             </div>
 
@@ -257,7 +257,7 @@ export default function CaisseView() {
 
           {canEdit && (
             <section className="form-card">
-              <h2>Cloturer la caisse</h2>
+              <h2>Clôturer la caisse</h2>
               <form onSubmit={submitClosing} noValidate>
                 <ErrorSummary errors={closing.formState.errors} labels={CLOSING_LABELS} />
 
@@ -275,7 +275,7 @@ export default function CaisseView() {
                       </label>
                       <span className="comptage-coupure">{formatDenomination(field.denomination)}</span>
                       <FormInput
-                        label="Quantite"
+                        label="Quantité"
                         name={`comptage.${index}.quantite`}
                         type="number"
                         min="0"
@@ -296,7 +296,7 @@ export default function CaisseView() {
                 </div>
 
                 <FormTextarea
-                  label="Commentaire de cloture"
+                  label="Commentaire de clôture"
                   name="notes"
                   rows={3}
                   register={closingRegister}
@@ -311,7 +311,7 @@ export default function CaisseView() {
                     onClick={askClosing}
                     disabled={saving}
                   >
-                    <Icon name="check" size="sm" /> Cloturer la caisse
+                    <Icon name="check" size="sm" /> Clôturer la caisse
                   </button>
                 </div>
               </form>
@@ -323,13 +323,13 @@ export default function CaisseView() {
             rows={movements}
             rowKey={(row) => String(row.id)}
             caption="Journal des mouvements de la session"
-            emptyMessage="Aucun mouvement enregistre."
+            emptyMessage="Aucun mouvement enregistré."
             defaultSort={{ key: 'createdAt', direction: 'desc' }}
           />
         </>
       )}
 
-      <ConfirmDialog {...dialogProps} confirmLabel="Cloturer" destructive />
+      <ConfirmDialog {...dialogProps} confirmLabel="Clôturer" destructive />
     </PageLayout>
   )
 }

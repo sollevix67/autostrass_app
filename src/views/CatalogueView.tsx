@@ -144,12 +144,12 @@ export default function CatalogueView() {
   const columns: ColumnDef<Article>[] = [
     {
       key: 'reference',
-      header: 'REFERENCE',
+      header: 'RÉFÉRENCE',
       sortable: true,
       sortValue: (row) => row.reference,
       render: (row) => <b className="reference">{row.reference}</b>,
     },
-    { key: 'designation', header: 'DESIGNATION', sortable: true, sortValue: (row) => row.designation, render: (row) => row.designation },
+    { key: 'designation',     header: 'DÉSIGNATION', sortable: true, sortValue: (row) => row.designation, render: (row) => row.designation },
     { key: 'category', header: 'CATEGORIE', sortable: true, sortValue: (row) => row.category, render: (row) => row.category },
     {
       key: 'prixUnitaireHT',
