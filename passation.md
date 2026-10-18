@@ -402,6 +402,14 @@ Les `window.alert` / `window.confirm` ont disparu.
 - `sessions_caisse` + `mouvements_caisse`
 - `journal_actions` (audit global : qui, quoi, quand, sur quoi)
 
+> 📋 **Import schema_step2 → schema.ts** : le bloc de re-export des 15 symboles
+> (`emplacements`, `tva`, `fournisseurs`, `commandesFournisseurs`,
+> `commandeFournisseurLines`, `journal_actions`, `stockParEmplacements`, etc.)
+> est déjà présent à la fin de `server/db/schema.ts`. Les sous-tâches restantes
+> sont `drizzle-generate-step2` (génération de la migration SQL) et
+> `drizzle-migrate-step2` (application sur la base cible + vérification du
+> journal Drizzle).
+
 **Étape 3 — Documents PDF**
 Devis, factures, bons de commande, bons de livraison, avoirs.
 Choix d'architecture : génération **côté serveur** (`pdfmake` ou `puppeteer`)
