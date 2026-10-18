@@ -125,7 +125,7 @@ export async function authenticate(email: string, password: string): Promise<Aut
   const matches = await bcrypt.compare(password, found.passwordHash)
   if (!matches) throw new AuthError(401, 'INVALID_CREDENTIALS', 'Email ou mot de passe incorrect.')
 
-  if (!found.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est desactive.')
+  if (!found.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est désactivé.')
 
   return {
     id: found.id,
@@ -171,7 +171,7 @@ function readToken(request: Request): string | null {
  * Exige un jeton valide et attache l'utilisateur a la requete.
  *
  * Le compte est relu en base a chaque requete : c'est ce qui permet de
- * desactiver un utilisateur sans attendre l'expiration de son jeton.
+ * désactiver un utilisateur sans attendre l'expiration de son jeton.
  */
 export async function requireAuth(request: Request, _response: Response, next: NextFunction): Promise<void> {
   try {
@@ -187,7 +187,7 @@ export async function requireAuth(request: Request, _response: Response, next: N
     // Compte supprime, desactive, ou role change depuis l'emission du jeton :
     // dans les trois cas, on applique l'etat courant et on ignore le jeton.
     if (!user) throw new AuthError(401, 'ACCOUNT_MISSING', 'Compte introuvable.')
-    if (!user.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est desactive.')
+    if (!user.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est désactivé.')
     if (user.role !== payload.role) {
       throw new AuthError(401, 'ROLE_CHANGED', 'Vos droits ont change. Reconnectez-vous.')
     }

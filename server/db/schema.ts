@@ -2,7 +2,7 @@
  * Schema Drizzle — Autostrass (version 2).
  *
  * Couvre les 8 metiers restants apres la v1 (articles / stock / mouvements) :
- * clients, vehicules, utilisateurs, receptions, ventes, commandes, livraisons
+ * clients, véhicules, utilisateurs, réceptions, ventes, commandes, livraisons
  * et retours.
  *
  * Conventions :
@@ -10,7 +10,7 @@
  *   proprietes JS restent lisibles.
  * - Les cles etrangeres sont declarees sans `references()` vers les tables
  *   existantes du schema v1 pour que `drizzle-kit generate` ne tente pas de
- *   recreer `articles` : on utilise `AnyMySQLColumn` et une contrainte
+ *   recréer `articles` : on utilise `AnyMySQLColumn` et une contrainte
  *   `FOREIGN KEY` en SQL si necessaire.
  * - Les montants sont en `DECIMAL(12,2)` ; MariaDB renvoie des chaines,
  *   la conversion en `number` est faite explicitement par le repository
@@ -39,7 +39,7 @@ import {
  * Drizzle 0.45 expose `defaultNow()` / `onUpdateNow()` comme methodes du
  * builder, pas comme cles de configuration. Mais `defaultNow()` produit
  * `DEFAULT (now())`, que le serialiseur MariaDB de drizzle-kit abandonne :
- * la colonne est creee sans defaut, donc tout INSERT — Drizzle compris, qui
+ * la colonne est créée sans défaut, donc tout INSERT — Drizzle compris, qui
  * passe par `DEFAULT` — laisse `created_at` a NULL. On ecrit donc
  * `DEFAULT CURRENT_TIMESTAMP` explicitement, seule forme que le dialecte
  * MariaDB restitue.
@@ -257,7 +257,7 @@ export const offlineVenteQueue = mysqlTable(
     /**
      * Identifiant attribue par le poste de caisse. La cle d'unicite impose
      * au serveur est sa protection contre un rejeu : la meme vente ne peut
-     * pas etre enregistree deux fois.
+     * ne peut pas être enregistrée deux fois.
      */
     reference: varchar('reference', { length: 64 }).notNull(),
     /** Charge JSON exacte de la vente, telle que le poste l'a enregistree. */
@@ -278,7 +278,7 @@ export const PAYMENT_MODES = ['espèces', 'carte', 'chèque'] as const
 export type PaymentMode = (typeof PAYMENT_MODES)[number]
 
 /**
- * Sessions de caisse : ouverture, fond de caisse, cloture.
+ * Sessions de caisse : ouverture, fond de caisse, clôture.
  *
  * Modelise le « tiroir » du depot. Une session est ouverte par un caissier a un
  * instant donne, le ferme apres comptage, et porte le resultat de ce comptage.
@@ -303,8 +303,8 @@ export const cashSessions = mysqlTable(
     /** Caissier proprietaire : la personne qui detient reellement le tiroir. */
     caissier: varchar('caissier', { length: 128 }).notNull(),
     /**
-     * Session deja ouverte par ce caissier. Une session par caissier : deux
-     * tiroirs ouverts sur le meme poste rendraient la cloture ambigue.
+     * Session déjà ouverte par ce caissier. Une session par caissier : deux
+     * tiroirs ouverts sur le même poste rendraient la clôture ambiguë.
      */
     utilisateur_id: int('utilisateur_id', { unsigned: true })
       .notNull()
@@ -313,20 +313,20 @@ export const cashSessions = mysqlTable(
     /** Fond de caisse remis a l'ouverture, en euros. */
     fonds_caisse: decimal('fonds_caisse', { precision: 12, scale: 2 }).notNull().default('0.00'),
     /**
-     * Total **theorique** en especes : `fonds_caisse + somme(ventes especes) -
-     * (monnaie rendue)`. Compare au comptage reel pour degager l'ecart.
+     * Total **théorique** en espèces : `fonds_caisse + somme(ventes espèces) -
+     * (monnaie rendue)`. Compare au comptage réel pour dégager l'écart.
      */
     total_theorique: decimal('total_theorique', { precision: 12, scale: 2 }),
-    /** Total **reel** compte en especes au moment de la cloture. */
+    /** Total **réel** compté en espèces au moment de la clôture. */
     total_reel: decimal('total_reel', { precision: 12, scale: 2 }),
     /**
-     * Ecart = `total_reel - total_theorique`. Nul tant que la session est
-     * ouverte : un ecart calcule avant le comptage n'aurait aucun sens.
+     * Écart = `total_reel - total_theorique`. Nul tant que la session est
+     * ouverte : un écart calculé avant le comptage n'aurait aucun sens.
      */
     ecart: decimal('ecart', { precision: 12, scale: 2 }),
     opened_at: datetime('opened_at', { mode: 'date' }).notNull(),
     closed_at: datetime('closed_at', { mode: 'date' }),
-    /** Commentaire libre : motif de l'ecart, incident de comptage. */
+    /** Commentaire libre : motif de l'écart, incident de comptage. */
     notes: text('notes'),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -340,9 +340,9 @@ export const cashSessions = mysqlTable(
 /**
  * Detail du comptage de la caisse, billet par billet.
  *
- * Indispensable pour comprendre un ecart : « il manque 12 € » ne se traite pas
+ * Indispensable pour comprendre un écart : « il manque 12 € » ne se traite pas
  * comme « il manque 7 € », le premier est un billet de 10 et le second une
- * combinaison. Un seul ecart global ne permet pas de retro-animer le deficit.
+ * combinaison. Un seul écart global ne permet pas de rétro-animer le déficit.
  */
 export const cashSessionBreaks = mysqlTable(
   'cash_session_breaks',
@@ -361,8 +361,8 @@ export const cashSessionBreaks = mysqlTable(
 /**
  * Journal des mouvements de caisse.
  *
- * Une entree par evenement : ouverture, encaissement, rendu, cloture. Sert a
- * expliquer un ecart ligne a ligne — le fond seul ne dit pas *quand* l'argent
+ * Une entrée par événement : ouverture, encaissement, rendu, clôture. Sert à
+ * expliquer un écart ligne à ligne — le fond seul ne dit pas *quand* l'argent
  * a disparu, la sequence le dit.
  */
 export const CASH_MOVEMENT_TYPES = [
@@ -384,7 +384,7 @@ export const cashMovements = mysqlTable(
     type: varchar('type', { length: 16, enum: CASH_MOVEMENT_TYPES }).notNull(),
     /**
      * Montant **signe** : positif = entree de liquide, negatif = sortie.
-     * L'ouverture (fond) et la cloture (comptage) sont donc des mouvements
+     * L'ouverture (fond) et la clôture (comptage) sont donc des mouvements
      * comme les autres, et le solde se deduit par simple somme.
      */
     montant: decimal('montant', { precision: 12, scale: 2 }).notNull().default('0.00'),
@@ -407,7 +407,7 @@ export const ventes = mysqlTable(
       .references(() => clients.id, { onDelete: 'set null' }),
     /**
      * Session de caisse ayant enregistre la vente. Nullable pour rester
-     * compatible avec l'historique deja present, mais toute nouvelle vente
+     * compatible avec l'historique déjà présent, mais toute nouvelle vente
      * l'exige : la route la refuse s'il est absent (422).
      */
     session_id: int('session_id', { unsigned: true })
@@ -432,8 +432,8 @@ export const ventes = mysqlTable(
     /**
      * Vente enregistree hors ligne, en mode degrade NF525.
      *
-     * Une vente de ce type a ete sous reserve de la cle de securite
-     * applicable pendant la coupure de la liaison : elle doit etre
+     * Une vente de ce type a été sous réserve de la clé de sécurité
+     * applicable pendant la coupure de la liaison : elle doit être
      * identifiable apres coup, ce qu'un simple horodatage ne garantit pas.
      */
     degrade: boolean('degrade').notNull().default(false),

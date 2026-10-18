@@ -11,7 +11,7 @@
  * Choix de l'algorithme : **SHA-256**, et non MD5 ni SHA-1. Ces derniers sont
  * aujourd'hui consideres casses pour la resistance aux collisions ; une
  * empreinte foiree est exactement ce que la norme cherche a empecher, donc
- * l'algorithme doit etre solide sur ce point, pas seulement rapide.
+ * l'algorithme doit être solide sur ce point, pas seulement rapide.
  *
  * ## Ce que la norme demande, et ce que l'on fait
  *
@@ -33,7 +33,7 @@
 
 import { createHash } from 'node:crypto'
 
-/** Blocvide utilise comme genine de la chaine. */
+/** Bloc vide utilisé comme genèse de la chaîne. */
 export const GENESIS_HASH = '0'.repeat(64)
 
 /**
@@ -72,10 +72,10 @@ export function fingerprintVente(
    *
    * La date seule suffit a l'_inalterabilite_ : l'empreinte doit prouver que
    * le **contenu** d'une vente n'a pas ete reecrit. L'ordre exact des ventes
-   * est deja garanti par `id`, qui est strictly croissant et fait partie de la
+   * est déjà garanti par `id`, qui est strictement croissant et fait partie de la
    * charge. Un deplacement d'une vente d'un jour sur un autre resterait
    * detecte ; un deplacement de quelques minutes ne change rien au contenu
-   * comptable et n'a pas lieu d'etre traite comme une alteration.
+   * comptable et n'a pas lieu d'être traité comme une altération.
    */
   function dateOnly(date: string | number | Date): string {
     const value = date instanceof Date ? date : new Date(date)
@@ -121,7 +121,7 @@ export function verifyFingerprints(
 ): { intacte: boolean; rupture: number | null; anterieures: number } {
   // La chaine ne **saute** jamais une vente : une vente sans empreinte
   // anterieure a la mise en conformite n'a pas de chainon, et la vente
-  // suivante a ete scellee sur le genine. Filtrer ces ventes ferait porter le
+  // suivante a été scellée sur la genèse. Filtrer ces ventes ferait porter le
   // chainon a la mauvaise vente, et le controle signalerait une rupture
   // inexistante.
   //

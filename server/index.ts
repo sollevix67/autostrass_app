@@ -56,7 +56,7 @@ app.use(securityHeaders)
  */
 function repositoryOr503(response: Response): ArticleRepository | null {
   if (!articles) {
-    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: "MariaDB n'est pas configurée." })
     return null
   }
   return articles
@@ -92,7 +92,7 @@ app.get('/api/health', async (_request: Request, response: Response) => {
 
 app.get('/api/dashboard', async (_request: Request, response: Response) => {
   if (!pool) {
-    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: "MariaDB n'est pas configurée." })
     return
   }
 
@@ -311,10 +311,10 @@ app.post('/api/articles', requireAuth, requireCsrf, requireRole('magasinier'), a
     response.status(201).json(await repository.create(validation.value))
   } catch (error) {
     if (isDuplicateKey(error)) {
-      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette référence existe déjà.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de l'enregistrement." })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Échec de l'enregistrement." })
   }
 })
 
@@ -343,10 +343,10 @@ app.put('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magas
     response.json(updated)
   } catch (error) {
     if (isDuplicateKey(error)) {
-      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette référence existe déjà.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Echec de la mise a jour.' })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Échec de la mise à jour.' })
   }
 })
 
@@ -374,7 +374,7 @@ app.patch('/api/articles/:reference/quantite', requireAuth, requireCsrf, require
     }
     response.json({ reference, quantite: quantity })
   } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de l'ajustement." })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Échec de l'ajustement." })
   }
 })
 
@@ -396,7 +396,7 @@ app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('ma
     }
     response.status(204).end()
   } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Echec de la suppression.' })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Échec de la suppression.' })
   }
 })
 

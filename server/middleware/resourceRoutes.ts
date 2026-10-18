@@ -81,11 +81,11 @@ export function createApiRouter(): Router {
   // emanant du meme site. Le double-soumission CSRF ferme ce reste : toute
   // ecriture doit aussi porter un `X-CSRF-Token` egal au cookie. Montre
   // apres `requireAuth` : inutile de verifier un jeton sur une requete qui va
-  // de toute facon etre refusee.
+  // de toute façon être refusée.
   router.use(requireCsrf)
 
   // --- Clients ------------------------------------------------------------
-  // `Router()` doit etre cree dans une variable puis monte : `router.use()`
+  // `Router()` doit être créé dans une variable puis monté : `router.use()`
   // renvoie le routeur PARENT, pas le sous-routeur. Passer sa valeur a
   // `crudRoutes` enregistrait les routes a la racine `/api`, d'ou un
   // « 400 Identifiant invalide » sur `GET /api/clients` (id vaut « clients »)
@@ -135,8 +135,8 @@ export function createApiRouter(): Router {
 
   // --- Utilisateurs (administration) --------------------------------------
   // Ces routes sont ecrites explicitement plutot que via `crudRoutes` : le
-  // mot de passe doit etre hashe, et un administrateur ne doit pas pouvoir se
-  // supprimer, se desactiver ou se retirer ses propres droits. Enregistrement
+  // mot de passe doit être hashé, et un administrateur ne doit pas pouvoir se
+  // supprimer, se désactiver ou se retirer ses propres droits. Enregistrement
   // de la fabrique plus bas, les ecritures ecrivaient deux fois la meme URL et
   // la premiere servie l'emportait : le garde-fou etait contourne.
   const utilisateursRouter = Router()
@@ -515,7 +515,7 @@ export function createApiRouter(): Router {
 
   // --- Caisse : sessions, comptage, journal --------------------------------
   // Ecrit explicitement plutot que via une fabrique : l'ouverture et la
-  // cloture sont des operations metier, pas un CRUD. `GET /actuelle` est
+  // clôture sont des opérations métier, pas un CRUD. `GET /actuelle` est
   // enregistre AVANT `GET /:id` — sans cela, `requireId` recevrait la chaine
   // « actuelle » et repondrait 400 au lieu de renvoyer la session ouverte.
   const caisseRouter = Router()
@@ -597,7 +597,7 @@ export function createApiRouter(): Router {
     }),
   )
 
-  /** Cloture apres comptage : calcule le total theorique et l'ecart. */
+  /** Clôture après comptage : calcule le total théorique et l'écart. */
   caisseRouter.post(
     '/:id/cloturer',
     requireRole('caissier'),
