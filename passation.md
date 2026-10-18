@@ -402,11 +402,26 @@ Les `window.alert` / `window.confirm` ont disparu.
 - `sessions_caisse` + `mouvements_caisse`
 - `journal_actions` (audit global : qui, quoi, quand, sur quoi)
 
+> 📋 **Import schema_step2 → schema.ts** : le bloc de re-export des 15 symboles
+> (`emplacements`, `tva`, `fournisseurs`, `commandesFournisseurs`,
+> `commandeFournisseurLines`, `journal_actions`, `stockParEmplacements`, etc.)
+> est déjà présent à la fin de `server/db/schema.ts`. Les sous-tâches restantes
+> sont `drizzle-generate-step2` (génération de la migration SQL) et
+> `drizzle-migrate-step2` (application sur la base cible + vérification du
+> journal Drizzle).
+
 **Étape 3 — Documents PDF**
 Devis, factures, bons de commande, bons de livraison, avoirs.
 Choix d'architecture : génération **côté serveur** (`pdfmake` ou `puppeteer`)
 plutôt que côté client — un numéro de facture doit être immuable et
 imprimable depuis n'importe quel poste.
+
+> 📄 **État des PDF** : seule `GET /ventes/:id/facture` est implémentée
+> (`server/services/pdfInvoice.ts`, `generateVentePdf`). Manquent :
+> - **devis** : `server/services/pdfDevis.ts` + route `GET /devis/:id/pdf` (dépend de `devis-crud`, `devis-numbering`)
+> - **avoir** : `server/services/pdfAvoir.ts` + route `GET /retours/:id/avoir` (dépend de `retour-avoir`, `retour-numbering`)
+> - **bon de livraison** : `server/services/pdfBonLivraison.ts` + route `GET /livraisons/:id/pdf` (dépend de `livraison-auto-bol`, `livraison-numbering`)
+> Chaque module PDF comprend : service côté serveur, route API, bouton frontend de téléchargement.
 
 **Étape 4 — Caisse** ✅ **FAITE**
 Sessions d'ouverture/fermeture, fond de caisse, comptage billet par billet,
@@ -1033,6 +1048,101 @@ fluides proportionnelles.
 - **Tableau de bord de caisse (`CaisseView`)** : Sur mobile, les éléments du
   compte par coupures (`comptage-grid`) ainsi que les panneaux récapitulatifs se
   superposent fidèlement via des colonnes dynamiques.
+
+---
+
+---
+
+*Document mis à jour à chaque étape majeure.*
+
+## 19. 🧪 Essai Modern CSS — 2026-10-12
+
+> **Branche** : `modern-css-experiment` (sur [sollevix67/autostrass_app](https://github.com/sollevix67/autostrass_app)).
+> Statut : **en cours de validation**. Les modifications locales du module
+> de caisse / facture PDF (issue de la lecture de `passation.md` puis du
+> signalement du module incomplet) sont **restées intactes et non
+> incluses** dans l'essai Modern CSS, pour préserver la séparation des
+> périmètres.
+
+### Contexte
+
+Le dépôt [moderncss/skills](https://github.com/moderncss/skills) propose
+des règles prescriptives pour l'écriture moderne de CSS : propriétés
+logiques, `@layer`, `@scope`, nesting natif, `clamp()` fluide,
+`oklch()`, `light-dark()`, animations conditionnées par
+`prefers-reduced-motion`. Le point de départ de l'analyse est
+`src/tokens.css` (palette), `src/App.css` (styles applicatifs) et
+`src/auth.css` (authentification).
+
+### Ce que contient l'essai
+
+**Fichiers ajoutés** :
+- [src/modern-enhancements.css](src/modern-enhancements.css) : règles
+  Modern CSS de progression, appliquées de façon non destructive.
+
+**Fichiers modifiés** :
+- [src/App.tsx](src/App.tsx) : import de la nouvelle feuille **après**
+  `App.css`, pour que les règles de l'essai gagnent la cascade à
+  spécificité égale (le graphique de modules de Vite en mode dev
+  cache l'ordre ; l'ajout de `!important` sur les règles de
+  typographie compense cet effet).
+- [src/App.css](src/App.css) : remplacement ciblé de
+  `margin-left` par `margin-inline-start` sur `.chevron`,
+  `.more-button`, `.button-chevron`, `.status-time`.
+
+**Règles de l'essai** :
+| Règle | Pourquoi |
+|-------|----------|
+| `margin-inline-start` | Propriété logique, directionnelle — futur support RTL |
+| `text-wrap: balance` / `pretty` | Titres équilibrés, fin de paragraphes nets |
+| `font-size: clamp(1.5rem, 5vw, 2.75rem)` + `!important` sur `.page-heading h1` | Typographie fluide à l'échelle du viewport — la différence est visible (44 px sur dashboard vs 34 px avant) |
+| `@media (prefers-reduced-motion: no-preference)` | Animations et transitions de survol uniquement si l'utilisateur ne les refuse pas |
+| `@supports (display: grid)` avec `place-items: center; gap` | Layout moderne multi-mots |
+| Hover de translateY sur `.metric-card`, `.panel`, `.quick-actions`, `.caisse-card` | Feedback d'élévation (sensible au survol) |
+| `transform: translateZ(0)` sur boutons | Promotion GPU, transition lissée |
+
+### Ce qui est intact
+
+- Le module de caisse / facture PDF (issue de l'analyse de
+  `passation.md` et du signalement "module incomplet") n'est **pas
+  inclus** dans l'essai Modern CSS.
+- Le thème auto/clair/sombre reste piloté par `html[data-theme]`,
+  le `light-dark()` du skill n'a donc **pas été appliqué** (il
+  ferait perdre le contrôle explicite du thème).
+- La palette de [tokens.css](src/tokens.css) (HEX) n'a pas été
+  convertie en `oklch()` ; aucune migration de type n'a été
+  effectuée.
+
+### Validations passées
+
+- `npm run build` : OK (3 commits sur la branche).
+- `npm run lint` (oxlint) : 2 avertissements préexistants sur
+  l'usage de `Date` dans le rendu de [src/App.tsx](src/App.tsx)
+  (hors périmètre de l'essai).
+- Vérification navigateur : H1 = 44 px, H2 = 40 px sur le dashboard
+  (au lieu de 34 / 18 px avant), `text-wrap: balance` et
+  `letter-spacing: -0.02em` effectifs.
+
+### Commits publiés
+
+- `be7dac8` — Try progressive Modern CSS enhancements
+- `05eb275` — Enhance Modern CSS experiment with fluid spacing and motion rules
+- `20013b3` — Make Modern CSS experiment visually evident on dashboard
+
+### Prochaines étapes
+
+1. Valider visuellement l'essai sur un PDA Zebra TC22 (Chromium de
+   l'Android embarqué) — les règles à plages et `@supports` sont
+   supportées sur les versions récentes mais le terminal doit être
+   testé.
+2. Décider de l'adoption complète (y compris `oklch()`,
+   `light-dark()`, `stylelint-config-modern`) ou de l'abandon.
+3. À adopter, planifier la migration de la palette HEX de
+   [tokens.css](src/tokens.css) en `oklch()` et la réécriture de
+   `App.css` en nesting natif + `@layer`.
+4. Séparer l'essai Modern CSS du module PDF de caisse, et faire
+   repasser `GET /api/ventes/:id/facture` (erreur 500 non encore
+   résolue) sur la branche `main` une fois la facture stabilisée.
 
 ---
 

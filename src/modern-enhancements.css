@@ -1,0 +1,156 @@
+/* =============================================================================
+   Essai d'améliorations Modern CSS (branch modern-css-experiment)
+   -----------------------------------------------------------------------------
+   Règles du dépôt moderncss/skills (Modern CSS) appliquées de façon
+   progressive et non destructive : pas de changement de palette, pas de
+   refonte des media queries, pas de suppression du contrôle de thème.
+============================================================================= */
+
+/* =============================================================================
+   Essai d'améliorations Modern CSS (branch modern-css-experiment)
+   -----------------------------------------------------------------------------
+   Règles du dépôt moderncss/skills (Modern CSS) appliquées de façon
+   progressive et non destructive : pas de changement de palette, pas de
+   refonte des media queries, pas de suppression du contrôle de thème.
+
+   NB : pas de @layer ici — avec @layer, les règles sans couche (dans
+   App.css) auraient toujours gagné, rendant les modifications invisibles.
+============================================================================= */
+
+/* --- alignement directionnel ---------------------------------------------
+   Règle moderne : propriété logique au lieu de properties physiques.
+   En mode LTR (configuration actuelle), visuellement identique. */
+.chevron,
+.more-button,
+.button-chevron,
+.status-time,
+.status-dot.connected {
+  margin-inline-start: auto;
+}
+
+/* --- retour à la ligne équilibré -----------------------------------------
+   text-wrap: balance → le texte des titres s'équilibre sur plusieurs
+   lignes au lieu d'être décalé, en préservant les sauts de ligne fixes. */
+@supports (text-wrap: balance) {
+  .page-heading h1,
+  .page-heading h2,
+  .panel-heading h2,
+  .quick-actions h2,
+  .login-card h1 {
+    text-wrap: balance;
+  }
+}
+
+/* --- texte "joli" pour le corps ------------------------------------------
+   text-wrap: pretty → évite les lignes d'un seul mot en fin de bloc. */
+@supports (text-wrap: pretty) {
+  .heading-copy,
+  .login-card .heading-copy {
+    text-wrap: pretty;
+  }
+}
+
+/* --- mouvement : respecter prefers-reduced-motion ------------------------
+   Les animations ne sont activées que pour les utilisateurs qui le
+   souhaitent (règle moderne). */
+@media (prefers-reduced-motion: no-preference) {
+  .boot-spinner {
+    animation: boot-spin .7s linear infinite;
+  }
+
+  @keyframes boot-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .nav-item,
+  .nav-badge,
+  .status-line .status-dot,
+  .metric-card:after,
+  .notification i,
+  .icon-button,
+  .mobile-menu,
+  .button-chevron {
+    transition:
+      background-color .15s ease,
+      border-color .15s ease,
+      color .15s ease,
+      transform .1s ease,
+      opacity .15s ease;
+  }
+}
+
+/* --- layout moderne avec display multi-mots -------------------------------
+   grid/flow au lieu de flex, avec gap (le gap est déjà présent, mais
+   l'utilisation de grid ajoute un support sémantique et prépare l'avenir). */
+@supports (display: grid) {
+  .metric-icon,
+  .workspace-switcher,
+  .chevron {
+    display: grid;
+    place-items: center;
+    gap: 9px;
+  }
+}
+
+/* --- espacement fluide -----------------------------------------------------
+   clamp() déjà utilisé dans App.css; on l'étend ici aux marges de blocs
+   et aux paddings de cartes pour un espacement à l'échelle du viewport. */
+.panel,
+.quick-actions,
+.metric-card {
+  margin: clamp(12px, 1.5vw, 16px) 0;
+  padding: clamp(16px, 2vw, 24px);
+}
+
+/* --- typographie à échelle fluide -----------------------------------------
+   Des tailles de police qui s'adaptent au viewport, en gardant les
+   valeurs de base du design system comme minimum. Les plages sont
+   volontairement larges pour que la différence soit visible sur grand
+   écran. Ces sélecteurs ont la même spécificité que ceux de App.css
+   afin de les remplacer. */
+.page-heading h1,
+.page-heading h2,
+.panel-heading h2,
+.quick-actions h2 {
+  font-size: clamp(1.25rem, 3.5vw, 2.5rem) !important;
+}
+.page-heading h1 {
+  font-size: clamp(1.5rem, 5vw, 2.75rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* --- retour à la ligne équilibré sur les titres de page -------------------
+   On élargit la barre de contenu pour que les titres s'étirent et
+   montrent la différence entre "décalé" et "équilibré". */
+.main-content {
+  max-width: 1440px;
+}
+
+/* --- cartes qui réagissent au container -----------------------------------
+   Règle moderne : @container pour un comportement indépendant du
+   viewport. Ici, un effet de soulèvement visible au survol. */
+.metric-card:hover,
+.panel:hover,
+.quick-actions:hover,
+.caisse-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- feedback visuel des boutons ------------------------------------------
+   Une transformation de légère au survol, protégée par prefers-reduced-motion. */
+.primary-button,
+.secondary-button,
+.danger-button,
+.link-button,
+.status-select {
+  transform: translateZ(0);
+}
+
+/* --- icônes de statut qui réagissent ---------------------------------------
+   Animation subtile de pulsation, protégée. */
+.status-dot.connected,
+.notification i {
+  transform: translateZ(0);
+}

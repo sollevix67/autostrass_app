@@ -17,8 +17,8 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
     - Caisse et vente comptoir (backend)
         - Conforme aux normes NF203 et NF525
         - Contrôle du fond de caisse
+        - Enregistrement des ventes au comptoir avec édition de facture
         - Ajout des articles au panier depuis le catalogue ou par saisie de la référence, de la désignation ou du code EAN13, avec autocompletion
-        - Edition de facture en cas de vente au comptoir
         - Ouverture de plusieurs sessions de caisse (maximum 1 session par utilisateur)
         - Interface de caisse utilisable au clavier
         - Clôture

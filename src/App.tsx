@@ -14,6 +14,7 @@ function getStoredTheme(): ThemeMode {
   }
   return 'auto'
 }
+import './modern-enhancements.css'
 import './App.css'
 import './auth.css'
 import { useDashboard } from './hooks/useDashboard'
