@@ -416,6 +416,13 @@ Choix d'architecture : génération **côté serveur** (`pdfmake` ou `puppeteer`
 plutôt que côté client — un numéro de facture doit être immuable et
 imprimable depuis n'importe quel poste.
 
+> 📄 **État des PDF** : seule `GET /ventes/:id/facture` est implémentée
+> (`server/services/pdfInvoice.ts`, `generateVentePdf`). Manquent :
+> - **devis** : `server/services/pdfDevis.ts` + route `GET /devis/:id/pdf` (dépend de `devis-crud`, `devis-numbering`)
+> - **avoir** : `server/services/pdfAvoir.ts` + route `GET /retours/:id/avoir` (dépend de `retour-avoir`, `retour-numbering`)
+> - **bon de livraison** : `server/services/pdfBonLivraison.ts` + route `GET /livraisons/:id/pdf` (dépend de `livraison-auto-bol`, `livraison-numbering`)
+> Chaque module PDF comprend : service côté serveur, route API, bouton frontend de téléchargement.
+
 **Étape 4 — Caisse** ✅ **FAITE**
 Sessions d'ouverture/fermeture, fond de caisse, comptage billet par billet,
 clôture avec écart, et **conformité NF525** (ventes figées, empreinte
