@@ -105,7 +105,7 @@ function upsertByReference(list: Article[], article: Article): Article[] {
 }
 
 /**
- * CRUD articles : charge la liste, cree, met a jour et supprime.
+ * CRUD articles : charge la liste, crée, met à jour et supprime.
  *
  * Si l'API est injoignable (503, 404, reseau coupe), le hook bascule en mode
  * local : les modifications restent en memoire et l'UI previent l'utilisateur.
@@ -150,7 +150,7 @@ export function useCatalogue(): UseCatalogueResult {
   }, [nonce])
 
   /**
-   * Execute une ecriture et bascule en mode local si l'API est indisponible.
+   * Exécute une écriture et bascule en mode local si l'API est indisponible.
    * `apply` est appele en cas de succes reseau, ou avec `fallback` en mode local.
    */
   const write = useCallback(

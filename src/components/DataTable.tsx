@@ -40,7 +40,7 @@ const compare = (a: string | number, b: string | number): number => {
  * Tableau generique triable.
  *
  * - tri local (aucun rechargement reseau) avec `aria-sort` expose
- * - etat vide et etat de chargement distincts
+ * - état vide et état de chargement distincts
  * - ligne active surlignee (edition en cours)
  */
 export function DataTable<T>({

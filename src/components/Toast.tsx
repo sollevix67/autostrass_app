@@ -9,7 +9,7 @@ const MAX_VISIBLE = 3
  * Provider de notifications ephemeres.
  *
  * Le conteneur utilise `role="status"` + `aria-live="polite"` afin que les
- * messages soient annonces par les lecteurs d'ecran sans interrompre la
+ * messages soient annoncés par les lecteurs d'écran sans interrompre la
  * lecture en cours. L'auto-fermeture est suspendue au survol, pour laisser
  * le temps de lire un message d'erreur.
  */

@@ -47,7 +47,7 @@ export function securityHeaders(_request: Request, response: Response, next: Nex
   response.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
 
   // `max-age=0` : le corps d'une erreur ne doit jamais etre conserve par le
-  // navigateur. Les messages d'erreur de l'API refletent l'etat de la base.
+  // navigateur. Les messages d'erreur de l'API reflètent l'état de la base.
   response.setHeader('Cache-Control', 'no-store')
 
   // Le HSTS n'a de sens qu'en HTTPS. Le poser en local casserait le

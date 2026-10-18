@@ -40,14 +40,14 @@ const navigation = [
   { label: 'Vue d’ensemble', path: '/', icon: 'grid' },
   { label: 'Catalogue', path: '/catalogue', icon: 'clipboard' },
   { label: 'Stock', path: '/stock', icon: 'box' },
-  { label: 'Réceptions', path: '/receptions', icon: 'download' },
+  { label: 'Receptions', path: '/receptions', icon: 'download' },
   { label: 'Ventes comptoir', path: '/ventes-comptoir', icon: 'cart' },
   { label: 'Caisse', path: '/caisse', icon: 'clipboard' },
   { label: 'Commandes clients', path: '/commandes-clients', icon: 'layers' },
   { label: 'Livraisons', path: '/livraisons', icon: 'truck' },
   { label: 'Retours', path: '/retours', icon: 'rotate-ccw' },
   { label: 'Clients', path: '/clients', icon: 'users' },
-  { label: 'Véhicules', path: '/vehicules', icon: 'car' }
+  { label: 'Vehicules', path: '/vehicules', icon: 'car' }
 ] as const satisfies ReadonlyArray<{ label: string; path: string; icon: IconName }>
 
 /** Initiales pour l'avatar : premiere lettre du prenom et du nom. */
@@ -100,7 +100,7 @@ function AppContent() {
   const themeLabel = theme === 'auto' ? 'Mode : automatique (système)' : theme === 'dark' ? 'Mode : sombre' : 'Mode : clair'
 
   // Tant que la session n'est pas verifiee, on n'affiche ni le depot ni
-  // l'ecran de connexion : sans cette attente, un rechargement de page fait
+  // l'écran de connexion : sans cette attente, un rechargement de page fait
   // clignoter le formulaire de connexion avant de retrouver la session.
   if (status === 'checking') {
     return (

@@ -2,7 +2,7 @@
  * Listes de valeurs des `<select>`, partagees par les formulaires.
  *
  * Centralisees ici plutot que dupliquees dans chaque vue : les libelles et
- * l'ordre d'affichage doivent être identiques partout, et une divergence
+ * l'ordre d'affichage doivent etre identiques partout, et une divergence
  * ("Cheque" dans un module, "Chèque" dans un autre) se remarque sur la facture
  * comme sur l'ecran.
  *
@@ -79,7 +79,7 @@ export const RETURN_REASON_OPTIONS: SelectOption[] = [
  * Fournisseurs du jeu de demonstration.
  *
  * Le cahier des charges demande un carnet de fournisseurs (module non
- * commence) : le fournisseur est aujourd'hui une simple chaine sur la
+ * commence) : le fournisseur est aujourd'hui une simple chaîne sur la
  * reception. Cette liste sert de repli tant que la table `fournisseurs` n'existe
  * pas, et sera remplacee par une lecture de l'API.
  */

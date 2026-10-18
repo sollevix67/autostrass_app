@@ -106,7 +106,7 @@ export function validateDelta(body: unknown): ValidationResult<number> {
 export function sendValidationError(response: Response, errors: Record<string, string>): void {
   response.status(422).json({
     error: 'VALIDATION_ERROR',
-    message: 'Données invalides.',
+    message: 'Donnees invalides.',
     details: errors,
   })
 }

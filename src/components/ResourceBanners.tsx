@@ -1,9 +1,9 @@
 /**
- * Bandeaux d'etat communs aux vues branchees sur l'API.
+ * Bandeaux d'état communs aux vues branchées sur l'API.
  *
  * Les sept modules deposes sur l'API partagent les memes trois situations :
  * une erreur a afficher, une API injoignable (mode degrade local), ou des
- * droits insuffisants pour ecrire. Les factoriser ici evite que l'un des
+ * droits insuffisants pour écrire. Les factoriser ici évite que l'un des
  * modules oublie le bandeau de mode degrade — c'est-a-dire affiche des
  * donnees de demonstration en laissant croire qu'elles sont enregistrees.
  *
@@ -20,7 +20,7 @@ type ResourceBannersProps = {
   /** `true` quand l'API est injoignable et que les ecritures restent locales. */
   offline: boolean
   /**
-   * Metier d'ecriture de la vue. `null` quand l'utilisateur a les droits :
+   * Métier d'écriture de la vue. `null` quand l'utilisateur a les droits :
    * aucun bandeau de lecture seule n'est alors affiche.
    */
   readOnly: string | null
@@ -29,7 +29,7 @@ type ResourceBannersProps = {
 }
 
 /**
- * Bandeaux d'etat d'une vue de ressource.
+ * Bandeaux d'état d'une vue de ressource.
  *
  * `role="alert"` sur l'erreur : le message est annonce aussitot. Le mode
  * degrade est en `role="status"` : c'est une information, pas une panne, et il
@@ -70,7 +70,7 @@ type EditableCardProps = {
 /**
  * Carte de formulaire masquee aux utilisateurs sans droits d'ecriture.
  *
- * Le formulaire disparaît plutôt que d'être désactivé champ par champ : un
+ * Le formulaire disparait plutot que d'etre desactive champ par champ : un
  * formulaire visible et inutilisable donne l'impression d'un bug. Le
  * permission d'afficher l'information utile (la liste) est preservee par la
  * vue.

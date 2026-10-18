@@ -1,10 +1,10 @@
 /* =============================================================================
    Semaine 3 : authentification
    -----------------------------------------------------------------------------
-   Ecran de connexion et etat de verification de session.
+   Écran de connexion et état de vérification de session.
    ========================================================================== */
 
-/* Attente de la verification de session au chargement. Evite l'affichage
+/* Attente de la vérification de session au chargement. Évite l'affichage
    du formulaire de connexion avant de savoir si une session existe. */
 .boot-screen {
   display: grid;

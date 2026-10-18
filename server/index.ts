@@ -44,8 +44,8 @@ const emptyDashboard = {
 
 app.use(express.json({ limit: '1mb' }))
 
-// En-tetes de securite appliques AVANT toute route : ils doivent previsible
-// figer les premieres reponses, y compris les 404 et les erreurs.
+// En-têtes de sécurité appliqués AVANT toute route : ils doivent prévisible
+// figer les premières réponses, y compris les 404 et les erreurs.
 app.use(securityHeaders)
 
 /**
@@ -56,7 +56,7 @@ app.use(securityHeaders)
  */
 function repositoryOr503(response: Response): ArticleRepository | null {
   if (!articles) {
-    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: "MariaDB n'est pas configurée." })
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
     return null
   }
   return articles
@@ -92,12 +92,12 @@ app.get('/api/health', async (_request: Request, response: Response) => {
 
 app.get('/api/dashboard', async (_request: Request, response: Response) => {
   if (!pool) {
-    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: "MariaDB n'est pas configurée." })
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
     return
   }
 
   try {
-    // `references` est un mot-cle reserve en MariaDB -> on evite l'alias.
+    // `references` est un mot-clé réservé en MariaDB → on évite l'alias.
     // `unit_price_ht` est expose par la vue sous le nom `prix_unitaire_ht`.
     const [rows] = await pool!.query<Array<RowDataPacket & { stock_value: number; total_references: number; low_stock: number; low_stock_items: string }>>(
       `SELECT
@@ -127,7 +127,7 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
     )
 
     // JSON_ARRAYAGG ne supporte pas de filtre : on agrege tout puis on ne garde
-    // que les lignes sous le seuil, ce qui evite une sous-requete corralee.
+    // que les lignes sous le seuil, ce qui évite une sous-requête corrélée.
     const parsed: unknown = rows[0]?.low_stock_items
     const allItems: LowStockItem[] = Array.isArray(parsed)
       ? (parsed as Array<Record<string, unknown>>).map((item) => ({
@@ -311,10 +311,10 @@ app.post('/api/articles', requireAuth, requireCsrf, requireRole('magasinier'), a
     response.status(201).json(await repository.create(validation.value))
   } catch (error) {
     if (isDuplicateKey(error)) {
-      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette référence existe déjà.' })
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Échec de l'enregistrement." })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de l'enregistrement." })
   }
 })
 
@@ -343,10 +343,10 @@ app.put('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magas
     response.json(updated)
   } catch (error) {
     if (isDuplicateKey(error)) {
-      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette référence existe déjà.' })
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Échec de la mise à jour.' })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Echec de la mise a jour.' })
   }
 })
 
@@ -374,7 +374,7 @@ app.patch('/api/articles/:reference/quantite', requireAuth, requireCsrf, require
     }
     response.json({ reference, quantite: quantity })
   } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Échec de l'ajustement." })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de l'ajustement." })
   }
 })
 
@@ -396,7 +396,7 @@ app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('ma
     }
     response.status(204).end()
   } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Échec de la suppression.' })
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Echec de la suppression.' })
   }
 })
 
@@ -404,7 +404,7 @@ app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('ma
 // `/api/auth` est monte avant `requireAuth` : la connexion ne peut pas
 // exiger un jeton qu'elle n'a pas encore.
 app.use('/api/auth', createAuthRouter())
-// Conformite NF525 : le routeur porte lui-meme `requireAuth`, ce qui evite de
+// Conformité NF525 : le routeur porte lui-même `requireAuth`, ce qui évite de
 // dependre de l'ordre de montage de `createApiRouter`.
 app.use('/api', createComplianceRouter())
 app.use('/api', createApiRouter())

@@ -3,7 +3,7 @@
  *
  * Chaque ressource expose les memes operations (liste, lecture, creation,
  * mise a jour, suppression) avec le meme contrat d'erreur. Ecrire la
- * validation et la traduction d'erreur une seule fois evite que deux metiers
+ * validation et la traduction d'erreur une seule fois évite que deux métiers
  * ne divergent sur un detail (un 422 sur l'un, un 500 sur l'autre).
  */
 
@@ -161,7 +161,7 @@ export function crudRoutes<TWrite, TPatch>(options: {
   /**
    * Roles autorises a creer, modifier et supprimer. La lecture reste ouverte a
    * tout utilisateur authentifie. Sans cette option, la ressource serait
-   * accessible en ecriture par tout le monde — c'etait le cas des clients et
+   * accessible en écriture par tout le monde — c'était le cas des clients et
    * des vehicules avant ce correctif.
    */
   rolesWrite: readonly UserRole[]

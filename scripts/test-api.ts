@@ -22,7 +22,7 @@ const DEMO_PASSWORD = 'demo1234'
 let passed = 0
 let failed = 0
 
-/** Cookies renvoyes par l'API (session + CSRF), reproduits a chaque appel. */
+/** Cookies renvoyés par l'API (session + CSRF), reproduits à chaque appel. */
 let cookie = ''
 /** Jeton CSRF courant, lu dans le cookie. */
 let csrf: string | null = null
@@ -75,7 +75,7 @@ async function call(
  *
  * La connexion fournit aussi le couple de jetons CSRF : le serveur pose un
  * cookie lisible (`autostrass_csrf`) et renvoie la meme valeur dans le corps.
- * Toute ecriture ulterieure doit renvoyer ce couple, sans quoi l'API repond
+ * Toute écriture ultérieure doit renvoyer ce couple, sans quoi l'API répond
  * 403 `CSRF_INVALID` — c'est le comportement attendu, pas une panne.
  */
 async function login(email: string, password: string = DEMO_PASSWORD): Promise<string | null> {
@@ -87,7 +87,7 @@ async function login(email: string, password: string = DEMO_PASSWORD): Promise<s
   if (response.status !== 200) return null
   const payload = (await response.json()) as { token?: string }
   // Les deux cookies sont necessaires : session pour l 'authentification,
-  // CSRF pour la verification de double soumission.
+  // CSRF pour la vérification de double soumission.
   cookie = (response.headers.getSetCookie?.() ?? [])
     .map((value) => value.split(';')[0])
     .filter((value) => value.length > 0)
@@ -506,7 +506,7 @@ check('une vente sous-encaissée est refusee (422)', venteInsuffisante.status ==
 
 // --- Caisse : ouverture, rattachement des ventes, comptage ------------------
 // Une vente n'existe pas hors d'une session de caisse : sans tiroir auquel
-// l'imputer, son montant n'entrerait dans aucun comptage. Le test verifie donc
+// l'imputer, son montant n'entrerait dans aucun comptage. Le test vérifie donc
 // le refus **et** la levee, dans cet ordre.
 console.log('\nCaisse')
 
@@ -705,7 +705,7 @@ check(
 check(
   'aucune vente n est declaree rompue',
   controle.status === 200,
-  { rupture: controle.body?.details?.rupture, etat: controle.body?.etat ?? controle.body?.details?.etat },
+  { rupture: controle.body?.details?.rupture, état: controle.body?.état ?? controle.body?.details?.état },
 )
 
 // La regle centrale de la norme : une vente validee ne s'ecrit plus.

@@ -6,7 +6,7 @@
  * Deux fichiers, appliques dans l'ordre : `seed_v2.sql` couvre les 8 metiers
  * de la v2, `seed_v3.sql` les entites ajoutees a l'etape 2 (emplacements, TVA,
  * fournisseurs, stock par emplacement). L'ordre compte : le stock par
- * emplacement du v3 reference les articles du v2.
+ * emplacement du v3 référence les articles du v2.
  *
  * Le SQL est replayee instruction par instruction plutot que d'un bloc, car
  * le mode multi-instructions de mysql2 ne renvoie que le dernier jeu de

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 
 /**
- * Gere l'etat d'un dialogue de confirmation depuis un simple handler.
+ * Gère l'état d'un dialogue de confirmation depuis un simple handler.
  *
  * Retourne les props a etaler sur `<ConfirmDialog />` plus la fonction
  * `confirm` a appeler depuis une action (suppression, annulation...).

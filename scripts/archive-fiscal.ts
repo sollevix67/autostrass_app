@@ -61,7 +61,7 @@ async function verify(file: string): Promise<void> {
   )
   console.log(`${ventes.length} vente(s) relue(s) depuis ${path.basename(file)}`)
   if (resultat.intacte) {
-    console.log(`Chaine intacte depuis le genine ${GENESIS_HASH.slice(0, 12)}…`)
+    console.log(`Chaîne intacte depuis le généèse ${GENESIS_HASH.slice(0, 12)}…`)
     if (resultat.anterieures > 0) {
       console.log(`${resultat.anterieures} vente(s) anterieure(s) a la mise en conformite, sans empreinte.`)
     }
@@ -136,7 +136,7 @@ async function archive(annee: number, sortie?: string): Promise<void> {
   // l'archive herite du soupcon.
   const controle = verifyFingerprints(lignes as unknown as Parameters<typeof verifyFingerprints>[0])
   if (!controle.intacte) {
-    console.error(`Refus d'archiver : chaine rompue sur la vente #${controle.rupture}.`)
+    console.error(`Refus d'archiver : chaîne rompue sur la vente #${controle.rupture}.`)
     process.exit(1)
   }
 

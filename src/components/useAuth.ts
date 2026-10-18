@@ -5,13 +5,13 @@ import { AuthContext, type AuthContextValue } from './authContext'
  * Accede au contexte d'authentification.
  *
  * Leve si le hook est utilise hors `AuthProvider` : c'est une erreur de
- * câblage, pas un etat metier, et la rendre explicite evite une lecture
+ * câblage, pas un état métier, et la rendre explicite évite une lecture
  * `null` silencieuse qui aboutirait a un crash tardif et sans cause.
  */
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext)
   if (context === null) {
-    throw new Error("useAuth doit être utilisé à l'intérieur de <AuthProvider>.")
+    throw new Error("useAuth doit etre utilise a l'interieur de <AuthProvider>.")
   }
   return context
 }

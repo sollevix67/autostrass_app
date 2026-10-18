@@ -6,13 +6,13 @@
  * sur une livraison, la vente concernee par un retour, le client d'une vente.
  *
  * Ces listes ne sont pas dupliquees dans chaque vue : le select est reconstruit
- * a chaque rendu, donc quatre `fetch` independants aboutiraient a quatre
+ * à chaque rendu, donc quatre `fetch` indépendants aboutiraient à quatre
  * appels identiques par session. Elles sont mises en cache ici pour la duree du
  * module, avec une seule requete concurrente par chemin.
  *
  * Le select ne lit que l'identifiant : un echec de chargement ne doit pas
  * empecher de saisir la vente elle-meme, seulement la selection rattachee. Le
- * hook n'expose donc volontairement pas d'etat d'erreur.
+ * hook n'expose donc volontairement pas d'état d'erreur.
  */
 
 import { useEffect, useState } from 'react'
@@ -49,7 +49,7 @@ function fetchOnce(path: string, signal?: AbortSignal): Promise<unknown[]> {
     })
     .then((data) => {
       const entry = cache.get(path)
-      // La référence ne doit changer que si `invalidate` a été appelé entre-temps.
+      // La reference ne doit changer que si `invalidate` a ete appele entre-temps.
       if (entry?.promise === promise) cache.set(path, { data, promise: null })
       return data
     })
@@ -58,7 +58,7 @@ function fetchOnce(path: string, signal?: AbortSignal): Promise<unknown[]> {
   return promise
 }
 
-/** Vide le cache : appele apres une ecriture pour recharger les listes. */
+/** Vide le cache : appelé après une écriture pour recharger les listes. */
 export function invalidateReferentials(paths?: string[]): void {
   if (paths === undefined) {
     cache.clear()
@@ -70,7 +70,7 @@ export function invalidateReferentials(paths?: string[]): void {
 /**
  * Charge un referentiel et le rend au composant, avec annulation au demontage.
  *
- * L'etat ne contient que la reponse du reseau. Le cache est relu pendant le
+ * L'état ne contient que la réponse du réseau. Le cache est relu pendant le
  * rendu, pas dans l'effet : y ecrire declencherait un second rendu en cascade
  * (regle `react(set-state-in-effect)`), alors que la lecture est pure.
  */
@@ -92,7 +92,7 @@ function useReferential<T>(path: string): T[] {
   }, [path])
 
   // Deux sources, dans l'ordre de fraicheur : la reponse de cette instance,
-  // sinon le cache partagé (une autre vue a peut-être déjà chargé la liste).
+  // sinon le cache partage (une autre vue a peut-etre deja charge la liste).
   if (fetched?.path === path) return fetched.rows
   return (cache.get(path)?.data as T[] | undefined) ?? []
 }

@@ -3,7 +3,7 @@ import { ApiError, toErrorMessage } from './api'
 /**
  * `true` si l'echec vient de l'API indisponible, et non d'une erreur metier.
  *
- * Dans ce cas la vue bascule en mode local : la donnee reste en memoire et
+ * Dans ce cas la vue bascule en mode local : la donnée reste en mémoire et
  * l'utilisateur continue a travailler au lieu de voir une erreur bloquante.
  */
 export function isApiUnavailable(error: unknown): boolean {

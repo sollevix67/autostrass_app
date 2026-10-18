@@ -3,8 +3,8 @@
  *
  * Les 8 metiers du schema v2 ont le meme contrat (liste, lecture, creation,
  * mise a jour, suppression). Factorise ici plutot que dans chaque vue :
- * annulation au demontage, etat de chargement, et surtout le comportement
- * « mode dégradé » déjà en place sur le catalogue.
+ * annulation au démontage, état de chargement, et surtout le comportement
+ * « mode degrade » deja en place sur le catalogue.
  *
  * Ce qui est specifique a un metier (validation Zod, transformation avant
  * envoi) reste dans la vue : le hook ne connait que le transport.
@@ -32,7 +32,7 @@ type Options<TRow> = {
   path: string
   /** Ligne de repli affichee si l'API est injoignable. */
   fallback?: TRow[]
-  /** Tri appliqué à la liste renvoyée. */
+  /** Tri applique a la liste renvoyee. */
   sort?: (rows: TRow[]) => TRow[]
 }
 
@@ -89,12 +89,12 @@ export function useResource<TRow extends { id: number }>(options: Options<TRow>)
       })
 
     return () => controller.abort()
-    // `sort` est recree a chaque rendu par l'appelant : on l'exclut
+    // `sort` est recrée à chaque rendu par l'appelant : on l'exclut
     // deliberement, sinon la liste se rechargerait sans fin.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path, nonce])
 
-  /** Remplace la ligne `id` dans l'etat local, ou l'ajoute en fin de liste. */
+  /** Remplace la ligne `id` dans l'état local, ou l'ajoute en fin de liste. */
   const applyUpsert = useCallback((row: TRow) => {
     setRows((current) => {
       const index = current.findIndex((item) => item.id === row.id)
@@ -105,7 +105,7 @@ export function useResource<TRow extends { id: number }>(options: Options<TRow>)
 
   /**
    * Execute une ecriture. Hors ligne, la reponse est consideree comme
-   * reussie et l'etat local est mis a jour : l'UI reste utilisable si la
+   * réussie et l'état local est mis à jour : l'UI reste utilisable si la
    * base est coupee, et le bandeau d'information previent l'utilisateur.
    */
   const write = useCallback(

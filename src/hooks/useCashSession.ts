@@ -1,10 +1,10 @@
 /**
- * Hook de la caisse : session courante, ouverture, clôture, journal.
+ * Hook de la caisse : session courante, ouverture, cloture, journal.
  *
  * Distinct de `useResource` parce que la caisse n'est pas une collection CRUD.
- * L'etat utile est **la session ouverte du caissier connecte**, qui peut
+ * L'état utile est **la session ouverte du caissier connecté**, qui peut
  * simplement ne pas exister : ce cas est le plus frequent au demarrage d'une
- * journee, et il doit s'afficher comme un etat normal (« vous n'avez pas de
+ * journée, et il doit s'afficher comme un état normal (« vous n'avez pas de
  * caisse ouverte »), pas comme une erreur ou une liste vide.
  *
  * La reponse de `GET /caisse/actuelle` est `null` quand il n'y a pas de
@@ -61,7 +61,7 @@ export function useCashSession(): CashState {
   }, [])
 
   /**
-   * Execute une ecriture de caisse.
+   * Exécute une écriture de caisse.
    *
    * En mode degrade, une ouverture « locale » serait un piege : le caissier
    * verrait sa caisse ouverte alors que la base ne l'a pas enregistre, et ses
@@ -99,8 +99,8 @@ export function useCashSession(): CashState {
       write(
         () =>
           api.post<ApiCashSession>(`/caisse/${session?.id ?? 0}/cloturer`, { comptage, notes }),
-        // Après clôture, le caissier n'a plus de session ouverte : on remet
-        // l'etat a `null` plutot que de garder une session fermee affichee
+        // Apres cloture, le caissier n'a plus de session ouverte : on remet
+        // l'état à `null` plutôt que de garder une session fermée affichée
         // comme si elle l'etait encore.
         () => setSession(null),
       ),
@@ -114,7 +114,7 @@ export function useCashSession(): CashState {
  * Journal des mouvements d'une session.
  *
  * Charge a la demande : un depot n'a pas besoin de l'historique de caisse tant
- * qu'il ne consulte pas l'écart d'une clôture. Un `useResource` ici
+ * qu'il ne consulte pas l'ecart d'une cloture. Un `useResource` ici
  * declencherait une requete sur chaque poste a l'ouverture de la vue.
  */
 export function useCashMovements(sessionId: number | null): {
@@ -122,7 +122,7 @@ export function useCashMovements(sessionId: number | null): {
   loading: boolean
   error: string | null
 } {
-  // L'etat ne porte que la reponse du reseau, avec le session concernee :
+  // L'état ne porte que la réponse du réseau, avec la session concernée :
   // l'identifiant permet de savoir si une reponse parvenue apres le
   // changement de session est encore pertinente.
   const [fetched, setFetched] = useState<{ sessionId: number; rows: ApiCashMovement[] } | null>(null)

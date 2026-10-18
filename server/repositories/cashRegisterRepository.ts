@@ -5,17 +5,17 @@
  * transaction, parce qu'une session mal fermee fausse le compte de caisse :
  *
  * 1. **Une seule session ouverte par caissier.** Deux tiroirs ouverts sur le
- *    même poste rendraient la clôture ambiguë : on ne saurait pas quel
+ *    meme poste rendraient la cloture ambigue : on ne saurait pas quel
  *    comptage arreter quelle recette.
- * 2. **Le total théorique est toujours dérivé des ventes**, jamais saisi. Il
+ * 2. **Le total theorique est toujours derive des ventes**, jamais saisi. Il
  *    vaut `fonds + especes encaissees - monnaie rendue`. Le saisissant
- *    laisserait un écart structurellement nul, donc toujours « justifié ».
- * 3. **La clôture fige la session.** Une fois `clôturée`, la session n'est plus
+ *    laisserait un ecart structurellement nul, donc toujours « justifie ».
+ * 3. **La cloture fige la session.** Une fois `clôturée`, la session n'est plus
  *    modifiable et n'accepte plus de vente : sinon le comptage afficherait un
- *    écart que la vente suivante vient d'inventer.
+ *    ecart que la vente suivante vient d'inventer.
  *
  * Les montants sont calcules en centimes entiers : `0.1 + 0.2 !== 0.3` en
- * flottant, et un écart de caisse calculé au centime près doit tomber juste.
+ * flottant, et un ecart de caisse calcule au centime pres doit tomber juste.
  */
 
 import { and, desc, eq, sql } from 'drizzle-orm'
@@ -34,7 +34,7 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100
 }
 
-/** Convertit un montant en chaine DECIMAL, format attendu par MariaDB. */
+/** Convertit un montant en chaîne DECIMAL, format attendu par MariaDB. */
 function toDecimal(value: number): string {
   return round2(value).toFixed(2)
 }
@@ -72,7 +72,7 @@ export type CashCountRow = {
  * Detail d'une session, avec ses agregats de caisse.
  *
  * `totalEspeces` est la somme des ventes en especes de la session. Elle est
- * présentée séparément du `totalTheorique` : le total théorique inclut le
+ * presentee separement du `totalTheorique` : le total theorique inclut le
  * fond de caisse et deduit la monnaie rendue, ce qui rend la comparaison au
  * comptage incomprehensible sans ce detail.
  */
@@ -111,7 +111,7 @@ export class CashRegisterRepository {
    * Le filtre sur `mode_paiement` est indispensable : sans lui, une vente par
    * carte ou par cheque gonflerait le solde du tiroir d'un montant qui n'y est
    * jamais entre. Le controle de caisse detecterait alors un excedent
-   * systematique a chaque cloture, sans qu'aucune erreur soit visible dans les
+   * systématique à chaque clôture, sans qu'aucune erreur soit visible dans les
    * ventes.
    */
   private async especesRecette(sessionId: number, tx?: Tx): Promise<number> {
@@ -198,7 +198,7 @@ export class CashRegisterRepository {
   /**
    * Session actuellement ouverte pour un caissier, ou `null`.
    *
-   * C'est l'etat affiche au caissier a son arrivee : il doit rouvrir sa
+   * C'est l'état affiché au caissier à son arrivée : il doit rouvrir sa
    * caisse, pas en ouvrir une seconde.
    */
   async findOpenByUser(utilisateurId: number): Promise<CashSessionRow | null> {
@@ -247,7 +247,7 @@ export class CashRegisterRepository {
   /**
    * Ouvre une session de caisse.
    *
-   * Refuse (409) si le caissier en a déjà une ouverte : la règle est
+   * Refuse (409) si le caissier en a deja une ouverte : la regle est
    * verifiee puis l'insertion effectuee dans la meme transaction, sans verrou
    * explicite. Deux ouvertures simultanees passent donc par la base, qui
    * n'a pas de contrainte d'unicite partielle sur ce cas — un caissier qui
@@ -276,7 +276,7 @@ export class CashRegisterRepository {
         throw new RepositoryError(
           409,
           'SESSION_DEJA_OUVERTE',
-          'Vous avez déjà une caisse ouverte. Fermez-la avant d\'en ouvrir une nouvelle.',
+          'Vous avez deja une caisse ouverte. Fermez-la avant d\'en ouvrir une nouvelle.',
         )
       }
 
@@ -308,13 +308,13 @@ export class CashRegisterRepository {
   /**
    * Session ouverte d'un caissier, **dans une transaction donnee**.
    *
-   * Utilisée par la création de vente : la session doit être lue et
+   * Utilisee par la creation de vente : la session doit etre lue et
    * l'encaissement ecrit dans la meme transaction, sinon une session close
-   * entre les deux ferait entrer une vente dans un tiroir déjà compté.
+   * entre les deux ferait entrer une vente dans un tiroir deja compté.
    *
    * `FOR UPDATE` verrouille la ligne : deux ventes simultanees ne peuvent pas
-   * s'écrire chacune leur session, et surtout une clôture concurrente ne peut
-   * pas s'inserer entre la lecture et l'ecriture du mouvement.
+   * s'ecrire chacune leur session, et surtout une cloture concurrente ne peut
+   * pas s'insérer entre la lecture et l'écriture du mouvement.
    */
   async findOpenForUpdate(tx: Tx, utilisateurId: number): Promise<{ id: number; caissier: string } | null> {
     const rows = await tx
@@ -334,7 +334,7 @@ export class CashRegisterRepository {
    *
    * Appele par la route de creation de vente, dans la **meme transaction** que
    * l'insertion de la vente : sans cela, un encaissement sans vente (ou
-   * l'inverse) fausserait le total théorique de la session.
+   * l'inverse) fausserait le total theorique de la session.
    *
    * Le montant journalise est la recette nette (`montant_paye - monnaie`) :
    * c'est ce qui entre physiquement dans le tiroir.
@@ -373,11 +373,11 @@ export class CashRegisterRepository {
    * Ferme une session apres comptage.
    *
    * Le total reel est la **somme des billets comptes**, pas un montant saisi :
-   * c'est le comptage physique. Le total théorique est recalculé ici, à
-   * partir des ventes, au moment de la clôture — et non à l'ouverture, où il
+   * c'est le comptage physique. Le total theorique est recalcule ici, a
+   * partir des ventes, au moment de la cloture — et non a l'ouverture, ou il
    * evoluerait avec chaque vente.
    *
-   * Écart = réel - théorique. Positif = excédent de caisse (le caissier a
+   * Ecart = reel - theorique. Positif = excédent de caisse (le caissier a
    * plus d'argent que prevu), negatif = deficit.
    */
   async close(input: {
@@ -404,7 +404,7 @@ export class CashRegisterRepository {
         throw new RepositoryError(404, 'NOT_FOUND', 'Session de caisse introuvable ou non attribuee a cet utilisateur.')
       }
       if (session.statut === 'clôturée') {
-        throw new RepositoryError(409, 'SESSION_DEJA_CLOTUREE', 'Cette session de caisse est déjà clôturée.')
+        throw new RepositoryError(409, 'SESSION_DEJA_CLOTUREE', 'Cette session de caisse est deja cloturee.')
       }
 
       const totalReel = round2(
@@ -416,7 +416,7 @@ export class CashRegisterRepository {
 
       // Le comptage remplace integralement l'ancien : on repart d'une session
       // sans aucun billet pour ne pas laisser de lignes orphelines si la
-      // clôture est rejouée après un échec partiel.
+      // cloture est rejouee apres un echec partiel.
       await tx.delete(schema.cashSessionBreaks).where(eq(schema.cashSessionBreaks.session_id, input.sessionId))
       if (input.comptage.length > 0) {
         await tx.insert(schema.cashSessionBreaks).values(
@@ -447,7 +447,7 @@ export class CashRegisterRepository {
         libelle:
           ecart === 0
             ? 'Cloture — comptage conforme'
-            : `Clôture — écart de ${ecart > 0 ? '+' : ''}${ecart.toFixed(2)} EUR`,
+            : `Cloture — ecart de ${ecart > 0 ? '+' : ''}${ecart.toFixed(2)} EUR`,
       })
 
       const updated = await tx
@@ -459,7 +459,7 @@ export class CashRegisterRepository {
       // Le detail du comptage est lu dans la transaction, pas via `this.db` :
       // le pool ouvrirait une **autre** connexion, qui ne voit pas encore les
       // lignes inserees ci-dessus. La reponse renverrait alors un comptage vide
-      // alors que la clôture vient de réussir. On retourne donc l'écart et le
+      // alors que la cloture vient de reussir. On retourne donc l'ecart et le
       // comptage calcules ici, la relecture complete se fera a la lecture
       // suivante de la session.
       const row = updated[0] as unknown as Record<string, unknown>

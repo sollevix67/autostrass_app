@@ -45,7 +45,7 @@ type UseDashboardResult = {
 
 /**
  * Charge le dashboard et le rafraichit periodiquement.
- * La requete est annulee au demontage ou a chaque refresh concurrent.
+ * La requête est annulée au démontage ou à chaque refresh concurrent.
  */
 export function useDashboard(pollIntervalMs: number | null = REFRESH_INTERVAL_MS): UseDashboardResult {
   const [dashboard, setDashboard] = useState<DashboardData>(INITIAL_DASHBOARD)

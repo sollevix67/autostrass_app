@@ -5,7 +5,7 @@
  * n'existent pas encore dans l'API (catalogue v1, agregats) et restent
  * partagees entre le hook, la vue et les schemas.
  *
- * Les sept autres métiers (clients, véhicules, réceptions, ventes, commandes,
+ * Les sept autres metiers (clients, vehicules, receptions, ventes, commandes,
  * livraisons, retours) sont desagrees par l'API : leurs formes vivent dans
  * `src/services/contracts.ts`. Les interfaces locales correspondantes ont ete
  * supprimees — elles concentraient des `id` en chaine et des `lineId`
@@ -66,7 +66,7 @@ export type UserRole = (typeof USER_ROLES)[number]
  * - tva_id : reference vers la table tva
  * - ean13 : code EAN13 de l'article
  * - delaiDisponibilite : nombre de jours pour un article non en stock
- * - forcerSurCommande : booleen pour forcer l'etat "Sur commande"
+ * - forcerSurCommande : booléen pour forcer l'état "Sur commande"
  * - prixUnitaireTTC : prix incluant les taxes
  */
 export interface Article {

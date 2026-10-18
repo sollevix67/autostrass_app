@@ -41,7 +41,7 @@ const required = (label: string, max = 255) =>
     })
     .pipe(z.string().min(1, `${label} est requis.`).max(max, `${label} ne doit pas depasser ${max} caracteres.`))
 
-/** Champ texte facultatif, memes garanties. Une chaine vide reste acceptee. */
+/** Champ texte facultatif, mêmes garanties. Une chaîne vide reste acceptée. */
 const optionalText = (label: string, max = 2000) =>
   z
     .string()
@@ -141,7 +141,7 @@ function guarded<T>(run: (value: string) => string) {
  * 422 « Le telephone est requis » sur `PUT { role: 'caissier' }`.
  *
  * La solution est un `preprocess` : cle absente -> `undefined` (accepte),
- * chaine vide -> `undefined` (accepte), sinon la chaine est validee.
+ * chaîne vide -> `undefined` (accepte), sinon la chaîne est validée.
  */
 const optionalPhone = (label: string) =>
   z.preprocess((value) => (typeof value === 'string' && value.trim() === '' ? undefined : value), phone(label).optional())
@@ -321,7 +321,7 @@ export const venteBodySchema = z
     monnaie: nonNegative('La monnaie').optional(),
     articles: documentLines,
   })
-  // Le total etant recalcule par le serveur, on verifie ici que la somme
+  // Le total étant recalculé par le serveur, on vérifie ici que la somme
   // encaissee couvre le total calcule, plutot que de comparer a un total fourni.
   .refine(
     (value) =>

@@ -7,10 +7,10 @@
    Densite 9/10 : echelle d'espacement 2 -> 32 px.
 
    Regle de maintenance : toute couleur ecrite en dur dans App.css doit
-   progressivement être remplacée par une variable de ce fichier. Les
+   progressivement etre remplacee par une variable de ce fichier. Les
    variables ci-dessous couvrent les roles, pas les teintes : App.css conserve
    encore des nuances historiques (coral, ambre) en dur, volontairement
-   inchangées pour ne pas casser les contrastes déjà valides.
+   inchangees pour ne pas casser les contrastes deja valides.
    ========================================================================== */
 
 :root {

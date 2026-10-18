@@ -1,33 +1,33 @@
 /**
- * Conformite NF525 — empreinte cryptographique et mode degrade.
+ * Conformité NF525 — empreinte cryptographique et mode dégradé.
  *
- * La NF525 (systemes de caisse enregistreuse) n'exige pas un algorithme
- * particulier : elle exige que **toute modification de la memoire de vente
- * soit detectable**. On s'appuie donc sur une chaine de hachage, chaque vente
- * portant l'empreinte du bloc qui la precede. Modifier une vente ancienne
- * invalide desormais toutes les empreintes suivantes, et le controle le
+ * La NF525 (systèmes de caisse enregistreuse) n'exige pas un algorithme
+ * particulier : elle exige que **toute modification de la mémoire de vente
+ * soit détectable**. On s'appuie donc sur une chaîne de hachage, chaque vente
+ * portant l'empreinte du bloc qui la précède. Modifier une vente ancienne
+ * invalide désormais toutes les empreintes suivantes, et le contrôle le
  * montre.
  *
  * Choix de l'algorithme : **SHA-256**, et non MD5 ni SHA-1. Ces derniers sont
- * aujourd'hui consideres casses pour la resistance aux collisions ; une
- * empreinte foiree est exactement ce que la norme cherche a empecher, donc
+ * aujourd'hui considérés cassés pour la résistance aux collisions ; une
+ * empreinte foirée est exactement ce que la norme cherche à empêcher, donc
  * l'algorithme doit être solide sur ce point, pas seulement rapide.
  *
  * ## Ce que la norme demande, et ce que l'on fait
  *
- * | Exigence NF525 | Realise ici |
+ * | Exigence NF525 | Réalisé ici |
  * |---|---|
- * | Vente inalterable apres validation | `PUT`/`DELETE` refuses (409 `VENTE_FROME`) |
- * | Sequence inalterable | Chaine de hachage : chaque vente porte l empreinte de la precedente |
- * | Journal des evenements du systeme | `system_events` (démarrage, arrêt, mode dégradé) |
- * | Mode degrade | Evenements journalises **localement** puis rejoues au retour du service |
- * | Conservation 7 ans | `scripts/archive-fiscal.ts` + note de deploiement |
+ * | Vente inaltérable après validation | `PUT`/`DELETE` refusés (409 `VENTE_FROME`) |
+ * | Séquence inaltérable | Chaîne de hachage : chaque vente porte l'empreinte de la précédente |
+ * | Journal des événements du système | `system_events` (démarrage, arrêt, mode dégradé) |
+ * | Mode dégradé | Événements journalisés **localement** puis rejoués au retour du service |
+ * | Conservation 7 ans | `scripts/archive-fiscal.ts` + note de déploiement |
  *
- * ## Limite assumee
+ * ## Limite assumée
  *
- * La NF525 prevaut aussi des **clés de scellement** operated par l'Etat et
- * une certification du materiel par l'ADEME. Ces deux points dependent
- * l'un de l'acheteur et ne sont pas realisables dans le code : ce module
+ * La NF525 prévoit aussi des **clés de scellement** opérées par l'État et
+ * une certification du matériel par l'ADEME. Ces deux points dépendent
+ * l'un de l'acheteur et ne sont pas réalisables dans le code : ce module
  * couvre les exigences logicielles.
  */
 
@@ -40,12 +40,12 @@ export const GENESIS_HASH = '0'.repeat(64)
  * Calcule l'empreinte d'une vente.
  *
  * Les montants sont convertis en centimes **avant** hachage : `15.5` et
- * `"15.50"` doivent produire la meme empreinte, sinon un simple changement de
- * format de serialization invaliderait la chaine sans que la donnee ait
+ * `"15.50"` doivent produire la même empreinte, sinon un simple changement de
+ * format de sérialisation invaliderait la chaîne sans que la donnée ait
  * change. Le calcul se fait sur un tableau de valeurs, pas sur du JSON, pour
- * que l'ordre des cles n'ait pas d'importance.
+ * que l'ordre des clés n'ait pas d'importance.
  *
- * @param previous empreinte de la vente precedente
+ * @param previous empreinte de la vente précédente
  */
 export function fingerprintVente(
   input: {
@@ -62,19 +62,19 @@ export function fingerprintVente(
   previous: string,
 ): string {
   /**
-   * Reduit un horodatage a sa **date civile**.
+   * Réduit un horodatage à sa **date civile**.
    *
-   * On ne hache ni l'heure ni l'instant : mysql2 convertit un `Date` en chaine
+   * On ne hache ni l'heure ni l'instant : mysql2 convertit un `Date` en chaîne
    * locale selon le fuseau du serveur, si bien que la valeur relue differe de
    * celle ecrite de quelques heures. Hacher l'une des deux rend l'empreinte
-   * non reproductible et le controle signale une rupture inexistante — c'est
-   * exactement ce que produit un decalage de fuseau.
+   * non reproductible et le contrôle signale une rupture inexistante — c'est
+   * exactement ce que produit un décalage de fuseau.
    *
-   * La date seule suffit a l'_inalterabilite_ : l'empreinte doit prouver que
-   * le **contenu** d'une vente n'a pas ete reecrit. L'ordre exact des ventes
-   * est déjà garanti par `id`, qui est strictement croissant et fait partie de la
-   * charge. Un deplacement d'une vente d'un jour sur un autre resterait
-   * detecte ; un deplacement de quelques minutes ne change rien au contenu
+   * La date seule suffit à l'_inaltérabilité_ : l'empreinte doit prouver que
+   * le **contenu** d'une vente n'a pas été réécrit. L'ordre exact des ventes
+   * est déjà garanti par `id`, qui est strictly croissant et fait partie de la
+   * charge. Un déplacement d'une vente d'un jour sur un autre resterait
+   * détecté ; un déplacement de quelques minutes ne change rien au contenu
    * comptable et n'a pas lieu d'être traité comme une altération.
    */
   function dateOnly(date: string | number | Date): string {
@@ -104,7 +104,7 @@ export function fingerprintVente(
   return createHash('sha256').update(charge, 'utf8').digest('hex')
 }
 
-/** Verifie qu'une chaine d'empreintes est intacte. */
+/** Vérifie qu'une chaîne d'empreintes est intacte. */
 export function verifyFingerprints(
   ventes: Array<{
     id: number
@@ -119,14 +119,14 @@ export function verifyFingerprints(
     articles: Array<{ reference: string; designation: string; quantite: number; prixUnitaire: number }>
   }>,
 ): { intacte: boolean; rupture: number | null; anterieures: number } {
-  // La chaine ne **saute** jamais une vente : une vente sans empreinte
-  // anterieure a la mise en conformite n'a pas de chainon, et la vente
-  // suivante a été scellée sur la genèse. Filtrer ces ventes ferait porter le
-  // chainon a la mauvaise vente, et le controle signalerait une rupture
+  // La chaîne ne **saute** jamais une vente : une vente sans empreinte
+  // antérieure à la mise en conformité n'a pas de chaînon, et la vente
+  // suivante a été scellée sur le généèse. Filtrer ces ventes ferait porter le
+  // chaînon à la mauvaise vente, et le contrôle signalerait une rupture
   // inexistante.
   //
-  // On les compte separement, et le controle les qualifie d'« anterieures »
-  // plutot que de rompues : absence d'empreinte != alteration.
+  // On les compte séparément, et le contrôle les qualifie d'« antérieures »
+  // plutôt que de rompues : absence d'empreinte ≠ altération.
   let previous = GENESIS_HASH
   let anterieures = 0
   let rupture: number | null = null

@@ -1,12 +1,12 @@
 /**
- * Vue caisse : ouverture, suivi et clôture.
+ * Vue caisse : ouverture, suivi et cloture.
  *
  * Une page, trois etats successifs — c'est le fil d'une journee de depot :
  * 1. **aucune session** : on compte le fond et on ouvre ;
  * 2. **session ouverte** : on encaisse, et on voit le solde du tiroir ;
- * 3. **session clôturée** : on compare le comptage au théorique et on clôt.
+ * 3. **session cloturee** : on compare le comptage au theorique et on clot.
  *
- * Le caissier n'a donc jamais a choisir son etat : la page montre ce qu'il lui
+ * Le caissier n'a donc jamais à choisir son état : la page montre ce qu'il lui
  * reste a faire. Le bouton de validation porte l'action attendue
  * (« Ouvrir la caisse », « Cloturer la caisse »), jamais un libelle generique.
  *
@@ -65,7 +65,7 @@ export default function CaisseView() {
   })
   const openingRegister = opening.register
 
-  // --- Formulaire de clôture ------------------------------------------------
+  // --- Formulaire de cloture ------------------------------------------------
   // Le comptage est pre-rempli avec les coupures courantes a quantite nulle :
   // le caissier remplit ce qu'il compte, il n'a pas a construire une liste.
   const closing = useForm({
@@ -85,7 +85,7 @@ export default function CaisseView() {
     return safe.reduce((acc, line) => acc + (line.denomination ?? 0) * (line.quantite ?? 0), 0)
   }, [watchedCount])
 
-  // Le solde théorique du tiroir, tant que la session est ouverte : fond
+  // Le solde theorique du tiroir, tant que la session est ouverte : fond
   // remis + especes encaissees. La monnaie rendue est deja deduite par le
   // serveur dans `totalEspeces`.
   const soldeTheorique = (session?.fondsCaisse ?? 0) + (session?.totalEspeces ?? 0)
@@ -110,8 +110,8 @@ export default function CaisseView() {
       comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
       notes: '',
     })
-    if (ecart === 0) toast.success(`Caisse clôturée : ${verdict.text.toLowerCase()}.`)
-    else toast.error(`Caisse clôturée avec un écart : ${verdict.text.toLowerCase()}.`)
+    if (ecart === 0) toast.success(`Caisse cloturee : ${verdict.text.toLowerCase()}.`)
+    else toast.error(`Caisse cloturee avec un ecart : ${verdict.text.toLowerCase()}.`)
   })
 
   const askClosing = () => {
@@ -119,7 +119,7 @@ export default function CaisseView() {
     confirm(
       'Cloturer la caisse ?',
       <>
-        Vous comptez <strong>{formatEuros(totalComptage)}</strong> pour un théorique de{' '}
+        Vous comptez <strong>{formatEuros(totalComptage)}</strong> pour un theorique de{' '}
         <strong>{formatEuros(soldeTheorique)}</strong>
         {ecart !== 0 && (
           <>
@@ -127,7 +127,7 @@ export default function CaisseView() {
             sera fermee et ne pourra plus recevoir de vente.
           </>
         )}
-        . Vous pourrez saisir un commentaire pour expliquer l'écart.
+        . Vous pourrez saisir un commentaire pour expliquer l'ecart.
       </>,
       () => {
         // La validation reelle est faite par le formulaire : le dialogue
@@ -169,7 +169,7 @@ export default function CaisseView() {
     <PageLayout
       eyebrow="CAISSE"
       title="Gestion de caisse"
-      description="Ouverture, suivi et clôture de votre session de caisse."
+      description="Ouverture, suivi et cloture de votre session de caisse."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
           <Icon name="rotate-ccw" size="sm" /> Actualiser
@@ -181,7 +181,7 @@ export default function CaisseView() {
       {!canEdit && (
         <p className="info-banner" role="note">
           <Icon name="alert" size="sm" /> La gestion de caisse est reservee a la caisse.
-          Consultez l'etat de la session ci-dessous.
+          Consultez l'état de la session ci-dessous.
         </p>
       )}
 
@@ -249,7 +249,7 @@ export default function CaisseView() {
               <span className="caisse-card-note">{session.nombreVentes} vente(s) — carte et cheque exclus</span>
             </div>
             <div className="caisse-card accent">
-              <span className="caisse-card-label">Solde théorique du tiroir</span>
+              <span className="caisse-card-label">Solde theorique du tiroir</span>
               <strong className="caisse-card-value">{formatEuros(soldeTheorique)}</strong>
               <span className="caisse-card-note">A comparer au comptage</span>
             </div>
@@ -290,18 +290,18 @@ export default function CaisseView() {
                   <strong>Total compte : {formatEuros(totalComptage)}</strong>
                   <span className="muted">
                     {' '}
-                    — théorique {formatEuros(soldeTheorique)}
+                    — theorique {formatEuros(soldeTheorique)}
                     {totalComptage !== soldeTheorique && ` (ecart ${varianceLabel(totalComptage - soldeTheorique).text})`}
                   </span>
                 </div>
 
                 <FormTextarea
-                  label="Commentaire de clôture"
+                  label="Commentaire de cloture"
                   name="notes"
                   rows={3}
                   register={closingRegister}
                   error={closing.formState.errors.notes?.message}
-                  placeholder="Optionnel : motif de l'écart, incident de comptage..."
+                  placeholder="Optionnel : motif de l'ecart, incident de comptage..."
                 />
 
                 <div className="form-actions">

@@ -178,12 +178,12 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
             width: '*',
             stack: [
               {
-                text: 'Conditions de règlement : 30 jours fin de mois',
+                text: 'Conditions de reglement : 30 jours fin de mois',
                 fontSize: 8,
                 color: '#555',
               },
               {
-                text: `Vente scellée (NF525) : n${vente.id} - ${vente.modePaiement}`,
+                text: `Vente scellee (NF525) : n${vente.id} - ${vente.modePaiement}`,
                 fontSize: 7,
                 color: '#888',
                 margin: [0, 4, 0, 0],

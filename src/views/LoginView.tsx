@@ -3,7 +3,7 @@
  *
  * Le formulaire est volontairement minimal : un depot compte peu d'utilisateurs
  * et la liste des comptes de demonstration est rappelee en bas d'ecran, ce qui
- * evite qu'un developpeur bloque sur l'ecran au premier lancement.
+ * évite qu'un développeur bloque sur l'écran au premier lancement.
  *
  * L'acces au depot sans session renverrait 401 sur toutes les routes metier :
  * le message le dit explicitement plutot que d'afficher une page vide.

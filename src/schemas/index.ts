@@ -24,15 +24,15 @@ const optionalText = (label: string, max = 2000) =>
 const nonNegative = (label: string) =>
   z
     .number({ message: `${label} est requis.` })
-    .finite(`${label} doit être un nombre.`)
-    .min(0, `${label} ne peut pas être négatif.`)
+    .finite(`${label} doit etre un nombre.`)
+    .min(0, `${label} ne peut pas etre negatif.`)
 
 const dateISO = (label: string) =>
   z
     .string()
     .trim()
     .min(1, `${label} est requise.`)
-    .regex(/^\d{4}-\d{2}-\d{2}/, `${label} doit être au format AAAA-MM-JJ.`)
+    .regex(/^\d{4}-\d{2}-\d{2}/, `${label} doit etre au format AAAA-MM-JJ.`)
 
 /**
  * Horodatage complet (ventes).
@@ -117,8 +117,8 @@ export const articleSchema = z.object({
     (value) => value <= 1_000_000,
     'Prix TTC trop eleve.',
   ),
-  quantite: nonNegative('La quantité').refine((value) => Number.isInteger(value), 'La quantité doit être un entier.'),
-  minimum: nonNegative('Le seuil minimum').refine((value) => Number.isInteger(value), 'Le seuil doit être un entier.'),
+  quantite: nonNegative('La quantite').refine((value) => Number.isInteger(value), 'La quantite doit etre un entier.'),
+  minimum: nonNegative('Le seuil minimum').refine((value) => Number.isInteger(value), 'Le seuil doit etre un entier.'),
 })
 
 /**
@@ -127,27 +127,27 @@ export const articleSchema = z.object({
  *
  * Volontairement identique a `documentLineSchema` cote API : c'est ce meme
  * contrat que `PUT /:id/lignes` attend, si bien qu'une ligne saisie en
- * réception peut être reprise à l'identique dans un panier de vente.
+ * reception peut etre reprise a l'identique dans un panier de vente.
  */
 export const documentLineSchema = z.object({
   reference: pieceReference,
   designation: required('La designation'),
   quantite: nonNegative('La quantite')
-    .refine((value) => Number.isInteger(value) && value > 0, 'La quantité doit être un entier positif.')
+    .refine((value) => Number.isInteger(value) && value > 0, 'La quantite doit etre un entier positif.')
     .refine((value) => value <= 9999, 'Quantite maximale : 9999.'),
   prixUnitaire: nonNegative('Le prix unitaire').refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
 })
 
-/** Ligne de réception : alias conservé pour les formulaires existants. */
+/** Ligne de reception : alias conserve pour les formulaires existants. */
 export const receptionLineSchema = documentLineSchema
 
 export const receptionSchema = z.object({
   fournisseur: required('Le fournisseur').max(128, 'Nom de fournisseur trop long.'),
-  dateReception: dateISO('La date de réception'),
+  dateReception: dateISO('La date de reception'),
   notes: optionalText('Les notes'),
   articles: z
     .array(documentLineSchema)
-    .min(1, 'Ajoutez au moins un article à la réception.')
+    .min(1, 'Ajoutez au moins un article a la reception.')
     .max(200, 'Maximum 200 lignes par document.'),
 })
 
@@ -158,7 +158,7 @@ export const cartLineSchema = documentLineSchema
  * Vente au comptoir.
  *
  * Le total n'est jamais saisi : il est recalcule par le serveur a partir des
- * lignes. Le formulaire ne verifie donc que la regle « montant encaisse >=
+ * lignes. Le formulaire ne vérifie donc que la règle « montant encaissé >=
  * total », que `venteContext` replique cote client.
  */
 const venteBase = z.object({
@@ -169,10 +169,10 @@ const venteBase = z.object({
   montantPaye: nonNegative('Le montant paye'),
 })
 
-/** Ajoute la regle "montant encaisse >= total" avec un message contextuel. */
+/** Ajoute la règle "montant encaissé >= total" avec un message contextuel. */
 export function venteContext(totalHT: number) {
   return venteBase.refine((value) => value.montantPaye >= totalHT - 0.005, {
-    message: `Le montant encaisse est inferieur au total de ${totalHT.toFixed(2)} EUR.`,
+    message: `Le montant encaissé est inférieur au total de ${totalHT.toFixed(2)} EUR.`,
     path: ['montantPaye'],
   })
 }
@@ -211,11 +211,11 @@ export const vehiculeSchema = z.object({
   modele: required('Le modele').max(64, 'Modele trop long.'),
   annee: z
     .number({ message: "L'annee est requise." })
-    .int("L'année doit être un entier.")
+    .int("L'annee doit etre un entier.")
     .min(1950, 'Annee trop ancienne.')
     .max(new Date().getFullYear() + 1, 'Annee dans le futur.'),
   type: z.enum(['voiture', 'camionnette', 'camion', 'autre'], { message: 'Type invalide.' }),
-  kilométrage: nonNegative('Le kilométrage').refine((value) => Number.isInteger(value), 'Le kilométrage doit être un entier.'),
+  kilometrage: nonNegative('Le kilometrage').refine((value) => Number.isInteger(value), 'Le kilometrage doit etre un entier.'),
   proprietaire: required('Le proprietaire').max(128, 'Proprietaire trop long.'),
   statut: z.enum(['disponible', 'en service', 'en maintenance'], { message: 'Statut invalide.' }),
 })
@@ -303,12 +303,12 @@ export const caisseOuvertureSchema = z.object({
 export const comptageLineSchema = z.object({
   denomination: z
     .number({ message: 'La denomination est requise.' })
-    .finite('La dénomination doit être un nombre.')
-    .positive('La dénomination doit être strictement positive.'),
+    .finite('La denomination doit etre un nombre.')
+    .positive('La denomination doit etre strictement positive.'),
   quantite: z
     .number({ message: 'La quantite est requise.' })
-    .int('La quantité doit être un entier.')
-    .min(0, 'La quantité ne peut pas être négative.')
+    .int('La quantite doit etre un entier.')
+    .min(0, 'La quantite ne peut pas etre negative.')
     .max(10_000, 'Quantite maximale : 10 000.'),
 })
 

@@ -1,13 +1,13 @@
 /**
  * Routes d'authentification.
  *
- * Le jeton de session est renvoye dans le corps de la reponse **et** dans un
- * cookie `httpOnly` : le corps permet au client de le stocker en memoire, le
- * cookie permet aux requetes natives (et au rechargement de page) de passer
+ * Le jeton de session est renvoyé dans le corps de la réponse **et** dans un
+ * cookie `httpOnly` : le corps permet au client de le stocker en mémoire, le
+ * cookie permet aux requêtes natives (et au rechargement de page) de passer
  * sans manipulation manuelle.
  *
  * Un jeton CSRF accompagne ce cookie, car `SameSite=Lax` n'interdit pas les
- * requetes emanant du meme site : voir l'analyse en tete de `csrf.ts`.
+ * requêtes émanant du même site : voir l'analyse en tête de `csrf.ts`.
  */
 
 import { Router } from 'express'
@@ -40,7 +40,7 @@ export function createAuthRouter(): Router {
 
   router.post(
     '/login',
-    // Limite avant toute verification : c'est la seule action ou un mot de
+    // Limite avant toute vérification : c'est la seule action où un mot de
     // passe peut etre devine, donc la seule qui merite un compteur.
     rateLimit(),
     handler(async (request, response) => {
@@ -84,7 +84,7 @@ export function createAuthRouter(): Router {
     '/logout',
     handler(async (_request, response) => {
       // Le cookie est efface, pas le jeton : celui-ci reste valide jusqu'a
-      // expiration. Un stockage de jetons revocationnables serait necessaire
+      // expiration. Un stockage de jetons révocationnables serait nécessaire
       // pour un deconnexion immediate et definitif.
       response.clearCookie(AUTH_COOKIE, { ...cookieOptions, maxAge: undefined })
       response.clearCookie(CSRF_COOKIE_NAME, { path: '/', secure: useSecureCookies })
@@ -106,7 +106,7 @@ export function createAuthRouter(): Router {
         nom: payload.nom,
         prenom: payload.prenom,
       }
-      // Renouvelle le jeton CSRF a chaque verification : apres un expiration
+      // Renouvelle le jeton CSRF à chaque vérification : après un expiration
       // de session, l'ancien couple cookie/jeton ne doit pas rester valable.
       const csrf = issueCsrfCookie(response, useSecureCookies)
       response.json({ user, csrfToken: csrf })

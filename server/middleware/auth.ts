@@ -6,9 +6,9 @@
  *   compatible Web Crypto, donc utilisable cote navigateur plus tard si besoin.
  * - Le jeton ne contient que l'identite et le role. Il n'est pas
  *   revoque : un compte desactive doit donc invalider ses jetons, ce que le
- *   middleware verifie a chaque requete en relisant `users.actif`.
- * - La signature est verifiee en premier : un jeton non signe ne doit jamais
- *   atteindre la logique metier, meme si son contenu est plausible.
+ *   middleware vérifie à chaque requête en relisant `users.actif`.
+ * - La signature est vérifiée en premier : un jeton non signé ne doit jamais
+ *   atteindre la logique métier, même si son contenu est plausible.
  */
 
 import type { NextFunction, Request, Response } from 'express'
@@ -125,7 +125,7 @@ export async function authenticate(email: string, password: string): Promise<Aut
   const matches = await bcrypt.compare(password, found.passwordHash)
   if (!matches) throw new AuthError(401, 'INVALID_CREDENTIALS', 'Email ou mot de passe incorrect.')
 
-  if (!found.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est désactivé.')
+  if (!found.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est desactive.')
 
   return {
     id: found.id,
@@ -170,8 +170,8 @@ function readToken(request: Request): string | null {
 /**
  * Exige un jeton valide et attache l'utilisateur a la requete.
  *
- * Le compte est relu en base a chaque requete : c'est ce qui permet de
- * désactiver un utilisateur sans attendre l'expiration de son jeton.
+ * Le compte est relu en base à chaque requête : c'est ce qui permet de
+ * desactiver un utilisateur sans attendre l'expiration de son jeton.
  */
 export async function requireAuth(request: Request, _response: Response, next: NextFunction): Promise<void> {
   try {
@@ -185,9 +185,9 @@ export async function requireAuth(request: Request, _response: Response, next: N
     const user = await repository.findById(payload.sub)
 
     // Compte supprime, desactive, ou role change depuis l'emission du jeton :
-    // dans les trois cas, on applique l'etat courant et on ignore le jeton.
+    // dans les trois cas, on applique l'état courant et on ignore le jeton.
     if (!user) throw new AuthError(401, 'ACCOUNT_MISSING', 'Compte introuvable.')
-    if (!user.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est désactivé.')
+    if (!user.actif) throw new AuthError(403, 'ACCOUNT_DISABLED', 'Ce compte est desactive.')
     if (user.role !== payload.role) {
       throw new AuthError(401, 'ROLE_CHANGED', 'Vos droits ont change. Reconnectez-vous.')
     }

@@ -88,7 +88,7 @@ export default function CatalogueView() {
   const isEditing = editingReference.length > 0
 
   const onSubmit = handleSubmit(async (values) => {
-    // Le schema transforme la reference en majuscules ; on aligne l'etat local.
+    // Le schéma transforme la référence en majuscules ; on aligne l'état local.
     const payload = { ...values, description: values.description ?? null, emplacement: values.emplacement ?? null } as any
     const saved = isEditing ? await update(payload) : await create(payload)
 

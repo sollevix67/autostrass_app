@@ -5,13 +5,13 @@
  *
  * - **Injection SQL** : aucune requete n'est concatenee. Tout passe par des
  *   requetes parametrées (`?`) ou par Drizzle, qui lie les valeurs. Verifie
- *   sur l'ensemble de `server/` : la seule interpolation dans une chaine SQL
+ *   sur l'ensemble de `server/` : la seule interpolation dans une chaîne SQL
  *   est la constante `LIMIT 1`.
  * - **XSS** : React echappe le texte par defaut et l'application n'emplace
  *   ni `innerHTML` ni `dangerouslySetInnerHTML`. Un `<script>` stocke en base
  *   s'affiche litteralement, il ne s'execute pas.
  * - **Mass-assignment** : les schemas Zod sont des `z.object` simples, qui
- *   suppriment les cles inconnues. Un corps `{"nom":"x","role":"admin"}`
+ *   suppriment les clés inconnues. Un corps `{"nom":"x","role":"admin"}`
  *   envoye a `PUT /api/clients/1` ne transmet que `nom`.
  *
  * Ce module traite ce qui reste et qui n'est pas couvert par ces garanties.
@@ -103,7 +103,7 @@ export type SanitizeReport = {
 }
 
 /**
- * Normalise une chaine : espaces de bord retires, forme canonique Unicode,
+ * Normalise une chaîne : espaces de bord retirés, forme canonique Unicode,
  * caracteres invisibles et de controle supprimes.
  *
  * La normalisation NFKC precede le nettoyage des caracteres de controle, pas
@@ -119,7 +119,7 @@ export function normalizeText(value: string): string {
     .trim()
 }
 
-/** Cherche un marqueur d'injection de markup dans une chaine normalisee. */
+/** Cherche un marqueur d'injection de markup dans une chaîne normalisée. */
 function findMarkupInjection(value: string): string | null {
   for (const { pattern, label } of INJECTION_PATTERNS) {
     if (pattern.test(value)) return label
@@ -127,7 +127,7 @@ function findMarkupInjection(value: string): string | null {
   return null
 }
 
-/** Cherche un marqueur d'injection SQL dans une chaine normalisee. */
+/** Cherche un marqueur d'injection SQL dans une chaîne normalisée. */
 export function findSqlInjection(value: string): string | null {
   for (const { pattern, label } of SQL_INJECTION_PATTERNS) {
     if (pattern.test(value)) return label
@@ -145,7 +145,7 @@ export function findSqlInjection(value: string): string | null {
  * des autres champs — un formulaire signale alors toutes ses erreurs d'un
  * coup, au lieu d'en afficher une a la fois.
  *
- * @param value   chaine brute
+ * @param value   chaîne brute
  * @param max     longueur maximale APRES normalisation
  * @param field   nom du champ, pour le message
  */

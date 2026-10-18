@@ -5,7 +5,7 @@
  * selon la police du systeme, se declenche en couleur sur Windows et n'est
  * pas annonce correctement par les lecteurs d'ecran. Le SVG herite de
  * `currentColor`, suit la taille du texte et reste invisible au lecteur
- * d'ecran quand il est decoratif (`aria-hidden`).
+ * d'écran quand il est décoratif (`aria-hidden`).
  */
 
 export type IconName =

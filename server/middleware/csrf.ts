@@ -169,7 +169,7 @@ function clientKey(request: Request): string {
  *
  * Sans cela, la limite est partagee entre toutes les routes : un blocage sur
  * `/api/auth/login` contaminerait les autres, et surtout la suite de tests
- * (qui enchaine des connexions valides) se bloquerait elle-meme. Chaque
+ * (qui enchaîne des connexions valides) se bloquerait elle-même. Chaque
  * famille de routes a son propre compteur.
  */
 function bucketKey(request: Request): string {
@@ -205,7 +205,7 @@ export function rateLimitState(request: Request): { attempts: number; blocked: b
  * Compter toutes les requetes punirait l'utilisateur legitime : un depot
  * voit plusieurs caisses se connecter au fil de la journee, et un depotier qui
  * se trompe de mot de passe dix fois dans la matinee serait bloque, alors
- * que l'attaquant n'a progresse sur rien. Seuls les echecs revelent une
+ * que l'attaquant n'a progresse sur rien. Seuls les échecs révèlent une
  * tentative.
  *
  * L'efficacite pour l'attaquant reste la meme : un forcage brute doit

@@ -3,7 +3,7 @@
  *
  * Ecrits explicitement plutot que genericises autour de `SimpleRepository` :
  * les types d'insertion et de patch different par table, et le mapping de
- * sortie est specifique a chaque metier. On reutilise `SimpleRepository` pour
+ * sortie est spécifique à chaque métier. On réutilise `SimpleRepository` pour
  * la lecture, et on ecrit les ecritures ici pour garder le typage strict.
  */
 

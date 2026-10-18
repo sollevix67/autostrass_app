@@ -191,7 +191,7 @@ export default function LivraisonsView() {
     <PageLayout
       eyebrow="LIVRAISONS"
       title="Suivi des livraisons"
-      description="Suivez l'etat de vos expeditions en temps reel."
+      description="Suivez l'état de vos expéditions en temps réel."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
           <Icon name="rotate-ccw" size="sm" /> Actualiser

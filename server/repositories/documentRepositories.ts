@@ -120,13 +120,13 @@ export class DocumentRepository<TRow extends { id: number }> {
    *
    * `before` et `after` s'executent **dans la transaction**, l'un avant
    * l'insertion, l'autre apres. C'est le seul moyen de garantir qu'une
-   * ecriture liee au document (le journal de caisse pour une vente) est
+   * écriture liée au document (le journal de caisse pour une vente) est
    * atomique avec lui : deux transactions separes laisseraient une vente sans
    * mouvement de caisse, donc un ecart de caisse invente a la cloture.
    *
    * `before` renvoie les colonnes supplementaires a inserer (par exemple
    * `session_id`). Resoudre la session ici, et non dans `toHead`, ferme la
-   * fenetre entre la lecture et l'ecriture : une session fermee entre les deux
+   * fenêtre entre la lecture et l'écriture : une session fermée entre les deux
    * ferait echouer la vente plutot que de l'imputer a un tiroir deja cloture.
    *
    * `after` recoit l'id insere : c'est ce qu'il faut pour l'empreinte NF525,

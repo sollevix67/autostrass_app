@@ -79,7 +79,7 @@ async function signIn(email: string): Promise<boolean> {
   csrf = payload.csrfToken ?? null
   // Le serveur pose DEUX cookies : la session (httpOnly) et le jeton CSRF
   // (lisible, c'est lui que le client recopie dans l'en-tete). Il faut
-  // renvoyer les deux, sinon la verification CSRF n'a rien a comparer.
+  // renvoyer les deux, sinon la vérification CSRF n'a rien à comparer.
   cookie = (response.headers.getSetCookie?.() ?? [])
     .map((value) => value.split(';')[0])
     .filter((value) => value.length > 0)
@@ -163,7 +163,7 @@ console.log('\nInjection SQL dans les champs')
 
   const after = await call('/api/articles')
   check('la table articles est intacte', after.status === 200 && Array.isArray(after.body), after.status)
-  check('le nombre d articles est inchange', before.body?.length === after.body?.length, {
+  check('le nombre d articles est inchangé', before.body?.length === after.body?.length, {
     avant: before.body?.length,
     apres: after.body?.length,
   })
@@ -265,7 +265,7 @@ console.log('\nBiais Unicode et caracteres de controle')
 // ---------------------------------------------------------------------------
 console.log('\nMass-assignment')
 {
-  // Un corps contenant des cles inconnues ne doit transmettre que les
+  // Un corps contenant des clés inconnues ne doit transmettre que les
   // champs declares par le schema.
   const created = await call('/api/clients', {
     method: 'POST',

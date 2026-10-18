@@ -10,21 +10,21 @@
  *    d'un jour selon le fuseau du serveur.
  */
 
-/** Convertit un DECIMAL MariaDB (chaine ou nombre) en `number`. */
+/** Convertit un DECIMAL MariaDB (chaîne ou nombre) en `number`. */
 export function toNumber(value: string | number | null | undefined): number {
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0
   const parsed = Number.parseFloat(String(value ?? '0'))
   return Number.isFinite(parsed) ? parsed : 0
 }
 
-/** Formate un `Date` en `YYYY-MM-DD` (date civile, sans decalage de fuseau). */
+/** Formate un `Date` en `YYYY-MM-DD` (date civile, sans décalage de fuseau). */
 export function toDateString(value: Date | string | null | undefined): string {
   if (value === null || value === undefined) return ''
   if (typeof value === 'string') return value.slice(0, 10)
   return value.toISOString().slice(0, 10)
 }
 
-/** Formate un `Date` en ISO 8601 complet, ou chaine vide si absent. */
+/** Formate un `Date` en ISO 8601 complet, ou chaîne vide si absent. */
 export function toIsoString(value: Date | string | null | undefined): string {
   if (value === null || value === undefined) return ''
   if (typeof value === 'string') return value
@@ -40,7 +40,7 @@ export function parseId(value: unknown): number | null {
 /**
  * Extrait le code d'erreur mysql2 whatever soit l'enveloppe.
  *
- * Drizzle emballe les echecs de requete dans une `DrizzleQueryError` qui
+ * Drizzle emballe les échecs de requête dans une `DrizzleQueryError` qui
  * porte `cause` : sans decomposer cette chaine, une violation de cle
  * etrangere arrive en 500 « erreur interne » au lieu de 422 « reference
  * inconnue », et le diagnostic est impossible cote client.

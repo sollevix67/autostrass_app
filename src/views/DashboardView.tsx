@@ -67,7 +67,7 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
           </div>
         </section>
         <section className="panel activity-panel">
-          <div className="panel-heading"><div><p className="panel-kicker">En direct</p><h2>Activité récente</h2></div><Link className="icon-button" to="/receptions" aria-label="Voir les réceptions"><Icon name="chevron-right" size="sm" /></Link></div>
+          <div className="panel-heading"><div><p className="panel-kicker">En direct</p><h2>Activite recente</h2></div><Link className="icon-button" to="/receptions" aria-label="Voir les réceptions"><Icon name="chevron-right" size="sm" /></Link></div>
           <div className="activity-list">
             {dashboard.activity.length === 0 ? (
               <p className="empty-state">
@@ -103,7 +103,7 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
           </Link>
           <Link to="/receptions">
             <span className="quick-icon blue">↓</span>
-            <span><b>Enregistrer une réception</b><small>Mettre du stock en entrée</small></span>
+            <span><b>Enregistrer une reception</b><small>Mettre du stock en entree</small></span>
             <span>→</span>
           </Link>
           <Link to="/ventes-comptoir">

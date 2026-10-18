@@ -5,7 +5,7 @@
  * structure : une entete datee, un statut eventuel, et des lignes. Le schema
  * Zod et le repository ont des vocabulaires differents (camelCase expose,
  * snake_case stocke) : cet adaptateur est le seul endroit ou la traduction
- * est ecrite, ce qui evite de la repeter dans chaque route.
+ * est écrite, ce qui évite de la répéter dans chaque route.
  */
 
 import type { z } from 'zod'
@@ -86,7 +86,7 @@ export function documentRoutes<TRow extends { id: number }>(options: {
   const { router, path, resource, repository, createSchema, headPatch, toHead, toHeadPatch } = options
 
   /**
-   * Refuse toute ecriture sur un document fige.
+   * Refuse toute écriture sur un document figé.
    *
    * Le code 409 `VENTE_FROME` distingue ce refus d'une erreur de droits (403)
    * ou de validation (422) : ce n'est pas l'utilisateur qui a tort, c'est la
@@ -209,7 +209,7 @@ export function documentRoutes<TRow extends { id: number }>(options: {
 
 /**
  * Regroupe les lignes d'un payload en lignes exposes.
- * Utilise par le script de verification pour comparer au repository.
+ * Utilisé par le script de vérification pour comparer au repository.
  */
 export function toDocumentLines(articles: readonly LinePayload[]): DocumentLine[] {
   return articles.map((line, index) => ({

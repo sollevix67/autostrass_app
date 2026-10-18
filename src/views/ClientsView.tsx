@@ -5,7 +5,7 @@
  * le catalogue : React Hook Form + Zod, resume d'erreurs focusable, et
  * suppression confirmee via `ConfirmDialog` plutot que `window.confirm`.
  *
- * L'ecriture est reservee au depot : un caissier voit la liste mais pas le
+ * L'écriture est réservée au dépôt : un caissier voit la liste mais pas le
  * formulaire de creation. Le bouton reste visible et desactive plutot que
  * masque, pour que la limite de droits soit lisible sans deviner.
  */
@@ -77,7 +77,7 @@ export default function ClientsView() {
       'Supprimer ce client ?',
       <>
         Le client <strong>{client.prenom} {client.nom}</strong> ({client.numeroClient}) sera
-        supprimé définitivement. Les commandes qui le référencent doivent d'abord être closes.
+        supprime definitivement. Les commandes qui le referencent doivent d'abord etre closes.
       </>,
       () => {
         // La suppression est asynchrone : on la declenche dans le callback du

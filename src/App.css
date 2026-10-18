@@ -403,7 +403,7 @@ html[data-theme='dark'] .login-demo button {
 .action-btn:disabled { opacity: .45; cursor: not-allowed; }
 
 /* --- Boutons d'action en ligne (tableaux) -------------------------------- */
-/* Le SVG remplace un emoji : la couleur vient de l'etat du bouton, pas d'une
+/* Le SVG remplace un emoji : la couleur vient de l'état du bouton, pas d'une
    police de caracteres, et l'icone garde la meme teinte au survol. */
 .action-btn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); cursor: pointer; transition: color .15s, border-color .15s, background-color .15s; }
 .action-btn:hover { border-color: var(--color-border); background: var(--color-muted); color: var(--text-strong); }
@@ -425,13 +425,13 @@ html[data-theme='dark'] .login-demo button {
   outline-offset: 2px;
   border-radius: 3px;
 }
-/* Ne pas imposer d'anneau au pointeur : on le remplace par un etat de survol. */
+/* Ne pas imposer d'anneau au pointeur : on le remplace par un état de survol. */
 :where(a, button, input, select, textarea, [tabindex]):focus:not(:focus-visible) { outline: none; }
 /* Anneau double sur fond sombre (sidebar) pour garantir le contraste 4.5:1. */
 .sidebar :where(a, button):focus-visible { outline-color: #f3a08f; }
 
 /* Respecte le reglage systeme "reduire les animations" : coupe transitions
-   et scroll fluide sans supprimer les retours d'etat visuels. */
+   et scroll fluide sans supprimer les retours d'état visuels. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -524,8 +524,8 @@ th.align-center, td.align-center { text-align: center; }
 .static-value { display: block; padding: 9px 0; color: var(--text-strong); font-size: 12px; }
 .muted { color: var(--text-muted); }
 
-/* --- Caisse : etat de session et comptage --------------------------------- */
-/* Quatre cartes alignées : le solde théorique est mis en avant (classe
+/* --- Caisse : état de session et comptage --------------------------------- */
+/* Quatre cartes alignees : le solde theorique est mis en avant (classe
    `accent`) parce que c'est la valeur a confronter au comptage, pas une
    donnee parmi d'autres. */
 .caisse-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 16px; }

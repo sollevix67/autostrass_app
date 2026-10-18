@@ -4,7 +4,7 @@
  * Toute la surface metier est derriere `requireAuth` : meme la lecture exige
  * un jeton valide. Les droits sont affines par metier :
  * - lecture        : tout utilisateur authentifie
- * - ecriture depot : admin, magasinier
+ * - écriture dépôt : admin, magasinier
  * - caisse         : admin, caissier
  * - administration : admin seul
  *
@@ -79,13 +79,13 @@ export function createApiRouter(): Router {
 
   // `SameSite=Lax` sur le cookie de session n'interdit pas les requetes
   // emanant du meme site. Le double-soumission CSRF ferme ce reste : toute
-  // ecriture doit aussi porter un `X-CSRF-Token` egal au cookie. Montre
+  // écriture doit aussi porter un `X-CSRF-Token` égal au cookie. Montre
   // apres `requireAuth` : inutile de verifier un jeton sur une requete qui va
-  // de toute façon être refusée.
+  // de toute facon etre refusee.
   router.use(requireCsrf)
 
   // --- Clients ------------------------------------------------------------
-  // `Router()` doit être créé dans une variable puis monté : `router.use()`
+  // `Router()` doit etre cree dans une variable puis monte : `router.use()`
   // renvoie le routeur PARENT, pas le sous-routeur. Passer sa valeur a
   // `crudRoutes` enregistrait les routes a la racine `/api`, d'ou un
   // « 400 Identifiant invalide » sur `GET /api/clients` (id vaut « clients »)
@@ -135,8 +135,8 @@ export function createApiRouter(): Router {
 
   // --- Utilisateurs (administration) --------------------------------------
   // Ces routes sont ecrites explicitement plutot que via `crudRoutes` : le
-  // mot de passe doit être hashé, et un administrateur ne doit pas pouvoir se
-  // supprimer, se désactiver ou se retirer ses propres droits. Enregistrement
+  // mot de passe doit etre hashe, et un administrateur ne doit pas pouvoir se
+  // supprimer, se desactiver ou se retirer ses propres droits. Enregistrement
   // de la fabrique plus bas, les ecritures ecrivaient deux fois la meme URL et
   // la premiere servie l'emportait : le garde-fou etait contourne.
   const utilisateursRouter = Router()
@@ -291,7 +291,7 @@ export function createApiRouter(): Router {
   })
 
   // --- Ventes ------------------------------------------------------------
-  // Seule entete dont la creation est conditionnee a un etat externe : une
+  // Seule entête dont la création est conditionnée à un état externe : une
   // vente sans session de caisse ouverte ne serait pas imputable a un tiroir,
   // et son montant n'entrerait dans aucun comptage. Le controle est fait dans
   // `beforeCreate`, donc dans la meme transaction que l'insertion.
@@ -390,7 +390,7 @@ export function createApiRouter(): Router {
           //
           // `precedente` est la derniere vente **avant** celle-ci : le
           // chainon doit precéder la vente qu'il scelle, sinon on la signerait
-          // elle-meme et la chaine ne progresserait jamais. `id < venteId`
+          // elle-même et la chaîne ne progresserait jamais. `id < venteId`
           // l'exclut explicitement plutot que de compter sur l'ordre du
           // `ORDER BY`, qui dependrait du plan d'execution.
           //
@@ -515,7 +515,7 @@ export function createApiRouter(): Router {
 
   // --- Caisse : sessions, comptage, journal --------------------------------
   // Ecrit explicitement plutot que via une fabrique : l'ouverture et la
-  // clôture sont des opérations métier, pas un CRUD. `GET /actuelle` est
+  // cloture sont des operations metier, pas un CRUD. `GET /actuelle` est
   // enregistre AVANT `GET /:id` — sans cela, `requireId` recevrait la chaine
   // « actuelle » et repondrait 400 au lieu de renvoyer la session ouverte.
   const caisseRouter = Router()
@@ -597,7 +597,7 @@ export function createApiRouter(): Router {
     }),
   )
 
-  /** Clôture après comptage : calcule le total théorique et l'écart. */
+  /** Cloture apres comptage : calcule le total theorique et l'ecart. */
   caisseRouter.post(
     '/:id/cloturer',
     requireRole('caissier'),

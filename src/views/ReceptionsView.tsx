@@ -1,7 +1,7 @@
 /**
- * Vue réceptions : saisie des articles reçus et historique.
+ * Vue receptions : saisie des articles recus et historique.
  *
- * Branche sur l'API (`/api/receptions`). Le formulaire suit le même patron que
+ * Branchee sur l'API (`/api/receptions`). Le formulaire suit le meme patron que
  * le catalogue : React Hook Form + Zod + `useFieldArray`, resume d'erreurs
  * focusable, et suppression confirmee par `ConfirmDialog`.
  *
@@ -64,7 +64,7 @@ export default function ReceptionsView() {
   /**
    * `useFieldArray` gere les cles de ligne et l'insertion/suppression. La cle
    * qu'il genere (`field.id`) est stable entre deux rendus : c'est elle qui
-   * evite qu'une ligne d'erreur se deplace quand on saisit une quantite.
+   * évite qu'une ligne d'erreur se déplace quand on saisit une quantité.
    */
   const { fields, append, remove: removeLine } = useFieldArray({ control, name: 'articles' })
 
@@ -96,9 +96,9 @@ export default function ReceptionsView() {
 
   const handleDeleteHistory = (reception: ApiReception) => {
     confirm(
-      `Supprimer la réception du ${reception.dateReception} ?`,
+      `Supprimer la reception du ${reception.dateReception} ?`,
       <>
-        La réception chez <strong>{reception.fournisseur}</strong> ({reception.articles.length}
+        La reception chez <strong>{reception.fournisseur}</strong> ({reception.articles.length}
         ligne(s), {formatEuros(reception.totalHT)}) sera retirees de l'historique.
       </>,
       () => {
@@ -151,7 +151,7 @@ export default function ReceptionsView() {
             onClick={() => handleDeleteHistory(row)}
             disabled={saving}
             title="Supprimer"
-            aria-label={`Supprimer la réception du ${row.dateReception}`}
+            aria-label={`Supprimer la reception du ${row.dateReception}`}
           >
             <Icon name="trash" size="sm" />
           </button>
@@ -162,7 +162,7 @@ export default function ReceptionsView() {
   return (
     <PageLayout
       eyebrow="RECEPTIONS"
-      title="Enregistrer une réception"
+      title="Enregistrer une reception"
       description="Ajoutez les articles recus de vos fournisseurs."
       actions={
         <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
@@ -173,13 +173,13 @@ export default function ReceptionsView() {
       <ResourceBanners
         error={error}
         offline={offline}
-        readOnly={canEdit ? null : 'La saisie des réceptions est réservée au dépôt. Consultez l\'historique ci-dessous.'}
-        resource="réceptions"
+        readOnly={canEdit ? null : 'La saisie des receptions est reservee au depot. Consultez l\'historique ci-dessous.'}
+        resource="receptions"
       />
 
       {canEdit && (
         <section className="form-card">
-          <h2>Nouvelle réception</h2>
+          <h2>Nouvelle reception</h2>
           <form onSubmit={onSubmit} noValidate>
             {/*
               Erreur de collection : Zod la place sur `articles`. On affiche un
@@ -204,7 +204,7 @@ export default function ReceptionsView() {
                 required
               />
               <FormInput
-                label="Date de réception"
+                label="Date de reception"
                 name="dateReception"
                 type="date"
                 register={reg}
@@ -285,7 +285,7 @@ export default function ReceptionsView() {
 
             <div className="form-actions">
               <button type="submit" className="primary-button" disabled={saving}>
-                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer la réception'}
+                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer la reception'}
               </button>
               <button type="button" className="secondary-button" onClick={() => reset(EMPTY_RECEPTION)}>
                 Effacer
@@ -299,10 +299,10 @@ export default function ReceptionsView() {
         columns={columns}
         rows={rows}
         rowKey={(row) => String(row.id)}
-        emptyMessage="Aucune réception enregistrée."
+        emptyMessage="Aucune reception enregistree."
         loading={loading}
         defaultSort={{ key: 'dateReception', direction: 'desc' }}
-        caption="Historique des réceptions fournisseurs"
+        caption="Historique des receptions fournisseurs"
       />
 
       <ConfirmDialog {...dialogProps} confirmLabel="Supprimer" destructive />

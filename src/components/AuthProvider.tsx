@@ -2,10 +2,10 @@
  * Provider d'authentification.
  *
  * Au chargement, la session est tentée via `GET /api/auth/me` : le cookie
- * `httpOnly` posé a la connexion suffit, donc un rechargement de page ne
- * deconnecte pas. Tant que cette verification est en cours, l'interface
- * affiche un etat « verification », pas un ecran de connexion : sans cela
- * l'utilisateur verrait clignoter le formulaire a chaque rechargement.
+ * `httpOnly` posé à la connexion suffit, donc un rechargement de page ne
+ * déconnecte pas. Tant que cette vérification est en cours, l'interface
+ * affiche un état « vérification », pas un écran de connexion : sans cela
+ * l'utilisateur verrait clignoter le formulaire à chaque rechargement.
  */
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
@@ -13,7 +13,7 @@ import { api, setSessionToken, setCsrfToken, toErrorMessage, isAbortError } from
 import { AuthContext, type SessionUser, type AuthStatus } from './authContext'
 import type { LoginResponse, MeResponse } from '../services/contracts'
 
-/** Message dedie aux echecs d'authentification ; les autres erreurs restent brutes. */
+/** Message dédié aux échecs d'authentification ; les autres erreurs restent brutes. */
 function toAuthError(error: unknown): string {
   const message = toErrorMessage(error)
   return message === "L'element demande est introuvable." ? 'Session expiree. Reconnectez-vous.' : message
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>('checking')
   const [error, setError] = useState<string | null>(null)
 
-  // Restauration de session au montage. L'annulation evite de mettre a jour
+  // Restauration de session au montage. L'annulation évite de mettre à jour
   // l'état sur un composant déjà démonté (React 19 signale l'écriture).
   useEffect(() => {
     const controller = new AbortController()
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .get<MeResponse>('/auth/me', { signal: controller.signal })
       .then((response) => {
         setUser(response.user)
-        // Le serveur renouvelle le jeton CSRF a chaque `/me` : on le prend.
+        // Le serveur renouvelle le jeton CSRF à chaque `/me` : on le prend.
         setCsrfToken(response.csrfToken)
         setStatus('authenticated')
         setError(null)
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await api.post('/auth/logout')
     } catch {
       // La deconnexion locale doit aboutir meme si l'appel echoue : l'API est
-      // peut-être déjà arrêtée, et l'utilisateur veut justement sortir.
+      // peut-etre deja arretee, et l'utilisateur veut justement sortir.
     }
     setSessionToken(null)
     setCsrfToken(null)

@@ -3,7 +3,7 @@
  * (lignes de reception, panier de vente comptoir, etc.).
  *
  * Pourquoi pas `key={index}` : l'index bouge des qu'un element est supprime
- * au milieu de la liste, ce qui fait reattribuer l'etat React (focus,
+ * au milieu de la liste, ce qui fait réattribuer l'état React (focus,
  * saisie en cours) au mauvais element.
  */
 export function createLineId(prefix = 'line'): string {
@@ -15,7 +15,7 @@ export function createLineId(prefix = 'line'): string {
 
 /**
  * Genere un identifiant sequentiel du type `L-004` a partir d'un prefixe
- * et du nombre d'éléments déjà présents.
+ * et du nombre d'elements deja presents.
  *
  * Reserve au mode local (donnees non persistes). Cote API, l'identifiant
  * est genere par la base.

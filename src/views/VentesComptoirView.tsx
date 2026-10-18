@@ -1,17 +1,17 @@
 /**
  * Vue ventes au comptoir : panier, encaissement et journal des ventes.
  *
- * Branchee sur l'API (`/api/ventes`). Le panier est un etat **local** tant que
+ * Branchee sur l'API (`/api/ventes`). Le panier est un état **local** tant que
  * la vente n'est pas validee : il n'a pas d'existence en base, et il ne doit
- * pas declencher d'ecriture a chaque ligne ajoutee. Seule la validation
+ * pas déclencher d'écriture à chaque ligne ajoutée. Seule la validation
  * finale envoie le document complet, entete et lignes, dans une transaction.
  *
  * Le total et la monnaie ne sont jamais saisis : ils sont recalcules par le
  * serveur a partir des lignes et du montant encaisse, ce qui empeche un total
  * incoherent avec le detail.
  *
- * Une vente ne peut être enregistrée que dans une **session de caisse
- * ouverte** : le serveur la refuse en 409 sinon. L'ecran renvoie donc vers la
+ * Une vente ne peut etre enregistree que dans une **session de caisse
+ * ouverte** : le serveur la refuse en 409 sinon. L'écran renvoie donc vers la
  * page Caisse plutot que de laisser l'utilisateur decouvrir le refus apres
  * avoir rempli un panier.
  */
@@ -70,8 +70,8 @@ export default function VentesComptoirView() {
 
   /**
    * Le resolver depend du total calcule : la regle « montant encaisse >=
-   * total » ne peut pas être un schéma statique. On garde un schéma constant
-   * pour les types et on appelle `venteSchema` a chaque rendu.
+   * total » ne peut pas etre un schema statique. On garde un schema constant
+   * pour les types et on appelle `venteSchema` à chaque rendu.
    */
   const form = useForm({
     resolver: zodResolver(venteSchema(totalHT)),

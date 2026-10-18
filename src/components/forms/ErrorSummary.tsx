@@ -66,7 +66,7 @@ function buildItems(
  * - `role="alert"` + `tabIndex={-1}` + `aria-labelledby`
  * - chaque message est un lien ancre vers le champ fautif (`#nomDuChamp`)
  * - le focus est deplace sur le resume a la premiere apparition d'erreurs,
- *   jamais a chaque frappe ni a chaque blur
+ *   jamais à chaque frappe ni à chaque blur
  * - les erreurs inline restent affichees : le resume les complete, il ne les
  *   remplace pas
  */

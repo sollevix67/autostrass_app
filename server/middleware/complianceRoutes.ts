@@ -1,10 +1,10 @@
 /**
- * Routes de conformite NF525 : controle d'inalterabilite et mode degrade.
+ * Routes de conformité NF525 : contrôle d'inaltérabilité et mode dégradé.
  *
  * Ces routes ne sont pas un « module metier » : elles exposent la capacite a
  * **demontrer** que la memoire de vente n'a pas ete reecrite. C'est ce que
  * demande un controle fiscal, et cela suppose de pouvoir rejouer la
- * verification a tout moment — donc que l'etat de la chaine soit consultable.
+ * vérification à tout moment — donc que l'état de la chaîne soit consultable.
  *
  * L'acces suit le RBAC : lecture pour tout utilisateur authentifie, ouverture
  * du mode degrade reservee a la caisse (c'est une decision operationnelle, pas
@@ -41,19 +41,19 @@ type SaleForFingerprint = {
 export function createComplianceRouter(): Router {
   const router = Router()
 
-  // Meme exigence que les metiers : le controle d'inalterabilite revele
+  // Même exigence que les métiers : le contrôle d'inaltérabilité révèle
   // quelle vente a ete alteree, ce qui est une information sensible.
   router.use(requireAuth)
   router.use(requireCsrf)
 
   /**
-   * Controle d'inalterabilite de la chaine d'empreintes.
+   * Contrôle d'inaltérabilité de la chaîne d'empreintes.
    *
-   * Rejoue le calcul depuis le genine et signale la premiere rupture. La reponse
+   * Rejoue le calcul depuis le généèse et signale la première rupture. La réponse
    * distingue trois etats, parce qu'ils n'appellent pas la meme reaction :
    * - `intacte` : tout concorde ;
    * - `anterieures` : des ventes n'ont pas d'empreinte (avant la mise en
-   *   conformite) — ce n'est pas une alteration ;
+   *   conformité) — ce n'est pas une altération ;
    * - `rompue` : une empreinte ne correspond plus, et **le controle doit
    *   s'arreter la** : il ne faut pas continuer a recalculer au-dela, la suite
    *   n'aurait plus de sens.
@@ -102,7 +102,7 @@ export function createComplianceRouter(): Router {
         articles: parVente.get(Number(vente.id)) ?? [],
       }))
 
-      // Le controle rejoue la chaine sur l'integralite des ventes, dans
+      // Le contrôle rejoue la chaîne sur l'intégralité des ventes, dans
       // l'ordre des identifiants : c'est cet ordre qui constitue la memoire
       // de vente. Les ventes anterieures a la mise en conformite n'ont pas
       // d'empreinte et sont comptees a part par `verifyFingerprints`.
@@ -160,7 +160,7 @@ export function createComplianceRouter(): Router {
   /**
    * Ventes accumulees hors ligne, en attente de rejeu.
    *
-   * Expose l'etat de la file plutot que de la traiter : le rejeu passe par
+   * Expose l'état de la file plutôt que de la traiter : le rejeu passe par
    * `POST /nf525/mode-degrade/rejouer`, qui doit pouvoir etre appele quand le
    * service revient, pas au moment ou l'evenement est constate.
    */
@@ -235,7 +235,7 @@ export function createComplianceRouter(): Router {
    *
    * Le rejeu lui-meme passe par `POST /api/ventes` : la vente reprend son
    * chemin normal, empreinte comprise. Cette route ne fait que pointer la
-   * file, ce qui evite deux chemins d'ecriture pour les ventes.
+   * file, ce qui évite deux chemins d'écriture pour les ventes.
    */
   router.post(
     '/nf525/mode-degrade/integrer/:id',

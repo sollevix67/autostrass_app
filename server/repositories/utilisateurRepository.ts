@@ -28,7 +28,7 @@ export type UtilisateurRow = {
   updatedAt: string
 }
 
-/** Utilisateur enrichi du hash : usage unique, verification de mot de passe. */
+/** Utilisateur enrichi du hash : usage unique, vérification de mot de passe. */
 export type UtilisateurAuth = UtilisateurRow & { passwordHash: string }
 
 export type UtilisateurInput = {
@@ -84,7 +84,7 @@ export class UtilisateurRepository {
   }
 
   /**
-   * Recherche par email avec le hash. Reserve a la verification de mot de passe :
+   * Recherche par email avec le hash. Réservée à la vérification de mot de passe :
    * ne jamais serialiser ce resultat dans une reponse HTTP.
    */
   async findByEmailWithSecret(email: string): Promise<UtilisateurAuth | null> {

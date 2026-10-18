@@ -70,7 +70,7 @@ export class ApiError extends Error {
       case 'DATABASE_UNAVAILABLE':
         return 'La base de donnees est injoignable. Verifiez la connexion MariaDB.'
       case 'NOT_FOUND':
-        return "L'element demande est introuvable."
+        return "L'élément demandé est introuvable."
       case 'VALIDATION_ERROR':
         return this.message
       case 'NETWORK_ERROR':
@@ -92,9 +92,9 @@ export class ApiError extends Error {
       case 'SELF_LOCKOUT':
         return this.message
       case 'IN_USE':
-        return 'Cet élément est utilisé ailleurs et ne peut pas être supprimé.'
+        return 'Cet element est utilise ailleurs et ne peut pas etre supprime.'
       case 'ALREADY_EXISTS':
-        return 'Cette valeur existe déjà.'
+        return 'Cette valeur existe deja.'
       case 'UNKNOWN_REFERENCE':
         return 'Reference inconnue : verifyz les donnees saisies.'
       default:

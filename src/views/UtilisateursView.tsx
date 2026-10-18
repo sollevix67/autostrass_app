@@ -79,7 +79,7 @@ export default function UtilisateursView() {
       motDePasse: values.motDePasse,
     })
     if (created === null) return
-    // Le mot de passe n'est jamais renvoye par l'API : le vider evite qu'il
+    // Le mot de passe n'est jamais renvoyé par l'API : le vider évite qu'il
     // reste dans le DOM et soit renvoye tel quel lors d'une modification.
     form.reset(EMPTY_USER)
     toast.success(`Compte cree pour ${created.email}.`)
@@ -88,13 +88,13 @@ export default function UtilisateursView() {
   /**
    * Bascule l'activation d'un compte.
    *
-   * Le serveur refuse (409 `SELF_LOCKOUT`) qu'un administrateur se désactive
-   * lui-meme : le depot resterait sans personne pour le gerer. L'etat du
-   * bouton reflétant désactivé dès le départ, et le refus remonte en toast.
+   * Le serveur refuse (409 `SELF_LOCKOUT`) qu'un administrateur se desactive
+   * lui-même : le dépôt resterait sans personne pour le gérer. L'état du
+   * bouton reflecting desactive des le depart, et le refus remonte en toast.
    */
   async function toggleActive(utilisateur: ApiUtilisateur) {
     if (utilisateur.id === user?.id) {
-      toast.error('Vous ne pouvez pas désactiver votre propre compte.')
+      toast.error('Vous ne pouvez pas desactiver votre propre compte.')
       return
     }
     setPatching(utilisateur.id)
@@ -104,7 +104,7 @@ export default function UtilisateursView() {
     toast.success(
       updated.actif
         ? `Compte de ${updated.email} active.`
-        : `Compte de ${updated.email} désactivé.`,
+        : `Compte de ${updated.email} desactive.`,
     )
   }
 
@@ -117,7 +117,7 @@ export default function UtilisateursView() {
       'Supprimer ce compte ?',
       <>
         Le compte de <strong>{utilisateur.prenom} {utilisateur.nom}</strong> ({utilisateur.email})
-        sera supprimé. Ses jetons de session deviennent invalides immédiatement.
+        sera supprime. Ses jetons de session deviennent invalides immediatement.
       </>,
       () => {
         void remove(utilisateur.id).then((deleted) => {
@@ -159,7 +159,7 @@ export default function UtilisateursView() {
             className={`toggle-btn ${row.actif ? 'active' : ''}`}
             aria-pressed={row.actif}
             disabled={!isAdmin || isSelf || saving || patching === row.id}
-            title={isSelf ? 'Vous ne pouvez pas désactiver votre propre compte' : undefined}
+            title={isSelf ? 'Vous ne pouvez pas desactiver votre propre compte' : undefined}
             onClick={() => void toggleActive(row)}
           >
             {row.actif ? 'Oui' : 'Non'}
