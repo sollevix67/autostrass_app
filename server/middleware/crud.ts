@@ -114,7 +114,7 @@ export function errorHandler(error: unknown, request: Request, response: Respons
 
   const mapped = toHttpError(error)
   if (mapped.code === 'DATABASE_UNAVAILABLE') {
-    console.error(`[api] ${request.method} ${request.originalUrl} database unavailable`, error)
+      console.error('[api]', request.method, request.originalUrl, 'database unavailable', error)
     response.status(mapped.status).json({
       error: mapped.code,
       message: 'La base de donnees est injoignable. Verifiez la connexion MariaDB.',
@@ -124,7 +124,7 @@ export function errorHandler(error: unknown, request: Request, response: Respons
 
   // Inconnue : on journalise pour conserver la cause, mais on ne renvoie jamais
   // le detail technique au client (fuite d'information).
-  console.error(`[api] ${request.method} ${request.originalUrl}`, error)
+    console.error('[api]', request.method, request.originalUrl, error)
   response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Une erreur interne est survenue.' })
 }
 

@@ -11,6 +11,7 @@ import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
 import { requireAuth, requireRole } from './middleware/auth.js'
 import { requireCsrf } from './middleware/csrf.js'
+import { rateLimit, authRateLimit } from './middleware/rateLimit.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -47,6 +48,10 @@ app.use(express.json({ limit: '1mb' }))
 // En-têtes de sécurité appliqués AVANT toute route : ils doivent prévisible
 // figer les premières réponses, y compris les 404 et les erreurs.
 app.use(securityHeaders)
+
+// Rate limiting global sur l'API : 100 requêtes / 15 min par IP.
+// Appliqué AVANT les routes d'authentification (qui ont leur propre limite plus stricte).
+app.use('/api', rateLimit())
 
 /**
  * Retourne le repository si la base est configuree, sinon repond 503.
@@ -403,7 +408,8 @@ app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('ma
 // --- Schema v2 : authentification et metiers -------------------------------
 // `/api/auth` est monte avant `requireAuth` : la connexion ne peut pas
 // exiger un jeton qu'elle n'a pas encore.
-app.use('/api/auth', createAuthRouter())
+// Rate limiting spécifique aux tentatives de connexion : 10 essais / 15 min par login.
+app.use('/api/auth', authRateLimit(), createAuthRouter())
 // Conformité NF525 : le routeur porte lui-même `requireAuth`, ce qui évite de
 // dependre de l'ordre de montage de `createApiRouter`.
 app.use('/api', createComplianceRouter())
