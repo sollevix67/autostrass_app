@@ -1,13 +1,9 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-10 — **étapes 1 et 4 de la feuille de route
-> terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est
-> complète **avec conformité NF525**, et la couche de persistance MariaDB /
-> Drizzle est validée sur une base réelle.
+> État du projet au 2026-10-23 — **étapes 1 et 4 de la feuille de route terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, et la couche de persistance MariaDB / Drizzle est validée sur une base réelle.
 >
-> ✅ Build, lint et suites API/sécurité relancés après les correctifs ; le
-> dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests
-> sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
+> ✅ Build, lint et suites API/sécurité relancés après les correctifs d’accents ; le dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
+>
 >
 > 📋 **Avancement étape 2 (modèle de données)** : tables ajoutées pour
 > emplacements hiérarchiques, TVA, fournisseurs, stock par emplacement et
