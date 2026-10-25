@@ -33,3 +33,6 @@ __pycache__
 
 # Archives fiscales NF525 : donnees de production, jamais versionnees
 archives/
+
+# Certificats SSL auto-signes (developpement local uniquement)
+config/ssl/

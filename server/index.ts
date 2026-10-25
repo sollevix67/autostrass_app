@@ -2,6 +2,10 @@ import 'dotenv/config'
 import express, { type Request, type Response } from 'express'
 import mysql from 'mysql2/promise'
 import type { RowDataPacket } from 'mysql2'
+import { readFileSync, existsSync } from 'fs'
+import { join } from 'path'
+import { createServer as createHttpsServer } from 'https'
+import { createServer as createHttpServer } from 'http'
 import { ArticleRepository } from './repositories/articleRepository.js'
 import { notFound, sendValidationError, validateArticleBody, validateDelta } from './middleware/validation.js'
 import { errorHandler } from './middleware/crud.js'
@@ -423,9 +427,29 @@ app.use((_request: Request, response: Response) => {
 
 app.use(errorHandler)
 
-app.listen(port, () => {
-  console.log(`Autostrass API listening on http://localhost:${port}`)
+const sslDir = join(process.cwd(), 'config', 'ssl')
+const certPath = join(sslDir, 'localhost.crt')
+const keyPath = join(sslDir, 'localhost.key')
+
+if (existsSync(certPath) && existsSync(keyPath)) {
+  const httpsPort = Number(process.env.HTTPS_PORT ?? 3443)
+  createHttpsServer({
+    key: readFileSync(keyPath),
+    cert: readFileSync(certPath),
+  }, app).listen(httpsPort, () => {
+    console.log(`Autostrass API listening on https://localhost:${httpsPort}`)
+  })
+  // Keep HTTP redirect/listener on the configured port
+  createHttpServer(app).listen(port, () => {
+    console.log(`Autostrass API (HTTP) listening on http://localhost:${port}`)
+  })
   if (!pool) console.warn('Warning: DB_* non configurees, /api/dashboard et /api/articles repondront 503.')
-})
+} else {
+  app.listen(port, () => {
+    console.log(`Autostrass API listening on http://localhost:${port}`)
+    if (!pool) console.warn('Warning: DB_* non configurees, /api/dashboard et /api/articles repondront 503.')
+    console.warn('Warning: No SSL certificates found in config/ssl/. HTTPS is disabled.')
+  })
+}
 
 export { app }

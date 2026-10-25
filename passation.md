@@ -1,6 +1,6 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-23 — **étapes 1 et 4 de la feuille de route terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, et la couche de persistance MariaDB / Drizzle est validée sur une base réelle.
+> État du projet au 2026-10-25 — **étapes 1, 4 et infra (HTTPS) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
 >
 > ✅ Build, lint et suites API/sécurité relancés après les correctifs d’accents ; le dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
 >
@@ -570,11 +570,15 @@ DB_NAME=autostrass
 DB_USER=autostrass
 DB_PASSWORD=***
 PORT=3001
+HTTPS_PORT=3443
 FRONTEND_URL=http://localhost:5173
 
 # Signature des jetons JWT — 32 caractères minimum, sinon l'API refuse de démarrer
 # Générer : node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 JWT_SECRET=***
+
+# HTTPS (développement local) : certificat auto-signé dans config/ssl/
+# Générer si besoin : node -e "const s=require('selfsigned'); (async()=>{const p=await s.generate([{name:'commonName',value:'localhost'}],{days:365,keySize:2048,algorithm:'sha256'});require('fs').mkdirSync('config/ssl',{recursive:true});require('fs').writeFileSync('config/ssl/localhost.key',p.private);require('fs').writeFileSync('config/ssl/localhost.crt',p.cert);console.log('ok');})()"
 ```
 
 ### Initialisation de la base
