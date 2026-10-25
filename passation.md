@@ -390,7 +390,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 
 > Détail dans la section 12 ci-dessous.
 
-**Étape 2 — Modèle de données** ✅ **TERMINEE**
+**Étape 2 — Modèle de données** ✅ **TERMINÉE**
 - `emplacements` hiérarchiques (allée → étagère → place) + migration de
   `articles.location` (texte libre) vers une clé étrangère
 - `tva` + `prix_ttc` sur le catalogue
@@ -398,10 +398,10 @@ Les `window.alert` / `window.confirm` ont disparu.
 - `sessions_caisse` + `mouvements_caisse`
 - `journal_actions` (audit global : qui, quoi, quand, sur quoi)
 
-> Les migrations Drizzle 0000 à 0006 sont generatees et appliquees sur la base
-> cible. `npm run db:migrate` est operationnel.
+> Les migrations Drizzle 0000 à 0006 sont générées et appliquées sur la base
+> cible. `npm run db:migrate` est opérationnel.
 
-**Stock — fonctionnalites metier** ✅ **AVANCEES**
+**Stock — fonctionnalités métier** ✅ **AVANCÉES**
 - `GET /api/emplacements` : liste hiérarchique avec stock cumulé par emplacement
 - `POST /api/emplacements` : création avec validation de la hiérarchie (allee → etagere → place)
 - `PUT /api/emplacements/:id` : mise à jour (code, libellé, capacité, actif)
@@ -411,7 +411,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 
 > Reste à faire : inventaire physique (comptage + ajustement de stock).
 
-**Stock — UI (frontend)** ✅ **TERMINEE** — `src/views/StockView.tsx`
+**Stock — UI (frontend)** ✅ **TERMINÉE** — `src/views/StockView.tsx`
 - Hiérarchie visuelle des emplacements (indentation par niveau : allée → étagère → place)
 - Modals : création/édition emplacement, transfert d'article
 - Etats vides riches avec hint explicite
@@ -420,7 +420,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 - Raccourci clavier : Escape ferme modales et annule l'édition
 - Actions de ligne : ajouter/retirer/modifier/transférer/supprimer
 - Layout 2 panneaux (articles | emplacements) responsive
-- Build + lint OK (2 warnings preexistants `Date` dans App.tsx)
+- Build + lint OK (2 warnings préexistants `Date` dans App.tsx)
 - Design system : tokens.css, composants FormInput/ConfirmDialog/useToast reuse
 
 **Étape 3 — Documents PDF**
