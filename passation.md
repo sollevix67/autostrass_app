@@ -421,6 +421,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 - Actions de ligne : ajouter/retirer/modifier/transférer/supprimer
 - Layout 2 panneaux (articles | emplacements) responsive
 - Build + lint OK (2 warnings préexistants `Date` dans App.tsx)
+- Bug corrigé : `visibleArticles` dédoublonne par référence (l'API peut renvoyer des lignes dupliquées via JOIN sur emplacements — chaque article apparaissait 5 fois dans le tableau)
 - Design system : tokens.css, composants FormInput/ConfirmDialog/useToast reuse
 
 **Étape 3 — Documents PDF**

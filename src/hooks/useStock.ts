@@ -99,7 +99,15 @@ export function useStock(): UseStockResult {
 
   const visibleArticles = useMemo(() => {
     const needle = query.trim().toLowerCase()
-    return articles.filter((item) => {
+    // De-duplication par reference : l'API peut renvoyer des lignes dupliquees
+    // (JOIN sur emplacements). On garde la premiere occurrence.
+    const seen = new Set<string>()
+    const uniques = articles.filter((item) => {
+      if (seen.has(item.reference)) return false
+      seen.add(item.reference)
+      return true
+    })
+    return uniques.filter((item) => {
       const matchesFilter =
         filter === 'all' ? true : filter === 'low' ? item.quantite <= item.minimum : item.quantite > item.minimum
       if (!matchesFilter) return false
