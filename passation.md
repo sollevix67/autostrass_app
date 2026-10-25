@@ -1,6 +1,6 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-25 — **étapes 1, 4 et infra (HTTPS) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
+> État du projet au 2026-10-25 — **étapes 1, 4, Stock UI et infra (HTTPS) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, le module Stock est complet (backend + frontend : hiérarchie emplacements, transferts, modals, toasts, escape-clavier), et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
 >
 > ✅ Build, lint et suites API/sécurité relancés après les correctifs d’accents ; le dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
 >
@@ -225,7 +225,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | `src/tokens.css` | Tokens et variables de thème | ✅ |
 | `src/views/CatalogueView.tsx` | CRUD complet branché API + mode local | ✅ |
 | `src/views/ClientsView.tsx` | **Modele de reference** : RHF + Zod + DataTable + ConfirmDialog + RBAC | ✅ |
-| `src/views/StockView.tsx` | Filtres, recherche, tri, modale — branché API (emplacement en texte libre) | ⚠️ |
+| `src/views/StockView.tsx` | Filtres, recherche, tri, modale emplacement + transfert, hiérarchie visuelle par profondeur, etats vides riches, toasts, raccourci clavier Escape | ✅ |
 | `src/views/VentesComptoirView.tsx` | Panier, encaissement, journal — **branche API** (caisse non modelisee) | ✅ |
 | `src/views/ReceptionsView.tsx` | Lignes dynamiques, historique — **branche API** | ✅ |
 | `src/views/VehiculesView.tsx` | Parc, statut editable inline — **branche API** | ✅ |
@@ -410,6 +410,18 @@ Les `window.alert` / `window.confirm` ont disparu.
 - Articles CRUD existant (GET, POST, PUT, PATCH quantite, DELETE)
 
 > Reste à faire : inventaire physique (comptage + ajustement de stock).
+
+**Stock — UI (frontend)** ✅ **TERMINEE** — `src/views/StockView.tsx`
+- Hiérarchie visuelle des emplacements (indentation par niveau : allée → étagère → place)
+- Modals : création/édition emplacement, transfert d'article
+- Etats vides riches avec hint explicite
+- Metriques rapides (articles, valeur stock, alertes stock bas, statut offline)
+- Toasts de feedback sur toutes les actions
+- Raccourci clavier : Escape ferme modales et annule l'édition
+- Actions de ligne : ajouter/retirer/modifier/transférer/supprimer
+- Layout 2 panneaux (articles | emplacements) responsive
+- Build + lint OK (2 warnings preexistants `Date` dans App.tsx)
+- Design system : tokens.css, composants FormInput/ConfirmDialog/useToast reuse
 
 **Étape 3 — Documents PDF**
 Devis, factures, bons de commande, bons de livraison, avoirs.
