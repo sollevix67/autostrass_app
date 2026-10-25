@@ -70,7 +70,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
         - Gestion des accès au différents modules
         - Gestion des profils utilisateur
 
-    - Paramères
+    - Paramètres
         - Base de données
         - Paramétrage des limites de requêtes API
-        - Paramètrage de limites de tantatives de connexion
+        - Paramétrage des limites de tentatives de connexion

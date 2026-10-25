@@ -196,6 +196,47 @@ export function FormSelect({
   )
 }
 
+type CheckboxProps = CommonProps & {
+  register?: FieldRegister
+  defaultChecked?: boolean
+}
+
+export function FormCheckbox({
+  label,
+  name,
+  error,
+  hint,
+  register,
+  defaultChecked,
+}: CheckboxProps) {
+  const uid = useId()
+  const errorId = `${uid}-error`
+  const hintId = `${uid}-hint`
+  const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined
+
+  const shared = {
+    name,
+    'aria-invalid': error ? true : undefined,
+    'aria-describedby': describedBy,
+  }
+
+  return (
+    <div className="form-group checkbox-group">
+      <label htmlFor={name}>
+        {register ? (
+          <input id={name} {...register(name)} type="checkbox" {...shared} />
+        ) : (
+          <input id={name} type="checkbox" defaultChecked={defaultChecked} {...shared} />
+        )}
+        {label}
+      </label>
+
+      {error && <small id={errorId} className="form-error-text" role="alert">{error}</small>}
+      {hint && <small id={hintId} className="form-hint">{hint}</small>}
+    </div>
+  )
+}
+
 type TextareaProps = Omit<CommonProps, 'rows'> & {
   rows?: number
   register?: FieldRegister

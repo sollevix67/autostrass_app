@@ -250,4 +250,116 @@ export class VehiculeRepository {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Fournisseurs
+// ---------------------------------------------------------------------------
+
+export type FournisseurRow = {
+  id: number
+  nom: string
+  code: string | null
+  email: string | null
+  telephone: string | null
+  adresse: string | null
+  ville: string | null
+  codePostal: string | null
+  delaiLivraison: number
+  modeLivraison: schema.DeliveryMode
+  actif: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type FournisseurInput = {
+  nom: string
+  code?: string | null
+  email?: string | null
+  telephone?: string | null
+  adresse?: string | null
+  ville?: string | null
+  codePostal?: string | null
+  delaiLivraison?: number
+  modeLivraison?: schema.DeliveryMode
+  actif?: boolean
+}
+
+function mapFournisseur(raw: Record<string, unknown>): FournisseurRow {
+  return {
+    id: Number(raw.id),
+    nom: String(raw.nom ?? ''),
+    code: raw.code ? String(raw.code) : null,
+    email: raw.email ? String(raw.email) : null,
+    telephone: raw.telephone ? String(raw.telephone) : null,
+    adresse: raw.adresse ? String(raw.adresse) : null,
+    ville: raw.ville ? String(raw.ville) : null,
+    codePostal: raw.code_postal ? String(raw.code_postal) : null,
+    delaiLivraison: Number(raw.delai_livraison ?? 0),
+    modeLivraison: (raw.mode_livraison as schema.DeliveryMode) ?? 'livraison',
+    actif: Boolean(raw.actif),
+    createdAt: toIsoString(raw.created_at as Date | null),
+    updatedAt: toIsoString(raw.updated_at as Date | null),
+  }
+}
+
+export class FournisseurRepository {
+  private readonly base: SimpleRepository<typeof schema.fournisseurs, FournisseurRow, never, never>
+
+  constructor(private readonly db: MySql2Database<Tables>) {
+    this.base = new SimpleRepository(db, schema.fournisseurs, schema.fournisseurs.id, mapFournisseur)
+  }
+
+  /** Liste triee par nom, ordre de lecture naturel d'un annuaire. */
+  async listOrdered(): Promise<FournisseurRow[]> {
+    const rows = await this.db.select().from(schema.fournisseurs).orderBy(asc(schema.fournisseurs.nom))
+    return rows.map((row) => mapFournisseur(row as unknown as Record<string, unknown>))
+  }
+
+  findById(id: number): Promise<FournisseurRow | null> {
+    return this.base.findById(id)
+  }
+
+  async create(input: FournisseurInput): Promise<FournisseurRow> {
+    return this.base.create({
+      nom: input.nom,
+      code: input.code ?? null,
+      email: input.email ?? null,
+      telephone: input.telephone ?? null,
+      adresse: input.adresse ?? null,
+      ville: input.ville ?? null,
+      code_postal: input.codePostal ?? null,
+      delai_livraison: input.delaiLivraison ?? 0,
+      mode_livraison: input.modeLivraison ?? 'livraison',
+      actif: input.actif ?? true,
+    } as never)
+  }
+
+  async update(id: number, input: Partial<FournisseurInput>): Promise<FournisseurRow | null> {
+    try {
+      const [result] = await this.db
+        .update(schema.fournisseurs)
+        .set({
+          ...(input.nom !== undefined && { nom: input.nom }),
+          ...(input.code !== undefined && { code: input.code }),
+          ...(input.email !== undefined && { email: input.email }),
+          ...(input.telephone !== undefined && { telephone: input.telephone }),
+          ...(input.adresse !== undefined && { adresse: input.adresse }),
+          ...(input.ville !== undefined && { ville: input.ville }),
+          ...(input.codePostal !== undefined && { code_postal: input.codePostal }),
+          ...(input.delaiLivraison !== undefined && { delai_livraison: input.delaiLivraison }),
+          ...(input.modeLivraison !== undefined && { mode_livraison: input.modeLivraison }),
+          ...(input.actif !== undefined && { actif: input.actif }),
+        })
+        .where(eq(schema.fournisseurs.id, id))
+      if (result.affectedRows === 0) return null
+      return this.findById(id)
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
+  }
+
+  remove(id: number): Promise<boolean> {
+    return this.base.remove(id)
+  }
+}
+
 export { RepositoryError }

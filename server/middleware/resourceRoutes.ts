@@ -25,6 +25,8 @@ import {
   caisseOuvertureSchema,
   clientBodySchema,
   clientPatchSchema,
+  fournisseurBodySchema,
+  fournisseurPatchSchema,
   commandeBodySchema,
   commandeHeadPatchSchema,
   livraisonBodySchema,
@@ -41,13 +43,15 @@ import {
   vehiculePatchSchema,
   type ClientInput,
   type ClientPatch,
+  type FournisseurInput,
+  type FournisseurPatch,
   type LivraisonInput,
   type LivraisonPatch,
   type VenteInput,
   type VehiculeInput,
   type VehiculePatch,
 } from './schemas.js'
-import { ClientRepository, VehiculeRepository } from '../repositories/referentielRepositories.js'
+import { ClientRepository, FournisseurRepository, VehiculeRepository } from '../repositories/referentielRepositories.js'
 import { createVenteRepository } from '../repositories/documentRepositories.js'
 import { generateVentePdf } from '../services/pdfInvoice.js'
 import { UtilisateurRepository } from '../repositories/utilisateurRepository.js'
@@ -117,6 +121,20 @@ export function createApiRouter(): Router {
     createSchema: clientBodySchema,
     patchSchema: clientPatchSchema,
     // Le referentiel client est gere par le depot, pas par la caisse.
+    rolesWrite: DEPOT_WRITE,
+  })
+
+  // --- Fournisseurs ------------------------------------------------------
+  const fournisseursRouter = Router()
+  router.use('/fournisseurs', fournisseursRouter)
+
+  crudRoutes<FournisseurInput, FournisseurPatch>({
+    resource: 'Fournisseur',
+    router: fournisseursRouter,
+    factory: (client) =>
+      new FournisseurRepository(client) as unknown as CrudRepository<FournisseurInput, FournisseurPatch>,
+    createSchema: fournisseurBodySchema,
+    patchSchema: fournisseurPatchSchema,
     rolesWrite: DEPOT_WRITE,
   })
 

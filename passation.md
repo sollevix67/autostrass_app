@@ -1,6 +1,6 @@
 # Passation — Autostrass App
 
-> État du projet au 2026-10-25 — **étapes 1, 4, Stock UI et infra (HTTPS) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, le module Stock est complet (backend + frontend : hiérarchie emplacements, transferts, modals, toasts, escape-clavier), et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
+> État du projet au 2026-10-25 — **étapes 1, 4, Stock UI, infra (HTTPS) et module Tiers (fournisseurs) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, le module Stock est complet (backend + frontend : hiérarchie emplacements, transferts, modals, toasts, escape-clavier), et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
 >
 > ✅ Build, lint et suites API/sécurité relancés après les correctifs d’accents ; le dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
 >
@@ -53,7 +53,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 |---|---|
 | ✅ Terminé | Gestion des utilisateurs, carnet d'adresses clients |
 | 🟡 Persistance acquise | Stock, réceptions, ventes, commandes, livraisons, retours — les saisies sont **réellement enregistrées** |
-| ❌ Non commencé | Devis, commande fournisseurs, carnet fournisseurs, historique, autocomplétion, WhatsApp, documents PDF |
+| ❌ Non commencé | Devis, commande fournisseurs, historique, autocomplétion, WhatsApp, documents PDF |
 
 ---
 
@@ -310,7 +310,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 > manque. Les sections 1 à 4 décrivent l'historique ; celle-ci décrit
 > l'avenir et n'est donc plus organized par semaine.
 
-### 📊 Avancement global : **2 modules terminés / 13**
+### 📊 Avancement global : **3 modules terminés / 13**
 
 > **Étape 1 faite.** Les 13 vues « ⚠️ partiel » sont branchées sur l'API :
 > RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`, et les
@@ -328,7 +328,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 | Livraisons (backend) | 🟡 En cours | Génération automatique des bons de livraison dès réception des articles à implémenter ; numérotation unique et gestion des secteurs/tournées partiellement présentes |
 | Retours client (backend) | 🟡 En cours | Édition des avoirs à implémenter ; numérotation unique des avoirs, remise en stock partielle, génération de bons de livraison pour retours refusés avec motifs à implémenter |
 | Carnet d'adresses clients (backend) | 🟡 En cours | API clients présente ; autocomplétion d'adresse via api-adresse.data.gouv.fr et recherche par numéro SIREN/SIRET manquantes, suivi client (devis, commandes, livraisons, factures) à implémenter, suspension/limitation du compte et attribution secteur tournée manquants |
-| Carnet d'adresses des fournisseurs (backend) | ❌ Non créé | Tout le module : création entité fournisseurs, suivi des commandes par fournisseurs |
+| Carnet d'adresses des fournisseurs (backend) | ✅ Terminé | Entité fournisseurs créée (table `fournisseurs`), repository `FournisseurRepository`, routes `/api/fournisseurs` (CRUD, rôle `depot_write`), schéma Zod `fournisseurBodySchema` / `fournisseurPatchSchema`, contrat `ApiFournisseur`, vue `FournisseursView.tsx` (liste, création, édition, suppression, RBAC), composant `FormCheckbox`. Dépendances : `DELIVERY_MODES` depuis `schema_step2.ts`, `useResource` hook générique, `canWrite('depot')`. |
 | Véhicules (backend) | 🟡 En cours | API véhicules présente ; suivi kilométriques, entretiens et réparation, suivi carburant (consommation, prix par km) manquants |
 | Personnels (backend) | ❌ Non commencé | Gestion des plannings, horaires de travail, accès aux modules, profils utilisateur à créer |
 | Paramètres (backend) | ❌ Non commencé | Configuration de la base de données, gestion des migrations à créer |
@@ -423,6 +423,16 @@ Les `window.alert` / `window.confirm` ont disparu.
 - Build + lint OK (2 warnings préexistants `Date` dans App.tsx)
 - Bug corrigé : `visibleArticles` dédoublonne par référence (l'API peut renvoyer des lignes dupliquées via JOIN sur emplacements — chaque article apparaissait 5 fois dans le tableau)
 - Design system : tokens.css, composants FormInput/ConfirmDialog/useToast reuse
+
+**Module Tiers — Fournisseurs (frontend + backend)** ✅ **TERMINÉ** — `src/views/FournisseursView.tsx`
+- Backend : `FournisseurRow` / `FournisseurInput` / `FournisseurRepository` dans `server/repositories/referentielRepositories.ts` (listOrdered, findById, create, update, remove)
+- Routes : `/api/fournisseurs` via `crudRoutes` + `FournisseurRepository`, écriture réservée au rôle `depot_write`
+- Schémas serveur : `fournisseurBodySchema`, `fournisseurPatchSchema` (Zod, `DELIVERY_MODES` depuis `schema_step2.ts`), types `FournisseurInput` / `FournisseurPatch`
+- Contrat : `ApiFournisseur` dans `src/services/contracts.ts` (`modeLivraison` typé comme union littérale)
+- Schémas frontend : `fournisseurSchema` (Zod), types `FournisseurFormValues` / `FournisseurFormOutput` dans `src/schemas/index.ts`
+- Vue : liste (DataTable triable), création, édition, suppression (ConfirmDialog), RBAC via `canWrite('depot')`
+- Nouveau composant : `FormCheckbox` dans `src/components/forms/FormFields.tsx` (mode contrôlé RHF via `register`)
+- Build + lint OK
 
 **Étape 3 — Documents PDF**
 Devis, factures, bons de commande, bons de livraison, avoirs.

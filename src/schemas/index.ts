@@ -200,6 +200,44 @@ export const clientSchema = z.object({
   type: z.enum(['particulier', 'professionnel'], { message: 'Type invalide.' }),
 })
 
+/** Fournisseur : nom requis, code optionnel, autres champs facultatifs. */
+export const fournisseurSchema = z.object({
+  nom: required('Le nom').max(128, 'Nom trop long.'),
+  code: z
+    .string()
+    .trim()
+    .max(32, 'Code trop long.')
+    .transform((val) => (val === '' ? undefined : val))
+    .optional(),
+  email: z
+    .string()
+    .trim()
+    .min(1, "L'email est requis.")
+    .email("Format d'email invalide.")
+    .optional()
+    .or(z.literal('')),
+  telephone: z
+    .string()
+    .trim()
+    .regex(/^[+0-9\s().-]{6,20}$/, 'Numero de telephone invalide.')
+    .optional()
+    .or(z.literal('')),
+  adresse: required('L\'adresse').max(255, 'Adresse trop longue.'),
+  ville: required('La ville').max(64, 'Ville trop longue.'),
+  codePostal: z
+    .string()
+    .trim()
+    .regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'),
+  delaiLivraison: z
+    .number({ message: 'Le delai de livraison est requis.' })
+    .min(0, 'Le delai de livraison ne peut pas etre negatif.')
+    .int('Le delai de livraison doit etre un entier.')
+    .default(0),
+  modeLivraison: z
+    .enum(['retrait', 'livraison', 'express', 'franchise'], { message: 'Mode de livraison invalide.' }),
+  actif: z.boolean().default(true),
+})
+
 export const vehiculeSchema = z.object({
   immatriculation: z
     .string()
@@ -335,6 +373,9 @@ export type CartLineFormValues = z.input<typeof cartLineSchema>
 export type CartLineFormOutput = z.output<typeof cartLineSchema>
 export type ClientFormValues = z.input<typeof clientSchema>
 export type ClientFormOutput = z.output<typeof clientSchema>
+
+export type FournisseurFormValues = z.input<typeof fournisseurSchema>
+export type FournisseurFormOutput = z.output<typeof fournisseurSchema>
 export type VehiculeFormValues = z.input<typeof vehiculeSchema>
 export type VehiculeFormOutput = z.output<typeof vehiculeSchema>
 export type UtilisateurFormValues = z.input<typeof utilisateurSchema>

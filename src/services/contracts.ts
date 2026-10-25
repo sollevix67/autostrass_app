@@ -72,6 +72,23 @@ export type ApiVehicule = {
   updatedAt: string
 }
 
+/** Fournisseur renvoye par `GET /api/fournisseurs`. */
+export type ApiFournisseur = {
+  id: number
+  nom: string
+  code: string | null
+  email: string | null
+  telephone: string | null
+  adresse: string | null
+  ville: string | null
+  codePostal: string | null
+  delaiLivraison: number
+  modeLivraison: 'retrait' | 'livraison' | 'express' | 'franchise'
+  actif: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 /** Utilisateur renvoye par `GET /api/utilisateurs` (jamais de hash). */
 export type ApiUtilisateur = {
   id: number
