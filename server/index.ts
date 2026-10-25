@@ -1,13 +1,13 @@
 import 'dotenv/config'
 import express, { type Request, type Response } from 'express'
 import mysql from 'mysql2/promise'
-import type { RowDataPacket } from 'mysql2'
+import type { RowDataPacket, ResultSetHeader } from 'mysql2'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { createServer as createHttpsServer } from 'https'
 import { createServer as createHttpServer } from 'http'
 import { ArticleRepository } from './repositories/articleRepository.js'
-import { notFound, sendValidationError, validateArticleBody, validateDelta } from './middleware/validation.js'
+import { notFound, sendValidationError, validateArticleBody, validateDelta, validateEmplacementBody, validateEmplacementPatch, validateTransfertBody } from './middleware/validation.js'
 import { errorHandler } from './middleware/crud.js'
 import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
@@ -281,6 +281,300 @@ app.get('/api/emplacements', requireAuth, async (_request: Request, response: Re
     })))
   } catch {
     response.status(503).json({ error: 'DATABASE_UNAVAILABLE', message: 'Impossible de lire les emplacements.' })
+  }
+})
+
+// --- Emplacements : creation -------------------------------------------------
+app.post('/api/emplacements', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  const validation = validateEmplacementBody(request.body)
+  if (!validation.ok) {
+    sendValidationError(response, validation.errors)
+    return
+  }
+
+  const { niveau, parent_id, code, libelle, capacite } = validation.value
+
+  // Verifier l'existance du parent si un parent est specifie
+  if (parent_id !== null) {
+    try {
+      const [parentRows] = await pool.query<RowDataPacket[]>(
+        'SELECT id, niveau FROM emplacements WHERE id = ?',
+        [parent_id],
+      )
+      if (parentRows.length === 0) {
+        response.status(400).json({ error: 'INVALID_PARENT', message: 'Emplacement parent introuvable.' })
+        return
+      }
+      const parentNiveau = parentRows[0].niveau as string
+      if (niveau === 'etagere' && parentNiveau !== 'allee') {
+        response.status(400).json({ error: 'INVALID_HIERARCHY', message: 'Une etagere doit dependre d une allee.' })
+        return
+      }
+      if (niveau === 'place' && parentNiveau !== 'etagere') {
+        response.status(400).json({ error: 'INVALID_HIERARCHY', message: 'Une place doit dependre d une etagere.' })
+        return
+      }
+    } catch {
+      response.status(503).json({ error: 'DATABASE_UNAVAILABLE', message: 'Impossible de verifier l emplacement parent.' })
+      return
+    }
+  } else if (niveau !== 'allee') {
+    response.status(400).json({ error: 'INVALID_HIERARCHY', message: 'Une allee n a pas de parent.' })
+    return
+  }
+
+  try {
+    const [result] = await pool.query<ResultSetHeader>(
+      `INSERT INTO emplacements (niveau, parent_id, code, libelle, capacite, actif)
+       VALUES (?, ?, ?, ?, ?, true)`,
+      [niveau, parent_id ?? null, code, libelle ?? null, capacite],
+    )
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT id, niveau, parent_id, code, libelle, capacite, actif FROM emplacements WHERE id = ?',
+      [result.insertId],
+    )
+    response.status(201).json(rows[0])
+  } catch (error) {
+    if (isDuplicateKey(error)) {
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cet emplacement existe deja.' })
+      return
+    }
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de la creation de l'emplacement." })
+  }
+})
+
+// --- Emplacements : mise a jour ----------------------------------------------
+app.put('/api/emplacements/:id', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  const idRaw = request.params.id
+  const id = typeof idRaw === 'string' ? Number.parseInt(idRaw, 10) : null
+  if (!id || !Number.isInteger(id)) {
+    response.status(400).json({ error: 'INVALID_ID', message: 'Identifiant invalide.' })
+    return
+  }
+
+  const validation = validateEmplacementPatch(request.body)
+  if (!validation.ok) {
+    sendValidationError(response, validation.errors)
+    return
+  }
+
+  const { code, libelle, capacite, actif } = validation.value
+  const sets: string[] = []
+  const values: unknown[] = []
+
+  if (code !== undefined) { sets.push('code = ?'); values.push(code) }
+  if (libelle !== undefined) { sets.push('libelle = ?'); values.push(libelle) }
+  if (capacite !== undefined) { sets.push('capacite = ?'); values.push(capacite) }
+  if (actif !== undefined) { sets.push('actif = ?'); values.push(actif) }
+
+  if (sets.length === 0) {
+    response.status(400).json({ error: 'NO_CHANGES', message: 'Aucun champ a mettre a jour.' })
+    return
+  }
+
+  values.push(id)
+
+  try {
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE emplacements SET ${sets.join(', ')} WHERE id = ?`,
+      values,
+    )
+    if (result.affectedRows === 0) {
+      response.status(404).json({ error: 'NOT_FOUND', message: 'Emplacement introuvable.' })
+      return
+    }
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT id, niveau, parent_id, code, libelle, capacite, actif FROM emplacements WHERE id = ?',
+      [id],
+    )
+    response.json(rows[0])
+  } catch (error) {
+    if (isDuplicateKey(error)) {
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cet emplacement existe deja.' })
+      return
+    }
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de la mise a jour de l'emplacement." })
+  }
+})
+
+// --- Emplacements : suppression ----------------------------------------------
+app.delete('/api/emplacements/:id', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  const idRaw = request.params.id
+  const id = typeof idRaw === 'string' ? Number.parseInt(idRaw, 10) : null
+  if (!id || !Number.isInteger(id)) {
+    response.status(400).json({ error: 'INVALID_ID', message: 'Identifiant invalide.' })
+    return
+  }
+
+  // Verifier qu il n a pas d enfants
+  try {
+    const [children] = await pool.query<RowDataPacket[]>(
+      'SELECT COUNT(*) AS nb FROM emplacements WHERE parent_id = ?',
+      [id],
+    )
+    if (Number(children[0].nb) > 0) {
+      response.status(400).json({ error: 'HAS_CHILDREN', message: 'Impossible de supprimer un emplacement contenant des sous-emplacements.' })
+      return
+    }
+
+    // Verifier qu il n est pas utilise par du stock
+    const [stock] = await pool.query<RowDataPacket[]>(
+      'SELECT COUNT(*) AS nb FROM stock_par_emplacements WHERE emplacement_id = ?',
+      [id],
+    )
+    if (Number(stock[0].nb) > 0) {
+      response.status(400).json({ error: 'IN_USE', message: 'Emplacement utilise par du stock : suppression imposible.' })
+      return
+    }
+
+    const [result] = await pool.query<ResultSetHeader>(
+      'DELETE FROM emplacements WHERE id = ?',
+      [id],
+    )
+    if (result.affectedRows === 0) {
+      response.status(404).json({ error: 'NOT_FOUND', message: 'Emplacement introuvable.' })
+      return
+    }
+    response.status(204).end()
+  } catch {
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de la suppression de l'emplacement." })
+  }
+})
+
+// --- Transfert d article entre emplacements ----------------------------------
+app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  const reference = routeParam(request, 'reference')
+  if (reference === null) {
+    notFound(response, 'Article')
+    return
+  }
+
+  const validation = validateTransfertBody(request.body)
+  if (!validation.ok) {
+    sendValidationError(response, validation.errors)
+    return
+  }
+
+  const { emplacement_id, quantite, motif } = validation.value
+
+  const connection = await pool.getConnection()
+  try {
+    await connection.beginTransaction()
+
+    // Verifier l article existe
+    const [articleRows] = await connection.query<RowDataPacket[]>(
+      'SELECT id FROM articles WHERE reference = ?',
+      [reference],
+    )
+    if (articleRows.length === 0) {
+      await connection.rollback()
+      response.status(404).json({ error: 'NOT_FOUND', message: 'Article introuvable.' })
+      return
+    }
+    const articleId = Number(articleRows[0].id)
+
+    // Verifier l emplacement cible si specifie
+    if (emplacement_id !== null) {
+      const [locRows] = await connection.query<RowDataPacket[]>(
+        'SELECT id, niveau FROM emplacements WHERE id = ? AND actif = true',
+        [emplacement_id],
+      )
+      if (locRows.length === 0) {
+        await connection.rollback()
+        response.status(400).json({ error: 'INVALID_LOCATION', message: 'Emplacement cible invalide ou inactif.' })
+        return
+      }
+    }
+
+    // Verifier le stock disponible a l emplacement actuel (si deja alloue)
+    const [currentStock] = await connection.query<RowDataPacket[]>(
+      `SELECT quantite FROM stock_par_emplacements spe
+       JOIN articles a ON a.id = spe.reference_id
+       WHERE a.reference = ?`,
+      [reference],
+    )
+    const currentQty = currentStock.length > 0 ? Number(currentStock[0].quantite) : 0
+    if (currentQty < quantite) {
+      await connection.rollback()
+      response.status(400).json({ error: 'INSUFFICIENT_STOCK', message: 'Stock insuffisant a l emplacement actuel.' })
+      return
+    }
+
+    // Mettre a jour ou inserer l allocation
+    if (emplacement_id === null) {
+      // Retirer l allocation (retour en stock non affecte)
+      await connection.execute(
+        `DELETE spe FROM stock_par_emplacements spe
+         JOIN articles a ON a.id = spe.reference_id
+         WHERE a.reference = ?`,
+        [reference],
+      )
+    } else {
+      const [existing] = await connection.query<RowDataPacket[]>(
+        `SELECT spe.id, spe.quantite FROM stock_par_emplacements spe
+         JOIN articles a ON a.id = spe.reference_id
+         WHERE a.reference = ?`,
+        [reference],
+      )
+      if (existing.length > 0) {
+        await connection.execute(
+          `UPDATE stock_par_emplacements spe
+           JOIN articles a ON a.id = spe.reference_id
+           SET spe.quantite = spe.quantite - ?
+           WHERE a.reference = ? AND spe.emplacement_id = ?`,
+          [quantite, reference, emplacement_id],
+        )
+        // Si l emplacement cible est le meme, juste confirmer
+        // sinon inserer une nouvelle ligne pour le nouvel emplacement
+        // (on retire de l ancien, on ajoute au nouveau)
+      }
+      // Upsert : inserer ou ajouter au nouvel emplacement
+      await connection.execute(
+        `INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
+         VALUES (?, ?, ?)
+         ON DUPLICATE KEY UPDATE quantite = quantite + VALUES(quantite)`,
+        [articleId, emplacement_id, quantite],
+      )
+    }
+
+    // Journaliser le mouvement
+    await connection.execute(
+      `INSERT INTO stock_movements (reference_id, delta, type, motif, created_at)
+       VALUES (?, ?, 'TRANSFERT', ?, CURRENT_TIMESTAMP)`,
+      [articleId, quantite, motif ?? null],
+    )
+
+    await connection.commit()
+    response.json({ reference, emplacement_id, quantite, motif })
+  } catch (error) {
+    await connection.rollback()
+    if (isDuplicateKey(error)) {
+      response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Conflit lors du transfert.' })
+      return
+    }
+    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec du transfert." })
+  } finally {
+    connection.release()
   }
 })
 

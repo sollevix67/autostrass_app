@@ -53,6 +53,151 @@ function readNumber(source: Record<string, unknown>, key: string, errors: Record
   return Math.round(parsed * 100) / 100
 }
 
+/** Donnees attendues pour creer un emplacement. */
+export type EmplacementBody = {
+  niveau: 'allee' | 'etagere' | 'place'
+  parent_id: number | null
+  code: string
+  libelle?: string | null
+  capacite: number
+}
+
+/** Donnees attendues pour mettre a jour un emplacement. */
+export type EmplacementPatch = {
+  code?: string
+  libelle?: string | null
+  capacite?: number
+  actif?: boolean
+}
+
+/** Donnees pour un transfert d'article entre emplacements. */
+export type TransfertBody = {
+  reference: string
+  emplacement_id: number | null
+  quantite: number
+  motif?: string | null
+}
+
+const MAX_LENGTHS_EMPLACEMENT = {
+  code: 32,
+  libelle: 128,
+} as const
+
+type Niveau = 'allee' | 'etagere' | 'place'
+
+function readNiveau(value: unknown): Niveau | null {
+  if (typeof value !== 'string') return null
+  if (value !== 'allee' && value !== 'etagere' && value !== 'place') return null
+  return value
+}
+
+/**
+ * Valide le corps d'un emplacement a la creation.
+ */
+export function validateEmplacementBody(body: unknown): ValidationResult<EmplacementBody> {
+  const errors: Record<string, string> = {}
+
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+    return { ok: false, errors: { body: 'Un objet JSON est attendu.' } }
+  }
+
+  const source = body as Record<string, unknown>
+
+  const niveau = readNiveau(source['niveau'])
+  if (!niveau) errors['niveau'] = "Niveau invalide ('allee', 'etagere' ou 'place')."
+
+  const parentIdRaw = source['parent_id']
+  let parentId: number | null = null
+  if (niveau === 'etagere' || niveau === 'place') {
+    if (typeof parentIdRaw !== 'number' || !Number.isInteger(parentIdRaw) || parentIdRaw < 1) {
+      errors['parent_id'] = 'Parent requis.'
+    } else {
+      parentId = parentIdRaw
+    }
+  }
+
+  const code = readString(source, 'code', MAX_LENGTHS_EMPLACEMENT.code, true, errors)
+  const libelle = readString(source, 'libelle', MAX_LENGTHS_EMPLACEMENT.libelle, false, errors) || null
+
+  const capacite = readNumber(source, 'capacite', errors, 0)
+
+  if (niveau === null) {
+    errors['niveau'] = "Niveau invalide ('allee', 'etagere' ou 'place')."
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors }
+  }
+
+  return { ok: true, value: { niveau: niveau!, parent_id: parentId, code, libelle, capacite } }
+}
+
+/**
+ * Valide le corps d'une mise a jour partielle d'emplacement.
+ */
+export function validateEmplacementPatch(body: unknown): ValidationResult<EmplacementPatch> {
+  const errors: Record<string, string> = {}
+  const result: EmplacementPatch = {}
+
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+    return { ok: false, errors: { body: 'Un objet JSON est attendu.' } }
+  }
+
+  const source = body as Record<string, unknown>
+
+  if ('code' in source) {
+    const code = readString(source, 'code', MAX_LENGTHS_EMPLACEMENT.code, true, errors)
+    if (code) result.code = code
+  }
+  if ('libelle' in source) {
+    result.libelle = readString(source, 'libelle', MAX_LENGTHS_EMPLACEMENT.libelle, false, errors) || null
+  }
+  if ('capacite' in source) {
+    result.capacite = readNumber(source, 'capacite', errors, 0)
+  }
+  if ('actif' in source) {
+    result.actif = typeof source['actif'] === 'boolean' ? source['actif'] : undefined
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors }
+  }
+
+  return { ok: true, value: result }
+}
+
+/**
+ * Valide le corps d'un transfert d'article entre emplacements.
+ */
+export function validateTransfertBody(body: unknown): ValidationResult<TransfertBody> {
+  const errors: Record<string, string> = {}
+
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+    return { ok: false, errors: { body: 'Un objet JSON est attendu.' } }
+  }
+
+  const source = body as Record<string, unknown>
+
+  const reference = readString(source, 'reference', 64, true, errors)
+  const emplacementIdRaw = source['emplacement_id']
+  let emplacementId: number | null = null
+  if (emplacementIdRaw !== undefined && emplacementIdRaw !== null) {
+    if (typeof emplacementIdRaw !== 'number' || !Number.isInteger(emplacementIdRaw) || emplacementIdRaw < 1) {
+      errors['emplacement_id'] = 'Emplacement invalide.'
+    } else {
+      emplacementId = emplacementIdRaw
+    }
+  }
+  const quantite = readNumber(source, 'quantite', errors, 1)
+  const motif = readString(source, 'motif', 255, false, errors) || null
+
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors }
+  }
+
+  return { ok: true, value: { reference, emplacement_id: emplacementId, quantite, motif } }
+}
+
 /**
  * Valide le corps d'un article sans dependance externe.
  * Refuse les valeurs negatives, les chaines trop longues et les NaN.

@@ -390,7 +390,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 
 > Détail dans la section 12 ci-dessous.
 
-**Étape 2 — Modèle de données**
+**Étape 2 — Modèle de données** ✅ **TERMINEE**
 - `emplacements` hiérarchiques (allée → étagère → place) + migration de
   `articles.location` (texte libre) vers une clé étrangère
 - `tva` + `prix_ttc` sur le catalogue
@@ -398,13 +398,18 @@ Les `window.alert` / `window.confirm` ont disparu.
 - `sessions_caisse` + `mouvements_caisse`
 - `journal_actions` (audit global : qui, quoi, quand, sur quoi)
 
-> 📋 **Import schema_step2 → schema.ts** : le bloc de re-export des 15 symboles
-> (`emplacements`, `tva`, `fournisseurs`, `commandesFournisseurs`,
-> `commandeFournisseurLines`, `journal_actions`, `stockParEmplacements`, etc.)
-> est déjà présent à la fin de `server/db/schema.ts`. Les sous-tâches restantes
-> sont `drizzle-generate-step2` (génération de la migration SQL) et
-> `drizzle-migrate-step2` (application sur la base cible + vérification du
-> journal Drizzle).
+> Les migrations Drizzle 0000 à 0006 sont generatees et appliquees sur la base
+> cible. `npm run db:migrate` est operationnel.
+
+**Stock — fonctionnalites metier** ✅ **AVANCEES**
+- `GET /api/emplacements` : liste hiérarchique avec stock cumulé par emplacement
+- `POST /api/emplacements` : création avec validation de la hiérarchie (allee → etagere → place)
+- `PUT /api/emplacements/:id` : mise à jour (code, libellé, capacité, actif)
+- `DELETE /api/emplacements/:id` : suppression avec garde-fous (pas d'enfants, pas de stock alloué)
+- `POST /api/articles/:reference/transfert` : transfert d'article entre emplacements avec vérification du stock disponible et journalisation dans `stock_movements`
+- Articles CRUD existant (GET, POST, PUT, PATCH quantite, DELETE)
+
+> Reste à faire : inventaire physique (comptage + ajustement de stock).
 
 **Étape 3 — Documents PDF**
 Devis, factures, bons de commande, bons de livraison, avoirs.
