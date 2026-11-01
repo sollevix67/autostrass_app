@@ -268,7 +268,7 @@ export default function StockView() {
     try {
       await api.post(`/articles/${reference.trim()}/transfert`, {
         quantite: q,
-        destination_id: destinationId || null,
+        emplacement_id: destinationId || null,
       })
       toast.success(`Transfert de ${q} unite(s) de ${reference} effectue`)
       setOpenTransfertModal(false)

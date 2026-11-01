@@ -1,5 +1,30 @@
 # Passation — Autostrass App
 
+## Consignes du dépôt actualisées — 2026-11-01
+
+**Action** : relecture de `AGENTS.md`. La consigne exige désormais une mise à
+jour de cette passation, puis le commit et le push de tous les changements
+locaux du dépôt après chaque action.
+
+**Changements inclus dans cette publication** : ajout de `AGENTS.md`, de la
+configuration projet `.claude/CLAUDE.md` et des métadonnées
+`.omc/template-version.json`, ainsi que des modifications locales du transfert
+de stock dans `server/index.ts`, `server/middleware/validation.ts` et
+`src/views/StockView.tsx`. Ces modifications identifient l'emplacement source,
+retirent la quantité transférée, suppriment les allocations épuisées,
+conservent le stock lors d'une destination identique et acceptent l'alias
+historique `destination_id`.
+
+**Validation** : diff relu et contrôle `git diff --check` réussi. Le build et
+le lint du tour précédent couvraient déjà ces modifications applicatives et
+ont réussi avec les avertissements préexistants documentés ci-dessous.
+Les défauts de transfert signalés lors de la revue restent à corriger :
+identifiant destination envoyé comme chaîne, priorité incorrecte de l'alias
+sur une destination explicitement nulle, référence absente du corps envoyé
+et colonnes de journalisation absentes du schéma SQL fourni.
+
+---
+
 ## Vue Fournisseurs montée — 2026-11-01
 
 **Action** : import de `FournisseursView` dans `src/App.tsx`, ajout du lien

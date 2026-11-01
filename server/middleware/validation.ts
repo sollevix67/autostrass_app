@@ -179,7 +179,8 @@ export function validateTransfertBody(body: unknown): ValidationResult<Transfert
   const source = body as Record<string, unknown>
 
   const reference = readString(source, 'reference', 64, true, errors)
-  const emplacementIdRaw = source['emplacement_id']
+  // Accepte le nom courant `emplacement_id` et l'alias historique `destination_id`.
+  const emplacementIdRaw = source['emplacement_id'] ?? source['destination_id']
   let emplacementId: number | null = null
   if (emplacementIdRaw !== undefined && emplacementIdRaw !== null) {
     if (typeof emplacementIdRaw !== 'number' || !Number.isInteger(emplacementIdRaw) || emplacementIdRaw < 1) {

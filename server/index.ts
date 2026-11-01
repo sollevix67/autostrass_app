@@ -506,49 +506,52 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
       }
     }
 
-    // Verifier le stock disponible a l emplacement actuel (si deja alloue)
+    // Trouver l'emplacement actuel (source) de l'article, s'il est deja alloue
     const [currentStock] = await connection.query<RowDataPacket[]>(
-      `SELECT quantite FROM stock_par_emplacements spe
+      `SELECT spe.emplacement_id, spe.quantite
+       FROM stock_par_emplacements spe
        JOIN articles a ON a.id = spe.reference_id
        WHERE a.reference = ?`,
       [reference],
     )
-    const currentQty = currentStock.length > 0 ? Number(currentStock[0].quantite) : 0
+    const currentRow = currentStock.length > 0 ? currentStock[0] : null
+    const currentQty = currentRow ? Number(currentRow.quantite) : 0
+    const currentEmplacementId = currentRow ? Number(currentRow.emplacement_id) : null
+
     if (currentQty < quantite) {
       await connection.rollback()
       response.status(400).json({ error: 'INSUFFICIENT_STOCK', message: 'Stock insuffisant a l emplacement actuel.' })
       return
     }
 
-    // Mettre a jour ou inserer l allocation
-    if (emplacement_id === null) {
-      // Retirer l allocation (retour en stock non affecte)
+    // Si l'emplacement cible est le meme que la source, rien a deplacer
+    if (emplacement_id !== null && currentEmplacementId === emplacement_id) {
+      await connection.commit()
+      response.json({ reference, emplacement_id, quantite, motif })
+      return
+    }
+
+    // Retirer la quantite de l'emplacement source (s'il y en a un)
+    if (currentEmplacementId !== null) {
       await connection.execute(
-        `DELETE spe FROM stock_par_emplacements spe
+        `UPDATE stock_par_emplacements spe
          JOIN articles a ON a.id = spe.reference_id
-         WHERE a.reference = ?`,
-        [reference],
+         SET spe.quantite = spe.quantite - ?
+         WHERE a.reference = ? AND spe.emplacement_id = ?`,
+        [quantite, reference, currentEmplacementId],
       )
+      // Supprimer la ligne si le solde devient nul
+      await connection.execute(
+        `DELETE FROM stock_par_emplacements
+         WHERE reference_id = ? AND emplacement_id = ? AND quantite <= 0`,
+        [articleId, currentEmplacementId],
+      )
+    }
+
+    // Mettre a jour ou inserer l allocation cible
+    if (emplacement_id === null) {
+      // Retour en stock non affecte : aucune allocation a creer
     } else {
-      const [existing] = await connection.query<RowDataPacket[]>(
-        `SELECT spe.id, spe.quantite FROM stock_par_emplacements spe
-         JOIN articles a ON a.id = spe.reference_id
-         WHERE a.reference = ?`,
-        [reference],
-      )
-      if (existing.length > 0) {
-        await connection.execute(
-          `UPDATE stock_par_emplacements spe
-           JOIN articles a ON a.id = spe.reference_id
-           SET spe.quantite = spe.quantite - ?
-           WHERE a.reference = ? AND spe.emplacement_id = ?`,
-          [quantite, reference, emplacement_id],
-        )
-        // Si l emplacement cible est le meme, juste confirmer
-        // sinon inserer une nouvelle ligne pour le nouvel emplacement
-        // (on retire de l ancien, on ajoute au nouveau)
-      }
-      // Upsert : inserer ou ajouter au nouvel emplacement
       await connection.execute(
         `INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
          VALUES (?, ?, ?)
