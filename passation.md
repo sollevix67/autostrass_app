@@ -1,5 +1,40 @@
 # Passation — Autostrass App
 
+## Correction de l'API Fournisseurs — 2026-11-01
+
+**Problème** : `GET /api/fournisseurs` échoue avec
+`TypeError: factory(...).list is not a function`. La fabrique CRUD appelle
+`list()`, alors que `FournisseurRepository` expose uniquement `listOrdered()`.
+Le cast `as unknown as CrudRepository` masquait cette incompatibilité au build.
+
+**Correctif** : ajout de `list()` au repository, avec délégation à la liste
+triée existante, et suppression du cast dans la factory fournisseurs. Le
+contrat CRUD est maintenant vérifié par TypeScript. Les quatre autres méthodes
+CRUD sont présentes. Les tests API couvrent désormais aussi la lecture des
+fournisseurs sans authentification et la réponse authentifiée sous forme de
+tableau.
+
+**Correctif complémentaire** : le pied de page utilise `lastUpdated` du hook
+dashboard pour afficher la dernière synchronisation. Les deux appels à
+`new Date()` dans le rendu, signalés par `react(purity)`, sont supprimés.
+
+**Validation** : erreur de méthode reproduite avant correction.
+`npm run build` réussi et `npm run lint` réussi sans avertissement. Vite
+conserve l'avertissement de taille du bundle (519,22 kB). Contrôle HTTP ciblé
+sur une API redémarrée sur les ports de diagnostic 3301 / 3445 : liste
+authentifiée HTTP 200 (3 fournisseurs), détail par identifiant HTTP 200,
+lecture sans authentification HTTP 401. Ces contrôles n'effectuent aucune
+écriture en base. La suite API complète recharge les seeds et n'a pas été
+relancée sur la base active ; aucune migration requise.
+
+**Activation** : l'API existante sur 3001 conserve le code chargé avant le
+correctif et renvoie encore HTTP 500. Redémarrer `npm run dev` ou
+`npm run dev:api` pour charger la correction. Les processus de diagnostic ont
+été arrêtés. Le fichier `build_errors.txt` contient des erreurs historiques
+du 4 octobre, absentes du build actuel.
+
+---
+
 ## Consignes du dépôt actualisées — 2026-11-01
 
 **Action** : relecture de `AGENTS.md`. La consigne exige désormais une mise à

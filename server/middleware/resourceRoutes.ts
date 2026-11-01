@@ -131,8 +131,7 @@ export function createApiRouter(): Router {
   crudRoutes<FournisseurInput, FournisseurPatch>({
     resource: 'Fournisseur',
     router: fournisseursRouter,
-    factory: (client) =>
-      new FournisseurRepository(client) as unknown as CrudRepository<FournisseurInput, FournisseurPatch>,
+    factory: (client) => new FournisseurRepository(client),
     createSchema: fournisseurBodySchema,
     patchSchema: fournisseurPatchSchema,
     rolesWrite: DEPOT_WRITE,

@@ -202,9 +202,13 @@ function AppContent() {
                   : 'MariaDB deconnectee'}
             </span>
             <span className="status-divider" aria-hidden="true">|</span>
-            <time className="status-time" dateTime={new Date().toISOString()}>
-              Derniere mise a jour : {new Date().toLocaleTimeString('fr-FR')}
-            </time>
+            {lastUpdated ? (
+              <time className="status-time" dateTime={lastUpdated.toISOString()}>
+                Derniere mise a jour : {lastUpdated.toLocaleTimeString('fr-FR')}
+              </time>
+            ) : (
+              <span className="status-time">Derniere mise a jour : en cours</span>
+            )}
           </div>
           <div className="footer-version">
             <small>Autostrass Depot v0.1.0</small>

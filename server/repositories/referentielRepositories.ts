@@ -308,6 +308,10 @@ export class FournisseurRepository {
     this.base = new SimpleRepository(db, schema.fournisseurs, schema.fournisseurs.id, mapFournisseur)
   }
 
+  list(): Promise<FournisseurRow[]> {
+    return this.listOrdered()
+  }
+
   /** Liste triee par nom, ordre de lecture naturel d'un annuaire. */
   async listOrdered(): Promise<FournisseurRow[]> {
     const rows = await this.db.select().from(schema.fournisseurs).orderBy(asc(schema.fournisseurs.nom))

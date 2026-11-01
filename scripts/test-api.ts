@@ -110,7 +110,7 @@ const health = await call('/api/health')
 check('GET /api/health repond 200', health.status === 200, health.body)
 check('la base est declaree connectee', health.body?.database === 'connected', health.body?.database)
 
-for (const path of ['/api/clients', '/api/vehicules', '/api/utilisateurs', '/api/receptions', '/api/ventes', '/api/emplacements']) {
+for (const path of ['/api/clients', '/api/fournisseurs', '/api/vehicules', '/api/utilisateurs', '/api/receptions', '/api/ventes', '/api/emplacements']) {
   const { status, body } = await call(path)
   check(`GET ${path} sans jeton repond 401`, status === 401, { status, body })
 }
@@ -201,6 +201,7 @@ const adminId = me.body?.user?.id as number
 console.log('\nLecture des metiers (jeton admin)')
 const metiers: Array<[string, string]> = [
   ['/api/clients', 'Client'],
+  ['/api/fournisseurs', 'Fournisseur'],
   ['/api/vehicules', 'Vehicule'],
   ['/api/utilisateurs', 'Utilisateur'],
   ['/api/receptions', 'Reception'],
