@@ -1,5 +1,40 @@
 # Passation — Autostrass App
 
+## Lecture du dépôt — 2026-11-01
+
+**Action** : prise de connaissance de la documentation, de la structure du
+projet et des principaux parcours frontend/backend.
+
+**Architecture constatée** :
+
+- Frontend React 19 / TypeScript / Vite : routage dans `src/App.tsx`, client
+  HTTP dans `src/services/api.ts`, hooks métier et CRUD générique
+  `useResource`, formulaires React Hook Form / Zod et composants partagés.
+- Backend Express 5 : routes catalogue, stock et emplacements dans
+  `server/index.ts`, routes métier dans `server/middleware/resourceRoutes.ts`,
+  repositories MariaDB / Drizzle et schémas dans `server/db/`.
+- Authentification JWT et cookie de session, rôles admin / magasinier /
+  caissier, protection CSRF et limitation des requêtes.
+- Caisse : sessions, comptage, clôture, rattachement transactionnel des ventes,
+  empreintes SHA-256 et outils d'archivage. Un générateur de facture PDF existe.
+- Développement : Vite relaie `/api` vers le port HTTP 3001 ; le serveur ouvre
+  aussi le port HTTPS 3443 lorsque les certificats locaux sont présents.
+
+**Repères pour la suite** : le CRUD fournisseurs existe dans l'API et
+`FournisseursView.tsx` est présent, mais cette vue n'est ni importée ni montée
+dans `src/App.tsx`. L'inventaire physique, les devis et les commandes
+fournisseurs complètes restent des chantiers de la feuille de route.
+Les défauts de transfert relevés lors de la revue précédente restent à traiter.
+Le README cite une ancienne version de Drizzle et certaines sections de cette
+passation donnent des états contradictoires : vérifier le code avant de
+considérer un module terminé.
+
+**Validation de cette action** : lecture des fichiers et de l'état Git ; aucun
+test d'exécution ni migration relancé. Le journal de migrations versionné
+contient les entrées `0000` à `0006`, sans vérification de la base active.
+
+---
+
 > État du projet au 2026-10-25 — **étapes 1, 4, Stock UI, infra (HTTPS) et module Tiers (fournisseurs) terminées** : les 13 vues sont branchées sur l'API, la gestion de caisse est complète **avec conformité NF525**, la couche de persistance MariaDB / Drizzle est validée sur une base réelle, le module Stock est complet (backend + frontend : hiérarchie emplacements, transferts, modals, toasts, escape-clavier), et le serveur expose désormais du **HTTPS** (port 3443) en plus de l'HTTP (port 3001) avec certificat auto-signé pour le développement local.
 >
 > ✅ Build, lint et suites API/sécurité relancés après les correctifs d’accents ; le dernier cycle de validation a confirmé **121/121 tests API** + **58/58 tests sécurité**. Le shell UI continue de proposer le thème auto / clair / sombre.
