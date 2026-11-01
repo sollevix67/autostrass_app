@@ -1,5 +1,19 @@
 # Passation — Autostrass App
 
+## Vue Fournisseurs montée — 2026-11-01
+
+**Action** : import de `FournisseursView` dans `src/App.tsx`, ajout du lien
+« Fournisseurs » après « Clients » dans la navigation et montage de la route
+`/fournisseurs`. Le fil d'Ariane reprend automatiquement le libellé du menu.
+La vue utilise le CRUD `/api/fournisseurs` et ses contrôles de droits existants.
+Ce branchement résout le point signalé lors de la lecture précédente.
+
+**Validation** : `npm run build` et `npm run lint` réussis. Le lint conserve
+deux avertissements préexistants `react(purity)` sur `Date` dans `src/App.tsx` ;
+Vite signale un bundle principal de 519,15 kB, au-dessus du seuil de 500 kB.
+
+---
+
 ## Lecture du dépôt — 2026-11-01
 
 **Action** : prise de connaissance de la documentation, de la structure du
@@ -20,7 +34,7 @@ projet et des principaux parcours frontend/backend.
 - Développement : Vite relaie `/api` vers le port HTTP 3001 ; le serveur ouvre
   aussi le port HTTPS 3443 lorsque les certificats locaux sont présents.
 
-**Repères pour la suite** : le CRUD fournisseurs existe dans l'API et
+**Repères au moment de cette lecture** : le CRUD fournisseurs existe dans l'API et
 `FournisseursView.tsx` est présent, mais cette vue n'est ni importée ni montée
 dans `src/App.tsx`. L'inventaire physique, les devis et les commandes
 fournisseurs complètes restent des chantiers de la feuille de route.

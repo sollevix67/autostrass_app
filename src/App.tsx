@@ -33,6 +33,7 @@ import CommandesClientsView from './views/CommandesClientsView'
 import LivraisonsView from './views/LivraisonsView'
 import RetoursView from './views/RetoursView'
 import ClientsView from './views/ClientsView'
+import FournisseursView from './views/FournisseursView'
 import VehiculesView from './views/VehiculesView'
 import UtilisateursView from './views/UtilisateursView'
 
@@ -47,6 +48,7 @@ const navigation = [
   { label: 'Livraisons', path: '/livraisons', icon: 'truck' },
   { label: 'Retours', path: '/retours', icon: 'rotate-ccw' },
   { label: 'Clients', path: '/clients', icon: 'users' },
+  { label: 'Fournisseurs', path: '/fournisseurs', icon: 'truck' },
   { label: 'Vehicules', path: '/vehicules', icon: 'car' }
 ] as const satisfies ReadonlyArray<{ label: string; path: string; icon: IconName }>
 
@@ -182,6 +184,7 @@ function AppContent() {
             <Route path="/livraisons" element={<LivraisonsView />} />
             <Route path="/retours" element={<RetoursView />} />
             <Route path="/clients" element={<ClientsView />} />
+            <Route path="/fournisseurs" element={<FournisseursView />} />
             <Route path="/vehicules" element={<VehiculesView />} />
             <Route path="/utilisateurs" element={<UtilisateursView />} />
             <Route path="*" element={<h1>404 - Page non trouvée</h1>} />
