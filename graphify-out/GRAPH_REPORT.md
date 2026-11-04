@@ -1,17 +1,17 @@
 # Graph Report - autostrass_app  (2026-11-04)
 
 ## Corpus Check
-- 253 files · ~333,156 words
+- 254 files · ~333,767 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 62 file(s) not represented in the graph (top: .csv 53, .css 5, (none) 2)
 
 ## Summary
-- 2538 nodes · 4834 edges · 166 communities (122 shown, 44 thin omitted)
+- 2538 nodes · 4834 edges · 167 communities (123 shown, 44 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 194 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f422d1fa`
+- Built from commit: `e7c24660`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,7 +37,7 @@
 - Authentication Security Middleware
 - Brand Asset Generators
 - test_core.py
-- RetoursView.tsx
+- CommandesClientsView.tsx
 - Python Tooling Test Imports
 - HTML Token Validation
 - package.json
@@ -168,6 +168,7 @@
 - vite
 - _palette_is_dark
 - 8
+- FournisseursView.tsx
 - .generate
 - _select_palette_for_mode
 - split_values
@@ -206,7 +207,7 @@
 - **Social Image HTML Design and Screenshot QA Workflow** — github_prompts_design_references_social_photos_design_social_photos_design_guide, github_prompts_design_references_social_photos_design_html_screenshot_workflow, github_prompts_design_references_social_photos_design_safe_zones_visual_qa, github_prompts_design_references_social_photos_design_platform_image_sizes [EXTRACTED 1.00]
 - **UI Styling Component, Utility, and Canvas Layers** — github_prompts_ui_styling_skill_ui_styling_skill, github_prompts_ui_styling_skill_component_layer, github_prompts_ui_styling_skill_tailwind_styling_layer, github_prompts_ui_styling_skill_canvas_visual_layer [EXTRACTED 1.00]
 
-## Communities (166 total, 44 thin omitted)
+## Communities (167 total, 44 thin omitted)
 
 ### Community 0 - "Shadcn Component Installer"
 Cohesion: 0.05
@@ -221,16 +222,16 @@ Cohesion: 0.06
 Nodes (44): read_rows(), TestAccessibilityGuidance, TestChartsTypographyAndIcons, TestCurrentReactGuidance, TestSemanticColors, TestGeneratedCatalogContract, _catalog_date(), _check_app_interface_contract() (+36 more)
 
 ### Community 3 - "Frontend API Hooks"
-Cohesion: 0.09
-Nodes (37): SEED_ARTICLES, upsertByReference(), useCatalogue(), UseCatalogueResult, INITIAL_DASHBOARD, mapDashboardPayload(), useDashboard(), UseDashboardResult (+29 more)
+Cohesion: 0.12
+Nodes (25): SEED_ARTICLES, upsertByReference(), useCatalogue(), UseCatalogueResult, Options, ResourceState, shouldDegrade(), StockFilter (+17 more)
 
 ### Community 4 - "server/index.ts"
 Cohesion: 0.12
 Nodes (10): app, certPath, emptyDashboard, hasDatabaseConfig, keyPath, LowStockItem, port, sslDir (+2 more)
 
 ### Community 5 - "Application Shell Components"
-Cohesion: 0.14
-Nodes (35): AppContent(), ConfirmDialog(), DataTable(), ErrorSummary(), FormCheckbox(), FormInput(), FormSelect(), Icon() (+27 more)
+Cohesion: 0.13
+Nodes (41): AppContent(), ConfirmDialog(), DataTable(), FormCheckbox(), FormInput(), FormSelect(), Icon(), PageLayout() (+33 more)
 
 ### Community 6 - "Primitive Color Palette"
 Cohesion: 0.05
@@ -246,7 +247,7 @@ Nodes (52): ArticleRef, CASH_BREAK_DENOMINATIONS, CASH_MOVEMENT_TYPES, CASH_SESS
 
 ### Community 9 - "CaisseView.tsx"
 Cohesion: 0.06
-Nodes (40): @hookform/resolvers, react-hook-form, ConfirmDialogProps, ColumnDef, compare(), DataTableProps, SortAccessor, CheckboxProps (+32 more)
+Nodes (45): @hookform/resolvers, react-hook-form, ConfirmDialogProps, ColumnDef, compare(), DataTableProps, SortAccessor, buildItems() (+37 more)
 
 ### Community 10 - "resourceRoutes.ts"
 Cohesion: 0.04
@@ -265,8 +266,8 @@ Cohesion: 0.06
 Nodes (35): AIDA PAS and FAB Copywriting, Before-After-Bridge Formula, Slide Copywriting Formulas, Cost of Inaction Formula, Create Slide Prompt, HTML Slide Template, HTML Presentation Structure, Slide Layout Patterns (+27 more)
 
 ### Community 14 - "Business Form Schemas"
-Cohesion: 0.05
-Nodes (34): ArticleFormOutput, ArticleFormValues, CaisseClotureFormOutput, CaisseClotureFormValues, CaisseOuvertureFormOutput, CaisseOuvertureFormValues, CartLineFormOutput, CartLineFormValues (+26 more)
+Cohesion: 0.06
+Nodes (30): ArticleFormOutput, ArticleFormValues, CaisseClotureFormOutput, CaisseClotureFormValues, CaisseOuvertureFormOutput, CaisseOuvertureFormValues, CartLineFormOutput, CartLineFormValues (+22 more)
 
 ### Community 15 - "Design System Generation"
 Cohesion: 0.07
@@ -292,9 +293,9 @@ Nodes (13): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(
 Cohesion: 0.10
 Nodes (5): format_markdown(), generate_design_system(), format_output(), TestDiagnosticsContracts, TestPersistence
 
-### Community 21 - "RetoursView.tsx"
-Cohesion: 0.09
-Nodes (27): cache, CacheEntry, fetchOnce(), useClientOptions(), useCommandeOptions(), useReferential(), useVenteOptions(), formatEuros() (+19 more)
+### Community 21 - "CommandesClientsView.tsx"
+Cohesion: 0.14
+Nodes (16): cache, CacheEntry, fetchOnce(), useClientOptions(), useCommandeOptions(), useReferential(), useVenteOptions(), ORDER_STATUS_OPTIONS (+8 more)
 
 ### Community 22 - "Python Tooling Test Imports"
 Cohesion: 0.13
@@ -317,8 +318,8 @@ Cohesion: 0.15
 Nodes (11): CashBreak, CashCountRow, CashMovementRow, CashRegisterRepository, CashSessionRow, round2(), Tables, toDecimal() (+3 more)
 
 ### Community 27 - "CaisseView.tsx"
-Cohesion: 0.07
-Nodes (32): CARRIER_OPTIONS, CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, CLIENT_TYPE_OPTIONS, DELIVERY_STATUS_OPTIONS, denomination, euros, formatDenomination() (+24 more)
+Cohesion: 0.08
+Nodes (26): CARRIER_OPTIONS, CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, CLIENT_TYPE_OPTIONS, DELIVERY_STATUS_OPTIONS, denomination, euros, formatDenomination() (+18 more)
 
 ### Community 29 - "read_rows"
 Cohesion: 0.19
@@ -357,8 +358,8 @@ Cohesion: 0.14
 Nodes (13): dotenv@^18.0.1, mysql2@^3.24.4, dotenv, mysql2, normalized, raw, statements, hasDatabaseConfig (+5 more)
 
 ### Community 40 - "VentesComptoirView.tsx"
-Cohesion: 0.11
-Nodes (17): react-router-dom, IconName, IconSize, PATHS, SIZES, EditableCard(), EditableCardProps, ResourceBannersProps (+9 more)
+Cohesion: 0.19
+Nodes (10): react-router-dom, PageLayoutProps, venteContext(), venteSchema(), buildUrl(), byDateDesc(), CartLine, todayIso() (+2 more)
 
 ### Community 41 - "Brand And Design Guidelines"
 Cohesion: 0.17
@@ -421,8 +422,8 @@ Cohesion: 0.06
 Nodes (13): BM25, detect_domain(), get_cip_brief(), _load_csv(), search(), search_all(), _search_csv(), BM25 (+5 more)
 
 ### Community 60 - "App.tsx"
-Cohesion: 0.09
-Nodes (25): react, App(), getStoredTheme(), getSystemTheme(), initials(), navigation, roleLabel(), ThemeMode (+17 more)
+Cohesion: 0.06
+Nodes (36): react, App(), getStoredTheme(), getSystemTheme(), initials(), navigation, roleLabel(), ThemeMode (+28 more)
 
 ### Community 61 - "UI UX Search CLI"
 Cohesion: 0.21
@@ -446,7 +447,7 @@ Nodes (13): compilerOptions, lib, module, moduleResolution, noEmit, noUnusedLoca
 
 ### Community 66 - "CaisseView.tsx"
 Cohesion: 0.16
-Nodes (13): buildItems(), ErrorItem, ErrorRecord, ErrorSummaryProps, readMessage(), CashState, useCashMovements(), useCashSession() (+5 more)
+Nodes (12): EditableCard(), EditableCardProps, ResourceBannersProps, CashState, useCashMovements(), useCashSession(), caisseClotureSchema, caisseOuvertureSchema (+4 more)
 
 ### Community 67 - "Design Token Catalog"
 Cohesion: 0.15
@@ -684,6 +685,10 @@ Nodes (4): _palette_is_dark(), _relative_luminance(), TestEndToEndCoherence, Tes
 Cohesion: 0.67
 Nodes (3): $type, $value, 8
 
+### Community 161 - "FournisseursView.tsx"
+Cohesion: 0.13
+Nodes (19): AuthContext, AuthContextValue, AuthStatus, SessionUser, AuthProvider(), toAuthError(), FournisseurFormOutput, fournisseurSchema (+11 more)
+
 ### Community 163 - "_select_palette_for_mode"
 Cohesion: 0.22
 Nodes (4): _contrast_ratio(), _derive_dark_palette(), _select_palette_for_mode(), TestPaletteSelection
@@ -693,8 +698,8 @@ Cohesion: 0.47
 Nodes (3): split_values(), style_identities(), TestStyleIdentityContract
 
 ### Community 168 - "Revue CSS — 4 novembre 2026"
-Cohesion: 0.20
-Nodes (8): Captures, Création de client en fenêtre contextuelle — 4 novembre 2026, Vérification, Captures, Graphify et points de suivi, Organisation, Revue CSS — 4 novembre 2026, Validation
+Cohesion: 0.18
+Nodes (9): Captures, Correction Échap dans l'aperçu intégré, Création de client en fenêtre contextuelle — 4 novembre 2026, Vérification, Captures, Graphify et points de suivi, Organisation, Revue CSS — 4 novembre 2026 (+1 more)
 
 ## Knowledge Gaps
 - **101 isolated node(s):** `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3`, `RFC-5321`, `Banner Design Skill` (+96 more)
@@ -714,16 +719,16 @@ Nodes (8): Captures, Création de client en fenêtre contextuelle — 4 novembre
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TailwindConfigGenerator` connect `TailwindConfigGenerator` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `Tailwind Generator Defaults`, `Tailwind Config Serialization`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Theme Validation`, `Tailwind Configuration Tests`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `zod` connect `createApiRouter` to `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `package.json`, `App.tsx`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3` to the rest of the system?**
   _101 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `zod` connect `createApiRouter` to `Application Shell Components`, `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `package.json`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `TailwindConfigGenerator` connect `TailwindConfigGenerator` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `Tailwind Generator Defaults`, `Tailwind Config Serialization`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Theme Validation`, `Tailwind Configuration Tests`?**
+  _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `DesignSystemGenerator` (e.g. with `TestReasoningMatch` and `TestReasoningContract`) actually correct?**
   _`DesignSystemGenerator` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Should `UI UX Search Engine` be split into smaller, more focused modules?**

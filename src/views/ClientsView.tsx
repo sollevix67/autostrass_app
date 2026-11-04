@@ -10,7 +10,7 @@
  * masque, pour que la limite de droits soit lisible sans deviner.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
@@ -63,7 +63,7 @@ export default function ClientsView() {
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
-  const { setFocus, formState: { errors, isSubmitting } } = form
+  const { setFocus, reset, formState: { errors, isSubmitting } } = form
   const [createOpen, setCreateOpen] = useState(false)
   const [createFailed, setCreateFailed] = useState(false)
   const createDialogRef = useRef<HTMLDialogElement>(null)
@@ -95,12 +95,25 @@ export default function ClientsView() {
     setCreateOpen(true)
   }
 
-  function closeCreateDialog() {
+  const closeCreateDialog = useCallback(() => {
     if (busy) return
     setCreateOpen(false)
-    form.reset(EMPTY_CLIENT)
+    reset(EMPTY_CLIENT)
     setCreateFailed(false)
-  }
+  }, [busy, reset])
+
+  useEffect(() => {
+    if (!createOpen) return
+    // Certains aperçus relaient keydown sans déclencher le cancel natif du dialogue.
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
+      closeCreateDialog()
+    }
+    document.addEventListener('keydown', onEscape, true)
+    return () => document.removeEventListener('keydown', onEscape, true)
+  }, [createOpen, closeCreateDialog])
 
   async function handleSubmit(values: ClientFormValues) {
     if (!canEdit || saving) return

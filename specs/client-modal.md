@@ -29,6 +29,23 @@ de production via un script Playwright temporaire, sans nouvelle dépendance
 dans le dépôt. Le serveur de vérification a été arrêté après les contrôles.
 L'avertissement Vite préexistant sur le bundle JS persiste (525,47 kB).
 
+## Correction Échap dans l'aperçu intégré
+
+La fermeture clavier écoute désormais explicitement `keydown` sur le
+document pendant l'ouverture, en complément du `cancel` natif de `<dialog>`.
+Cela couvre les événements relayés par un aperçu sans annulation native.
+
+Contrôle ciblé avant/après : avant correction, le clavier Chromium ferme la
+fenêtre mais un `keydown` relayé seul la laisse ouverte. Après correction,
+les neuf cas (touche réelle ou relayée depuis champ, liste fermée, bouton,
+résumé d'erreurs ou document) ferment la fenêtre avec restitution du focus
+et du défilement. L'écoute est retirée après fermeture ; la sauvegarde en
+cours reste protégée et Échap fonctionne à nouveau après un refus API.
+Build et lint réussis. L'aperçu hôte n'a pas été piloté directement : les
+événements relayés ont été simulés dans Chromium avec des réponses API
+fictives, sans écriture MariaDB. Voir le
+[relevé ciblé](screenshots/client-modal/escape-verification.json).
+
 ## Captures
 
 | Vue | Clair | Sombre |

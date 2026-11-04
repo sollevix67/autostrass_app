@@ -1,5 +1,37 @@
 # Passation — Autostrass App
 
+## Échap dans la fenêtre Clients de l'aperçu intégré — 2026-11-04
+
+**Signalement** : Échap ne ferme pas la fenêtre dans l'aperçu intégré.
+La création dépendait uniquement du `cancel` natif de `<dialog>`. Le contrôle
+ciblé reproduit une fenêtre restant ouverte lorsque `keydown` est relayé
+sans cet événement natif ; la touche réelle fonctionnait dans Chromium.
+
+**Correctif** : écoute explicite d'Échap sur le document uniquement pendant
+l'ouverture. La capture couvre les champs et les événements relayés au
+document ; le gestionnaire utilise la même fermeture que la croix et
+Annuler. Il est retiré à la fermeture. Le blocage pendant une sauvegarde
+et le retour du focus sont conservés.
+
+**Validation** : build et lint réussis. Neuf cas de fermeture vérifiés
+(clavier réel ou relayé depuis champ, liste fermée, bouton, résumé d'erreurs
+ou document), avec restitution du focus et du défilement. L'écoute est
+retirée après fermeture. Sauvegarde en cours protégée, Échap à nouveau
+fonctionnel après refus API. Aucun changement visuel ni backend.
+L'aperçu hôte n'a pas été piloté directement ; le relais clavier est simulé
+dans Chromium, avec réponses API fictives et aucune écriture MariaDB.
+Relevé dans `specs/screenshots/client-modal/escape-verification.json`.
+Le serveur de vérification est arrêté. Avertissement Vite préexistant :
+bundle JS de 525,71 kB.
+
+**Graphify** : `graphify update .` terminé : **2 538 nœuds, 4 834 liens,
+167 communautés**. Aucun lien orphelin ; empreinte AST de `ClientsView.tsx`
+conforme au disque. JSON, HTML, rapport, métadonnées et sauvegarde actualisés.
+Limites connues conservées : SQL sans parseur, certains CSS non classifiés,
+analyse sémantique des documents/images non relancée.
+
+---
+
 ## Création des clients en fenêtre contextuelle — 2026-11-04
 
 **Demande** : déplacer l'ajout de client dans une fenêtre contextuelle.

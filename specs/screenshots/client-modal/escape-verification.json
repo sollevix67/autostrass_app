@@ -1,0 +1,88 @@
+{
+  "results": [
+    {
+      "mode": "keyboard",
+      "target": "#nom",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "keyboard",
+      "target": "#type",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "keyboard",
+      "target": ".client-modal-header button",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "keyboard",
+      "target": ".error-summary",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "relayed-keydown",
+      "target": "#nom",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "relayed-keydown",
+      "target": "#type",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "relayed-keydown",
+      "target": ".client-modal-header button",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "relayed-keydown",
+      "target": ".error-summary",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "relayed-keydown",
+      "target": "document",
+      "closed": true,
+      "focusRestored": true,
+      "overflowRestored": true,
+      "events": []
+    },
+    {
+      "mode": "closed-dialog",
+      "listenerRemoved": true
+    },
+    {
+      "mode": "saving",
+      "closedWhilePending": false,
+      "closedAfterApiError": true,
+      "postCount": 1
+    }
+  ],
+  "errors": [],
+  "scope": "Chromium : touche réelle et keydown relayé sans cancel natif ; API simulée, aucune écriture MariaDB"
+}
