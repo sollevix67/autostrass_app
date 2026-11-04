@@ -1,5 +1,88 @@
 # Passation — Autostrass App
 
+## Reprise et fiabilisation des transferts de stock — 2026-11-04
+
+**Reprise** : lecture de la passation, de la feuille de route, des consignes
+et des modifications locales déjà présentes. Le chantier repris est celui
+des transferts de stock, prioritaire avant l'inventaire physique. Les
+changements préexistants du contrat, du formulaire, du backend, des
+dépendances et de l'environnement de test ont été conservés et complétés.
+
+**Transferts** : la référence provient de l'URL encodée ; le formulaire envoie
+des identifiants numériques. Une destination `null` prime sur l'alias
+historique `destination_id`. L'origine est choisie explicitement parmi les
+allocations et le stock non affecté, avec leurs quantités disponibles.
+L'API refuse les quantités fractionnaires, les dépassements, les origines
+ambiguës et les allocations historiques incohérentes sans les réécrire.
+
+Le déplacement verrouille article, solde et allocations, conserve le stock
+total, supprime les allocations épuisées et fusionne la destination. Un
+déplacement vers la même origine ne modifie rien. La journalisation utilise
+les colonnes SQL existantes : mouvement `TRANSFERT` de delta nul et détails
+dans `journal_actions` avec l'auteur, les origines/destinations et le motif.
+Tout échec du journal annule le déplacement. La suppression d'un emplacement
+est sérialisée avec les transferts pour éviter les allocations orphelines.
+**Aucune nouvelle migration** n'est nécessaire.
+
+**Affichage** : les articles répartis ne sont plus dupliqués dans le
+catalogue et le stock ; leurs chemins sont regroupés. Les champs d'ancien
+emplacement unique sont vidés après un déplacement pour ne plus afficher
+une place obsolète après désaffectation. Le dashboard identifie les
+transferts. La modale permet le choix de l'origine, reste centrée et dispose
+de champs lisibles sur mobile ; les tableaux restent dans leurs panneaux.
+Les transferts sont désactivés sans droits magasinier/admin ou hors ligne.
+
+**Validation** : `npm run build`, `npm run lint`, `npm run test:errors` et
+vérification TypeScript des nouveaux scripts réussis. Sur MariaDB 11.4.5
+locale temporaire : **13/13 scénarios de transfert**, **123/123 contrôles API**
+et **58/58 contrôles sécurité** réussis via `npm run test:integration`.
+Les tests comprennent deux transferts simultanés depuis un emplacement ou
+du stock non affecté, un échec de journalisation simulé par trigger, ainsi
+qu'une suppression concurrente de destination. `test:stock` permet de
+relancer uniquement la partie transferts et sa validation.
+
+Le compte configuré dans `.env` n'autorisait pas la création d'une base
+jetable. Les tests ont donc utilisé une instance locale isolée via
+`TEST_DB_*`, sans écriture sur la base de l'application. Le helper crée une
+base aléatoire, applique schéma/migrations/seeds et assure son nettoyage.
+Le plafond global de l'API vaut 1 000 appels uniquement sous `NODE_ENV=test`
+pour permettre la suite complète ; il reste à 100 ailleurs et les limites
+d'authentification ne changent pas. Le README décrit ces commandes.
+
+Contrôle Chromium effectué à 1440 px et 390 px avec un transfert réel :
+choix d'origine obligatoire si ambigu, refus des fractions, corps numérique,
+HTTP 200, stock relu conforme et absence de débordement horizontal mobile.
+Captures dans `specs/screenshots/stock-transfer-{desktop,mobile}.png`.
+Le proxy Vite a présenté des `ECONNRESET` pendant le diagnostic ; la validation
+navigateur a acheminé les requêtes vers l'API jetable via Playwright, sans
+simuler les réponses. Le fonctionnement du proxy de développement reste à
+recontrôler. Le build conserve l'avertissement de bundle principal : 522,37 kB.
+
+**Graphify** : `graphify update .` (0.9.102) a actualisé le graphe du code :
+**2 525 nœuds, 4 819 liens, 162 communautés**. Les 4 819 liens ont des
+extrémités présentes. JSON, visualisation HTML, rapport, métadonnées et
+sauvegarde datée sont actualisés. L'analyse sémantique des documents/images
+n'a pas été relancée ; 11 SQL restent sans parseur et 61 fichiers non
+classifiés, dont `App.css`. Certains libellés de communautés restent dérivés
+de leur nœud central. Ces limites n'empêchent pas l'actualisation du code TS.
+Les empreintes AST correspondent au contenu des neuf fichiers TypeScript
+applicatifs et de test modifiés ou ajoutés.
+
+**Nettoyage** : les API et bases jetables des campagnes terminées ont été
+fermées/supprimées. L'instance MariaDB locale a été arrêtée et son fichier
+d'identifiants retiré. Le contrôle automatique a refusé la suppression
+récursive du dossier de données temporaire (`blocked by policy`) ; il reste
+dans `%TEMP%/autostrass-transfer-verification/data`, hors du dépôt, avec les
+outils de vérification temporaires. Aucun service de test n'écoute sur 43316.
+
+**Suite** : reprendre l'inventaire physique (comptage et ajustements
+traçables), puis devis et commandes fournisseurs. Les allocations
+historiques excédentaires de la base applicative restent à réconcilier avec
+les emplacements réellement souhaités. Cette intervention n'a pas démarré
+ni redémarré les services habituels de l'application.
+
+---
+
 ## Lecture de la passation et actualisation Graphify — 2026-11-04
 
 **Action** : lecture intégrale de cette passation et des consignes du dépôt.

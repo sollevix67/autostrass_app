@@ -72,7 +72,7 @@ export type EmplacementPatch = {
 
 /** Donnees pour un transfert d'article entre emplacements. */
 export type TransfertBody = {
-  reference: string
+  source_emplacement_id?: number | null
   emplacement_id: number | null
   quantite: number
   motif?: string | null
@@ -178,25 +178,36 @@ export function validateTransfertBody(body: unknown): ValidationResult<Transfert
 
   const source = body as Record<string, unknown>
 
-  const reference = readString(source, 'reference', 64, true, errors)
-  // Accepte le nom courant `emplacement_id` et l'alias historique `destination_id`.
-  const emplacementIdRaw = source['emplacement_id'] ?? source['destination_id']
-  let emplacementId: number | null = null
-  if (emplacementIdRaw !== undefined && emplacementIdRaw !== null) {
-    if (typeof emplacementIdRaw !== 'number' || !Number.isInteger(emplacementIdRaw) || emplacementIdRaw < 1) {
-      errors['emplacement_id'] = 'Emplacement invalide.'
-    } else {
-      emplacementId = emplacementIdRaw
+  // Une destination nulle explicite prime sur l'alias historique.
+  const emplacementIdRaw = Object.hasOwn(source, 'emplacement_id')
+    ? source['emplacement_id']
+    : source['destination_id']
+  const readEmplacementId = (value: unknown, key: string): number | null => {
+    if (value === null) return null
+    if (typeof value !== 'number' || !Number.isInteger(value) || value < 1 || value > 4_294_967_295) {
+      errors[key] = 'Un identifiant d emplacement entier positif ou null est attendu.'
+      return null
     }
+    return value
   }
-  const quantite = readNumber(source, 'quantite', errors, 1)
+  const emplacementId = readEmplacementId(emplacementIdRaw, 'emplacement_id')
+  const sourceEmplacementId = Object.hasOwn(source, 'source_emplacement_id')
+    ? readEmplacementId(source['source_emplacement_id'], 'source_emplacement_id')
+    : undefined
+  const quantite = source['quantite']
+  if (typeof quantite !== 'number' || !Number.isInteger(quantite) || quantite < 1 || quantite > 2_147_483_647) {
+    errors['quantite'] = 'Une quantite entiere comprise entre 1 et 2147483647 est attendue.'
+  }
+  if (source['motif'] !== undefined && source['motif'] !== null && typeof source['motif'] !== 'string') {
+    errors['motif'] = 'Texte attendu.'
+  }
   const motif = readString(source, 'motif', 255, false, errors) || null
 
-  if (Object.keys(errors).length > 0) {
+  if (Object.keys(errors).length > 0 || typeof quantite !== 'number') {
     return { ok: false, errors }
   }
 
-  return { ok: true, value: { reference, emplacement_id: emplacementId, quantite, motif } }
+  return { ok: true, value: { source_emplacement_id: sourceEmplacementId, emplacement_id: emplacementId, quantite, motif } }
 }
 
 /**

@@ -18,6 +18,8 @@
     "test:api": "tsx scripts/test-api.ts",
     "test:security": "tsx scripts/test-security.ts",
     "test:errors": "tsx scripts/test-error-mapping.ts",
+    "test:stock": "tsx scripts/test-stock-transfers.ts",
+    "test:integration": "tsx scripts/test-stock-transfers.ts --all",
     "test:caisse": "tsx scripts/verify-caisse.ts",
     "caisse:diagnostic": "tsx scripts/close-open-sessions.ts",
     "nf525:controle": "tsx scripts/archive-fiscal.ts --verifier archives/2026/ventes-2026.jsonl",
@@ -44,7 +46,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.6",
-    "@types/node": "^24.13.3",
+    "@types/node": "^24.19.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@types/react-router-dom": "^5.3.3",
@@ -59,5 +61,8 @@
   },
   "overrides": {
     "esbuild": "^0.28.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

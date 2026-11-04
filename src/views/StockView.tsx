@@ -4,10 +4,11 @@ import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
+import { canWrite, useAuth } from '../components/useAuth'
 import { Icon } from '../components/Icon'
 import { useStock, type StockFilter } from '../hooks/useStock'
 import { api, isAbortError, toErrorMessage } from '../services/api'
-import type { ApiStockEmplacement } from '../services/contracts'
+import type { ApiArticleEmplacements, ApiStockEmplacement, StockTransfertInput } from '../services/contracts'
 import type { Article } from '../types'
 import { FormInput } from '../components/forms/FormFields'
 
@@ -28,8 +29,11 @@ type EmplacementForm = {
 type TransfertForm = {
   reference: string
   quantite: string
+  sourceId: string
   destinationId: string | null
 }
+
+const STOCK_NON_AFFECTE = 'non-affecte'
 
 export default function StockView() {
   const {
@@ -53,6 +57,8 @@ export default function StockView() {
   } = useStock()
 
   const toast = useToast()
+  const { user } = useAuth()
+  const canTransfer = canWrite(user?.role, 'depot')
   const { dialogProps, confirm } = useConfirm()
   const [savingEdit, setSavingEdit] = useState(false)
 
@@ -79,10 +85,61 @@ export default function StockView() {
   const [transfertForm, setTransfertForm] = useState<TransfertForm>({
     reference: '',
     quantite: '1',
+    sourceId: '',
     destinationId: null,
   })
   const [transfertFormError, setTransfertFormError] = useState<string | null>(null)
   const [savingTransfert, setSavingTransfert] = useState(false)
+  const [transfertStock, setTransfertStock] = useState<ApiArticleEmplacements | null>(null)
+  const [transfertStockError, setTransfertStockError] = useState<{ reference: string; message: string } | null>(null)
+  const transfertReference = transfertForm.reference.trim()
+  const currentTransfertStock = transfertStock?.reference === transfertReference ? transfertStock : null
+  const currentTransfertStockError = transfertStockError?.reference === transfertReference ? transfertStockError.message : null
+  const transfertStockLoading = openTransfertModal && !!transfertReference && !currentTransfertStock && !currentTransfertStockError
+  const transfertSources = currentTransfertStock
+    ? [
+      ...currentTransfertStock.emplacements
+        .filter((item) => item.quantite > 0)
+        .map((item) => ({ id: String(item.emplacementId), label: item.chemin, quantite: item.quantite })),
+      ...(currentTransfertStock.quantiteNonAffectee > 0
+        ? [{ id: STOCK_NON_AFFECTE, label: 'Stock non affecté', quantite: currentTransfertStock.quantiteNonAffectee }]
+        : []),
+    ]
+    : []
+  const transfertSource = transfertSources.find((item) => item.id === transfertForm.sourceId)
+  const transfertStockInconsistent = !!currentTransfertStock && (
+    currentTransfertStock.quantiteTotale < 0 ||
+    currentTransfertStock.quantiteNonAffectee < 0 ||
+    currentTransfertStock.emplacements.some((item) => item.quantite < 0) ||
+    currentTransfertStock.emplacements.reduce((sum, item) => sum + item.quantite, 0) > currentTransfertStock.quantiteTotale
+  )
+
+  useEffect(() => {
+    if (!openTransfertModal || !transfertReference) return
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => {
+      api.get<ApiArticleEmplacements>(`/articles/${encodeURIComponent(transfertReference)}/emplacements`, { signal: controller.signal })
+        .then((stock) => {
+          if (controller.signal.aborted) return
+          // La réponse reste liée à la référence saisie, même si sa casse diffère en base.
+          setTransfertStock({ ...stock, reference: transfertReference })
+          setTransfertStockError(null)
+          const sourceIds = stock.emplacements.filter((item) => item.quantite > 0).map((item) => String(item.emplacementId))
+          if (stock.quantiteNonAffectee > 0) sourceIds.push(STOCK_NON_AFFECTE)
+          setTransfertForm((current) => current.reference.trim() === transfertReference
+            ? { ...current, sourceId: sourceIds.length === 1 ? sourceIds[0] : '' }
+            : current)
+        })
+        .catch((err) => {
+          if (controller.signal.aborted || isAbortError(err)) return
+          setTransfertStockError({ reference: transfertReference, message: toErrorMessage(err) })
+        })
+    }, 250)
+    return () => {
+      window.clearTimeout(timer)
+      controller.abort()
+    }
+  }, [openTransfertModal, transfertReference])
 
   /* ---------- Chargement des emplacements ---------- */
   const loadEmplacements = useCallback(() => {
@@ -240,36 +297,56 @@ export default function StockView() {
 
   /* ---------- Transfert ---------- */
   const openTransfert = (row: Article) => {
-    setTransfertForm({ reference: row.reference, quantite: '1', destinationId: null })
+    setTransfertForm({ reference: row.reference, quantite: '1', sourceId: '', destinationId: null })
     setTransfertFormError(null)
+    setTransfertStock(null)
+    setTransfertStockError(null)
     setOpenTransfertModal(true)
   }
 
   const resetTransfertForm = () => {
-    setTransfertForm({ reference: '', quantite: '1', destinationId: null })
+    setTransfertForm({ reference: '', quantite: '1', sourceId: '', destinationId: null })
     setTransfertFormError(null)
+    setTransfertStock(null)
+    setTransfertStockError(null)
   }
 
   const handleTransfertSave = async () => {
+    if (savingTransfert || !canTransfer || offline) return
     setTransfertFormError(null)
-    const { reference, quantite, destinationId } = transfertForm
+    const { reference, quantite, sourceId, destinationId } = transfertForm
 
     if (!reference.trim()) {
       setTransfertFormError('La reference est obligatoire')
       return
     }
     const q = Number(quantite)
-    if (isNaN(q) || q <= 0) {
-      setTransfertFormError('La quantite doit etre un nombre positif')
+    if (!Number.isInteger(q) || q <= 0 || q > 2_147_483_647) {
+      setTransfertFormError('La quantité doit être un entier positif inférieur ou égal à 2 147 483 647')
+      return
+    }
+    if (!currentTransfertStock || !transfertSource || transfertStockInconsistent) {
+      setTransfertFormError('Sélectionnez un stock de départ valide')
+      return
+    }
+    if (q > transfertSource.quantite) {
+      setTransfertFormError('La quantité dépasse le stock disponible au départ')
+      return
+    }
+    const emplacementId = destinationId === null ? null : Number(destinationId)
+    if (emplacementId !== null && (!Number.isInteger(emplacementId) || emplacementId < 1)) {
+      setTransfertFormError('Sélectionnez un emplacement de destination valide')
       return
     }
 
+    const payload: StockTransfertInput = {
+      source_emplacement_id: sourceId === STOCK_NON_AFFECTE ? null : Number(sourceId),
+      emplacement_id: emplacementId,
+      quantite: q,
+    }
     setSavingTransfert(true)
     try {
-      await api.post(`/articles/${reference.trim()}/transfert`, {
-        quantite: q,
-        emplacement_id: destinationId || null,
-      })
+      await api.post(`/articles/${encodeURIComponent(reference.trim())}/transfert`, payload)
       toast.success(`Transfert de ${q} unite(s) de ${reference} effectue`)
       setOpenTransfertModal(false)
       loadEmplacements()
@@ -357,7 +434,7 @@ export default function StockView() {
           <button className="action-btn edit" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
             <Icon name="edit" size="sm" />
           </button>
-          <button className="action-btn transfert" onClick={() => openTransfert(row)} title="Transférer" aria-label={`Transférer ${row.reference}`}>
+          <button className="action-btn transfert" onClick={() => openTransfert(row)} title="Transférer" aria-label={`Transférer ${row.reference}`} disabled={!canTransfer || offline || savingTransfert}>
             <Icon name="truck" size="sm" />
           </button>
           <button className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
@@ -461,6 +538,7 @@ export default function StockView() {
               setOpenTransfertModal(true)
             }}
             aria-label="Transfert d'article"
+            disabled={!canTransfer || offline || savingTransfert}
           >
             <Icon name="truck" size="sm" /> Transfert
           </button>
@@ -735,7 +813,7 @@ export default function StockView() {
       <div
         className="modal-overlay"
         onMouseDown={() => setOpenTransfertModal(false)}
-        style={{ display: openTransfertModal ? 'block' : 'none' }}
+        style={{ display: openTransfertModal ? 'flex' : 'none' }}
       >
         <div
           className="modal transfert-modal"
@@ -747,11 +825,11 @@ export default function StockView() {
         >
           <h2 id="transfert-modal-title">Transfert d'article</h2>
           <p id="transfert-modal-desc" className="modal-desc">
-            Deplacez une quantite d'un article vers un nouvel emplacement.
+            Déplacez une quantité d'un article vers un nouvel emplacement.
           </p>
 
           {transfertFormError && (
-            <div className="stock-alert error">
+            <div className="stock-alert error" role="alert">
               <Icon name="alert" size="sm" />
               <span>{transfertFormError}</span>
             </div>
@@ -759,33 +837,79 @@ export default function StockView() {
 
           <form onSubmit={(e) => { e.preventDefault(); handleTransfertSave() }} className="modal-form">
             <FormInput
-              label="Reference de l'article"
-              name="reference"
+              label="Référence de l'article"
+              name="transfert-reference"
               value={transfertForm.reference}
-              onChange={(_, v) => setTransfertForm({ ...transfertForm, reference: v })}
+              onChange={(_, v) => {
+                const referenceChanged = v.trim() !== transfertReference
+                setTransfertForm({ ...transfertForm, reference: v, sourceId: referenceChanged ? '' : transfertForm.sourceId })
+                if (referenceChanged) {
+                  setTransfertStock(null)
+                  setTransfertStockError(null)
+                }
+                setTransfertFormError(null)
+              }}
               placeholder="Ex: REF-1234"
               required
             />
+            <div className="form-group">
+              <label className="form-label" htmlFor="transfert-source">Stock de départ</label>
+              <select
+                id="transfert-source"
+                name="source_emplacement_id"
+                value={transfertForm.sourceId}
+                onChange={(event) => setTransfertForm({ ...transfertForm, sourceId: event.target.value })}
+                className="form-select"
+                disabled={!currentTransfertStock || transfertStockInconsistent || savingTransfert}
+                aria-describedby="transfert-stock-status"
+                required
+              >
+                <option value="">Sélectionnez le stock de départ</option>
+                {transfertSources.map((item) => (
+                  <option key={item.id} value={item.id}>{item.label} — {item.quantite} unité(s)</option>
+                ))}
+              </select>
+              <p id="transfert-stock-status" className="form-hint" role="status">
+                {transfertStockLoading
+                  ? 'Chargement du stock disponible...'
+                  : currentTransfertStockError
+                    ? `Impossible de charger le stock : ${currentTransfertStockError}`
+                    : transfertStockInconsistent
+                      ? 'La répartition du stock est incohérente. Faites vérifier les quantités avant de transférer.'
+                      : !transfertReference
+                        ? "Saisissez la référence de l'article."
+                        : currentTransfertStock && transfertSources.length === 0
+                          ? 'Aucun stock disponible pour cet article.'
+                          : transfertSource
+                            ? `${transfertSource.quantite} unité(s) disponible(s) au départ.`
+                            : 'Choisissez l’emplacement ou le stock non affecté à déplacer.'}
+              </p>
+            </div>
             <FormInput
-              label="Quantite a transferer"
-              name="quantite"
+              label="Quantité à transférer"
+              name="transfert-quantite"
               type="number"
               min="1"
+              step="1"
+              max={transfertSource?.quantite ?? 2_147_483_647}
               value={transfertForm.quantite}
               onChange={(_, v) => setTransfertForm({ ...transfertForm, quantite: v })}
               required
             />
             <div className="form-group">
-              <label className="form-label">Emplacement destination</label>
+              <label className="form-label" htmlFor="transfert-destination">Emplacement destination</label>
               <select
+                id="transfert-destination"
+                name="emplacement_id"
                 value={transfertForm.destinationId ?? ''}
                 onChange={(e) =>
                   setTransfertForm({ ...transfertForm, destinationId: e.target.value || null })
                 }
                 className="form-select"
+                disabled={savingTransfert}
               >
-                <option value="">Aucun (stock non alloue)</option>
-                {emplacements.map((e) => (
+                <option value="">Aucun (stock non affecté)</option>
+                {emplacements.filter((item) => item.actif).map((e) => (
                   <option key={e.id} value={e.id}>{e.chemin}</option>
                 ))}
               </select>
@@ -797,7 +921,7 @@ export default function StockView() {
               <button
                 type="submit"
                 className="primary-button"
-                disabled={savingTransfert}
+                disabled={savingTransfert || !canTransfer || offline || !transfertSource || transfertStockLoading || transfertStockInconsistent}
               >
                 {savingTransfert ? 'Transfert en cours...' : 'Effectuer le transfert'}
               </button>

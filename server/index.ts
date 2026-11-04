@@ -13,7 +13,7 @@ import { createAuthRouter } from './middleware/authRoutes.js'
 import { createApiRouter } from './middleware/resourceRoutes.js'
 import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
-import { requireAuth, requireRole } from './middleware/auth.js'
+import { requireAuth, requireRole, type AuthenticatedRequest } from './middleware/auth.js'
 import { requireCsrf } from './middleware/csrf.js'
 import { rateLimit, authRateLimit } from './middleware/rateLimit.js'
 
@@ -55,7 +55,9 @@ app.use(securityHeaders)
 
 // Rate limiting global sur l'API : 100 requêtes / 15 min par IP.
 // Appliqué AVANT les routes d'authentification (qui ont leur propre limite plus stricte).
-app.use('/api', rateLimit())
+// Les suites d'intégration dépassent 100 appels sur leur API jetable.
+// Seul NODE_ENV=test relève ce plafond global ; les limites d'auth restent actives.
+app.use('/api', rateLimit(false, process.env.NODE_ENV === 'test' ? 1000 : undefined))
 
 /**
  * Retourne le repository si la base est configuree, sinon repond 503.
@@ -125,9 +127,10 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
 
     const [movements] = await pool!.query<Array<RowDataPacket & { type: string; title: string; detail: string; created_at: Date }>>(
       `SELECT
-        'INVENTAIRE' AS type,
+        CASE WHEN m.reason = 'TRANSFERT' THEN 'TRANSFERT' ELSE 'INVENTAIRE' END AS type,
         a.designation AS title,
-        CONCAT('Quantite ajustee de ', m.delta) AS detail,
+        CASE WHEN m.reason = 'TRANSFERT' THEN 'Transfert entre emplacements'
+             ELSE CONCAT('Quantite ajustee de ', m.delta) END AS detail,
         m.created_at
       FROM stock_movements m
       JOIN articles a ON a.id = m.reference_id
@@ -421,43 +424,105 @@ app.delete('/api/emplacements/:id', requireAuth, requireCsrf, requireRole('magas
     return
   }
 
-  // Verifier qu il n a pas d enfants
+  // Le verrou commun au transfert évite de supprimer une destination entre
+  // la vérification de son stock et l'arrivée d'une nouvelle allocation.
+  const connection = await pool.getConnection()
   try {
-    const [children] = await pool.query<RowDataPacket[]>(
+    await connection.beginTransaction()
+    const [locations] = await connection.query<RowDataPacket[]>('SELECT id FROM emplacements WHERE id = ? FOR UPDATE', [id])
+    if (locations.length === 0) {
+      await connection.rollback()
+      response.status(404).json({ error: 'NOT_FOUND', message: 'Emplacement introuvable.' })
+      return
+    }
+    const [children] = await connection.query<RowDataPacket[]>(
       'SELECT COUNT(*) AS nb FROM emplacements WHERE parent_id = ?',
       [id],
     )
     if (Number(children[0].nb) > 0) {
+      await connection.rollback()
       response.status(400).json({ error: 'HAS_CHILDREN', message: 'Impossible de supprimer un emplacement contenant des sous-emplacements.' })
       return
     }
 
     // Verifier qu il n est pas utilise par du stock
-    const [stock] = await pool.query<RowDataPacket[]>(
+    const [stock] = await connection.query<RowDataPacket[]>(
       'SELECT COUNT(*) AS nb FROM stock_par_emplacements WHERE emplacement_id = ?',
       [id],
     )
     if (Number(stock[0].nb) > 0) {
+      await connection.rollback()
       response.status(400).json({ error: 'IN_USE', message: 'Emplacement utilise par du stock : suppression imposible.' })
       return
     }
 
-    const [result] = await pool.query<ResultSetHeader>(
+    await connection.query<ResultSetHeader>(
       'DELETE FROM emplacements WHERE id = ?',
       [id],
     )
-    if (result.affectedRows === 0) {
-      response.status(404).json({ error: 'NOT_FOUND', message: 'Emplacement introuvable.' })
-      return
-    }
+    await connection.commit()
     response.status(204).end()
-  } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de la suppression de l'emplacement." })
+  } catch (error) {
+    await connection.rollback()
+    throw error
+  } finally {
+    connection.release()
   }
 })
 
+// --- Repartition d un article : choix de la source du transfert ---------------
+app.get('/api/articles/:reference/emplacements', requireAuth, async (request: Request, response: Response) => {
+  if (!pool) {
+    response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
+    return
+  }
+
+  const reference = routeParam(request, 'reference')
+  if (reference === null) {
+    notFound(response, 'Article')
+    return
+  }
+
+  // Une seule requete assure une vue coherente du solde et des allocations.
+  const [rows] = await pool.query<RowDataPacket[]>(
+    `SELECT a.reference, s.quantity, spe.emplacement_id, spe.quantite,
+            CASE e.niveau
+              WHEN 'allee' THEN e.code
+              WHEN 'etagere' THEN CONCAT_WS(' / ', parent.code, e.code)
+              WHEN 'place' THEN CONCAT_WS(' / ', grand_parent.code, parent.code, e.code)
+              ELSE CONCAT('Emplacement #', spe.emplacement_id)
+            END AS chemin
+     FROM articles a
+     JOIN stock_balances s ON s.reference_id = a.id
+     LEFT JOIN stock_par_emplacements spe ON spe.reference_id = a.id
+     LEFT JOIN emplacements e ON e.id = spe.emplacement_id
+     LEFT JOIN emplacements parent ON parent.id = e.parent_id
+     LEFT JOIN emplacements grand_parent ON grand_parent.id = parent.parent_id
+     WHERE a.reference = ?
+     ORDER BY chemin, spe.emplacement_id`,
+    [reference],
+  )
+  if (rows.length === 0) {
+    notFound(response, 'Article')
+    return
+  }
+
+  const quantiteTotale = Number(rows[0].quantity)
+  const emplacements = rows.filter((row) => row.emplacement_id !== null).map((row) => ({
+    emplacementId: Number(row.emplacement_id),
+    chemin: String(row.chemin),
+    quantite: Number(row.quantite),
+  }))
+  response.json({
+    reference: String(rows[0].reference),
+    quantiteTotale,
+    quantiteNonAffectee: quantiteTotale - emplacements.reduce((total, row) => total + row.quantite, 0),
+    emplacements,
+  })
+})
+
 // --- Transfert d article entre emplacements ----------------------------------
-app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {
+app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, requireRole('magasinier'), async (request: AuthenticatedRequest, response: Response) => {
   if (!pool) {
     response.status(503).json({ error: 'DATABASE_UNCONFIGURED', message: 'MariaDB n est pas configuree.' })
     return
@@ -475,15 +540,15 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
     return
   }
 
-  const { emplacement_id, quantite, motif } = validation.value
+  const { emplacement_id, quantite, motif, source_emplacement_id } = validation.value
 
   const connection = await pool.getConnection()
   try {
     await connection.beginTransaction()
 
-    // Verifier l article existe
+    // Le verrou article serialise les transferts avec les ajustements de stock.
     const [articleRows] = await connection.query<RowDataPacket[]>(
-      'SELECT id FROM articles WHERE reference = ?',
+      'SELECT id FROM articles WHERE reference = ? FOR UPDATE',
       [reference],
     )
     if (articleRows.length === 0) {
@@ -493,10 +558,54 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
     }
     const articleId = Number(articleRows[0].id)
 
-    // Verifier l emplacement cible si specifie
+    const [balanceRows] = await connection.query<RowDataPacket[]>(
+      'SELECT quantity FROM stock_balances WHERE reference_id = ? FOR UPDATE',
+      [articleId],
+    )
+    const [stockRows] = await connection.query<RowDataPacket[]>(
+      `SELECT emplacement_id, quantite FROM stock_par_emplacements
+       WHERE reference_id = ? ORDER BY emplacement_id FOR UPDATE`,
+      [articleId],
+    )
+    const totalQuantity = Number(balanceRows[0]?.quantity)
+    const allocatedQuantity = stockRows.reduce((total, row) => total + Number(row.quantite), 0)
+    const unallocatedQuantity = totalQuantity - allocatedQuantity
+    if (!Number.isInteger(totalQuantity) || totalQuantity < 0 || unallocatedQuantity < 0
+      || stockRows.some((row) => !Number.isInteger(Number(row.quantite)) || Number(row.quantite) < 0)) {
+      await connection.rollback()
+      response.status(409).json({ error: 'INCONSISTENT_STOCK', message: 'La repartition du stock est incoherente. Verifiez les allocations avant de transferer.' })
+      return
+    }
+
+    let sourceEmplacementId = source_emplacement_id
+    if (sourceEmplacementId === undefined) {
+      const occupiedRows = stockRows.filter((row) => Number(row.quantite) > 0)
+      if (occupiedRows.length + (unallocatedQuantity > 0 ? 1 : 0) > 1) {
+        await connection.rollback()
+        response.status(409).json({ error: 'SOURCE_REQUIRED', message: 'Choisissez l emplacement source du transfert.' })
+        return
+      }
+      sourceEmplacementId = occupiedRows.length === 1 ? Number(occupiedRows[0].emplacement_id) : null
+    }
+
+    const sourceRow = stockRows.find((row) => Number(row.emplacement_id) === sourceEmplacementId)
+    if (sourceEmplacementId !== null && !sourceRow) {
+      await connection.rollback()
+      response.status(400).json({ error: 'INVALID_SOURCE', message: 'Cet article n est pas affecte a l emplacement source.' })
+      return
+    }
+    const sourceQuantity = sourceEmplacementId === null ? unallocatedQuantity : Number(sourceRow?.quantite)
+    if (sourceQuantity < quantite) {
+      await connection.rollback()
+      response.status(400).json({ error: 'INSUFFICIENT_STOCK', message: 'Stock insuffisant a l emplacement source.' })
+      return
+    }
+
+    // Le verrou empeche la suppression ou la desactivation de la destination
+    // pendant le transfert (le schema historique ne porte pas cette FK).
     if (emplacement_id !== null) {
       const [locRows] = await connection.query<RowDataPacket[]>(
-        'SELECT id, niveau FROM emplacements WHERE id = ? AND actif = true',
+        'SELECT id FROM emplacements WHERE id = ? AND actif = true FOR UPDATE',
         [emplacement_id],
       )
       if (locRows.length === 0) {
@@ -506,52 +615,28 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
       }
     }
 
-    // Trouver l'emplacement actuel (source) de l'article, s'il est deja alloue
-    const [currentStock] = await connection.query<RowDataPacket[]>(
-      `SELECT spe.emplacement_id, spe.quantite
-       FROM stock_par_emplacements spe
-       JOIN articles a ON a.id = spe.reference_id
-       WHERE a.reference = ?`,
-      [reference],
-    )
-    const currentRow = currentStock.length > 0 ? currentStock[0] : null
-    const currentQty = currentRow ? Number(currentRow.quantite) : 0
-    const currentEmplacementId = currentRow ? Number(currentRow.emplacement_id) : null
-
-    if (currentQty < quantite) {
-      await connection.rollback()
-      response.status(400).json({ error: 'INSUFFICIENT_STOCK', message: 'Stock insuffisant a l emplacement actuel.' })
-      return
-    }
-
-    // Si l'emplacement cible est le meme que la source, rien a deplacer
-    if (emplacement_id !== null && currentEmplacementId === emplacement_id) {
+    // Un transfert sur la meme source ne modifie ni allocations ni journaux.
+    if (sourceEmplacementId === emplacement_id) {
       await connection.commit()
-      response.json({ reference, emplacement_id, quantite, motif })
+      response.json({ reference, source_emplacement_id: sourceEmplacementId, emplacement_id, quantite, motif })
       return
     }
 
-    // Retirer la quantite de l'emplacement source (s'il y en a un)
-    if (currentEmplacementId !== null) {
+    if (sourceEmplacementId !== null) {
       await connection.execute(
-        `UPDATE stock_par_emplacements spe
-         JOIN articles a ON a.id = spe.reference_id
-         SET spe.quantite = spe.quantite - ?
-         WHERE a.reference = ? AND spe.emplacement_id = ?`,
-        [quantite, reference, currentEmplacementId],
+        `UPDATE stock_par_emplacements SET quantite = quantite - ?
+         WHERE reference_id = ? AND emplacement_id = ?`,
+        [quantite, articleId, sourceEmplacementId],
       )
-      // Supprimer la ligne si le solde devient nul
       await connection.execute(
         `DELETE FROM stock_par_emplacements
-         WHERE reference_id = ? AND emplacement_id = ? AND quantite <= 0`,
-        [articleId, currentEmplacementId],
+         WHERE reference_id = ? AND emplacement_id = ? AND quantite = 0`,
+        [articleId, sourceEmplacementId],
       )
     }
 
-    // Mettre a jour ou inserer l allocation cible
-    if (emplacement_id === null) {
-      // Retour en stock non affecte : aucune allocation a creer
-    } else {
+    // Le stock non affecte reste la difference entre solde global et allocations.
+    if (emplacement_id !== null) {
       await connection.execute(
         `INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
          VALUES (?, ?, ?)
@@ -560,22 +645,37 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
       )
     }
 
-    // Journaliser le mouvement
+    // Les allocations remplacent désormais l'ancien emplacement unique.
+    // Éviter son réaffichage lorsque le dernier emplacement est vidé.
+    await connection.execute('UPDATE articles SET location = ?, emplacement_id = NULL WHERE id = ?', ['', articleId])
+
+    // Aucun changement de solde global : delta = 0. Le detail du deplacement
+    // est conserve dans le journal d audit existant, dans la meme transaction.
     await connection.execute(
-      `INSERT INTO stock_movements (reference_id, delta, type, motif, created_at)
-       VALUES (?, ?, 'TRANSFERT', ?, CURRENT_TIMESTAMP)`,
-      [articleId, quantite, motif ?? null],
+      `INSERT INTO stock_movements (reference_id, delta, reason) VALUES (?, 0, 'TRANSFERT')`,
+      [articleId],
+    )
+    await connection.execute(
+      `INSERT INTO journal_actions (utilisateur_id, entite, entite_id, action, details)
+       VALUES (?, 'article', ?, 'modification', ?)`,
+      [request.user!.id, reference, JSON.stringify({
+        type: 'TRANSFERT',
+        source_emplacement_id: sourceEmplacementId,
+        destination_emplacement_id: emplacement_id,
+        quantite,
+        motif,
+      })],
     )
 
     await connection.commit()
-    response.json({ reference, emplacement_id, quantite, motif })
+    response.json({ reference, source_emplacement_id: sourceEmplacementId, emplacement_id, quantite, motif })
   } catch (error) {
     await connection.rollback()
     if (isDuplicateKey(error)) {
       response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Conflit lors du transfert.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec du transfert." })
+    throw error
   } finally {
     connection.release()
   }

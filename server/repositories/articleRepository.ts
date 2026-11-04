@@ -38,10 +38,9 @@ type ArticleRowPacket = RowDataPacket & {
   location: string      // ancienne colonne (texte libre)
   emplacement: string | null
   description: string | null
-  emplacement_id: number | null  // nouvelle FK vers emplacements.id
 }
 
-/** Colonnes lues depuis la vue v_stock. */
+/** Une ligne par article, même lorsque son stock occupe plusieurs emplacements. */
 const SELECT_COLUMNS = `
   SELECT
     a.reference,
@@ -52,14 +51,23 @@ const SELECT_COLUMNS = `
     s.minimum_quantity AS minimum,
     a.location,               -- conservé pour compatibilité (texte libre)
     a.description,
-    COALESCE(ep.code, a.location) AS emplacement, -- hiérarchique "A-xx / E-xx / P-xx"
-    ep.niveau,
-    ep.parent_id,
-    spe.emplacement_id
+    COALESCE((
+      SELECT GROUP_CONCAT(
+        CASE ep.niveau
+          WHEN 'allee' THEN ep.code
+          WHEN 'etagere' THEN CONCAT_WS(' / ', parent.code, ep.code)
+          WHEN 'place' THEN CONCAT_WS(' / ', grand_parent.code, parent.code, ep.code)
+          ELSE CONCAT('Emplacement #', spe.emplacement_id)
+        END ORDER BY spe.emplacement_id SEPARATOR ' ; '
+      )
+      FROM stock_par_emplacements spe
+      LEFT JOIN emplacements ep ON ep.id = spe.emplacement_id
+      LEFT JOIN emplacements parent ON parent.id = ep.parent_id
+      LEFT JOIN emplacements grand_parent ON grand_parent.id = parent.parent_id
+      WHERE spe.reference_id = a.id AND spe.quantite > 0
+    ), a.location) AS emplacement
   FROM articles a
   JOIN stock_balances s ON s.reference_id = a.id
-  LEFT JOIN stock_par_emplacements spe ON spe.reference_id = a.id
-  LEFT JOIN emplacements ep ON ep.id = spe.emplacement_id
 `
 
 function toNumber(value: number | string | null | undefined): number {

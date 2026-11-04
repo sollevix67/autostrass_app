@@ -238,6 +238,26 @@ export type ApiStockEmplacement = {
   nombreReferences: number
 }
 
+/** Répartition d'un article (`GET /api/articles/:reference/emplacements`). */
+export type ApiArticleEmplacements = {
+  reference: string
+  quantiteTotale: number
+  quantiteNonAffectee: number
+  emplacements: Array<{
+    emplacementId: number
+    chemin: string
+    quantite: number
+  }>
+}
+
+/** Corps de `POST /api/articles/:reference/transfert`. `null` désigne le stock non affecté. */
+export type StockTransfertInput = {
+  source_emplacement_id: number | null
+  emplacement_id: number | null
+  quantite: number
+  motif?: string | null
+}
+
 /** Retour renvoye par `GET /api/retours`. */
 export type ApiRetour = {
   id: number

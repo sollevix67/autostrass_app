@@ -16,7 +16,8 @@ npm run db:generate
 npm run db:migrate
 ```
 
-Note : avec la version Drizzle présente dans ce dépôt (`drizzle-kit@0.18.1`), la commande de génération correcte est `drizzle-kit generate:mysql` (et non `drizzle-kit generate`).
+La version installée de `drizzle-kit` (0.31.x) utilise `drizzle-kit generate`.
+L'application des migrations passe par le migrateur MySQL de Drizzle ORM.
 
 Les migrations sont stockées dans `database/drizzle/` et le client Drizzle est initialisé via `server/db/client.ts`.
 
@@ -28,6 +29,37 @@ npm run dev
 ```
 
 L’API expose `GET /api/health` et `GET /api/dashboard` sur le port `3001`. Vite relaie automatiquement les appels `/api` vers cette API.
+
+## Tests sur une base jetable
+
+```bash
+npm run test:errors
+npm run test:stock
+npm run test:integration
+```
+
+`test:stock` vérifie la validation et les transferts réels (conservation,
+concurrence, audit et droits). `test:integration` enchaîne également les
+suites API et sécurité. Ces deux commandes créent leur propre base MariaDB,
+appliquent le schéma, les migrations et les seeds, démarrent une API isolée,
+puis arrêtent cette API et suppriment la base créée, même en cas d'échec.
+Elles n'utilisent jamais `DB_NAME` comme cible.
+
+Configurer `TEST_DB_HOST`, `TEST_DB_PORT`, `TEST_DB_USER` et
+`TEST_DB_PASSWORD` pour utiliser une instance de test ; à défaut, les
+paramètres `DB_*` correspondants sont repris. Le compte doit pouvoir créer
+et supprimer une base `autostrass_transfer_test_*` ainsi que créer les
+tables et triggers de test. Un refus de création interrompt le test sans
+réutiliser une base existante. Les secrets restent hors du dépôt.
+
+L'API jetable utilise `NODE_ENV=test` : son plafond global est de 1 000
+requêtes pour permettre la suite complète, contre 100 en développement et
+en production. Les protections CSRF, les rôles et les limites de tentatives
+d'authentification restent actifs.
+
+Les commandes historiques `test:api` et `test:security` ciblent l'API déjà
+démarrée (`API_URL`, port 3001 par défaut) et écrivent dans sa base ; réserver
+leur exécution directe à une base de test.
 
 ## React + TypeScript + Vite
 

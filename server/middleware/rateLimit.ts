@@ -74,7 +74,7 @@ function loginIdentityFor(request: Request, body: unknown): string {
  * requete en contient un (route de connexion). Laisse a `false` partout
  * ailleurs : la cle reste l'IP.
  */
-export function rateLimit(useLoginIdentity = false): RequestHandler {
+export function rateLimit(useLoginIdentity = false, maxRequests = MAX_REQUESTS): RequestHandler {
   return (request: Request, response: Response, next: NextFunction): void => {
     const key = useLoginIdentity ? loginIdentityFor(request, request.body) : identityFor(request)
     const now = Date.now()
@@ -86,13 +86,13 @@ export function rateLimit(useLoginIdentity = false): RequestHandler {
     }
 
     bucket.count += 1
-    const remaining = Math.max(0, MAX_REQUESTS - bucket.count)
+    const remaining = Math.max(0, maxRequests - bucket.count)
 
-    response.setHeader('RateLimit-Limit', String(MAX_REQUESTS))
+    response.setHeader('RateLimit-Limit', String(maxRequests))
     response.setHeader('RateLimit-Remaining', String(remaining))
     response.setHeader('RateLimit-Reset', String(Math.ceil(bucket.resetAt / 1000)))
 
-    if (bucket.count > MAX_REQUESTS) {
+    if (bucket.count > maxRequests) {
       const retryAfter = Math.ceil((bucket.resetAt - now) / 1000)
       response.setHeader('Retry-After', String(retryAfter))
       response.status(429).json({

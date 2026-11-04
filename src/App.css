@@ -603,6 +603,7 @@ th.align-center, td.align-center { text-align: center; }
   margin-top: 16px;
 }
 .stock-panel {
+  min-width: 0;
   border: 1px solid #e4e8e5;
   border-radius: 5px;
   background: #fff;
@@ -622,6 +623,13 @@ th.align-center, td.align-center { text-align: center; }
   font-family: var(--font-display);
   font-size: 15px;
   font-weight: 500;
+}
+.stock-panel .panel-header {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.stock-panel .table-wrap {
+  position: relative;
 }
 .panel-controls {
   display: flex;
@@ -816,7 +824,8 @@ th.align-center, td.align-center { text-align: center; }
   flex-direction: column;
   gap: 14px;
 }
-.form-label {
+.form-label,
+.transfert-modal .form-group > label {
   display: block;
   margin-bottom: 5px;
   color: #26323d;
@@ -824,7 +833,8 @@ th.align-center, td.align-center { text-align: center; }
   font-weight: 700;
   letter-spacing: .4px;
 }
-.form-select {
+.form-select,
+.transfert-modal .form-group input {
   width: 100%;
   padding: 8px 11px;
   border: 1px solid #e4e8e5;
@@ -837,6 +847,12 @@ th.align-center, td.align-center { text-align: center; }
 .form-select:focus {
   outline: none;
   border-color: #26323d;
+}
+.transfert-modal .form-group input,
+.transfert-modal .form-select {
+  min-height: 40px;
+  font-family: inherit;
+  font-size: 16px;
 }
 
 /* Responsive : sur mobile, empiler les panneaux */
