@@ -1368,9 +1368,9 @@
     "semantic_hash": "ef5ec08f45030464a6944a924efe9a11"
   },
   "design-system/autostrass/MASTER.md": {
-    "mtime": 1793824387.7348099,
-    "seen": 1793824496.8228192,
-    "ast_hash": "114287d72b4c1b06219c723f9263d6c6",
+    "mtime": 1793824591.3391826,
+    "seen": 1793824616.86063,
+    "ast_hash": "14a75867829786fef562cff0b5213d1f",
     "semantic_hash": ""
   },
   "index.html": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1793824325.8396895,
-    "seen": 1793824496.8236873,
-    "ast_hash": "1805ec2cca79f1261becaf799af014dd",
+    "mtime": 1793824591.3406818,
+    "seen": 1793824616.8614726,
+    "ast_hash": "62ec8213b842abde286e57192b4529c6",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1572,9 +1572,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/verification.json": {
-    "mtime": 1793824431.983318,
-    "seen": 1793824496.8086874,
-    "ast_hash": "236ea46d0b328d02ecb027b25be1ceb6",
+    "mtime": 1793824508.0766418,
+    "seen": 1793824616.8457904,
+    "ast_hash": "be074ad3e764431a5fa07b55ddc16bf3",
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/caisse-mobile-dark.png": {
@@ -1590,9 +1590,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/catalogue-mobile-dark.png": {
-    "mtime": 1793824430.9645946,
-    "seen": 1793824496.824226,
-    "ast_hash": "4eb0174c6795860503831bfb95ba03c3",
+    "mtime": 1793824506.9985402,
+    "seen": 1793824616.862081,
+    "ast_hash": "d8ce9a844717b9eaa90a407a0ed87b63",
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/catalogue-mobile-light.png": {
@@ -1602,9 +1602,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/clients-dark.png": {
-    "mtime": 1793824428.823549,
-    "seen": 1793824496.8242295,
-    "ast_hash": "dcec2e2d200e1ca0f1be2687e36b060c",
+    "mtime": 1793824504.9327676,
+    "seen": 1793824616.8622057,
+    "ast_hash": "a00f3c2cc6accb174cfd73b691f09864",
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/clients-light.png": {
@@ -1614,8 +1614,8 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/connexion-mobile-dark.png": {
-    "mtime": 1793824431.4697201,
-    "seen": 1793824496.824233,
+    "mtime": 1793824507.5673141,
+    "seen": 1793824616.8623223,
     "ast_hash": "31a9a24b2d9a27a63c4c1558d07231ac",
     "semantic_hash": ""
   },
@@ -1626,9 +1626,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/dashboard-dark.png": {
-    "mtime": 1793824426.1737018,
-    "seen": 1793824496.8242364,
-    "ast_hash": "b217cdc6c9ae512d854eea687a115a15",
+    "mtime": 1793824500.1888082,
+    "seen": 1793824616.862437,
+    "ast_hash": "4756d1c6eef1d7bf7109d66128c07f1e",
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/dashboard-light.png": {
@@ -1638,8 +1638,8 @@
     "semantic_hash": ""
   },
   "specs/screenshots/css-review/transfert-mobile-dark.png": {
-    "mtime": 1793824430.3777514,
-    "seen": 1793824496.8242393,
+    "mtime": 1793824506.4069653,
+    "seen": 1793824616.86255,
     "ast_hash": "eaf8b8e789106bf5e1dfe494abbb5d1b",
     "semantic_hash": ""
   },
@@ -1647,6 +1647,12 @@
     "mtime": 1793824486.6769152,
     "seen": 1793824496.8242407,
     "ast_hash": "9b173a297a58b3b578bca658475d5f34",
+    "semantic_hash": ""
+  },
+  "specs/css-review.md": {
+    "mtime": 1793824591.338683,
+    "seen": 1793824616.861475,
+    "ast_hash": "8774b1a8a8ec85ec5c1028b943210280",
     "semantic_hash": ""
   },
   "package-lock.json": {

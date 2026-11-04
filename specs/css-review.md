@@ -1,5 +1,9 @@
 # Revue CSS — 4 novembre 2026
 
+> Évolution ultérieure du module Clients : le formulaire est désormais dans
+> une [fenêtre contextuelle](client-modal.md). Les captures ci-dessous
+> documentent la refonte CSS initiale.
+
 La refonte reprend la palette bleu et ambre du design system : navigation
 bleu nuit, actions bleues, repères ambre et états métier distincts. Les vues
 partagent une typographie, des formulaires et des surfaces cohérents dans

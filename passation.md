@@ -1,5 +1,39 @@
 # Passation — Autostrass App
 
+## Création des clients en fenêtre contextuelle — 2026-11-04
+
+**Demande** : déplacer l'ajout de client dans une fenêtre contextuelle.
+La liste est désormais visible directement ; « Nouveau client » ouvre un
+dialogue natif reprenant les champs, la validation Zod et les styles communs.
+Le dialogue contient le focus, bloque l'arrière-plan et se ferme avec
+Annuler, la croix, Échap ou un clic à l'extérieur. Les fermetures sont
+bloquées pendant l'enregistrement. La réussite referme le dialogue, remet
+le formulaire à zéro et actualise la liste ; une erreur reste dans la
+fenêtre avec les valeurs saisies. Les droits dépôt restent appliqués.
+
+**Validation** : `npm run build`, `npm run lint` et `git diff --check`
+réussis. **143 contrôles Chromium/Playwright réussis**, dont les rendus
+375/768/1024/1440 px dans les deux thèmes, validation vide, effacement,
+annulation, piège de focus et retour au déclencheur, erreur API conservant
+les champs, nouvelle tentative, sauvegarde lente sans fermeture ni double
+envoi, création affichée dans la liste et droits admin/magasinier/caissier.
+La confirmation de suppression existante reste fonctionnelle. Aucune
+erreur JavaScript observée. Réponses API fictives interceptées, sans
+écriture MariaDB ; aucune modification du backend ou du schéma.
+
+Cinq captures et relevé JSON dans `specs/screenshots/client-modal/` ; méthode
+et comportement dans `specs/client-modal.md`. Le serveur de vérification
+est arrêté. Avertissement Vite préexistant : bundle JS de 525,47 kB.
+Le comportement hors ligne de `useResource` est conservé.
+
+**Graphify** : `graphify update .` a actualisé JSON, HTML, rapport,
+métadonnées et sauvegarde : **2 538 nœuds, 4 834 liens, 166 communautés**.
+Aucun lien orphelin ; empreinte AST de `ClientsView.tsx` conforme au disque.
+Limites connues conservées : 11 SQL sans parseur, 62 fichiers non classifiés
+(dont du CSS) et analyse sémantique des documents/images non relancée.
+
+---
+
 ## Refonte CSS bleu et ambre — 2026-11-04
 
 **Direction validée** : reprise large de l'apparence avec la palette bleu et

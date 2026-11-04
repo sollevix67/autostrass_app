@@ -69,6 +69,14 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .modal-form { display: flex; flex-direction: column; gap: 18px; }
 .modal .form-actions { justify-content: flex-end; }
 
+/* Création de client : dialogue natif, deux colonnes sur ordinateur. */
+.client-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
+.client-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
+.client-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 10px; }
+.client-modal-header h2 { margin: 0; }
+.client-form-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.client-form-reset { margin-inline-end: auto; }
+
 @media (max-width: 1024px) {
   .form-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

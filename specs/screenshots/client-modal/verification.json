@@ -1,0 +1,143 @@
+{
+  "checks": 143,
+  "errors": [],
+  "cases": [
+    {
+      "theme": "light",
+      "width": 375,
+      "bounds": {
+        "x": 17,
+        "y": 12,
+        "width": 341,
+        "height": 820
+      },
+      "metrics": {
+        "scroll": 339,
+        "width": 339,
+        "background": "rgb(255, 255, 255)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "bounds": {
+        "x": 24,
+        "y": 71.875,
+        "width": 720,
+        "height": 856.234375
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(255, 255, 255)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "bounds": {
+        "x": 152,
+        "y": 236.25,
+        "width": 720,
+        "height": 527.5
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(255, 255, 255)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "bounds": {
+        "x": 360,
+        "y": 236.25,
+        "width": 720,
+        "height": 527.5
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(255, 255, 255)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "bounds": {
+        "x": 17,
+        "y": 12,
+        "width": 341,
+        "height": 820
+      },
+      "metrics": {
+        "scroll": 339,
+        "width": 339,
+        "background": "rgb(22, 35, 56)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "bounds": {
+        "x": 24,
+        "y": 71.875,
+        "width": 720,
+        "height": 856.234375
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(22, 35, 56)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "bounds": {
+        "x": 152,
+        "y": 236.25,
+        "width": 720,
+        "height": 527.5
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(22, 35, 56)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "bounds": {
+        "x": 360,
+        "y": 236.25,
+        "width": 720,
+        "height": 527.5
+      },
+      "metrics": {
+        "scroll": 718,
+        "width": 718,
+        "background": "rgb(22, 35, 56)",
+        "modal": true,
+        "bodyOverflow": "hidden"
+      }
+    }
+  ],
+  "api": "Réponses fictives interceptées, aucune écriture MariaDB"
+}

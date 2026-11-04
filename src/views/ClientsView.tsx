@@ -1,7 +1,7 @@
 /**
  * Vue clients : liste, creation et suppression.
  *
- * Branchee sur l'API (`/api/clients`). Le formulaire suit le meme patron que
+ * Branchee sur l'API (`/api/clients`). Le formulaire en fenêtre modale suit le meme patron que
  * le catalogue : React Hook Form + Zod, resume d'erreurs focusable, et
  * suppression confirmee via `ConfirmDialog` plutot que `window.confirm`.
  *
@@ -10,6 +10,7 @@
  * masque, pour que la limite de droits soit lisible sans deviner.
  */
 
+import { useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
@@ -62,12 +63,54 @@ export default function ClientsView() {
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
+  const { setFocus, formState: { errors, isSubmitting } } = form
+  const [createOpen, setCreateOpen] = useState(false)
+  const [createFailed, setCreateFailed] = useState(false)
+  const createDialogRef = useRef<HTMLDialogElement>(null)
 
   const canEdit = canWrite(user?.role, 'depot')
+  const busy = saving || isSubmitting
+
+  useEffect(() => {
+    const dialog = createDialogRef.current
+    if (!createOpen || !canEdit || !dialog) return
+
+    const trigger = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    // Le dialogue natif rend l'arrière-plan inerte et contient le focus clavier.
+    dialog.showModal()
+    setFocus('nom')
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+      if (trigger?.isConnected) trigger.focus()
+    }
+  }, [createOpen, canEdit, setFocus])
+
+  function openCreateDialog() {
+    form.reset(EMPTY_CLIENT)
+    setCreateFailed(false)
+    setCreateOpen(true)
+  }
+
+  function closeCreateDialog() {
+    if (busy) return
+    setCreateOpen(false)
+    form.reset(EMPTY_CLIENT)
+    setCreateFailed(false)
+  }
 
   async function handleSubmit(values: ClientFormValues) {
+    if (!canEdit || saving) return
+    setCreateFailed(false)
     const created = await create(values)
-    if (created === null) return
+    if (created === null) {
+      setCreateFailed(true)
+      return
+    }
+    setCreateOpen(false)
     form.reset(EMPTY_CLIENT)
     toast.success(`Client ${created.numeroClient} enregistre.`)
   }
@@ -148,9 +191,21 @@ export default function ClientsView() {
       title="Gestion des clients"
       description="Consultez et gérez votre base de clients."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={openCreateDialog}
+            disabled={!canEdit || busy}
+            aria-haspopup="dialog"
+            title={!canEdit ? 'La création de clients est réservée au dépôt.' : undefined}
+          >
+            <Icon name="plus" size="sm" /> Nouveau client
+          </button>
+        </>
       }
     >
       {offline && (
@@ -159,47 +214,97 @@ export default function ClientsView() {
           enregistrees.
         </p>
       )}
-      {error !== null && <p className="error-banner" role="alert">{error}</p>}
+      {error !== null && !createOpen && <p className="error-banner" role="alert">{error}</p>}
 
-      {canEdit ? (
-        <form className="form-card" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
-          <h2>Nouveau client</h2>
-
-          <ErrorSummary
-            errors={form.formState.errors}
-            labels={{
-              nom: 'Nom',
-              prenom: 'Prenom',
-              telephone: 'Telephone',
-              email: 'Email',
-              adresse: 'Adresse',
-              ville: 'Ville',
-              codePostal: 'Code postal',
-              type: 'Type',
-            }}
-          />
-
-          <div className="form-grid-2">
-            <FormInput label="Nom" name="nom" register={register} required />
-            <FormInput label="Prenom" name="prenom" register={register} required />
-            <FormInput label="Telephone" name="telephone" type="tel" register={register} required />
-            <FormInput label="Email" name="email" type="email" register={register} required />
-            <FormInput label="Adresse" name="adresse" register={register} required />
-            <FormInput label="Ville" name="ville" register={register} required />
-            <FormInput label="Code postal" name="codePostal" register={register} required />
-            <FormSelect label="Type" name="type" register={register} options={TYPES} required />
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
-              <Icon name="plus" size="sm" /> Ajouter le client
+      {canEdit && (
+        <dialog
+          ref={createDialogRef}
+          className="modal client-modal"
+          aria-labelledby="new-client-title"
+          aria-describedby="new-client-description"
+          onKeyDown={(event) => {
+            if (event.key !== 'Tab') return
+            const controls = event.currentTarget.querySelectorAll<HTMLElement>(
+              'button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href]',
+            )
+            const first = controls[0]
+            const last = controls[controls.length - 1]
+            if (!first) {
+              event.preventDefault()
+            } else if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault()
+              last.focus()
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault()
+              first.focus()
+            }
+          }}
+          onCancel={(event) => {
+            event.preventDefault()
+            closeCreateDialog()
+          }}
+          onMouseDown={(event) => {
+            if (event.target !== event.currentTarget) return
+            const bounds = event.currentTarget.getBoundingClientRect()
+            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+              closeCreateDialog()
+            }
+          }}
+        >
+          <div className="client-modal-header">
+            <h2 id="new-client-title">Nouveau client</h2>
+            <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeCreateDialog} disabled={busy}>
+              <Icon name="close" size="lg" />
             </button>
-            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_CLIENT)}>
-              Effacer
-            </button>
           </div>
-        </form>
-      ) : (
+          <p id="new-client-description" className="modal-desc">Renseignez les coordonnées du client à ajouter.</p>
+          {offline && <p className="info-banner" role="status">API clients indisponible : les modifications restent locales.</p>}
+          {createFailed && error && <p className="error-banner" role="alert">{error}</p>}
+          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate aria-busy={busy}>
+
+            <ErrorSummary
+              errors={errors}
+              labels={{
+                nom: 'Nom',
+                prenom: 'Prenom',
+                telephone: 'Telephone',
+                email: 'Email',
+                adresse: 'Adresse',
+                ville: 'Ville',
+                codePostal: 'Code postal',
+                type: 'Type',
+              }}
+            />
+
+            <fieldset className="client-form-fields" disabled={busy}>
+              <legend className="sr-only">Coordonnées du nouveau client</legend>
+              <div className="form-grid-2">
+                <FormInput label="Nom" name="nom" register={register} error={errors.nom?.message} required />
+                <FormInput label="Prénom" name="prenom" register={register} error={errors.prenom?.message} required />
+                <FormInput label="Téléphone" name="telephone" type="tel" register={register} error={errors.telephone?.message} required />
+                <FormInput label="Email" name="email" type="email" register={register} error={errors.email?.message} required />
+                <FormInput label="Adresse" name="adresse" register={register} error={errors.adresse?.message} required />
+                <FormInput label="Ville" name="ville" register={register} error={errors.ville?.message} required />
+                <FormInput label="Code postal" name="codePostal" register={register} error={errors.codePostal?.message} required />
+                <FormSelect label="Type" name="type" register={register} options={TYPES} error={errors.type?.message} required />
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="secondary-button client-form-reset" onClick={() => form.reset(EMPTY_CLIENT)}>
+                  Effacer
+                </button>
+                <button type="button" className="secondary-button" onClick={closeCreateDialog}>
+                  Annuler
+                </button>
+                <button type="submit" className="primary-button">
+                  <Icon name="plus" size="sm" /> {busy ? 'Enregistrement…' : 'Ajouter le client'}
+                </button>
+              </div>
+            </fieldset>
+          </form>
+        </dialog>
+      )}
+      {!canEdit && (
         <p className="info-banner" role="note">
           <Icon name="alert" size="sm" /> La saisie de nouveaux clients est reservee au depot.
           Consultez la liste ci-dessous.

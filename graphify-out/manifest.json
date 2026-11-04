@@ -810,9 +810,9 @@
     "semantic_hash": ""
   },
   "src/views/ClientsView.tsx": {
-    "mtime": 1792322601.1656253,
-    "seen": 1792931406.971134,
-    "ast_hash": "6a86b044ba53d1a4e73de8714f431d70",
+    "mtime": 1793825226.747949,
+    "seen": 1793825299.170259,
+    "ast_hash": "a674ee001c18564d90a0f46c70c6ead7",
     "semantic_hash": ""
   },
   "src/views/CommandesClientsView.tsx": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1793824591.3406818,
-    "seen": 1793824616.8614726,
-    "ast_hash": "62ec8213b842abde286e57192b4529c6",
+    "mtime": 1793825294.6727214,
+    "seen": 1793825299.185091,
+    "ast_hash": "5e4f73ded18a19e7dac63d8b2ceb9eb3",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1650,9 +1650,51 @@
     "semantic_hash": ""
   },
   "specs/css-review.md": {
-    "mtime": 1793824591.338683,
-    "seen": 1793824616.861475,
-    "ast_hash": "8774b1a8a8ec85ec5c1028b943210280",
+    "mtime": 1793825294.671722,
+    "seen": 1793825299.1850948,
+    "ast_hash": "8921869ef09a03e028986b8635f55676",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/verification.json": {
+    "mtime": 1793825244.516704,
+    "seen": 1793825299.16564,
+    "ast_hash": "625d3794ae4cff90c73f0e6471b34b72",
+    "semantic_hash": ""
+  },
+  "specs/client-modal.md": {
+    "mtime": 1793825294.6702185,
+    "seen": 1793825299.1850932,
+    "ast_hash": "d4a74735ff41576dde39f8ea6cb41960",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/client-desktop-dark.png": {
+    "mtime": 1793825241.9134674,
+    "seen": 1793825299.1855326,
+    "ast_hash": "7ef712f56a05ddce5a738386cf2efab3",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/client-desktop-light.png": {
+    "mtime": 1793825238.208592,
+    "seen": 1793825299.1855345,
+    "ast_hash": "fec2976e851db6d0713b0f6485d7b806",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/client-mobile-dark.png": {
+    "mtime": 1793825239.1618035,
+    "seen": 1793825299.1855354,
+    "ast_hash": "c35a534ca9495b52a18f49ebcc34bfd9",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/client-mobile-light.png": {
+    "mtime": 1793825235.6433446,
+    "seen": 1793825299.1855366,
+    "ast_hash": "cc2dcd4cd74ed13290b1557b001f5f46",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/client-modal/clients-list-desktop.png": {
+    "mtime": 1793825238.052375,
+    "seen": 1793825299.1855373,
+    "ast_hash": "6f9359618a91d9fdcc19bb578f8d9f86",
     "semantic_hash": ""
   },
   "package-lock.json": {
