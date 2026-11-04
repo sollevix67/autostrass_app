@@ -1,79 +1,50 @@
-/* =============================================================================
-   Design tokens Autostrass
-   -----------------------------------------------------------------------------
-   Source de verite : design-system/autostrass/MASTER.md
-   Palette : bleu #1E40AF (primaire) + ambre #D97706 (accent), fond clair.
-   Typo : Fira Code (titres / donnees) + Fira Sans (texte).
-   Densite 9/10 : echelle d'espacement 2 -> 32 px.
-
-   Regle de maintenance : toute couleur ecrite en dur dans App.css doit
-   progressivement etre remplacee par une variable de ce fichier. Les
-   variables ci-dessous couvrent les roles, pas les teintes : App.css conserve
-   encore des nuances historiques (coral, ambre) en dur, volontairement
-   inchangees pour ne pas casser les contrastes deja valides.
-   ========================================================================== */
-
+/* Palette et dimensions communes. Les composants utilisent des rôles,
+   le thème sombre ne modifie que leurs valeurs. */
 :root {
-  /* --- Roles de couleur ------------------------------------------------ */
+  color-scheme: light;
   --color-primary: #1e40af;
+  --color-primary-hover: #1e3a8a;
   --color-on-primary: #ffffff;
   --color-secondary: #3b82f6;
   --color-accent: #d97706;
-  --color-on-accent: #1a1200;
+  --color-on-accent: #231700;
   --color-background: #f8fafc;
-  --color-foreground: #1e293b;
-  --color-card: #ffffff;
-  --color-card-foreground: #1e293b;
-  --color-muted: #e9eef6;
-  --color-muted-foreground: #475569;
-  --color-border: #dbeafe;
-  --color-destructive: #dc2626;
-  --color-on-destructive: #ffffff;
-  --color-ring: #1e40af;
-
-  /* --- Surfaces et lateral (theme sombre existant) ---------------------- */
   --color-surface: #ffffff;
-  --color-surface-sunken: #f5f6f3;
-  --color-sidebar: #1f2a34;
-  --color-sidebar-hover: #33424b;
-  --color-sidebar-text: #aeb9be;
+  --color-surface-sunken: #f1f5f9;
+  --color-muted: #e9eef6;
+  --color-border: #dbe3ef;
+  --color-border-strong: #8190a5;
+  --color-ring: #1e40af;
+  --color-overlay: rgb(15 23 42 / 55%);
+  --text-strong: #172b4d;
+  --text-body: #334155;
+  --text-muted: #526277;
+  --text-faint: #5c6a7d;
+
+  --color-sidebar: #12264b;
+  --color-sidebar-hover: #1d3966;
+  --color-sidebar-text: #cfdaec;
   --color-sidebar-text-strong: #ffffff;
-  --color-sidebar-muted: #84929a;
-  --color-sidebar-border: #3b4750;
-  --color-sidebar-divider: #35434d;
+  --color-sidebar-muted: #a7bad8;
+  --color-sidebar-border: #365077;
+  --color-sidebar-divider: #2b4265;
+  --color-sidebar-ring: #fbbf24;
 
-  /* --- Texte ------------------------------------------------------------ */
-  --text-strong: #26323d;
-  --text-body: #3f4b53;
-  --text-muted: #6b7679;
-  --text-faint: #96a0a3;
-  --text-on-dark: #d7e0e4;
+  --status-success: #166534;
+  --status-success-bg: #ecf8f0;
+  --status-warning: #92400e;
+  --status-warning-bg: #fff4dc;
+  --status-info: #1e40af;
+  --status-info-bg: #edf3ff;
+  --status-danger: #b91c1c;
+  --status-danger-hover: #991b1b;
+  --status-danger-bg: #fff1f2;
+  --status-danger-border: #efadb5;
+  --status-neutral: #526277;
 
-  /* --- Semantique de statut --------------------------------------------- */
-  --status-success: #5caa82;
-  --status-success-bg: #eaf6ef;
-  --status-warning: #ce9840;
-  --status-warning-bg: #fff5dd;
-  --status-info: #5c9bd7;
-  --status-info-bg: #eaf3fb;
-  --status-danger: #d1624a;
-  --status-danger-bg: #fdf1ef;
-  --status-danger-border: #f3cec7;
-  --status-neutral: #788a8e;
-
-  /* --- Accents d'icones (cards, badges) --------------------------------- */
-  --accent-blue: #5c9bd7;
-  --accent-coral: #ee806c;
-  --accent-yellow: #e2b34e;
-  --accent-green: #6aaf91;
-  --accent-coral-soft: #fcece8;
-
-  /* --- Typographie ------------------------------------------------------ */
-  --font-sans: 'Fira Sans', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'Fira Code', ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  --font-display: 'Fira Code', Georgia, serif;
-
-  /* --- Espacement (densite 9/10) ---------------------------------------- */
+  --font-sans: 'Fira Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, Consolas, monospace;
+  --font-display: var(--font-mono);
   --space-xs: 2px;
   --space-sm: 4px;
   --space-md: 8px;
@@ -81,49 +52,64 @@
   --space-xl: 16px;
   --space-2xl: 24px;
   --space-3xl: 32px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 3px rgb(15 23 42 / 4%);
+  --shadow-md: 0 4px 16px rgb(15 23 42 / 7%);
+  --shadow-lg: 0 16px 48px rgb(15 23 42 / 18%);
 
-  /* --- Rayons ----------------------------------------------------------- */
-  --radius-sm: 4px;
-  --radius-md: 5px;
-  --radius-pill: 20px;
-
-  /* --- Ombres ----------------------------------------------------------- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-brand: 0 5px 14px rgba(38, 50, 61, 0.16);
-  --shadow-danger: 0 5px 14px rgba(184, 69, 47, 0.18);
-  --shadow-toast: 0 8px 22px rgba(38, 50, 61, 0.14);
-  --shadow-sidebar-open: 8px 0 24px rgba(31, 42, 52, 0.18);
+  /* Alias conservés pour les composants existants. */
+  --color-foreground: var(--text-strong);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--text-strong);
+  --color-muted-foreground: var(--text-muted);
+  --color-destructive: var(--status-danger);
+  --color-on-destructive: #ffffff;
+  --text-on-dark: var(--color-sidebar-text);
+  --accent-blue: var(--color-primary);
+  --accent-coral: var(--color-accent);
+  --accent-yellow: var(--color-accent);
+  --accent-green: var(--status-success);
+  --accent-coral-soft: var(--status-warning-bg);
 }
 
 html[data-theme='dark'] {
   color-scheme: dark;
-  --color-background: #0f172a;
-  --color-foreground: #e2e8f0;
-  --color-card: #111827;
-  --color-card-foreground: #e5e7eb;
-  --color-muted: #1f2937;
-  --color-muted-foreground: #cbd5e1;
-  --color-border: #334155;
-  --color-surface: #111827;
-  --color-surface-sunken: #0b1220;
-  --color-sidebar: #0b1220;
-  --color-sidebar-hover: #1e293b;
-  --color-sidebar-text: #cbd5e1;
-  --color-sidebar-text-strong: #f8fafc;
-  --color-sidebar-muted: #94a3b8;
-  --color-sidebar-border: #334155;
-  --color-sidebar-divider: #1e293b;
-  --text-strong: #f8fafc;
-  --text-body: #dbe4ee;
-  --text-muted: #a8b4c4;
-  --text-faint: #8ea0b5;
-  --text-on-dark: #e2e8f0;
-  --status-info-bg: #0f172a;
-  --status-warning-bg: #2c1d0f;
-  --status-success-bg: #0f172a;
-  --status-danger-bg: #2a1212;
-  --shadow-brand: 0 5px 14px rgba(15, 23, 42, 0.35);
-  --shadow-toast: 0 8px 22px rgba(2, 6, 23, 0.4);
+  --color-primary: #a9c3ff;
+  --color-primary-hover: #c7d8ff;
+  --color-on-primary: #12264b;
+  --color-accent: #fbbf24;
+  --color-background: #0d1729;
+  --color-surface: #162338;
+  --color-surface-sunken: #101c2e;
+  --color-muted: #24354e;
+  --color-border: #344660;
+  --color-border-strong: #758aa8;
+  --color-ring: #a9c3ff;
+  --color-overlay: rgb(2 6 23 / 72%);
+  --text-strong: #f0f5ff;
+  --text-body: #d7e2f3;
+  --text-muted: #b1c1d8;
+  --text-faint: #a5b8d1;
+  --color-sidebar: #0a1426;
+  --color-sidebar-hover: #1b3254;
+  --color-sidebar-border: #324a6a;
+  --color-sidebar-divider: #243b5b;
+  --status-success: #86efac;
+  --status-success-bg: #183b2e;
+  --status-warning: #fcd68c;
+  --status-warning-bg: #3f301a;
+  --status-info: #a9c3ff;
+  --status-info-bg: #223659;
+  --status-danger: #fda4af;
+  --status-danger-hover: #fecdd3;
+  --status-danger-bg: #442632;
+  --status-danger-border: #9f5a68;
+  --status-neutral: #b1c1d8;
+  --color-on-destructive: #421320;
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 12%);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 18%);
+  --shadow-lg: 0 16px 48px rgb(0 0 0 / 40%);
 }

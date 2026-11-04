@@ -1,29 +1,62 @@
-/* Polices du design system : Fira Sans (texte) + Fira Code (titres, donnees).
-   Import Google Fonts, puis les tokens de couleur/espacement. */
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 @import './tokens.css';
 
 :root {
   font-family: var(--font-sans);
-  color: var(--text-strong);
-  background: var(--color-surface-sunken);
+  color: var(--text-body);
+  background: var(--color-background);
+  font-size: 14px;
+  line-height: 1.5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --ink: var(--text-strong);
-  --muted: var(--text-muted);
-  --line: var(--color-border);
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
-button { font: inherit; }
 #root { min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button, select, input[type='checkbox'], input[type='radio'] { cursor: pointer; }
+button:disabled, input:disabled, select:disabled, textarea:disabled { cursor: not-allowed; }
+a { color: var(--color-primary); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+img, svg { max-inline-size: 100%; }
+h1, h2, h3, h4 { color: var(--text-strong); line-height: 1.3; text-wrap: balance; }
+p { overflow-wrap: break-word; }
 
-/* Les icones SVG sont alignees sur la ligne de base du texte et se
-   contractent pour ne jamais augmenter la hauteur d'un bouton. */
 .icon {
   display: inline-block;
   flex: 0 0 auto;
   vertical-align: -0.125em;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-ring);
+  outline-offset: 3px;
+}
+
+.sr-only, .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Seuls les états interactifs changent doucement ; les cartes ne bougent pas. */
+@media (prefers-reduced-motion: no-preference) {
+  a, button, input, select, textarea {
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

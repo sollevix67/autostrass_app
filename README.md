@@ -61,6 +61,14 @@ Les commandes historiques `test:api` et `test:security` ciblent l'API déjà
 démarrée (`API_URL`, port 3001 par défaut) et écrivent dans sa base ; réserver
 leur exécution directe à une base de test.
 
+## Style et thèmes
+
+La palette bleu et ambre, les polices et les espacements sont centralisés
+dans `src/tokens.css`. Les thèmes clair et sombre partagent les mêmes
+composants ; le mode automatique suit le système. Voir
+[le design system](design-system/autostrass/MASTER.md) pour l'organisation
+des feuilles CSS et [la revue visuelle](specs/css-review.md) pour la validation.
+
 ## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.

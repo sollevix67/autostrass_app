@@ -1,0 +1,90 @@
+/* Formulaires communs : listes métier, saisie de documents, caisse et modales. */
+.form-card {
+  margin-block-end: 24px;
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-card > h2, .form-card > h3, .sub-heading {
+  margin: 0 0 20px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.sub-heading { margin-block-start: 24px; font-size: 15px; }
+.form-grid-2, .form-grid-3 { display: grid; gap: 18px 24px; }
+.form-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.form-group { min-width: 0; }
+.form-group > label, .form-label { display: block; margin-block-end: 6px; color: var(--text-strong); font-size: 12px; font-weight: 500; }
+.required { margin-inline-start: 3px; color: var(--status-danger); }
+.form-group :where(input:not([type='checkbox']):not([type='radio']), select, textarea), .form-select, .filter-select,
+.search-input, .filter-bar input, .filter-bar select, .status-select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-body);
+  background: var(--color-surface);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.form-group textarea { display: block; min-height: 96px; resize: vertical; }
+.form-group :where(input, select, textarea):focus,
+.form-select:focus, .filter-select:focus, .search-input:focus, .filter-bar input:focus,
+.filter-bar select:focus, .status-select:focus { border-color: var(--color-primary); }
+input::placeholder, textarea::placeholder { color: var(--text-faint); opacity: 1; }
+.form-group input:disabled, .form-group select:disabled, .form-group textarea:disabled,
+.form-select:disabled, .status-select:disabled { background: var(--color-surface-sunken); opacity: .65; }
+input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin: 0; accent-color: var(--color-primary); vertical-align: middle; }
+.form-group:has(> input[type='checkbox']) { display: flex; align-items: center; gap: 10px; }
+.form-group:has(> input[type='checkbox']) > label { margin: 0; }
+.form-group label:has(input[type='checkbox']) { display: flex; align-items: center; gap: 10px; min-height: 42px; margin: 0; }
+.form-hint, .form-error-text { display: block; margin: 6px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.form-error-text { color: var(--status-danger); font-weight: 500; }
+.form-group [aria-invalid='true'] { border-color: var(--status-danger); background: var(--status-danger-bg); }
+.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-block-start: 24px; }
+.static-value { display: block; min-height: 42px; padding-block: 10px; color: var(--text-strong); overflow-wrap: anywhere; }
+.filter-select { width: 160px; }
+.search-input, .filter-bar input, .filter-bar select { width: min(100%, 280px); }
+.status-select { width: auto; max-width: 100%; min-height: 34px; padding: 6px 10px; font-size: 12px; }
+.reception-article { position: relative; margin-block-end: 16px; padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-sunken); }
+.reception-article > .action-btn { margin-block-start: 12px; }
+.reception-total, .vente-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-block: 20px; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--status-info-bg); color: var(--text-strong); }
+.reception-total strong, .vente-total strong { font-family: var(--font-mono); font-size: 19px; }
+
+/* Un cadre commun aux confirmations et aux formulaires de stock. */
+.modal-overlay { position: fixed; z-index: 2000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--color-overlay); backdrop-filter: blur(3px); }
+.modal { width: min(540px, 100%); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; padding: 28px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); color: var(--text-body); background: var(--color-surface); box-shadow: var(--shadow-lg); }
+.modal h2 { margin: 0 0 10px; font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.modal-desc, .confirm-message { margin: 0 0 24px; color: var(--text-muted); font-size: 13px; }
+.confirm-message strong { color: var(--text-strong); }
+.modal-form { display: flex; flex-direction: column; gap: 18px; }
+.modal .form-actions { justify-content: flex-end; }
+
+@media (max-width: 1024px) {
+  .form-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .form-card, .reception-article { padding: 18px; }
+  .form-grid-2, .form-grid-3 { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .form-group :where(input:not([type='checkbox']):not([type='radio']), select, textarea), .form-select, .filter-select,
+  .search-input, .filter-bar input, .filter-bar select { min-height: 44px; font-size: 16px; }
+  .form-actions > button { flex-grow: 1; }
+  .modal { padding: 22px; }
+  .panel-controls .filter-select, .panel-controls .search-input { flex: 1 1 180px; width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .filter-bar input, .filter-bar select { width: 100%; }
+  .modal-overlay { padding: 12px; }
+  .modal { max-height: calc(100dvh - 24px); padding: 20px; }
+}

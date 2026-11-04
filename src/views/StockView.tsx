@@ -703,7 +703,7 @@ export default function StockView() {
       <div
         className="modal-overlay"
         onMouseDown={() => setOpenEmplacementModal(false)}
-        style={{ display: openEmplacementModal ? 'block' : 'none' }}
+        style={{ display: openEmplacementModal ? 'flex' : 'none' }}
       >
         <div
           className="modal emplacement-modal"

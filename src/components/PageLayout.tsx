@@ -15,9 +15,7 @@ type PageLayoutProps = {
  * Structure commune de toutes les vues de page : sur-titre, titre,
  * description, actions puis contenu.
  *
- * Accessibilite : le shell global detient le seul `h1` de l'application.
- * Le titre de vue est donc en `h2`, ce qui respecte la hierarchie des
- * titres sans dupliquer le `h1`.
+ * Chaque vue porte son h1 ; le titre d'accueil du shell est réservé au dashboard.
  */
 export function PageLayout({ eyebrow, title, description, actions, children }: PageLayoutProps) {
   return (
@@ -25,7 +23,7 @@ export function PageLayout({ eyebrow, title, description, actions, children }: P
       <div className="page-heading">
         <div>
           <p className="eyebrow">{eyebrow}</p>
-          <h2>{title}</h2>
+          <h1>{title}</h1>
           {description && <p className="heading-copy">{description}</p>}
         </div>
         {actions && <div className="page-actions">{actions}</div>}

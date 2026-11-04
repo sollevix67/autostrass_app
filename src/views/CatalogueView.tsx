@@ -222,10 +222,10 @@ export default function CatalogueView() {
       render: (row) => (
         <div className="actions-cell">
           <button type="button" className="action-btn edit" onClick={() => handleEdit(row)} title="Charger dans le formulaire" aria-label={`Modifier ${row.reference}`}>
-            ✎
+            <Icon name="edit" size="sm" />
           </button>
           <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
-            🗑
+            <Icon name="trash" size="sm" />
           </button>
         </div>
       ),

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 
 type ThemeMode = 'light' | 'dark' | 'auto'
@@ -14,8 +14,9 @@ function getStoredTheme(): ThemeMode {
   }
   return 'auto'
 }
-import './modern-enhancements.css'
 import './App.css'
+import './components.css'
+import './forms.css'
 import './auth.css'
 import { useDashboard } from './hooks/useDashboard'
 import { ToastProvider } from './components/Toast'
@@ -69,6 +70,7 @@ function AppContent() {
   const { dashboard, apiMode, error, lastUpdated, refresh } = useDashboard()
   const { user, status, signOut } = useAuth()
   const [mobileNav, setMobileNav] = useState(false)
+  const mobileMenuRef = useRef<HTMLButtonElement>(null)
   const [theme, setTheme] = useState<ThemeMode>(() => getStoredTheme())
   const location = useLocation()
 
@@ -90,6 +92,18 @@ function AppContent() {
     media.addListener(syncTheme)
     return () => media.removeListener(syncTheme)
   }, [theme])
+
+  useEffect(() => {
+    if (!mobileNav) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileNav(false)
+        mobileMenuRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [mobileNav])
 
   const cycleTheme = () => {
     setTheme((current) => {
@@ -119,7 +133,8 @@ function AppContent() {
 
   return (
     <div className="app-shell">
-      <aside className={`sidebar ${mobileNav ? 'sidebar-open' : ''}`}>
+      {mobileNav && <button className="sidebar-backdrop" aria-label="Fermer le menu" onClick={() => setMobileNav(false)} />}
+      <aside id="main-navigation" className={`sidebar ${mobileNav ? 'sidebar-open' : ''}`}>
         <div className="brand"><span className="brand-mark">A</span><span>AUTOSTRASS</span></div>
         <div className="workspace-switcher"><span className="workspace-dot"></span><span><b>Depot principal</b><small>Ouvert aujourd hui</small></span><span className="chevron">⌄</span></div>
         <nav aria-label="Navigation principale">
@@ -130,6 +145,7 @@ function AppContent() {
               to={item.path}
               key={item.label}
               end
+              onClick={() => setMobileNav(false)}
             >
               <Icon name={item.icon} size="sm" />
               <span>{item.label}</span>
@@ -141,6 +157,7 @@ function AppContent() {
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             to="/utilisateurs"
             end
+            onClick={() => setMobileNav(false)}
           >
             <Icon name="settings" size="sm" />
             <span>Utilisateurs & droits</span>
@@ -150,9 +167,18 @@ function AppContent() {
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu"><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
+        <header className="topbar"><button ref={mobileMenuRef} className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu" aria-controls="main-navigation" aria-expanded={mobileNav}><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
-          <div className="page-heading"><div><p className="eyebrow">LUNDI 20 SEPTEMBRE 2026</p><h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1><p className="heading-copy">Voici ce qui se passe dans votre dépôt aujourd’hui.</p></div><button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle opération <Icon name="chevron-down" size="sm" /></button></div>
+          {location.pathname === '/' && (
+            <div className="page-heading">
+              <div>
+                <p className="eyebrow">{lastUpdated ? lastUpdated.toLocaleDateString('fr-FR', { dateStyle: 'full', timeZone: 'Europe/Paris' }) : 'Votre dépôt'}</p>
+                <h1>Bonjour {user.prenom} <Icon name="star" size="sm" /></h1>
+                <p className="heading-copy">Voici ce qui se passe dans votre dépôt aujourd’hui.</p>
+              </div>
+              <button className="primary-button"><Icon name="plus" size="sm" /> Nouvelle opération <Icon name="chevron-down" size="sm" /></button>
+            </div>
+          )}
           <div className="status-line">
             <span className={`status-dot ${apiMode === 'connected' ? 'connected' : apiMode === 'error' ? 'error' : ''}`}></span>
             {apiMode === 'connected'

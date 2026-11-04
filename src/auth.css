@@ -1,107 +1,44 @@
-/* =============================================================================
-   Semaine 3 : authentification
-   -----------------------------------------------------------------------------
-   Écran de connexion et état de vérification de session.
-   ========================================================================== */
-
-/* Attente de la vérification de session au chargement. Évite l'affichage
-   du formulaire de connexion avant de savoir si une session existe. */
+/* Connexion et attente de session, avec les mêmes tokens que les vues métier. */
 .boot-screen {
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 14px;
+  gap: 16px;
   min-height: 100vh;
-  background: var(--color-surface-sunken);
   color: var(--text-muted);
-  font-size: 12px;
+  background: var(--color-background);
 }
+
 .boot-spinner {
-  width: 26px;
-  height: 26px;
-  border: 2px solid var(--color-muted);
-  border-top-color: var(--color-primary);
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-block-start-color: var(--color-primary);
   border-radius: 50%;
-  animation: boot-spin .7s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .boot-spinner { animation: boot-spin 800ms linear infinite; }
 }
 @keyframes boot-spin { to { transform: rotate(360deg); } }
 
-/* Carte de connexion : largeur bornee, centree verticalement. */
-.login-screen {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
-  padding: 24px 18px;
-  background: var(--color-surface-sunken);
-}
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  padding: 32px 30px 26px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-card);
-  box-shadow: var(--shadow-lg);
-}
-.login-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 22px;
-  color: var(--text-strong);
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 2.2px;
-}
-.login-card h1 {
-  margin: 0 0 6px;
-  color: var(--text-strong);
-  font-family: var(--font-display);
-  font-size: 21px;
-  font-weight: 500;
-}
-.login-card .heading-copy { margin: 0 0 20px; color: var(--text-muted); font-size: 12px; line-height: 1.55; }
-.login-card .form-group { margin-bottom: 14px; }
-.login-submit { width: 100%; justify-content: center; margin-top: 6px; }
-.login-submit:disabled { opacity: .6; cursor: not-allowed; }
+.login-screen { display: grid; place-items: center; min-height: 100vh; min-height: 100dvh; padding: 32px 20px; background: var(--color-background); }
+.login-card { width: min(440px, 100%); padding: 32px; border: 1px solid var(--color-border); border-block-start: 4px solid var(--color-primary); border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-md); }
+.login-brand { margin-block-end: 28px; color: var(--text-strong); }
+.login-card h1 { margin: 0 0 12px; font-family: var(--font-display); font-size: 23px; font-weight: 500; letter-spacing: -.5px; }
+.login-card .heading-copy { margin: 0 0 24px; }
+.login-card .form-group { margin-block-end: 18px; }
+.login-submit { width: 100%; margin-block-start: 4px; }
+.login-demo { margin-block-start: 28px; padding-block-start: 20px; border-block-start: 1px solid var(--color-border); }
+.login-demo p { margin: 0 0 14px; color: var(--text-muted); font-size: 12px; }
+.login-demo code { padding: 2px 5px; border-radius: var(--radius-sm); color: var(--text-strong); background: var(--color-muted); font-family: var(--font-mono); }
+.login-demo ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.login-demo button { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; width: 100%; min-height: 40px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--text-muted); background: var(--color-surface-sunken); text-align: start; font-size: 12px; }
+.login-demo button b { color: var(--text-strong); font-weight: 500; }
+.login-demo button:hover { border-color: var(--color-primary); background: var(--status-info-bg); }
 
-/* Rappel des comptes de demonstration. Utile en developpement, a retirer
-   ou a remplacer par un texte d'aide en production. */
-.login-demo {
-  margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
+@media (max-width: 480px) {
+  .login-screen { padding: 20px 16px; }
+  .login-card { padding: 24px; }
+  .login-card h1 { font-size: 21px; }
 }
-.login-demo p {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 9px;
-  color: var(--text-muted);
-  font-size: 10px;
-}
-.login-demo code {
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: var(--color-muted);
-  font-family: var(--font-mono);
-  font-size: 10px;
-}
-.login-demo ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
-.login-demo button {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  color: var(--text-muted);
-  text-align: left;
-  font-size: 10px;
-  cursor: pointer;
-  transition: border-color .15s, color .15s;
-}
-.login-demo button:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.login-demo button b { color: var(--text-strong); font-weight: 600; }

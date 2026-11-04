@@ -1,0 +1,1595 @@
+{
+  "checks": 451,
+  "failures": [],
+  "results": [
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/catalogue",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/stock",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/receptions",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/ventes-comptoir",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/caisse",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 244, 220)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/commandes-clients",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/livraisons",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/retours",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/clients",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/fournisseurs",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/vehicules",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 375,
+      "path": "/utilisateurs",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/catalogue",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/stock",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/receptions",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/ventes-comptoir",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/caisse",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 244, 220)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/commandes-clients",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/livraisons",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/retours",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/clients",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/fournisseurs",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/vehicules",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "path": "/utilisateurs",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/catalogue",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/stock",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/receptions",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/ventes-comptoir",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/caisse",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 244, 220)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/commandes-clients",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/livraisons",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/retours",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/clients",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/fournisseurs",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/vehicules",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "path": "/utilisateurs",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/catalogue",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/stock",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/receptions",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/ventes-comptoir",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/caisse",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 255, 255)",
+        "rgb(255, 244, 220)",
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/commandes-clients",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/livraisons",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/retours",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/clients",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/fournisseurs",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/vehicules",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "path": "/utilisateurs",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(255, 255, 255)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "light",
+      "states": {
+        "border": "rgb(185, 28, 28)",
+        "errorColor": "rgb(185, 28, 28)",
+        "outline": "solid",
+        "transition": "0s",
+        "checkbox": {
+          "width": 18,
+          "height": 18
+        },
+        "fontSize": "16px"
+      },
+      "contrasts": [
+        {
+          "foreground": "--text-strong",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 13.478314600924653
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 14.102034448456891
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 12.87249027716568
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 12.104451783585057
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 9.896764973632585
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 10.35474573184942
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 9.451924418631656
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 8.88797434870609
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 5.95191726361851
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 6.2273470215745945
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 5.684390027605361
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 5.345230295515975
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 5.264146860633911
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 5.507749490081115
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 5.027533581716035
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 4.7275652589295145
+        },
+        {
+          "foreground": "--status-success",
+          "background": "--status-success-bg",
+          "minimum": 4.5,
+          "ratio": 6.536724725442783
+        },
+        {
+          "foreground": "--status-warning",
+          "background": "--status-warning-bg",
+          "minimum": 4.5,
+          "ratio": 6.491018510269233
+        },
+        {
+          "foreground": "--status-info",
+          "background": "--status-info-bg",
+          "minimum": 4.5,
+          "ratio": 7.83569125677895
+        },
+        {
+          "foreground": "--status-danger",
+          "background": "--status-danger-bg",
+          "minimum": 4.5,
+          "ratio": 5.889675463818466
+        },
+        {
+          "foreground": "--color-on-primary",
+          "background": "--color-primary",
+          "minimum": 4.5,
+          "ratio": 8.722410784954462
+        },
+        {
+          "foreground": "--color-on-primary",
+          "background": "--color-primary-hover",
+          "minimum": 4.5,
+          "ratio": 10.357982247884618
+        },
+        {
+          "foreground": "--color-on-accent",
+          "background": "--color-accent",
+          "minimum": 4.5,
+          "ratio": 5.520580785538175
+        },
+        {
+          "foreground": "--color-on-destructive",
+          "background": "--status-danger",
+          "minimum": 4.5,
+          "ratio": 6.4700447145121895
+        },
+        {
+          "foreground": "--color-sidebar-text",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 10.60318874754372
+        },
+        {
+          "foreground": "--color-sidebar-text-strong",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 14.951249237718372
+        },
+        {
+          "foreground": "--color-sidebar-muted",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 7.588281413156921
+        },
+        {
+          "foreground": "--color-border-strong",
+          "background": "--color-surface",
+          "minimum": 3,
+          "ratio": 3.247731657739689
+        },
+        {
+          "foreground": "--color-ring",
+          "background": "--color-surface",
+          "minimum": 3,
+          "ratio": 8.722410784954462
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/catalogue",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/stock",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/receptions",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/ventes-comptoir",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/caisse",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(63, 48, 26)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/commandes-clients",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/livraisons",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/retours",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/clients",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/fournisseurs",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/vehicules",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "path": "/utilisateurs",
+      "scroll": 375,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "305px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/catalogue",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/stock",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/receptions",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/ventes-comptoir",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/caisse",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(63, 48, 26)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/commandes-clients",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/livraisons",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/retours",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/clients",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/fournisseurs",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/vehicules",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "path": "/utilisateurs",
+      "scroll": 768,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "698px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/catalogue",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/stock",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/receptions",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/ventes-comptoir",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/caisse",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(63, 48, 26)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/commandes-clients",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/livraisons",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/retours",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/clients",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/fournisseurs",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/vehicules",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "path": "/utilisateurs",
+      "scroll": 1024,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "332.281px 332.281px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/catalogue",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/stock",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/receptions",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/ventes-comptoir",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/caisse",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(22, 35, 56)",
+        "rgb(63, 48, 26)",
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": null
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/commandes-clients",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/livraisons",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/retours",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/clients",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/fournisseurs",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/vehicules",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "path": "/utilisateurs",
+      "scroll": 1440,
+      "headings": 1,
+      "cards": [
+        "rgb(22, 35, 56)"
+      ],
+      "formColumns": "519px 519px"
+    },
+    {
+      "theme": "dark",
+      "states": {
+        "border": "rgb(253, 164, 175)",
+        "errorColor": "rgb(253, 164, 175)",
+        "outline": "solid",
+        "transition": "0s",
+        "checkbox": {
+          "width": 18,
+          "height": 18
+        },
+        "fontSize": "16px"
+      },
+      "contrasts": [
+        {
+          "foreground": "--text-strong",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 16.395126153896744
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 14.425918652856954
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 15.6486274321021
+        },
+        {
+          "foreground": "--text-strong",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 11.338249459117115
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 13.708541559262445
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 12.062017914770742
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 13.084367725185178
+        },
+        {
+          "foreground": "--text-body",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 9.480309115075004
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 9.805473420704654
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 8.62774464752845
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 9.359013094236984
+        },
+        {
+          "foreground": "--text-muted",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 6.78109473907693
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-background",
+          "minimum": 4.5,
+          "ratio": 8.85622180703297
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-surface",
+          "minimum": 4.5,
+          "ratio": 7.792507002427061
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-surface-sunken",
+          "minimum": 4.5,
+          "ratio": 8.452982564051684
+        },
+        {
+          "foreground": "--text-faint",
+          "background": "--color-muted",
+          "minimum": 4.5,
+          "ratio": 6.124628207849846
+        },
+        {
+          "foreground": "--status-success",
+          "background": "--status-success-bg",
+          "minimum": 4.5,
+          "ratio": 8.777625506894132
+        },
+        {
+          "foreground": "--status-warning",
+          "background": "--status-warning-bg",
+          "minimum": 4.5,
+          "ratio": 9.178866885652404
+        },
+        {
+          "foreground": "--status-info",
+          "background": "--status-info-bg",
+          "minimum": 4.5,
+          "ratio": 6.860620806539489
+        },
+        {
+          "foreground": "--status-danger",
+          "background": "--status-danger-bg",
+          "minimum": 4.5,
+          "ratio": 7.077815224178245
+        },
+        {
+          "foreground": "--color-on-primary",
+          "background": "--color-primary",
+          "minimum": 4.5,
+          "ratio": 8.498749950403491
+        },
+        {
+          "foreground": "--color-on-primary",
+          "background": "--color-primary-hover",
+          "minimum": 4.5,
+          "ratio": 10.462150525975936
+        },
+        {
+          "foreground": "--color-on-accent",
+          "background": "--color-accent",
+          "minimum": 4.5,
+          "ratio": 10.535506478069571
+        },
+        {
+          "foreground": "--color-on-destructive",
+          "background": "--status-danger",
+          "minimum": 4.5,
+          "ratio": 8.253032173390041
+        },
+        {
+          "foreground": "--color-sidebar-text",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 13.052967008895894
+        },
+        {
+          "foreground": "--color-sidebar-text-strong",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 18.405610584544874
+        },
+        {
+          "foreground": "--color-sidebar-muted",
+          "background": "--color-sidebar",
+          "minimum": 4.5,
+          "ratio": 9.341490498610668
+        },
+        {
+          "foreground": "--color-border-strong",
+          "background": "--color-surface",
+          "minimum": 3,
+          "ratio": 4.473610868664314
+        },
+        {
+          "foreground": "--color-ring",
+          "background": "--color-surface",
+          "minimum": 3,
+          "ratio": 8.964222241364121
+        }
+      ]
+    }
+  ],
+  "pageErrors": []
+}

@@ -1,5 +1,55 @@
 # Passation — Autostrass App
 
+## Refonte CSS bleu et ambre — 2026-11-04
+
+**Direction validée** : reprise large de l'apparence avec la palette bleu et
+ambre du design system. Les tokens clair/sombre sont centralisés ; la
+structure, les formulaires, tableaux, boutons, messages, modales et la
+connexion partagent désormais les mêmes rôles de couleur. Les surcharges
+de `modern-enhancements.css` sont supprimées, avec des feuilles dédiées
+`components.css` et `forms.css`.
+
+**Navigation et lisibilité** : un titre principal par vue, date du dashboard
+issue de la synchronisation, accès rapides stylés comme des liens, menu
+mobile refermé par navigation, fond ou Échap avec restitution du focus.
+Les icônes du catalogue utilisent le composant SVG commun. Les modales de
+stock sont centrées, les tableaux défilent dans leur panneau et les champs
+d'erreur conservent leur priorité visuelle.
+
+**Validation** : `npm run build` et `npm run lint` réussis. Six feuilles
+analysées avec PostCSS, aucune variable CSS manquante. Chromium/Playwright :
+**451 contrôles réussis**, dont 104 rendus (13 vues, largeurs 375/768/1024/1440,
+clair et sombre), sans débordement horizontal de page ni erreur JavaScript.
+Modale transfert mobile, menu, focus, erreurs du catalogue, cases à cocher,
+cible tactile, réduction des animations et thème automatique vérifiés.
+Les 29 couples de couleurs mesurés par thème dépassent 4,5:1 pour les textes
+et 3:1 pour les bordures de champs/focus. La cascade d'erreur reste prioritaire
+même lorsque le champ a le focus.
+
+La campagne utilise des réponses API fictives, **sans écriture ni connexion
+MariaDB** ; les tests backend n'ont pas été relancés pour cette refonte.
+Les douze captures et le relevé JSON sont dans `specs/screenshots/css-review/`.
+La méthode et l'organisation des styles sont documentées dans
+`specs/css-review.md`, le README et le design system. CSS compilé :
+**32,57 kB**, contre 39,06 kB avant ; avertissement JS préexistant : 522,94 kB.
+
+**Graphify** : `graphify update .` (0.9.102) a actualisé le graphe du code :
+**2 532 nœuds, 4 826 liens, 174 communautés**. Aucun lien orphelin ; empreintes
+AST des quatre TSX modifiés conformes au disque. JSON, HTML, rapport,
+métadonnées et sauvegarde datée actualisés. Les limites persistent :
+11 SQL sans `tree_sitter_sql`, 62 fichiers non classifiés (dont du CSS),
+analyse sémantique des documents/images non relancée. Le graphe ne décrit
+pas les sélecteurs CSS. Le paquet CLI est plus récent que sa skill Copilot
+locale ; aucune installation globale n'a été modifiée.
+
+**Suite** : les messages Zod techniques exposés lors d'une soumission vide
+du catalogue restent à normaliser dans un chantier de validation. La feuille
+de route métier précédente (inventaire physique, devis, commandes
+fournisseurs) reste à reprendre. Aucune migration ni modification backend
+dans cette intervention ; les services de vérification ont été arrêtés.
+
+---
+
 ## Reprise et fiabilisation des transferts de stock — 2026-11-04
 
 **Reprise** : lecture de la passation, de la feuille de route, des consignes
