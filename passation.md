@@ -1,5 +1,34 @@
 # Passation — Autostrass App
 
+## Lecture de la passation et actualisation Graphify — 2026-11-04
+
+**Action** : lecture intégrale de cette passation et des consignes du dépôt.
+Les entrées du 1er novembre précisent le dernier état documenté : vue
+Fournisseurs montée, contrat CRUD corrigé et build/lint validés. Le
+redémarrage de l'API après ce correctif reste à confirmer. Les défauts de
+transfert de stock, l'inventaire physique, les devis et les commandes
+fournisseurs complètes restent les principaux points ouverts. Les sections
+historiques contiennent des contradictions et un doublon Modern CSS ;
+vérifier le code avant de reprendre leurs affirmations d'achèvement.
+
+**Graphify** : le graphe du 25 octobre était fondé sur `8a2864a0`, avant les
+derniers changements applicatifs. `graphify update .` (CLI 0.9.102) a
+actualisé l'analyse du code au commit `e0687bd9` : **2 484 nœuds, 4 744 liens
+et 158 communautés**. Le JSON, la visualisation HTML, le rapport et les
+métadonnées sont actualisés ; Graphify a sauvegardé l'état précédent dans
+`graphify-out/2026-11-04/` et renouvelé son cache AST. L'analyse sémantique
+des documents n'a pas été relancée. Les limites persistent : 11 fichiers SQL
+sans analyse structurelle faute de `tree_sitter_sql`, 61 fichiers non
+classifiés et certains libellés de communautés dérivés de leur nœud central.
+
+**Validation** : les 4 744 liens référencent des nœuds présents ; les empreintes
+AST correspondent au contenu actuel des sept fichiers applicatifs modifiés
+depuis le précédent graphe. `git diff --check` réussi. Cette action
+porte sur la documentation et les artefacts Graphify ; aucun test applicatif,
+redémarrage de service ni accès en écriture à la base n'a été effectué.
+
+---
+
 ## Correction de l'API Fournisseurs — 2026-11-01
 
 **Problème** : `GET /api/fournisseurs` échoue avec
