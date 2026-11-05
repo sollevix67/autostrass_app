@@ -1356,9 +1356,9 @@
     "semantic_hash": "6a05d157ecdd78377c046786c402c8b6"
   },
   "TODO.md": {
-    "mtime": 1792928607.3722684,
-    "seen": 1792931406.9847672,
-    "ast_hash": "cfea805b6091183d35ebb4c78f863f2c",
+    "mtime": 1793903882.4243083,
+    "seen": 1793904312.1007452,
+    "ast_hash": "2353416589b8032785088dc62d4e927f",
     "semantic_hash": ""
   },
   "build_errors.txt": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1793825924.9473922,
-    "seen": 1793825932.0474355,
-    "ast_hash": "2b0083ac9dfdc239010a70ad451e0692",
+    "mtime": 1793904392.061275,
+    "seen": 1793904448.2600837,
+    "ast_hash": "f44b80108a77dfdb930f81e2f480a743",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1701,6 +1701,12 @@
     "mtime": 1793825927.5203178,
     "seen": 1793825932.0317981,
     "ast_hash": "3958473dc7a36936278b2180ecec0c9c",
+    "semantic_hash": ""
+  },
+  "specs/parametres-roadmap.md": {
+    "mtime": 1793904304.432905,
+    "seen": 1793904312.1021485,
+    "ast_hash": "4cb785e5336ba74e7ffb6a4786b8f82c",
     "semantic_hash": ""
   },
   "package-lock.json": {

@@ -1,5 +1,50 @@
 # Passation — Autostrass App
 
+## Mise à jour de la feuille de route Paramètres — 2026-11-05
+
+**Demande** : analyser l'existant et mettre à jour la feuille de route après
+les cinq ajouts à `TODO.md` : emplacements, secteurs de livraison, catégories
+et sous-catégories, certificats HTTPS et Cloudflare Turnstile.
+
+**Analyse** : la gestion des emplacements existe dans Stock ; HTTPS est
+partiellement pris en charge au démarrage de l'API. Les catégories sont
+codées en dur, les secteurs et sous-catégories n'ont pas de référentiel et
+Turnstile est absent. Aucun écran Paramètres n'est monté. Les trois exigences
+antérieures (base de données, limites API, limites de connexion) sont aussi
+reprises pour décrire le module complet.
+
+**Livrable** : [`specs/parametres-roadmap.md`](specs/parametres-roadmap.md)
+rapproche les huit exigences du code existant et définit sept lots avec
+dépendances, critères de validation et arbitrages à traiter pendant leur
+implémentation. Les lignes Stock, Livraisons et Paramètres du tableau de
+la section 5 sont corrigées sur les points vérifiés. Les autres modules
+n'ont pas fait l'objet d'un nouvel audit.
+
+**Points à reprendre** : les limiteurs d'authentification se cumulent ; l'un
+cherche `login` alors que le contrat envoie `email` et compte toutes les
+routes `/api/auth`. L'API HTTPS conserve un listener HTTP sans redirection,
+et le frontend Vite n'est pas configuré en HTTPS. Ces constats guident les
+lots futurs ; ils ne sont pas corrigés dans cette intervention documentaire.
+
+**Validation** : lecture croisée du code, des schémas et des migrations ;
+les 11 liens locaux de la nouvelle feuille de route sont valides et
+`git diff --check` réussit. Aucun changement applicatif, migration ou
+écriture MariaDB ; aucun test applicatif relancé pour cette documentation.
+Le contenu ajouté par l'utilisateur dans `TODO.md` est conservé.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré le JSON, le HTML et
+le rapport : **2 545 nœuds, 4 842 liens, 163 communautés**. Aucun identifiant
+dupliqué ni lien orphelin ; les empreintes AST des **86 fichiers TypeScript**
+applicatifs et scripts correspondent au disque. Métadonnées, cache AST et
+sauvegarde du 2026-11-05 actualisés. Limites : 11 SQL sans parseur, 62 fichiers
+non classifiés et analyse sémantique des documents non relancée. Les ajouts
+de `TODO.md` et cette feuille de route ne sont donc pas encore décrits par
+de nouveaux liens sémantiques. Le graphe est fondé sur le code de `423417a9`,
+inchangé par cette intervention. Le CLI a aussi actualisé automatiquement
+sa skill Claude locale de 0.9.102 vers 0.9.103.
+
+---
+
 ## Échap dans la fenêtre Clients de l'aperçu intégré — 2026-11-04
 
 **Signalement** : Échap ne ferme pas la fenêtre dans l'aperçu intégré.
@@ -646,6 +691,12 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 > Cette section en reprend les 13 modules et indique, pour chacun, ce qui
 > manque. Les sections 1 à 4 décrivent l'historique ; celle-ci décrit
 > l'avenir et n'est donc plus organized par semaine.
+>
+> **Actualisation ciblée du 2026-11-05** : les nouveaux paramètres et leurs
+> dépendances sont détaillés dans [`specs/parametres-roadmap.md`](specs/parametres-roadmap.md).
+> Les lignes Stock, Livraisons et Paramètres ci-dessous reprennent les points
+> vérifiés dans cette analyse ; les statuts des autres modules restent
+> historiques et n'ont pas été réaudités.
 
 ### 📊 Avancement global : **3 modules terminés / 13**
 
@@ -656,24 +707,24 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 | Module du cahier des charges | Persistance | Écart restant |
 |---|---|---|
-| Stock (backend) | 🟡 En cours | Migration de `articles.location` vers `emplacement_id` terminée ; lecture authentifiée et affichage du stock cumulé par allée → étagère → place ajoutés dans la première tranche. Gestion CRUD des emplacements, transferts et inventaire physique restent à implémenter |
+| Stock (backend) | 🟡 En cours | CRUD des emplacements et transferts présents ; transferts fiabilisés et validés le 2026-11-04. Restent l'inventaire physique et l'accès à la gestion des emplacements depuis le futur module Paramètres |
 | Catalogue (frontend) | 🟡 En cours | Manquent : TVA et prix TTC, état du stock avec forcing "Sur commande", délai de disponibilité, recherche par EAN13, compatibilité par immatriculation/VIN (API) |
 | Caisse (backend) | ✅ Terminé | Contrôle du fond de caisse, comptage billet par billet, clôture avec écart et conformité NF525 terminés ; documents PDF (factures, bons de commande, etc.) en étape 3 |
 | Devis (backend) | ❌ Non commencé | Tout le module : numérotation, création/modification, envoi email/WhatsApp, transformation en commande client |
 | Commande et réception fournisseurs (backend) | 🟡 En cours | Réceptions : lien vers carnet fournisseurs manquant. Commandes fournisseurs : module non commencé (blocage par heures, attribution automatique, gestion liste articles, filtrage) |
 | Commande client (backend) | 🟡 En cours | API commande client présente ; édition des bons de commande en PDF manquante (étape 3) |
-| Livraisons (backend) | 🟡 En cours | Génération automatique des bons de livraison dès réception des articles à implémenter ; numérotation unique et gestion des secteurs/tournées partiellement présentes |
+| Livraisons (backend) | 🟡 En cours | CRUD lié aux commandes, transporteur, dates, adresse et statut présents. Bons de livraison automatiques, numérotation métier, secteurs et tournées à implémenter ; aucun référentiel secteur/tournée trouvé lors de l'analyse du 2026-11-05 |
 | Retours client (backend) | 🟡 En cours | Édition des avoirs à implémenter ; numérotation unique des avoirs, remise en stock partielle, génération de bons de livraison pour retours refusés avec motifs à implémenter |
 | Carnet d'adresses clients (backend) | 🟡 En cours | API clients présente ; autocomplétion d'adresse via api-adresse.data.gouv.fr et recherche par numéro SIREN/SIRET manquantes, suivi client (devis, commandes, livraisons, factures) à implémenter, suspension/limitation du compte et attribution secteur tournée manquants |
 | Carnet d'adresses des fournisseurs (backend) | ✅ Terminé | Entité fournisseurs créée (table `fournisseurs`), repository `FournisseurRepository`, routes `/api/fournisseurs` (CRUD, rôle `depot_write`), schéma Zod `fournisseurBodySchema` / `fournisseurPatchSchema`, contrat `ApiFournisseur`, vue `FournisseursView.tsx` (liste, création, édition, suppression, RBAC), composant `FormCheckbox`. Dépendances : `DELIVERY_MODES` depuis `schema_step2.ts`, `useResource` hook générique, `canWrite('depot')`. |
 | Véhicules (backend) | 🟡 En cours | API véhicules présente ; suivi kilométriques, entretiens et réparation, suivi carburant (consommation, prix par km) manquants |
 | Personnels (backend) | ❌ Non commencé | Gestion des plannings, horaires de travail, accès aux modules, profils utilisateur à créer |
-| Paramètres (backend) | ❌ Non commencé | Configuration de la base de données, gestion des migrations à créer |
+| Paramètres (backend) | 🟡 Socles existants, écran absent | Base configurée par `DB_*`, migrations disponibles, limiteurs dans le code, emplacements administrables dans Stock et support HTTPS partiel. À livrer : écran et configuration, limites réglables, accès aux emplacements, référentiels secteurs/catégories/sous-catégories, gestion des certificats et Turnstile. Voir les lots PARAM-01 à PARAM-07 dans `specs/parametres-roadmap.md` |
 
-> **Point clé** : le backend des 8 métiers est terminé (tables, repositories,
-> routes, RBAC, validation) et le frontend est désormais branché dessus. Ce
-> qui manque est presque toujours du **modèle de données** (étape 2) ou des
-> **documents PDF** (étape 3) — plus de travail d'interface.
+> **Lecture du tableau** : un CRUD existant ne signifie pas que le module
+> répond à tout le cahier des charges. Les écarts métier restent décrits
+> ligne par ligne ; le chantier Paramètres ajoute notamment un écran
+> d'administration, des référentiels et des intégrations.
 
 ### 📋 Avancement de la checklist ui-ux-pro-max
 
@@ -798,6 +849,14 @@ SHA-256 chaînée, journal des événements système, mode dégradé, archivage 
 
 **Étape 6 — Qualité et production**
 Vitest + Playwright, `React.lazy`, logs structurés, CI/CD, CSP.
+
+**Chantier Paramètres — feuille de route ajoutée le 2026-11-05**
+Voir [`specs/parametres-roadmap.md`](specs/parametres-roadmap.md) : socle et
+base de données → accès aux emplacements existants → catégories et
+sous-catégories → secteurs → limites API/connexion → certificats HTTPS →
+Turnstile. Chaque lot précise ses dépendances et ses critères de validation.
+Cet ordre concerne Paramètres ; la priorité entre ce chantier et l'inventaire
+physique, les devis ou les commandes fournisseurs reste à fixer.
 
 ### ❓ Décisions en attente
 

@@ -74,3 +74,8 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
         - Base de données
         - Paramétrage des limites de requêtes API
         - Paramétrage des limites de tentatives de connexion
+        - Paramétrage des emplacements de stockage (allée, étagère, place)
+        - Paramétrage des secteurs de livraison
+        - Paramétrage des catégories et sous-catégories d'articles
+        - Paramétrage des certificats SSL pour le support HTTPS
+        - Paramétrage Cloudflare Turnstile
