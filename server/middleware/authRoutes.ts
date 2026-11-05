@@ -15,6 +15,8 @@ import { AUTH_COOKIE, authenticate, issueToken, verifyToken, AuthError, type Aut
 import { handler, parseBody } from './crud.js'
 import { loginBodySchema } from './schemas.js'
 import { issueCsrfCookie, rateLimit, CSRF_COOKIE_NAME } from './csrf.js'
+import { getSettings } from '../services/settingsStore.js'
+import { verifyTurnstile } from '../services/turnstile.js'
 
 /** Duree du cookie de session, alignee sur la duree du jeton (12 h). */
 const COOKIE_MAX_AGE_MS = 12 * 60 * 60 * 1000
@@ -38,6 +40,12 @@ const cookieOptions = {
 export function createAuthRouter(): Router {
   const router = Router()
 
+  router.get('/configuration', (_request, response) => {
+    const { enabled, siteKey } = getSettings().turnstile
+    response.setHeader('Cache-Control', 'no-store')
+    response.json({ enabled, siteKey: enabled ? siteKey : '' })
+  })
+
   router.post(
     '/login',
     // Limite avant toute vérification : c'est la seule action où un mot de
@@ -45,6 +53,7 @@ export function createAuthRouter(): Router {
     rateLimit(),
     handler(async (request, response) => {
       const value = parseBody(loginBodySchema, request.body)
+      await verifyTurnstile(getSettings().turnstile, value.turnstileToken, 'login')
       const user = await authenticate(value.email, value.motDePasse)
       const token = await issueToken(user)
       const csrf = issueCsrfCookie(response, useSecureCookies)

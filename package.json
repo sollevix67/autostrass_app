@@ -18,6 +18,7 @@
     "test:api": "tsx scripts/test-api.ts",
     "test:security": "tsx scripts/test-security.ts",
     "test:errors": "tsx scripts/test-error-mapping.ts",
+    "test:parametres": "tsx scripts/test-parametres-unit.ts && tsx scripts/test-parametres.ts --all",
     "test:stock": "tsx scripts/test-stock-transfers.ts",
     "test:integration": "tsx scripts/test-stock-transfers.ts --all",
     "test:caisse": "tsx scripts/verify-caisse.ts",

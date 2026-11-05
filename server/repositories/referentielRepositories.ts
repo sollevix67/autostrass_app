@@ -20,6 +20,7 @@ type Tables = typeof schema
 // ---------------------------------------------------------------------------
 
 export type ClientRow = {
+  secteurId: number | null
   id: number
   nom: string
   prenom: string
@@ -35,6 +36,7 @@ export type ClientRow = {
 }
 
 export type ClientInput = {
+  secteurId?: number | null
   nom: string
   prenom: string
   telephone: string
@@ -49,6 +51,7 @@ export type ClientInput = {
 
 function mapClient(raw: Record<string, unknown>): ClientRow {
   return {
+    secteurId: raw.secteur_id == null ? null : Number(raw.secteur_id),
     id: Number(raw.id),
     nom: String(raw.nom ?? ''),
     prenom: String(raw.prenom ?? ''),
@@ -69,6 +72,13 @@ export class ClientRepository {
 
   constructor(private readonly db: MySql2Database<Tables>) {
     this.base = new SimpleRepository(db, schema.clients, schema.clients.id, mapClient)
+  }
+
+  private async validateSecteur(id: number | null | undefined, clientId?: number) {
+    if (id == null) return
+    const [secteur] = await this.db.select().from(schema.secteursLivraison).where(eq(schema.secteursLivraison.id, id)).limit(1)
+    const previous = clientId ? await this.findById(clientId) : null
+    if (!secteur || (!secteur.actif && previous?.secteurId !== id)) throw new RepositoryError(422, 'UNKNOWN_REFERENCE', 'Choisissez un secteur actif.')
   }
 
   list(): Promise<ClientRow[]> {
@@ -93,6 +103,7 @@ export class ClientRepository {
    * deux numeros distincts — pas de collision.
    */
   async create(input: ClientInput): Promise<ClientRow> {
+    await this.validateSecteur(input.secteurId)
     const numero = input.numeroClient ?? `TMP-${crypto.randomUUID().slice(0, 8)}`
     const created = await this.base.create({
       nom: input.nom,
@@ -104,6 +115,7 @@ export class ClientRepository {
       code_postal: input.codePostal,
       type: input.type,
       numero_client: numero,
+      secteur_id: input.secteurId ?? null,
     } as never)
 
     if (input.numeroClient) return created
@@ -115,6 +127,7 @@ export class ClientRepository {
 
   /** Le numero de dossier est imuable : on le retire des mises a jour. */
   async update(id: number, input: Partial<ClientInput>): Promise<ClientRow | null> {
+    await this.validateSecteur(input.secteurId, id)
     const { numeroClient: _ignored, ...rest } = input
     try {
       const [result] = await this.db
@@ -128,6 +141,7 @@ export class ClientRepository {
           ...(rest.ville !== undefined && { ville: rest.ville }),
           ...(rest.codePostal !== undefined && { code_postal: rest.codePostal }),
           ...(rest.type !== undefined && { type: rest.type }),
+          ...(rest.secteurId !== undefined && { secteur_id: rest.secteurId }),
         })
         .where(eq(schema.clients.id, id))
       if (result.affectedRows === 0) return null

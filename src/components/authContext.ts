@@ -25,7 +25,7 @@ export type AuthContextValue = {
   status: AuthStatus
   /** Message d'erreur de la derniere tentative de connexion. */
   error: string | null
-  signIn: (email: string, motDePasse: string) => Promise<boolean>
+  signIn: (email: string, motDePasse: string, turnstileToken?: string) => Promise<boolean>
   signOut: () => Promise<void>
   /** Remplace l'utilisateur courant apres une modification de son compte. */
   refreshUser: () => Promise<void>

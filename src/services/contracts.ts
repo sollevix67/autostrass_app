@@ -6,6 +6,19 @@
  */
 
 import type { UserRole } from '../types'
+import type { ApiLimits, LoginLimits, DatabaseSettings, HttpsSettings } from '../schemas/parametres'
+
+export type ApiParametres = {
+  api: ApiLimits
+  login: LoginLimits
+  database: Omit<DatabaseSettings, 'password'> & { passwordConfigured: boolean; restartRequired: boolean }
+  turnstile: { enabled: boolean; siteKey: string; hostnames: string[]; secretConfigured: boolean }
+  https: Omit<HttpsSettings, 'certificatePem' | 'privateKeyPem'> & {
+    active: boolean; restartRequired: boolean; privateKeyConfigured: boolean
+    certificate: { subject: string; issuer: string; validFrom: string; validTo: string; fingerprint: string } | null
+  }
+  updatedAt: string | null
+}
 
 /** Reponse de `POST /api/auth/login`. */
 export type LoginResponse = {
@@ -43,6 +56,7 @@ export type ApiLine = {
 
 /** Client renvoye par `GET /api/clients`. */
 export type ApiClient = {
+  secteurId?: number | null
   id: number
   nom: string
   prenom: string

@@ -36,3 +36,6 @@ archives/
 
 # Certificats SSL auto-signes (developpement local uniquement)
 config/ssl/
+
+# Paramètres techniques et secrets administrés par l'application
+config/runtime/

@@ -1,0 +1,47 @@
+/* Navigation et vues du module Paramètres, palette du design system. */
+.parametres-layout { display: grid; grid-template-columns: minmax(190px, 230px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.parametres-content { min-width: 0; }
+.parametres-stack { display: grid; gap: 24px; }
+.parametre-fieldset { display: grid; gap: 16px; width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; }
+.parametre-checkbox { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 13px; }
+.parametre-editor > .parametre-detail { border-block-start: 1px solid var(--color-border); }
+.turnstile-widget { display: grid; gap: 10px; width: 100%; min-width: 0; }
+.parametres-nav { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.parametres-nav a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 12px; border-radius: var(--radius-sm); color: var(--text-body); font-size: 12px; text-decoration: none; }
+.parametres-nav a:hover { background: var(--color-surface-sunken); }
+.parametres-nav a.active { color: var(--color-primary); background: var(--status-info-bg); font-weight: 600; box-shadow: inset 3px 0 var(--color-primary); }
+.parametres-nav .icon { flex-shrink: 0; }
+.parametres-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.parametre-card { display: flex; flex-direction: column; align-items: start; gap: 14px; min-width: 0; padding: 22px; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--text-body); background: var(--color-surface); box-shadow: var(--shadow-sm); text-decoration: none; }
+.parametre-card:hover { border-color: var(--color-primary); }
+.parametre-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+.parametre-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: var(--radius-sm); color: var(--color-primary); background: var(--status-info-bg); }
+.parametre-card h2, .parametre-detail h2 { margin: 0; color: var(--text-strong); font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.parametre-card p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.parametre-card-action { display: flex; align-items: center; gap: 6px; margin-block-start: auto; color: var(--color-primary); font-size: 12px; font-weight: 500; }
+.parametre-detail { display: grid; justify-items: start; gap: 18px; padding: 24px; }
+.parametre-detail p { margin: 0; font-size: 13px; line-height: 1.7; }
+.parametre-detail h3 { margin: 0; color: var(--text-strong); font-size: 14px; }
+.parametre-features { margin: 0; padding-inline-start: 20px; font-size: 13px; line-height: 1.7; }
+.parametre-features li + li { margin-block-start: 8px; }
+.parametre-facts { display: grid; width: 100%; margin: 0; font-size: 13px; }
+.parametre-facts > div { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(0, 1.5fr); gap: 16px; padding-block: 14px; border-block-end: 1px solid var(--color-border); }
+.parametre-facts dt { color: var(--text-muted); }
+.parametre-facts dd { margin: 0; overflow-wrap: anywhere; }
+.parametre-categories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; margin: 0; padding: 0; list-style: none; }
+.parametre-categories li { padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; }
+
+@media (max-width: 1100px) {
+  .parametres-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .parametres-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+  .parametres-nav { display: flex; overflow-x: auto; overscroll-behavior-inline: contain; }
+  .parametres-nav a { flex-shrink: 0; white-space: nowrap; }
+  .parametre-detail { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .parametres-cards, .parametre-categories { grid-template-columns: minmax(0, 1fr); }
+  .parametre-card { padding: 20px; }
+  .parametre-facts > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}

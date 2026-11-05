@@ -160,6 +160,7 @@ const phone = (label: string, optional = false) => {
 // ---------------------------------------------------------------------------
 
 export const clientBodySchema = z.object({
+  secteurId: z.number().int().positive().nullable().optional(),
   nom: required('Le nom', 64),
   prenom: required('Le prenom', 64),
   telephone: phone('Le telephone'),
@@ -290,6 +291,7 @@ export const utilisateurPatchSchema = z.object({
  * hash bcrypt de plusieurs kilo-octets a calculer.
  */
 export const loginBodySchema = z.object({
+  turnstileToken: z.string().max(2048).optional(),
   email: email(),
   motDePasse: z
     .string({ message: 'Le mot de passe est requis.' })

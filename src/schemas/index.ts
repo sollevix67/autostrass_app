@@ -84,6 +84,7 @@ const pieceReference = z
 
 /** Reutilise par le catalogue, le stock et la vente comptoir. */
 export const articleSchema = z.object({
+  sousCategorieId: optionalRef('La sous-catégorie').optional(),
   reference: pieceReference,
   designation: required('La designation').max(255, 'La designation ne doit pas depasser 255 caracteres.'),
   category: z
@@ -95,7 +96,7 @@ export const articleSchema = z.object({
     (value) => value <= 1_000_000,
     'Prix trop eleve.',
   ),
-  tvaId: z.number({ message: 'La TVA est requise.' }).int().positive(),
+  tvaId: z.coerce.number({ message: 'La TVA est requise.' }).int().positive(),
   ean13: z
     .string()
     .trim()
@@ -103,14 +104,15 @@ export const articleSchema = z.object({
     .regex(/^[0-9]+$/, 'EAN13 doit contenir uniquement des chiffres')
     .optional()
     .or(z.literal(''))
+    .nullable()
     .transform((val) => val === '' ? null : val),
   emplacement: z
     .string()
     .trim()
     .max(64, 'Emplacement trop long.')
-    .optional()
-    .transform((val) => (val === '' || val === undefined) ? null : val),
-  description: optionalText('La description'),
+    .nullish()
+    .transform((val) => (val === '' || val == null) ? null : val),
+  description: optionalText('La description').nullish(),
   delaiDisponibilite: z.number({ message: 'Le délai de disponibilité est requis.' }).int().nonnegative(),
   forcerSurCommande: z.boolean(),
   prixUnitaireTTC: nonNegative('Le prix unitaire TTC').refine(

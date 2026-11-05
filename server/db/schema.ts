@@ -98,6 +98,28 @@ export const users = mysqlTable(
 export const CLIENT_TYPES = ['particulier', 'professionnel'] as const
 export type ClientType = (typeof CLIENT_TYPES)[number]
 
+export const secteursLivraison = mysqlTable('secteurs_livraison', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  code: varchar('code', { length: 64 }).notNull(),
+  libelle: varchar('libelle', { length: 128 }).notNull(),
+  actif: boolean('actif').notNull().default(true),
+}, (table) => [uniqueIndex('uq_secteurs_code').on(table.code)])
+
+export const categoriesArticles = mysqlTable('categories_articles', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  code: varchar('code', { length: 64 }).notNull(),
+  libelle: varchar('libelle', { length: 128 }).notNull(),
+  actif: boolean('actif').notNull().default(true),
+}, (table) => [uniqueIndex('uq_categories_code').on(table.code)])
+
+export const sousCategoriesArticles = mysqlTable('sous_categories_articles', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  categorieId: int('categorie_id', { unsigned: true }).notNull().references(() => categoriesArticles.id, { onDelete: 'restrict' }),
+  code: varchar('code', { length: 64 }).notNull(),
+  libelle: varchar('libelle', { length: 128 }).notNull(),
+  actif: boolean('actif').notNull().default(true),
+}, (table) => [uniqueIndex('uq_sous_categories_code').on(table.categorieId, table.code)])
+
 export const clients = mysqlTable(
   'clients',
   {
@@ -115,6 +137,7 @@ export const clients = mysqlTable(
      * par MariaDB (`AUTO_INCREMENT` sur la cle) et lisible pour un humain.
      */
     numero_client: varchar('numero_client', { length: 32 }).notNull(),
+    secteur_id: int('secteur_id', { unsigned: true }).references(() => secteursLivraison.id, { onDelete: 'restrict' }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

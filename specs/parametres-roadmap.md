@@ -1,103 +1,66 @@
-# Paramètres — état de l'existant et feuille de route
+# Paramètres — feuille de route et état livré
 
-Analyse du **5 novembre 2026**, à partir des cinq ajouts de
-[`TODO.md`](../TODO.md). Le périmètre retenu est l'analyse et la planification.
-Les constats proviennent du code ; ils ne constituent pas une nouvelle
-validation en fonctionnement. Aucun paramètre n'est implémenté par cette
-intervention.
-
-Le backend actuel est Express 5. La mention NestJS du cahier des charges
-est antérieure à ces ajouts ; une migration de framework n'est pas incluse
-dans cette feuille de route.
+Actualisation : **5 novembre 2026**. Les huit exigences de
+[`TODO.md`](../TODO.md) disposent désormais de vues, routes et sauvegardes.
+Le guide [Administration des paramètres](parametres.md) décrit l'utilisation,
+les API, la migration et les procédures de déploiement et de récupération.
 
 ## État des huit exigences
 
-Il n'existe ni vue Paramètres ni route `/parametres` dans
-[`App.tsx`](../src/App.tsx). L'entrée Administration mène à Utilisateurs &
-droits. Le module doit donc réunir des fonctions existantes et de nouveaux
-référentiels.
-
-| Exigence | Existant vérifié dans le code | Travail restant |
+| Exigence | Livraison | Prise d'effet |
 | --- | --- | --- |
-| Base de données | Pool MariaDB et Drizzle initialisés à partir de `DB_*` au démarrage dans [`client.ts`](../server/db/client.ts) ; scripts de migration existants. | Définir puis fournir le périmètre d'administration : état de connexion et configuration. Distinguer les paramètres de démarrage des paramètres modifiables en cours d'exécution. |
-| Limites de requêtes API | Limiteur global en mémoire, 100 requêtes par IP sur une fenêtre de 15 minutes ; plafond de 1 000 sous `NODE_ENV=test`. | Rendre les valeurs configurables, préciser la prise d'effet et conserver les réponses 429 avec `Retry-After`. |
-| Limites de tentatives de connexion | Limiteur sur `/api/auth` et compteur d'échecs sur `/login`, avec valeurs inscrites dans le code. | Harmoniser les compteurs et leur identité avant de les exposer dans Paramètres. |
-| Emplacements : allée → étagère → place **(ajout)** | Tables hiérarchiques, liste, création, modification et suppression via `/api/emplacements`, formulaires dans [`StockView.tsx`](../src/views/StockView.tsx). | Donner accès à cette gestion depuis Paramètres en réutilisant le même contrat et les mêmes données ; conserver les usages dans Stock. |
-| Secteurs de livraison **(ajout)** | Livraisons rattachées à une commande, avec transporteur, adresse, dates et statut. Aucun référentiel secteur/tournée ni rattachement client à un secteur trouvé dans les schémas, migrations ou API. | Créer le référentiel, son administration et le rattachement des clients. Préparer son utilisation par les futures tournées. |
-| Catégories et sous-catégories d'articles **(ajout)** | Sept catégories codées en dur dans [`CatalogueView.tsx`](../src/views/CatalogueView.tsx) ; `articles.category` est une chaîne persistée par [`articleRepository.ts`](../server/repositories/articleRepository.ts). Aucun référentiel de sous-catégories. | Créer les référentiels et leur relation parent/enfant, reprendre les valeurs existantes et alimenter le catalogue depuis l'API. |
-| Certificats SSL / HTTPS **(ajout)** | L'API charge `config/ssl/localhost.crt` et `localhost.key` au démarrage, si les deux existent ; port HTTPS configurable par `HTTPS_PORT`. | Définir la gestion des certificats, leur validation, leur renouvellement et leur activation. Couvrir aussi l'accès au frontend et le déploiement sur les terminaux. |
-| Cloudflare Turnstile **(ajout)** | Aucune intégration, variable dédiée, widget ni vérification serveur trouvés dans le code applicatif. | Ajouter la configuration et la vérification du challenge dans le parcours de connexion, avec activation explicite. |
+| Base de données | Formulaire serveur/port/base/utilisateur/mot de passe, test de connexion et des tables nécessaires, sauvegarde côté serveur, indication du redémarrage requis. | Prochain démarrage du pool commun Express/Drizzle. |
+| Limites API | Nombre de requêtes et fenêtre configurables par IP, réponses 429 et `Retry-After` conservés. | Requêtes suivantes ; fenêtre remise à zéro si sa durée change. |
+| Tentatives de connexion | Nombre d'échecs, fenêtre et blocage configurables par email normalisé. Succès réinitialisant le compteur ; `/me` et `/logout` exclus du compteur d'échecs. | Requêtes suivantes ; blocages en cours conservés jusqu'à échéance. |
+| Emplacements | Gestion allée → étagère → place partagée entre Stock et Paramètres ; parents numériques, capacité zéro, droits et refus de suppression préservés. | Immédiate, persistée dans MariaDB. |
+| Secteurs | CRUD, activation/désactivation et affectation facultative des clients. Suppression refusée si le secteur est utilisé. | Immédiate, persistée dans MariaDB. |
+| Catégories et sous-catégories | CRUD, lien parent/enfant et catalogue alimenté depuis l'API. Reprise des catégories historiques, codes stables, refus de suppression d'un élément utilisé. | Immédiate, persistée dans MariaDB. |
+| HTTPS | Import certificat/chaîne PEM et clé privée, contrôle de la paire et de la validité, état et échéance, port et politique HTTP. Express sert le site compilé et l'API. | Prochain démarrage ; maintien HTTP ou redirection 308. |
+| Cloudflare Turnstile | Clés et domaines, challenge avant activation, widget de connexion et Siteverify côté serveur avant création de session. | Immédiate ; échec fermé si le service est indisponible. |
 
-## Points qui conditionnent l'implémentation
+## Lots PARAM-01 à PARAM-07
 
-**Limitation des connexions.** Dans
-[`rateLimit.ts`](../server/middleware/rateLimit.ts), `authRateLimit()` compte
-tous les appels sous `/api/auth`, y compris les succès et les routes autres
-que `/login`. Son identité cherche un champ `login`, tandis que le formulaire
-et le schéma utilisent `email` : les requêtes actuelles retombent sur l'IP.
-Le compteur de [`csrf.ts`](../server/middleware/csrf.ts), monté sur `/login`
-dans [`authRoutes.ts`](../server/middleware/authRoutes.ts), compte les échecs
-par IP et famille de route, avec remise à zéro après réussite. Le plafond
-global s'ajoute aux deux. Le futur réglage doit définir une politique
-cohérente, notamment pour les caisses et PDA partageant une même IP.
-
-**HTTPS.** Le code de [`server/index.ts`](../server/index.ts) laisse aussi
-un serveur HTTP actif lorsque HTTPS est disponible ; ce serveur répond à
-l'application, sans redirection vers HTTPS. Les fichiers sont chargés une
-fois au démarrage. [`vite.config.ts`](../vite.config.ts) ne configure pas
-HTTPS pour le frontend et relaie `/api` vers HTTP sur le port 3001. Le support
-HTTPS de l'API ne suffit donc pas à déclarer un accès HTTPS complet au site
-ou une chaîne de confiance validée sur Zebra TC22.
-
-**Emplacements.** Les écritures API exigent authentification, CSRF et rôle
-magasinier (ou admin). La suppression refuse un emplacement avec enfants
-ou stock alloué. Une entrée dans Paramètres doit conserver ces règles et
-réutiliser la hiérarchie existante, sans créer un second référentiel.
-Le fonctionnement complet du formulaire n'a pas été retesté pendant cet
-audit documentaire.
-
-## Ordre d'implémentation proposé
-
-Cet ordre concerne le chantier Paramètres. Il n'annule pas les chantiers
-métier ouverts : inventaire physique, devis et commandes fournisseurs.
-Les identifiants ci-dessous servent au suivi ; tous les lots restent à faire.
-
-| Lot | Contenu et dépendances | Critères de validation |
+| Lot | État | Validation / complément de déploiement |
 | --- | --- | --- |
-| PARAM-01 — Socle et base de données | Créer la navigation et la vue Paramètres, les contrats et validations partagés. Restreindre les réglages techniques à l'administrateur. Séparer configuration de démarrage, secrets et paramètres métier persistés. Exposer l'état de la connexion MariaDB ; préciser la procédure de modification de `DB_*`. | Accès direct et navigation contrôlés ; erreurs de connexion compréhensibles ; aucun secret renvoyé au navigateur ; prise d'effet ou redémarrage requis explicite. |
-| PARAM-02 — Emplacements | Après PARAM-01, réutiliser ou extraire la gestion existante de Stock pour la rendre accessible depuis Paramètres. Garder les autorisations métier existantes. | Même hiérarchie visible dans les deux vues après rechargement ; création/édition cohérentes ; suppression refusée si enfants ou stock ; transferts inchangés. |
-| PARAM-03 — Catégories | Après PARAM-01, créer les tables et API des catégories/sous-catégories puis brancher le catalogue. Migrer les valeurs réellement présentes dans `articles.category`, y compris celles hors des sept options actuelles. | Aucune association article perdue ; choix de sous-catégorie limité à sa catégorie ; doublons et suppressions d'éléments utilisés gérés ; affichage et édition cohérents après rechargement. |
-| PARAM-04 — Secteurs | Après PARAM-01, créer les secteurs puis le rattachement facultatif des clients. Définir le contrat consommable par Livraisons ; la planification des tournées reste un chantier métier distinct. | Clients existants conservés sans affectation imposée ; secteur sélectionnable et persistant ; désactivation/suppression d'un secteur utilisé gérée ; contrat compatible avec les futures tournées. |
-| PARAM-05 — Limites API et connexion | Après PARAM-01, harmoniser les trois niveaux actuels et définir nombre, fenêtre, durée de blocage, identité et prise d'effet. Dimensionner les limites avec l'usage simultané de plusieurs terminaux. | Seuils et fenêtres testés ; succès/échecs comptés selon la politique retenue ; `/me` et `/logout` ne consomment pas le quota d'essais de mot de passe ; comportement derrière une IP partagée vérifié ; 429 et `Retry-After` conservés. |
-| PARAM-06 — Certificats HTTPS | Après PARAM-01, choisir la terminaison TLS (Node ou proxy), puis réaliser l'administration adaptée : statut, échéance, remplacement et activation des certificats. Conserver les clés privées hors du dépôt et des réponses API. | Paire certificat/clé valide ; remplacement invalide sans perte de la configuration précédente ; activation et renouvellement vérifiés ; politique HTTP explicite ; site et API utilisables en HTTPS sur le TC22. |
-| PARAM-07 — Turnstile | Après PARAM-01 et la définition de PARAM-05, ajouter clé publique, secret côté serveur et activation. Intégrer le widget à la connexion et la vérification serveur avant émission d'une session. Prévoir les domaines de développement et de production. | Jeton absent, invalide, expiré ou déjà utilisé refusé quand le service est activé ; indisponibilité externe traitée sans connexion autorisée par défaut ; secret jamais exposé ; connexion sans challenge uniquement lorsque désactivé ; limites et CSRF conservés. |
+| PARAM-01 — Socle et base de données | Livré | Neuf pages, accès contrôlés, erreurs explicites, écritures atomiques, concurrence et secrets masqués testés. Migration `0007` à appliquer sur chaque instance. |
+| PARAM-02 — Emplacements | Livré | Création puis relecture dans Stock et Paramètres ; droits, hiérarchie, suppression et 13 scénarios de transfert validés. |
+| PARAM-03 — Catégories | Livré | CRUD, unicité, inactivation, cohérence catégorie/sous-catégorie et persistance des articles testés. Codes historiques conservés, y compris vides ; ils restent administrables. |
+| PARAM-04 — Secteurs | Livré | Affectations client persistantes, retrait d'affectation et suppression protégée testés. |
+| PARAM-05 — Quotas | Livré | Paramètres appliqués à chaud, comptes distincts derrière une IP et remise à zéro après succès testés ; protections historiques conservées. |
+| PARAM-06 — HTTPS | Livré, recette matérielle restante | Paire valide/invalide, redémarrage, accès HTTPS au site et à l'API, redirection HTTP testés. Fournir un certificat reconnu et valider la chaîne sur les PDA réels. |
+| PARAM-07 — Turnstile | Livré, recette Cloudflare restante | Succès/refus/panne et hostname/action testés par simulation Siteverify ; widget, expiration, erreurs et transport contrôlés en navigateur avec simulation. Fournir les clés et domaines du compte Cloudflare pour la recette réelle. |
 
-Les référentiels devront être décrits dans les schémas Drizzle et accompagnés
-de migrations ; aucun schéma de table ni contrat d'API proposé ici n'est
-déjà livré. La reprise des catégories nécessite une migration des données,
-tandis que les secteurs doivent accepter les clients historiques non affectés.
+## Choix retenus et périmètre restant
 
-## Arbitrages à faire lors des lots concernés
+Les réglages techniques et leurs secrets résident dans un fichier local protégé,
+hors Git ; les référentiels métier résident dans MariaDB. Les écritures sont
+réservées aux administrateurs, sauf les emplacements, également accessibles
+aux magasiniers. Les lectures de référentiels nécessaires aux formulaires
+restent accessibles aux utilisateurs authentifiés.
 
-- Définir jusqu'où va « Base de données » : diagnostic, édition des réglages
-  de démarrage, ou changement de connexion avec procédure de redémarrage.
-  Le pool actuel est créé avant toute connexion utilisateur.
-- Choisir la terminaison HTTPS et le mode de fourniture/renouvellement des
-  certificats pour dimensionner l'écran d'administration.
-- Définir si un secteur de livraison est une affectation manuelle ou une
-  zone calculée à partir de codes postaux, ainsi que son lien aux tournées.
-- Définir le parcours d'authentification de la future application Android
-  avant d'étendre Turnstile au-delà de la connexion web.
+Le changement de base ne déplace ni ne copie les données : la base cible doit
+être préparée et migrée. HTTPS termine dans Node ; le renouvellement est manuel
+par remplacement de la paire PEM. La confiance du certificat sur les terminaux
+reste une étape de déploiement. Les compteurs de quotas sont en mémoire par
+processus et doivent être partagés si plusieurs instances sont déployées.
 
-## Vérification de cette analyse
+Les secteurs sont attribués manuellement aux clients. Les tournées, leur
+planification et leur intégration à Livraisons restent un chantier métier.
+L'authentification de la future application Android reste à définir si
+Turnstile est activé ; toute connexion à `/api/auth/login` est alors soumise
+au challenge, quel que soit le client.
 
-Lecture croisée de la navigation, des vues Stock/Catalogue/Livraisons/Connexion,
-des repositories, des schémas, migrations et middlewares d'authentification,
-ainsi que de la configuration Vite et du démarrage serveur. Recherche des
-références aux secteurs, tournées, sous-catégories et à Turnstile dans
-`src/`, `server/`, `database/`, `scripts/`, le README et `.env.example`.
+Les autres chantiers de `TODO.md` (inventaire physique, devis, commandes
+fournisseurs, etc.) conservent leurs priorités propres.
 
-Aucun accès à la base en fonctionnement, modification de configuration,
-test applicatif ou déploiement n'est nécessaire à cette analyse documentaire.
-Lors de l'implémentation, prévoir build/lint, tests d'API et de sécurité sur
-base jetable, puis contrôles navigateur adaptés aux lots livrés.
+## Vérifications
+
+Build, lint, typage strict des nouveaux scripts et traduction des erreurs SQL ;
+5 groupes unitaires et 8 groupes API Paramètres ; 123 contrôles API historiques,
+58 contrôles sécurité et 13 scénarios de transfert. Les essais MariaDB utilisent
+une instance et des bases jetables, sans changement de la base applicative.
+Les 336 contrôles navigateur passent ; les captures et le bilan sont dans
+[`screenshots/parametres/`](screenshots/parametres/).
+
+La migration n'a pas été appliquée à la base de l'application. Aucun certificat
+de production, compte Cloudflare réel ou Zebra physique n'a servi à la recette.

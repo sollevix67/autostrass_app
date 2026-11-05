@@ -70,6 +70,7 @@ export type UserRole = (typeof USER_ROLES)[number]
  * - prixUnitaireTTC : prix incluant les taxes
  */
 export interface Article {
+  sousCategorieId?: number | null
   reference: string
   designation: string
   category: string

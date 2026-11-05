@@ -14,6 +14,8 @@ import { useAuth } from '../components/useAuth'
 import { Icon } from '../components/Icon'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { z } from 'zod'
+import { TurnstileWidget } from '../components/TurnstileWidget'
+import { useRemoteValue } from '../hooks/useRemoteValue'
 
 /** Validation locale, en miroir de `loginBodySchema` cote serveur. */
 const loginSchema = z.object({
@@ -36,9 +38,14 @@ export function LoginView() {
   const [motDePasse, setMotDePasse] = useState('')
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [submitting, setSubmitting] = useState(false)
+  const configuration = useRemoteValue<{ enabled: boolean; siteKey: string }>('/auth/configuration')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [challengeError, setChallengeError] = useState<string | null>(null)
+  const [challengeRevision, setChallengeRevision] = useState(0)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submitting || configuration.loading || !configuration.data || (configuration.data.enabled && !turnstileToken)) return
 
     const parsed = loginSchema.safeParse({ email, motDePasse })
     if (!parsed.success) {
@@ -53,7 +60,8 @@ export function LoginView() {
 
     setFieldErrors({})
     setSubmitting(true)
-    await signIn(parsed.data.email, parsed.data.motDePasse)
+    const success = await signIn(parsed.data.email, parsed.data.motDePasse, turnstileToken || undefined)
+    if (!success) { setTurnstileToken(''); setChallengeRevision((value) => value + 1); configuration.reload() }
     setSubmitting(false)
   }
 
@@ -123,7 +131,11 @@ export function LoginView() {
             )}
           </div>
 
-          <button type="submit" className="primary-button login-submit" disabled={submitting}>
+          {configuration.loading && <p role="status">Chargement de la protection de connexion…</p>}
+          {configuration.error && <p className="error-banner" role="alert">{configuration.error}<button type="button" className="link-button" onClick={configuration.reload}>Réessayer</button></p>}
+          {!configuration.loading && configuration.data?.enabled && <TurnstileWidget siteKey={configuration.data.siteKey} action="login" onToken={setTurnstileToken} onError={setChallengeError} revision={challengeRevision} />}
+          {challengeError && <p className="error-banner" role="alert">{challengeError}</p>}
+          <button type="submit" className="primary-button login-submit" disabled={submitting || configuration.loading || !configuration.data || (configuration.data.enabled && !turnstileToken)}>
             {submitting ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>

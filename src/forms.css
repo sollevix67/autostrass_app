@@ -68,6 +68,8 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .confirm-message strong { color: var(--text-strong); }
 .modal-form { display: flex; flex-direction: column; gap: 18px; }
 .modal .form-actions { justify-content: flex-end; }
+.emplacement-dialog { width: min(540px, calc(100vw - 32px)); margin: auto; }
+.emplacement-dialog::backdrop { background: var(--color-overlay); }
 
 /* Création de client : dialogue natif, deux colonnes sur ordinateur. */
 .client-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }

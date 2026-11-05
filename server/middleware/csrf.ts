@@ -25,6 +25,7 @@
 
 import type { NextFunction, Request, Response } from 'express'
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
+import { getSettings } from '../services/settingsStore.js'
 
 const CSRF_COOKIE = 'autostrass_csrf'
 
@@ -149,18 +150,12 @@ interface Bucket {
 
 const buckets = new Map<string, Bucket>()
 
-/** Fenetre d'observation, en millisecondes. */
-const WINDOW_MS = 15 * 60 * 1000
-/** Nombre de tentatives tolerees par fenetre et par identite. */
-const MAX_ATTEMPTS = 10
-/** Duree du blocage apres depassement, en millisecondes. */
-const BLOCK_MS = 15 * 60 * 1000
-
 /**
- * Identite de tentatives : adresse IP. Suffisant pour un depot interne ou
- * l'API est sur un reseau prive.
+ * Identité : email normalisé et haché ; IP si l'email est absent.
  */
 function clientKey(request: Request): string {
+  const email = request.body?.email
+  if (typeof email === 'string' && email.trim()) return `compte:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex')}`
   return request.ip ?? request.socket.remoteAddress ?? 'inconnu'
 }
 
@@ -189,12 +184,12 @@ export function rateLimitState(request: Request): { attempts: number; blocked: b
   const bucket = buckets.get(bucketKey(request))
   if (bucket === undefined) return { attempts: 0, blocked: false }
   const now = Date.now()
-  prune(bucket, now, WINDOW_MS)
+  prune(bucket, now, getSettings().login.windowSeconds * 1000)
   return { attempts: bucket.hits.length, blocked: bucket.blockedUntil > now }
 }
 
 /**
- * Limite les tentatives par adresse IP sur la fenetre glissante.
+ * Limite les échecs par compte sur la fenêtre glissante configurée.
  *
  * Applique a `/api/auth/login` : c'est la seule action par laquelle un
  * attaquant peut obtenir un acces, et la seule ou un mot de passe peut etre
@@ -214,17 +209,7 @@ export function rateLimitState(request: Request): { attempts: number; blocked: b
  * legitime de « purger » ses erreurs precedentes.
  */
 export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?: number } = {}) {
-  const limit = options.limit ?? MAX_ATTEMPTS
-  const windowMs = options.windowMs ?? WINDOW_MS
-  const block = options.blockMs ?? BLOCK_MS
 
-  /**
-   * Enregistre un echec ; repond 429 si le compteur est epuise.
-   *
-   * `emitTooMany` repond via la fonction d'origine, **jamais** via
-   * `response.status`. Ce dernier est remplace, dans le middleware retour, par
-   * un wrapper qui rappelle `registerFailure` sur tout code >= 400 : y passer
-   * ferait boucler `status(429)` -> `registerFailure` -> `status(429)` jusqu'a
   /**
    * Enregistre un echec et indique si le compteur vient d'etre epuise.
    *
@@ -243,6 +228,10 @@ export function rateLimit(options: { limit?: number; windowMs?: number; blockMs?
    * consulte le retour de cette fonction.
    */
   function registerFailure(request: Request): boolean {
+    const configured = getSettings().login
+    const limit = options.limit ?? configured.maxAttempts
+    const windowMs = options.windowMs ?? configured.windowSeconds * 1000
+    const block = options.blockMs ?? configured.blockSeconds * 1000
     const key = bucketKey(request)
     const now = Date.now()
     const bucket = buckets.get(key) ?? { hits: [], blockedUntil: 0 }

@@ -50,6 +50,13 @@
       "when": 1791576117730,
       "tag": "0006_add_catalogue_fields_and_compatibilite",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1793906140483,
+      "tag": "0007_parametres_referentiels",
+      "breakpoints": true
     }
   ]
 }

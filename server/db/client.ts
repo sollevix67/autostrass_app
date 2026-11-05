@@ -10,19 +10,18 @@ import 'dotenv/config'
 import mysql from 'mysql2/promise'
 import { drizzle, type MySql2Database } from 'drizzle-orm/mysql2'
 import * as schema from './schema.js'
+import { effectiveDatabaseSettings } from '../services/settingsStore.js'
+
+const databaseSettings = effectiveDatabaseSettings()
 
 export const hasDatabaseConfig = Boolean(
-  process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER && process.env.DB_PASSWORD,
+  databaseSettings.host && databaseSettings.database && databaseSettings.user,
 )
 
 /** Pool MariaDB, ou `null` si la base n'est pas configuree. */
 export const pool = hasDatabaseConfig
   ? mysql.createPool({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT ?? 3306),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      ...databaseSettings,
       connectionLimit: 10,
       waitForConnections: true,
       connectTimeout: 5000,

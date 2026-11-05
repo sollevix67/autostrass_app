@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -7,8 +7,10 @@ import { useToast } from '../components/useToast'
 import { canWrite, useAuth } from '../components/useAuth'
 import { Icon } from '../components/Icon'
 import { useStock, type StockFilter } from '../hooks/useStock'
+import { useEmplacements } from '../hooks/useEmplacements'
+import { EmplacementsManager } from '../components/EmplacementsManager'
 import { api, isAbortError, toErrorMessage } from '../services/api'
-import type { ApiArticleEmplacements, ApiStockEmplacement, StockTransfertInput } from '../services/contracts'
+import type { ApiArticleEmplacements, StockTransfertInput } from '../services/contracts'
 import type { Article } from '../types'
 import { FormInput } from '../components/forms/FormFields'
 
@@ -17,14 +19,6 @@ const filters: Array<{ value: StockFilter; label: string }> = [
   { value: 'low', label: 'Sous le seuil' },
   { value: 'ok', label: 'Stock OK' },
 ]
-
-type EmplacementForm = {
-  code: string
-  libelle: string
-  niveau: 'allee' | 'etagere' | 'place'
-  capacite: string
-  parentId: string | null
-}
 
 type TransfertForm = {
   reference: string
@@ -63,24 +57,9 @@ export default function StockView() {
   const [savingEdit, setSavingEdit] = useState(false)
 
   /* ---------- Emplacements ---------- */
-  const [emplacements, setEmplacements] = useState<ApiStockEmplacement[]>([])
-  const [emplacementsLoading, setEmplacementsLoading] = useState(true)
-  const [emplacementsError, setEmplacementsError] = useState<string | null>(null)
+  const { emplacements, loading: emplacementsLoading, error: emplacementsError, reload: loadEmplacements } = useEmplacements()
 
   /* ---------- Modals ---------- */
-  const [openEmplacementModal, setOpenEmplacementModal] = useState(false)
-  const [emplacementModalMode, setEmplacementModalMode] = useState<'create' | 'edit'>('create')
-  const [emplacementModalItem, setEmplacementModalItem] = useState<ApiStockEmplacement | null>(null)
-  const [emplacementForm, setEmplacementForm] = useState<EmplacementForm>({
-    code: '',
-    libelle: '',
-    niveau: 'place',
-    capacite: '',
-    parentId: null,
-  })
-  const [emplacementFormError, setEmplacementFormError] = useState<string | null>(null)
-  const [savingEmplacement, setSavingEmplacement] = useState(false)
-
   const [openTransfertModal, setOpenTransfertModal] = useState(false)
   const [transfertForm, setTransfertForm] = useState<TransfertForm>({
     reference: '',
@@ -141,47 +120,19 @@ export default function StockView() {
     }
   }, [openTransfertModal, transfertReference])
 
-  /* ---------- Chargement des emplacements ---------- */
-  const loadEmplacements = useCallback(() => {
-    const controller = new AbortController()
-    api
-      .get<ApiStockEmplacement[]>('/emplacements', { signal: controller.signal })
-      .then((emplacements) => {
-        setEmplacements(emplacements)
-        setEmplacementsLoading(false)
-        setEmplacementsError(null)
-      })
-      .catch((err) => {
-        if (isAbortError(err)) return
-        setEmplacementsError(toErrorMessage(err))
-        setEmplacementsLoading(false)
-      })
-    return () => controller.abort()
-  }, [])
-
-  useEffect(() => {
-    loadEmplacements()
-  }, [loadEmplacements])
-
   /* ---------- Raccourcis clavier ---------- */
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        if (openEmplacementModal) setOpenEmplacementModal(false)
         if (openTransfertModal) setOpenTransfertModal(false)
         if (editing) cancelEditing()
       }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [openEmplacementModal, openTransfertModal, editing, cancelEditing])
+  }, [openTransfertModal, editing, cancelEditing])
 
   /* ---------- Helpers ---------- */
-  const niveauLabel = (n: string) => (n === 'allee' ? 'Allée' : n === 'etagere' ? 'Etagère' : 'Place')
-  const emplacementDepth = (n: string) => (n === 'allee' ? 0 : n === 'etagere' ? 1 : 2)
-  const niveauColor = (n: string) =>
-    n === 'allee' ? 'status-emplacement-allee' : n === 'etagere' ? 'status-emplacement-etagere' : 'status-emplacement-place'
-
   const handleDelete = (article: Article) => {
     confirm(
       `Supprimer ${article.reference}`,
@@ -208,91 +159,6 @@ export default function StockView() {
     } else {
       toast.error(`Echec de la mise a jour de ${editing.reference}`)
     }
-  }
-
-  /* ---------- Formulaire emplacement ---------- */
-  const resetEmplacementForm = () => {
-    setEmplacementForm({ code: '', libelle: '', niveau: 'place', capacite: '', parentId: null })
-    setEmplacementFormError(null)
-  }
-
-  const openEmplacementEdit = (item: ApiStockEmplacement) => {
-    setEmplacementModalMode('edit')
-    setEmplacementModalItem(item)
-    setEmplacementForm({
-      code: item.code,
-      libelle: item.libelle ?? '',
-      niveau: item.niveau as 'allee' | 'etagere' | 'place',
-      capacite: String(item.capacite ?? ''),
-      parentId: item.parentId ? String(item.parentId) : null,
-    })
-    setEmplacementFormError(null)
-    setOpenEmplacementModal(true)
-  }
-
-  const handleEmplacementSave = async () => {
-    setEmplacementFormError(null)
-    const { code, libelle, niveau, capacite, parentId } = emplacementForm
-
-    if (!code.trim()) {
-      setEmplacementFormError('Le code est obligatoire')
-      return
-    }
-    if (!libelle.trim()) {
-      setEmplacementFormError('Le libelle est obligatoire')
-      return
-    }
-    const capNum = Number(capacite)
-    if (capacite && (isNaN(capNum) || capNum < 0)) {
-      setEmplacementFormError('La capacite doit etre un nombre positif')
-      return
-    }
-
-    setSavingEmplacement(true)
-    try {
-      if (emplacementModalMode === 'create') {
-        await api.post('/emplacements', {
-          code: code.trim(),
-          libelle: libelle.trim(),
-          niveau,
-          capacite: capNum || null,
-          parent_id: parentId || null,
-        })
-        toast.success(`Emplacement "${code}" cree`)
-      } else if (emplacementModalItem) {
-        await api.put(`/emplacements/${emplacementModalItem.id}`, {
-          code: code.trim(),
-          libelle: libelle.trim(),
-          niveau,
-          capacite: capNum || null,
-          parent_id: parentId || null,
-        })
-        toast.success(`Emplacement "${code}" mis a jour`)
-      }
-      setOpenEmplacementModal(false)
-      loadEmplacements()
-    } catch (err) {
-      const msg = isAbortError(err) ? '' : toErrorMessage(err)
-      setEmplacementFormError(msg || 'Echec de l enregistrement')
-    } finally {
-      setSavingEmplacement(false)
-    }
-  }
-
-  const handleEmplacementDelete = (item: ApiStockEmplacement) => {
-    confirm(
-      `Supprimer l'emplacement ${item.code}`,
-      `Etes-vous sur de vouloir supprimer "${item.chemin}" ? Cette action est definitive et supprimera aussi les emplacements enfants.`,
-      async () => {
-        try {
-          await api.delete(`/emplacements/${item.id}`)
-          toast.success(`Emplacement ${item.code} supprime`)
-          loadEmplacements()
-        } catch (err) {
-          toast.error(toErrorMessage(err) || 'Echec de la suppression')
-        }
-      },
-    )
   }
 
   /* ---------- Transfert ---------- */
@@ -445,68 +311,6 @@ export default function StockView() {
     },
   ]
 
-  const emplacementColumns: ColumnDef<ApiStockEmplacement>[] = [
-    {
-      key: 'chemin',
-      header: 'EMPLACEMENT',
-      sortable: true,
-      sortValue: (row) => row.chemin,
-      render: (row) => (
-        <div className="emplacement-row">
-          <span className="emplacement-indent" style={{ paddingLeft: emplacementDepth(row.niveau) * 18 }}></span>
-          <Icon name="box" size="sm" />
-          <span className="emplacement-chemin">{row.chemin}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'niveau',
-      header: 'NIVEAU',
-      render: (row) => (
-        <span className={`status-badge ${niveauColor(row.niveau)}`}>{niveauLabel(row.niveau)}</span>
-      ),
-    },
-    {
-      key: 'quantite',
-      header: 'STOCK',
-      align: 'right',
-      sortable: true,
-      sortValue: (row) => row.quantite,
-      render: (row) => row.quantite,
-    },
-    {
-      key: 'nombreReferences',
-      header: 'REFERENCES',
-      align: 'right',
-      sortable: true,
-      sortValue: (row) => row.nombreReferences,
-      render: (row) => row.nombreReferences,
-    },
-    {
-      key: 'capacite',
-      header: 'CAPACITE',
-      align: 'right',
-      sortable: true,
-      sortValue: (row) => row.capacite,
-      render: (row) => (row.capacite != null ? row.capacite : '-'),
-    },
-    {
-      key: 'actions',
-      header: 'ACTIONS',
-      width: '110px',
-      render: (row) => (
-        <div className="actions-cell">
-          <button className="action-btn edit" onClick={() => openEmplacementEdit(row)} title="Modifier" aria-label={`Modifier ${row.code}`}>
-            <Icon name="edit" size="sm" />
-          </button>
-          <button className="action-btn delete" onClick={() => handleEmplacementDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.code}`}>
-            <Icon name="trash" size="sm" />
-          </button>
-        </div>
-      ),
-    },
-  ]
-
   /* ---------- Rendu ---------- */
   return (
     <PageLayout
@@ -519,18 +323,6 @@ export default function StockView() {
       }
       actions={(
         <>
-          <button
-            className="primary-button"
-            onClick={() => {
-              resetEmplacementForm()
-              setEmplacementModalMode('create')
-              setEmplacementModalItem(null)
-              setOpenEmplacementModal(true)
-            }}
-            aria-label="Nouvel emplacement"
-          >
-            <Icon name="plus" size="sm" /> Nouvel emplacement
-          </button>
           <button
             className="secondary-button"
             onClick={() => {
@@ -566,14 +358,6 @@ export default function StockView() {
           </div>
         )}
       </div>
-
-      {/* Erreur de chargement emplacements */}
-      {emplacementsError && (
-        <div className="stock-alert error">
-          <Icon name="alert" size="sm" />
-          <span>Impossible de charger les emplacements : {emplacementsError}</span>
-        </div>
-      )}
 
       <div className="stock-grid">
         {/* Panel gauche : Articles */}
@@ -666,147 +450,7 @@ export default function StockView() {
           )}
         </section>
 
-        {/* Panel droit : Emplacements */}
-        <section className="stock-panel">
-          <div className="panel-header">
-            <h3>Emplacements</h3>
-          </div>
-
-          {emplacementsLoading ? (
-            <div className="stock-empty">
-              <Icon name="bell" size="lg" />
-              <p>Chargement des emplacements...</p>
-            </div>
-          ) : emplacements.length === 0 ? (
-            <div className="stock-empty">
-              <Icon name="layers" size="lg" />
-              <p>Aucun emplacement cree</p>
-              <p className="stock-empty-hint">
-                Creez une allee, puis des etageres et des places pour organiser votre stock.
-              </p>
-            </div>
-          ) : (
-            <DataTable
-              columns={emplacementColumns}
-              rows={emplacements}
-              rowKey={(r) => r.id.toString()}
-              defaultSort={{ key: 'chemin', direction: 'asc' }}
-              emptyMessage="Aucun emplacement."
-              loading={false}
-              caption="Liste des emplacements de stockage"
-            />
-          )}
-        </section>
-      </div>
-
-      {/* Modal : Creation/edition d'emplacement */}
-      <div
-        className="modal-overlay"
-        onMouseDown={() => setOpenEmplacementModal(false)}
-        style={{ display: openEmplacementModal ? 'flex' : 'none' }}
-      >
-        <div
-          className="modal emplacement-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="emplacement-modal-title"
-          aria-describedby="emplacement-modal-desc"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <h2 id="emplacement-modal-title">
-            {emplacementModalMode === 'create' ? 'Nouvel emplacement' : 'Modifier l emplacement'}
-          </h2>
-          <p id="emplacement-modal-desc" className="modal-desc">
-            {emplacementModalMode === 'create'
-              ? 'Creez un emplacement (allee, etagere ou place) pour ranger vos articles.'
-              : 'Modifiez les informations de cet emplacement.'}
-          </p>
-
-          {emplacementFormError && (
-            <div className="stock-alert error">
-              <Icon name="alert" size="sm" />
-              <span>{emplacementFormError}</span>
-            </div>
-          )}
-
-          <form onSubmit={(e) => { e.preventDefault(); handleEmplacementSave() }} className="modal-form">
-            <FormInput
-              label="Code"
-              name="code"
-              value={emplacementForm.code}
-              onChange={(_, v) => setEmplacementForm({ ...emplacementForm, code: v })}
-              placeholder="Ex: A-01-05"
-              required
-            />
-            <FormInput
-              label="Libelle"
-              name="libelle"
-              value={emplacementForm.libelle}
-              onChange={(_, v) => setEmplacementForm({ ...emplacementForm, libelle: v })}
-              placeholder="Ex: Allee A - Etagere 1 - Place 5"
-              required
-            />
-            <div className="form-group">
-              <label className="form-label">Niveau</label>
-              <select
-                value={emplacementForm.niveau}
-                onChange={(e) =>
-                  setEmplacementForm({ ...emplacementForm, niveau: e.target.value as 'allee' | 'etagere' | 'place' })
-                }
-                className="form-select"
-              >
-                <option value="allee">Allée</option>
-                <option value="etagere">Etagère</option>
-                <option value="place">Place</option>
-              </select>
-              <p className="form-hint">
-                Une allee est racine. Une etagere depend d'une allee. Une place depend d'une etagere.
-              </p>
-            </div>
-            <FormInput
-              label="Capacite (unites)"
-              name="capacite"
-              type="number"
-              min="0"
-              value={emplacementForm.capacite}
-              onChange={(_, v) => setEmplacementForm({ ...emplacementForm, capacite: v })}
-              hint="Nombre maximal d unites pouvant etre stockees"
-            />
-            <div className="form-group">
-              <label className="form-label">Emplacement parent</label>
-              <select
-                value={emplacementForm.parentId ?? ''}
-                onChange={(e) =>
-                  setEmplacementForm({ ...emplacementForm, parentId: e.target.value || null })
-                }
-                className="form-select"
-              >
-                <option value="">Aucun (racine)</option>
-                {emplacements
-                  .filter((e) => (emplacementModalItem ? e.id !== emplacementModalItem.id : true))
-                  .map((e) => (
-                    <option key={e.id} value={e.id}>{e.chemin}</option>
-                  ))}
-              </select>
-            </div>
-            <div className="form-actions">
-              <button type="button" className="secondary-button" onClick={() => setOpenEmplacementModal(false)}>
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={savingEmplacement}
-              >
-                {savingEmplacement
-                  ? 'Enregistrement...'
-                  : emplacementModalMode === 'create'
-                    ? 'Creer'
-                    : 'Enregistrer'}
-              </button>
-            </div>
-          </form>
-        </div>
+        <EmplacementsManager emplacements={emplacements} loading={emplacementsLoading} error={emplacementsError} reload={loadEmplacements} />
       </div>
 
       {/* Modal : Transfert d'article */}

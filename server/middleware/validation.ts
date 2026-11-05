@@ -4,6 +4,11 @@ import type { Response } from 'express'
 type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> }
 
 export type ArticleBody = {
+  tvaId?: number
+  ean13?: string | null
+  delaiDisponibilite?: number
+  forcerSurCommande?: boolean
+  sousCategorieId?: number | null
   reference: string
   designation: string
   category: string
@@ -228,13 +233,33 @@ export function validateArticleBody(body: unknown, options: { partial?: boolean 
     reference: readString(source, 'reference', MAX_LENGTHS.reference, required, errors),
     designation: readString(source, 'designation', MAX_LENGTHS.designation, required, errors),
     category: readString(source, 'category', MAX_LENGTHS.category, required, errors),
-    emplacement: readString(source, 'emplacement', MAX_LENGTHS.emplacement, required, errors),
+    emplacement: readString(source, 'emplacement', MAX_LENGTHS.emplacement, false, errors),
     prixUnitaireHT: readNumber(source, 'prixUnitaireHT', errors),
     quantite: readNumber(source, 'quantite', errors),
     minimum: readNumber(source, 'minimum', errors),
   }
 
   const description = readString(source, 'description', 2000, false, errors)
+  for (const key of ['tvaId', 'delaiDisponibilite'] as const) {
+    if (key in source) {
+      const number = source[key]
+      if (typeof number !== 'number' || !Number.isInteger(number) || number < (key === 'tvaId' ? 1 : 0)) errors[key] = 'Un entier valide est attendu.'
+      else value[key] = number
+    }
+  }
+  if ('ean13' in source) {
+    if (source.ean13 !== null && (typeof source.ean13 !== 'string' || !/^\d{0,16}$/.test(source.ean13))) errors.ean13 = 'Code EAN invalide.'
+    else value.ean13 = (source.ean13 || null) as string | null
+  }
+  if ('forcerSurCommande' in source) {
+    if (typeof source.forcerSurCommande !== 'boolean') errors.forcerSurCommande = 'Une valeur booléenne est attendue.'
+    else value.forcerSurCommande = source.forcerSurCommande
+  }
+  if ('sousCategorieId' in source) {
+    const subId = source.sousCategorieId
+    if (subId !== null && (typeof subId !== 'number' || !Number.isInteger(subId) || subId <= 0)) errors.sousCategorieId = 'Identifiant de sous-catégorie invalide.'
+    else value.sousCategorieId = subId as number | null
+  }
   if (description) value.description = description
 
   return Object.keys(errors).length > 0 ? { ok: false, errors } : { ok: true, value }

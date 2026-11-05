@@ -68,6 +68,7 @@ export const SEED_ARTICLES: Article[] = [
 ]
 
 export const EMPTY_ARTICLE: Article = {
+  sousCategorieId: null,
   reference: '',
   designation: '',
   category: '',

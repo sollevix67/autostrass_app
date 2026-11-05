@@ -1,10 +1,17 @@
 import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import { settingsError } from '../services/settingsStore.js'
 
 /**
  * Forme d'un article telle que renvoyee par l'API (camelCase),
  * alignee sur le type `Article` du frontend.
  */
 export type ArticleRow = {
+  tvaId: number
+  ean13: string | null
+  delaiDisponibilite: number
+  forcerSurCommande: boolean
+  prixUnitaireTTC: number
+  sousCategorieId: number | null
   reference: string
   designation: string
   category: string
@@ -17,6 +24,11 @@ export type ArticleRow = {
 
 /** Donnees attendues pour creer ou remplacer un article. */
 export type ArticleInput = {
+  tvaId?: number
+  ean13?: string | null
+  delaiDisponibilite?: number
+  forcerSurCommande?: boolean
+  sousCategorieId?: number | null
   reference: string
   designation: string
   category: string
@@ -46,6 +58,8 @@ const SELECT_COLUMNS = `
     a.reference,
     a.designation,
     a.category,
+    a.sous_categorie_id,
+    a.tva_id, a.ean13, a.delai_disponibilite, a.forcer_sur_commande, a.prix_unitaire_ttc,
     a.unit_price_ht,
     s.quantity,
     s.minimum_quantity AS minimum,
@@ -77,9 +91,11 @@ function toNumber(value: number | string | null | undefined): number {
 
 function mapRow(row: ArticleRowPacket): ArticleRow {
   return {
+    tvaId: Number(row.tva_id), ean13: row.ean13 ?? null, delaiDisponibilite: Number(row.delai_disponibilite), forcerSurCommande: Boolean(row.forcer_sur_commande), prixUnitaireTTC: toNumber(row.prix_unitaire_ttc),
     reference: row.reference,
     designation: row.designation,
     category: row.category,
+    sousCategorieId: row.sous_categorie_id == null ? null : Number(row.sous_categorie_id),
     prixUnitaireHT: toNumber(row.unit_price_ht),
     quantite: toNumber(row.quantity),
     minimum: toNumber(row.minimum),
@@ -90,6 +106,25 @@ function mapRow(row: ArticleRowPacket): ArticleRow {
 
 export class ArticleRepository {
   constructor(private readonly pool: Pool) {}
+
+  private async validateCategory(connection: import('mysql2/promise').PoolConnection, input: ArticleInput, previous?: RowDataPacket) {
+    const [categories] = await connection.query<RowDataPacket[]>('SELECT id, code, actif FROM categories_articles WHERE code = ? FOR UPDATE', [input.category])
+    if (!categories.length || (!categories[0].actif && previous?.category !== input.category)) throw settingsError('Choisissez une catégorie active.')
+    const subId = input.sousCategorieId === undefined && previous?.category === input.category ? previous.sous_categorie_id : input.sousCategorieId ?? null
+    if (subId !== null && subId !== undefined) {
+      const [subs] = await connection.query<RowDataPacket[]>('SELECT id, categorie_id, actif FROM sous_categories_articles WHERE id = ? FOR UPDATE', [subId])
+      if (!subs.length || subs[0].categorie_id !== categories[0].id || (!subs[0].actif && previous?.sous_categorie_id !== subId)) throw settingsError('Sous-catégorie invalide pour cette catégorie.')
+    }
+    return subId ?? null
+  }
+
+  private async saveCatalogueFields(connection: import('mysql2/promise').PoolConnection, reference: string, input: ArticleInput, previous?: RowDataPacket) {
+    const tvaId = input.tvaId ?? previous?.tva_id ?? 1
+    const [taxes] = await connection.query<RowDataPacket[]>('SELECT taux FROM tva WHERE id = ?', [tvaId])
+    if (!taxes.length) throw settingsError('TVA inconnue.')
+    const ttc = Math.round(input.prixUnitaireHT * (1 + Number(taxes[0].taux) / 100) * 100) / 100
+    await connection.execute('UPDATE articles SET tva_id = ?, ean13 = ?, delai_disponibilite = ?, forcer_sur_commande = ?, prix_unitaire_ttc = ? WHERE reference = ?', [tvaId, input.ean13 === undefined ? previous?.ean13 ?? null : input.ean13, input.delaiDisponibilite ?? previous?.delai_disponibilite ?? 0, input.forcerSurCommande ?? previous?.forcer_sur_commande ?? false, ttc, reference])
+  }
 
   async list(): Promise<ArticleRow[]> {
     const [rows] = await this.pool.query<ArticleRowPacket[]>(`${SELECT_COLUMNS} ORDER BY a.reference`)
@@ -105,10 +140,11 @@ export class ArticleRepository {
     const connection = await this.pool.getConnection()
     try {
       await connection.beginTransaction()
+      const subId = await this.validateCategory(connection, input)
 
       const [result] = await connection.execute<ResultSetHeader>(
-        `INSERT INTO articles (reference, designation, category, unit_price_ht, location, description)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO articles (reference, designation, category, unit_price_ht, location, description, sous_categorie_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           input.reference,
           input.designation,
@@ -116,6 +152,7 @@ export class ArticleRepository {
           input.prixUnitaireHT,
           input.emplacement ?? '',
           input.description ?? null,
+          subId,
         ],
       )
 
@@ -123,6 +160,8 @@ export class ArticleRepository {
         `INSERT INTO stock_balances (reference_id, quantity, minimum_quantity) VALUES (?, ?, ?)`,
         [result.insertId, input.quantite, input.minimum],
       )
+
+      await this.saveCatalogueFields(connection, input.reference, input)
 
       await connection.commit()
     } catch (error) {
@@ -141,10 +180,13 @@ export class ArticleRepository {
     const connection = await this.pool.getConnection()
     try {
       await connection.beginTransaction()
+      const [existing] = await connection.query<RowDataPacket[]>('SELECT * FROM articles WHERE reference = ? FOR UPDATE', [reference])
+      if (!existing.length) { await connection.rollback(); return null }
+      const subId = await this.validateCategory(connection, input, existing[0])
 
       const [result] = await connection.execute<ResultSetHeader>(
         `UPDATE articles
-            SET designation = ?, category = ?, unit_price_ht = ?, location = ?, emplacement_id = ?, description = ?
+            SET designation = ?, category = ?, unit_price_ht = ?, location = ?, emplacement_id = ?, description = ?, sous_categorie_id = ?
           WHERE reference = ?`,
         [
           input.designation,
@@ -153,6 +195,7 @@ export class ArticleRepository {
           input.emplacement ?? '',
           null,
           input.description ?? null,
+          subId,
           reference,
         ],
       )
@@ -170,6 +213,7 @@ export class ArticleRepository {
         [input.quantite, input.minimum, reference],
       )
 
+      await this.saveCatalogueFields(connection, reference, input, existing[0])
       await connection.commit()
     } catch (error) {
       await connection.rollback()

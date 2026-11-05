@@ -37,6 +37,17 @@ import ClientsView from './views/ClientsView'
 import FournisseursView from './views/FournisseursView'
 import VehiculesView from './views/VehiculesView'
 import UtilisateursView from './views/UtilisateursView'
+import ParametresLayout, { ParametresAdminGuard } from './views/parametres/ParametresLayout'
+import ParametresView from './views/parametres/ParametresView'
+import BaseDonneesView from './views/parametres/BaseDonneesView'
+import LimitesApiView from './views/parametres/LimitesApiView'
+import ConnexionView from './views/parametres/ConnexionView'
+import EmplacementsView from './views/parametres/EmplacementsView'
+import SecteursView from './views/parametres/SecteursView'
+import CategoriesView from './views/parametres/CategoriesView'
+import HttpsView from './views/parametres/HttpsView'
+import TurnstileView from './views/parametres/TurnstileView'
+import { parametreTitle, visibleParametres } from './parametres'
 
 const navigation = [
   { label: 'Vue d’ensemble', path: '/', icon: 'grid' },
@@ -162,12 +173,15 @@ function AppContent() {
             <Icon name="settings" size="sm" />
             <span>Utilisateurs & droits</span>
           </NavLink>
+          {visibleParametres(user.role).length > 0 && <NavLink className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} to="/parametres" onClick={() => setMobileNav(false)}>
+            <Icon name="settings" size="sm" /><span>Paramètres</span>
+          </NavLink>}
         </nav>
         <div className="sidebar-footer"><div className="profile-avatar">{initials(user.prenom, user.nom)}</div><div><b>{user.prenom} {user.nom}</b><small>{roleLabel(user.role)}</small></div><button className="more-button" aria-label="Se déconnecter" onClick={() => void signOut()}><Icon name="chevron-right" size="lg" /></button></div>
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button ref={mobileMenuRef} className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu" aria-controls="main-navigation" aria-expanded={mobileNav}><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
+        <header className="topbar"><button ref={mobileMenuRef} className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu" aria-controls="main-navigation" aria-expanded={mobileNav}><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{parametreTitle(location.pathname) ?? navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
           {location.pathname === '/' && (
             <div className="page-heading">
@@ -213,6 +227,20 @@ function AppContent() {
             <Route path="/fournisseurs" element={<FournisseursView />} />
             <Route path="/vehicules" element={<VehiculesView />} />
             <Route path="/utilisateurs" element={<UtilisateursView />} />
+            <Route path="/parametres" element={<ParametresLayout />}>
+              <Route index element={<ParametresView />} />
+              <Route path="emplacements" element={<EmplacementsView />} />
+              <Route element={<ParametresAdminGuard />}>
+                <Route path="base-de-donnees" element={<BaseDonneesView />} />
+                <Route path="limites-api" element={<LimitesApiView />} />
+                <Route path="connexion" element={<ConnexionView />} />
+                <Route path="secteurs" element={<SecteursView />} />
+                <Route path="categories" element={<CategoriesView />} />
+                <Route path="https" element={<HttpsView />} />
+                <Route path="turnstile" element={<TurnstileView />} />
+              </Route>
+              <Route path="*" element={<h1>Paramètre introuvable</h1>} />
+            </Route>
             <Route path="*" element={<h1>404 - Page non trouvée</h1>} />
           </Routes>
         </div>

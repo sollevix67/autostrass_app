@@ -49,9 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => controller.abort()
   }, [])
 
-  const signIn = useCallback(async (email: string, motDePasse: string): Promise<boolean> => {
+  const signIn = useCallback(async (email: string, motDePasse: string, turnstileToken?: string): Promise<boolean> => {
     try {
-      const response = await api.post<LoginResponse>('/auth/login', { email, motDePasse })
+      const response = await api.post<LoginResponse>('/auth/login', { email, motDePasse, turnstileToken })
       // Le serveur pose aussi un cookie httpOnly ; on garde le jeton en
       // memoire pour ne pas dependre d'un stockage persistant lisible.
       setSessionToken(response.token)

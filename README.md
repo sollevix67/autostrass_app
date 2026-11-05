@@ -30,10 +30,25 @@ npm run dev
 
 L’API expose `GET /api/health` et `GET /api/dashboard` sur le port `3001`. Vite relaie automatiquement les appels `/api` vers cette API.
 
+## Paramètres du dépôt
+
+Le module `/parametres` administre la connexion MariaDB, les quotas API et
+de connexion, les emplacements, les secteurs clients, les catégories et
+sous-catégories, HTTPS et Turnstile. Appliquer la migration `0007` avec
+`npm run db:migrate` avant utilisation. Les paramètres techniques sont
+enregistrés hors Git dans `config/runtime/settings.json` ; MariaDB et HTTPS
+nécessitent un redémarrage pour appliquer leurs modifications.
+
+Voir le [guide d'administration et de déploiement](specs/parametres.md) pour
+les droits, sauvegardes, certificats, clés Cloudflare et procédures de
+récupération, et la [feuille de route](specs/parametres-roadmap.md) pour la recette restante.
+
 ## Tests sur une base jetable
 
 ```bash
 npm run test:errors
+npm run build
+npm run test:parametres
 npm run test:stock
 npm run test:integration
 ```
@@ -60,6 +75,12 @@ d'authentification restent actifs.
 Les commandes historiques `test:api` et `test:security` ciblent l'API déjà
 démarrée (`API_URL`, port 3001 par défaut) et écrivent dans sa base ; réserver
 leur exécution directe à une base de test.
+
+`test:parametres` ajoute les contrôles des paramètres, référentiels,
+persistance, certificats et Turnstile, puis les suites API et sécurité sur
+sa propre base jetable. Le build préalable permet de vérifier que le site
+compilé est servi en HTTPS. Le fichier de paramètres de test est isolé et
+supprimé à la fin.
 
 ## Style et thèmes
 

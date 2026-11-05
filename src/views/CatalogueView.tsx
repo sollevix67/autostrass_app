@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -13,7 +13,8 @@ import { EMPTY_ARTICLE, useCatalogue } from '../hooks/useCatalogue'
 import { articleSchema } from '../schemas'
 import type { Article } from '../types'
 import type { FieldRegister } from '../components/forms/FormFields'
-import { api } from '../services/api'
+import { useRemoteValue } from '../hooks/useRemoteValue'
+import type { Referentiel, SousCategorie } from '../schemas/parametres'
 
 interface Tva {
   id: number
@@ -25,29 +26,19 @@ interface Tva {
   updatedAt: string
 }
 
-const categories = [
-  { value: 'freins', label: 'Freins' },
-  { value: 'filtres', label: 'Filtres' },
-  { value: 'batteries', label: 'Batteries' },
-  { value: 'huiles', label: 'Huiles' },
-  { value: 'pneus', label: 'Pneus' },
-  { value: 'electrique', label: 'Électrique' },
-  { value: 'carrosserie', label: 'Carrosserie' },
-]
-
 const currency = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export default function CatalogueView() {
+  const categories = useRemoteValue<Referentiel[]>('/categories')
+  const sousCategories = useRemoteValue<SousCategorie[]>('/sous-categories')
+  const [editingId, setEditingId] = useState<string | null>(null)
   const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
-  const [tvaList, setTvaList] = useState<Tva[]>([])
-
-  useEffect(() => {
-    api.get('/tva').then((res) => setTvaList(res as Tva[]))
-  }, [])
+  const taxes = useRemoteValue<Tva[]>('/tva')
 
   const FIELD_LABELS = {
+    sousCategorieId: 'Sous-catégorie',
     reference: 'Référence',
     designation: 'Désignation',
     category: 'Catégorie',
@@ -68,6 +59,7 @@ export default function CatalogueView() {
     register: rhfRegister,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -84,12 +76,15 @@ export default function CatalogueView() {
   const register = rhfRegister as unknown as FieldRegister
 
   /** Reference en cours d'edition ; `null` = mode creation. */
-  const editingReference = watch('reference')
-  const isEditing = editingReference.length > 0
+  const isEditing = editingId !== null
+  const category = watch('category')
+  const subId = watch('sousCategorieId')
+  const selectedCategory = categories.data?.find((item) => item.code === category)
 
   const onSubmit = handleSubmit(async (values) => {
+    if (!categories.data || !sousCategories.data || !taxes.data || categories.error || sousCategories.error || taxes.error || offline) return
     // Le schéma transforme la référence en majuscules ; on aligne l'état local.
-    const payload = { ...values, description: values.description ?? null, emplacement: values.emplacement ?? null } as any
+    const payload = { ...values, reference: editingId ?? values.reference, description: values.description ?? null, emplacement: values.emplacement ?? null } as any
     const saved = isEditing ? await update(payload) : await create(payload)
 
     if (!saved) {
@@ -105,11 +100,15 @@ export default function CatalogueView() {
           : `Article ${payload.reference} cree.`,
     )
     reset(EMPTY_ARTICLE)
+    setEditingId(null)
   })
 
   /** Charge un article dans le formulaire et place le focus sur la reference. */
   const handleEdit = (article: Article) => {
+    setEditingId(article.reference)
     reset({
+      ...EMPTY_ARTICLE,
+      ...article,
       reference: article.reference,
       designation: article.designation,
       category: article.category,
@@ -133,7 +132,7 @@ export default function CatalogueView() {
         const ok = await remove(article.reference)
         if (ok) {
           toast.success(`Article ${article.reference} supprime.`)
-          if (editingReference === article.reference) reset(EMPTY_ARTICLE)
+          if (editingId === article.reference) { reset(EMPTY_ARTICLE); setEditingId(null) }
         } else {
           toast.error(`La suppression de ${article.reference} a echoue.`)
         }
@@ -150,7 +149,8 @@ export default function CatalogueView() {
       render: (row) => <b className="reference">{row.reference}</b>,
     },
     { key: 'designation',     header: 'DÉSIGNATION', sortable: true, sortValue: (row) => row.designation, render: (row) => row.designation },
-    { key: 'category', header: 'CATEGORIE', sortable: true, sortValue: (row) => row.category, render: (row) => row.category },
+    { key: 'category', header: 'CATEGORIE', sortable: true, sortValue: (row) => row.category, render: (row) => categories.data?.find((item) => item.code === row.category)?.libelle ?? row.category },
+    { key: 'sousCategorie', header: 'SOUS-CATÉGORIE', render: (row) => sousCategories.data?.find((item) => item.id === row.sousCategorieId)?.libelle ?? '—' },
     {
       key: 'prixUnitaireHT',
       header: 'PRIX HT',
@@ -221,7 +221,7 @@ export default function CatalogueView() {
       width: '92px',
       render: (row) => (
         <div className="actions-cell">
-          <button type="button" className="action-btn edit" onClick={() => handleEdit(row)} title="Charger dans le formulaire" aria-label={`Modifier ${row.reference}`}>
+          <button type="button" className="action-btn edit" disabled={saving} onClick={() => handleEdit(row)} title="Charger dans le formulaire" aria-label={`Modifier ${row.reference}`}>
             <Icon name="edit" size="sm" />
           </button>
           <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
@@ -239,7 +239,7 @@ export default function CatalogueView() {
       description="Ajouter, modifier ou supprimer des articles du catalogue."
       actions={
         isEditing ? (
-          <button type="button" className="secondary-button" onClick={() => reset(EMPTY_ARTICLE)}>
+          <button type="button" className="secondary-button" disabled={saving} onClick={() => { reset(EMPTY_ARTICLE); setEditingId(null) }}>
             Annuler la modification
           </button>
         ) : undefined
@@ -247,12 +247,12 @@ export default function CatalogueView() {
     >
       {offline && (
         <p className="info-banner" role="status">
-          API catalogue indisponible : les modifications restent en memoire et seront perdues au rechargement.
+          API catalogue indisponible : l’enregistrement des articles est suspendu.
         </p>
       )}
 
       <form className="form-card" onSubmit={onSubmit} noValidate>
-        <h2>{isEditing ? `Modifier ${editingReference}` : 'Nouvel article'}</h2>
+        <h2>{isEditing ? `Modifier ${editingId}` : 'Nouvel article'}</h2>
 
         <ErrorSummary errors={errors} labels={FIELD_LABELS} order={FIELD_ORDER} />
 
@@ -260,11 +260,12 @@ export default function CatalogueView() {
           <FormInput
             label="Référence"
             name="reference"
+            readOnly={isEditing}
             register={register}
             error={errors.reference?.message as string | undefined}
             required
             placeholder="ex: PLA-2841"
-            hint="Lettres, chiffres, point, tiret, slash et undescore"
+            hint={isEditing ? 'La référence reste stable après création.' : 'Lettres, chiffres, point, tiret, slash et underscore'}
           />
           <FormInput
             label="Désignation"
@@ -277,15 +278,19 @@ export default function CatalogueView() {
           <FormSelect
             label="Catégorie"
             name="category"
-            options={categories}
-            register={register}
+            options={(categories.data ?? []).filter((item) => item.actif || item.code === category).map((item) => ({ value: item.code, label: `${item.libelle}${item.actif ? '' : ' (inactive)'}` }))}
+            value={category}
+            onChange={(_, value) => { setValue('category', value); setValue('sousCategorieId', null) }}
             error={errors.category?.message && typeof errors.category.message === 'string' ? errors.category.message : undefined}
             required
           />
+          <FormSelect label="Sous-catégorie" name="sousCategorieId" placeholder="Aucune sous-catégorie" value={subId == null ? '' : String(subId)}
+            options={(sousCategories.data ?? []).filter((item) => item.categorieId === selectedCategory?.id && (item.actif || item.id === subId)).map((item) => ({ value: String(item.id), label: item.libelle }))}
+            onChange={(_, value) => setValue('sousCategorieId', value ? Number(value) : null)} />
           <FormSelect
             label="TVA"
             name="tvaId"
-            options={tvaList.map(tva => ({ value: tva.id.toString(), label: `TVA ${tva.taux}%` }))}
+            options={(taxes.data ?? []).map(tva => ({ value: tva.id.toString(), label: `TVA ${tva.taux}%` }))}
             register={register}
             error={errors.tvaId?.message && typeof errors.tvaId.message === 'string' ? errors.tvaId.message : undefined}
             required
@@ -317,7 +322,6 @@ export default function CatalogueView() {
             name="emplacement"
             register={register}
             error={errors.emplacement?.message && typeof errors.emplacement.message === 'string' ? errors.emplacement.message : undefined}
-            required
             placeholder="ex: A-03 / E-02"
           />
           <FormInput
@@ -360,14 +364,16 @@ export default function CatalogueView() {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="primary-button" disabled={isSubmitting || saving}>
+          <button type="submit" className="primary-button" disabled={isSubmitting || saving || offline || categories.loading || sousCategories.loading || taxes.loading || Boolean(categories.error || sousCategories.error || taxes.error)}>
             <Icon name="plus" size="sm" /> {isSubmitting || saving ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Créer'} l'article
           </button>
-          <button type="button" className="secondary-button" onClick={() => reset(EMPTY_ARTICLE)}>
+          <button type="button" className="secondary-button" disabled={saving} onClick={() => { reset(EMPTY_ARTICLE); setEditingId(null) }}>
             Effacer
           </button>
         </div>
         {error && <p className="error-banner" role="alert">{error}</p>}
+        {(categories.error || sousCategories.error) && <p className="error-banner" role="alert">Impossible de charger les catégories. <button type="button" className="link-button" onClick={() => { categories.reload(); sousCategories.reload() }}>Réessayer</button></p>}
+        {taxes.error && <p className="error-banner" role="alert">Impossible de charger les taux de TVA. <button type="button" className="link-button" onClick={taxes.reload}>Réessayer</button></p>}
       </form>
 
       <div className="form-card">
@@ -379,7 +385,7 @@ export default function CatalogueView() {
           loading={loading}
           loadingMessage="Chargement du catalogue..."
           emptyMessage="Aucun article. Utilisez le formulaire ci-dessus pour creer le premier."
-          isRowActive={(row) => row.reference === editingReference}
+          isRowActive={(row) => row.reference === editingId}
           defaultSort={{ key: 'reference', direction: 'asc' }}
           caption="Liste des articles du catalogue"
         />

@@ -1,7 +1,8 @@
 import 'dotenv/config'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { readFile, unlink } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { createServer } from 'node:net'
 import { dirname, resolve } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
@@ -16,7 +17,7 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 export type TestEnvironment = {
   connection: Connection
   baseUrl: string
-  restartApi(): Promise<void>
+  restartApi(options?: { expectHttpRedirect?: boolean }): Promise<void>
   runScript(path: string): Promise<void>
   close(): Promise<void>
 }
@@ -56,6 +57,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
   }
 
   const databaseName = `autostrass_transfer_test_${randomBytes(8).toString('hex')}`
+  const settingsPath = resolve(tmpdir(), `${databaseName}.settings.json`)
   const jwtSecret = randomBytes(32).toString('hex')
   const secrets = [password, process.env.DB_PASSWORD, process.env.JWT_SECRET, jwtSecret]
     .filter((value): value is string => Boolean(value))
@@ -160,6 +162,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
         }
       }
       if (errors.length) throw new Error(`Nettoyage de l’environnement de test : ${errors.join('; ')}`)
+      await unlink(settingsPath).catch((error: NodeJS.ErrnoException) => { if (error.code !== 'ENOENT') throw error })
     })()
     return cleanup
   }
@@ -189,6 +192,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       NODE_ENV: 'test',
+      AUTOSTRASS_SETTINGS_FILE: settingsPath,
       DB_HOST: host,
       DB_PORT: String(credentials.port),
       DB_USER: user,
@@ -200,7 +204,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
       API_URL: baseUrl,
     }
 
-    async function restartApi(): Promise<void> {
+    async function restartApi(options: { expectHttpRedirect?: boolean } = {}): Promise<void> {
       if (cleanup) throw new Error('L’environnement de test est déjà fermé.')
       if (api) await stopProcess(api)
       api = startProcess(['--import', 'tsx', 'server/index.ts'], env)
@@ -208,7 +212,8 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
       while (Date.now() < deadline) {
         if (api.done || api.error) break
         try {
-          const response = await fetch(`${baseUrl}/api/health`, { signal: AbortSignal.timeout(1000) })
+          const response = await fetch(`${baseUrl}/api/health`, { signal: AbortSignal.timeout(1000), redirect: 'manual' })
+          if (options.expectHttpRedirect && response.status === 308 && !api.done && !api.error) return
           const health = await response.json() as { database?: string }
           if (response.ok && health.database === 'connected' && !api.done && !api.error) return
         } catch {

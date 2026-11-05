@@ -43,6 +43,7 @@ type CommonProps = {
 }
 
 type InputProps = CommonProps & {
+  readOnly?: boolean
   type?: string
   step?: string
   min?: string | number
@@ -53,6 +54,7 @@ type InputProps = CommonProps & {
 }
 
 export function FormInput({
+  readOnly,
   label,
   name,
   type = 'text',
@@ -75,6 +77,7 @@ export function FormInput({
   const isNumeric = type === 'number'
 
   const shared = {
+    readOnly,
     id: name,
     name,
     placeholder,

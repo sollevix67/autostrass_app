@@ -1,8 +1,7 @@
 import 'dotenv/config'
 import express, { type Request, type Response } from 'express'
-import mysql from 'mysql2/promise'
 import type { RowDataPacket, ResultSetHeader } from 'mysql2'
-import { readFileSync, existsSync } from 'fs'
+import { existsSync } from 'fs'
 import { join } from 'path'
 import { createServer as createHttpsServer } from 'https'
 import { createServer as createHttpServer } from 'http'
@@ -15,24 +14,15 @@ import { createComplianceRouter } from './middleware/complianceRoutes.js'
 import { securityHeaders } from './middleware/security.js'
 import { requireAuth, requireRole, type AuthenticatedRequest } from './middleware/auth.js'
 import { requireCsrf } from './middleware/csrf.js'
-import { rateLimit, authRateLimit } from './middleware/rateLimit.js'
+import { rateLimit } from './middleware/rateLimit.js'
+import { pool } from './db/client.js'
+import { createSettingsRouter } from './middleware/settingsRoutes.js'
+import { startupSettings } from './services/settingsStore.js'
+import { validateCertificate } from './services/httpsSettings.js'
+import { createReferentielSettingsRouter } from './middleware/referentielSettingsRoutes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
-const hasDatabaseConfig = Boolean(process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER && process.env.DB_PASSWORD)
-
-const pool = hasDatabaseConfig
-  ? mysql.createPool({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT ?? 3306),
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      connectionLimit: 10,
-      waitForConnections: true,
-      connectTimeout: 5000,
-    })
-  : null
 
 const articles = pool ? new ArticleRepository(pool) : null
 
@@ -716,6 +706,7 @@ app.post('/api/articles', requireAuth, requireCsrf, requireRole('magasinier'), a
   try {
     response.status(201).json(await repository.create(validation.value))
   } catch (error) {
+    if ((error as { status?: number }).status === 422) { response.status(422).json({ error: 'VALIDATION_ERROR', message: (error as Error).message }); return }
     if (isDuplicateKey(error)) {
       response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
       return
@@ -748,6 +739,7 @@ app.put('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magas
     }
     response.json(updated)
   } catch (error) {
+    if ((error as { status?: number }).status === 422) { response.status(422).json({ error: 'VALIDATION_ERROR', message: (error as Error).message }); return }
     if (isDuplicateKey(error)) {
       response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
       return
@@ -810,7 +802,9 @@ app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('ma
 // `/api/auth` est monte avant `requireAuth` : la connexion ne peut pas
 // exiger un jeton qu'elle n'a pas encore.
 // Rate limiting spécifique aux tentatives de connexion : 10 essais / 15 min par login.
-app.use('/api/auth', authRateLimit(), createAuthRouter())
+app.use('/api/auth', createAuthRouter())
+app.use('/api/parametres', createSettingsRouter())
+app.use('/api', createReferentielSettingsRouter())
 // Conformité NF525 : le routeur porte lui-même `requireAuth`, ce qui évite de
 // dependre de l'ordre de montage de `createApiRouter`.
 app.use('/api', createComplianceRouter())
@@ -818,26 +812,37 @@ app.use('/api', createApiRouter())
 
 // 404 puis gestionnaire d'erreurs : l'ordre compte, les routes `/api/*` sont
 // toutes tryees. Le gestionnaire traduit les erreurs en JSON homogene.
+const frontendPath = join(process.cwd(), 'dist')
+if (existsSync(join(frontendPath, 'index.html'))) {
+  app.use(express.static(frontendPath))
+  app.get('/{*path}', (request, response, next) => {
+    if (request.path.startsWith('/api')) return next()
+    response.sendFile(join(frontendPath, 'index.html'))
+  })
+}
+
 app.use((_request: Request, response: Response) => {
   response.status(404).json({ error: 'NOT_FOUND', message: 'Route inconnue.' })
 })
 
 app.use(errorHandler)
 
-const sslDir = join(process.cwd(), 'config', 'ssl')
-const certPath = join(sslDir, 'localhost.crt')
-const keyPath = join(sslDir, 'localhost.key')
-
-if (existsSync(certPath) && existsSync(keyPath)) {
-  const httpsPort = Number(process.env.HTTPS_PORT ?? 3443)
+const tls = startupSettings.https
+if (tls.enabled) {
+  validateCertificate(tls)
+  const httpsPort = tls.port
   createHttpsServer({
-    key: readFileSync(keyPath),
-    cert: readFileSync(certPath),
+    key: tls.privateKeyPem,
+    cert: tls.certificatePem,
+    minVersion: 'TLSv1.2',
   }, app).listen(httpsPort, () => {
     console.log(`Autostrass API listening on https://localhost:${httpsPort}`)
   })
   // Keep HTTP redirect/listener on the configured port
-  createHttpServer(app).listen(port, () => {
+  createHttpServer(tls.httpMode === 'redirect' ? (request, response) => {
+    response.writeHead(308, { Location: `${tls.publicOrigin.replace(/\/$/, '')}${request.url?.startsWith('/') ? request.url : '/'}` })
+    response.end()
+  } : app).listen(port, () => {
     console.log(`Autostrass API (HTTP) listening on http://localhost:${port}`)
   })
   if (!pool) console.warn('Warning: DB_* non configurees, /api/dashboard et /api/articles repondront 503.')
