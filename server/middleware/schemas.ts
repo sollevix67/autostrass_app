@@ -160,11 +160,12 @@ const phone = (label: string, optional = false) => {
 // ---------------------------------------------------------------------------
 
 const clientNumberSchema = z.string({ message: 'Le numéro client est requis.' })
-  .transform(guarded<string>((value) => sanitizeCode(value, 32, 'Le numéro client')))
+  .trim()
+  .regex(/^[0-9]{1,6}$/, 'Le numéro client doit contenir de 1 à 6 chiffres uniquement.')
 
 export const clientBodySchema = z.object({
   numeroClient: z.preprocess(
-    (value) => typeof value === 'string' && normalizeText(value) === '' ? undefined : value,
+    (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
     clientNumberSchema.optional(),
   ),
   secteurId: z.number().int().positive().nullable().optional(),

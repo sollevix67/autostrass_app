@@ -35,10 +35,10 @@ ON DUPLICATE KEY UPDATE nom = VALUES(nom), role = VALUES(role), actif = VALUES(a
 -- ---------------------------------------------------------------------------
 INSERT INTO clients (nom, prenom, telephone, email, adresse, ville, code_postal, type, numero_client)
 VALUES
-  ('Dupont',   'Jean',   '0611000101', 'jean.dupont@example.fr',   '12 rue de la Republique', 'Lyon',      '69001',    'particulier',    'CLI-0001'),
-  ('Martin',   'Claire', '0611000102', 'claire.martin@example.fr', '5 avenue Jean Jaures',   'Villeurbanne', '69100', 'professionnel',  'CLI-0002'),
-  ('Garcia',   'Miguel', '0611000103', 'miguel.garcia@example.fr', '27 cours Gambetta',      'Lyon',      '69003',    'professionnel',  'CLI-0003'),
-  ('Roux',     'Nadia',  '0611000104', 'nadia.roux@example.fr',    '8 rue de la Part-Dieu',  'Lyon',      '69003',    'particulier',    'CLI-0004')
+  ('Dupont',   'Jean',   '0611000101', 'jean.dupont@example.fr',   '12 rue de la Republique', 'Lyon',      '69001',    'particulier',    '000001'),
+  ('Martin',   'Claire', '0611000102', 'claire.martin@example.fr', '5 avenue Jean Jaures',   'Villeurbanne', '69100', 'professionnel',  '000002'),
+  ('Garcia',   'Miguel', '0611000103', 'miguel.garcia@example.fr', '27 cours Gambetta',      'Lyon',      '69003',    'professionnel',  '000003'),
+  ('Roux',     'Nadia',  '0611000104', 'nadia.roux@example.fr',    '8 rue de la Part-Dieu',  'Lyon',      '69003',    'particulier',    '000004')
 ON DUPLICATE KEY UPDATE email = VALUES(email), adresse = VALUES(adresse);
 
 -- ---------------------------------------------------------------------------
@@ -59,7 +59,7 @@ ON DUPLICATE KEY UPDATE marque = VALUES(marque), kilometrage = VALUES(kilometrag
 -- (client, date) : on garde l'insertion idempotente via NOT EXISTS.
 INSERT INTO commandes (client_id, date_commande, statut, date_livraison_prevue)
 SELECT c.id, '2026-09-20', 'validée', '2026-09-28' FROM clients c
-WHERE c.numero_client = 'CLI-0001'
+WHERE c.numero_client = '000001'
   AND NOT EXISTS (
     SELECT 1 FROM commandes cmd WHERE cmd.client_id = c.id AND cmd.date_commande = '2026-09-20'
   );
@@ -68,7 +68,7 @@ INSERT INTO commande_lines (commande_id, ligne, reference, designation, quantite
 SELECT cmd.id, 1, 'PLA-2841', 'Plaquettes de frein avant', 2, 15.50
 FROM commandes cmd
 JOIN clients c ON c.id = cmd.client_id
-WHERE c.numero_client = 'CLI-0001'
+WHERE c.numero_client = '000001'
   AND cmd.date_commande = '2026-09-20'
 ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);
 
@@ -80,7 +80,7 @@ INSERT INTO livraisons (commande_id, transporteur, date_expedition, date_livrais
 SELECT cmd.id, 'Colissimo', '2026-09-22', '2026-09-28', '12 rue de la Republique, 69001 Lyon', 'en transit', '6A0000000012'
 FROM commandes cmd
 JOIN clients c ON c.id = cmd.client_id
-WHERE c.numero_client = 'CLI-0001'
+WHERE c.numero_client = '000001'
   AND cmd.date_commande = '2026-09-20'
   AND NOT EXISTS (SELECT 1 FROM livraisons l WHERE l.commande_id = cmd.id);
 
@@ -104,21 +104,21 @@ ON DUPLICATE KEY UPDATE quantite_recue = VALUES(quantite_recue);
 -- ---------------------------------------------------------------------------
 INSERT INTO ventes (client_id, date_vente, caissier, total_ht, montant_paye, monnaie, mode_paiement)
 SELECT c.id, '2026-09-23 10:15:00', 'Sophie Bernard', 31.00, 50.00, 19.00, 'espèces'
-FROM clients c WHERE c.numero_client = 'CLI-0002'
+FROM clients c WHERE c.numero_client = '000002'
   AND NOT EXISTS (SELECT 1 FROM ventes v WHERE v.client_id = c.id AND v.date_vente = '2026-09-23 10:15:00');
 
 INSERT INTO vente_lines (vente_id, ligne, reference, designation, quantite, prix_unitaire, montant)
 SELECT v.id, 1, 'BAT-7710', 'Batterie 12V 70Ah', 1, 15.50, 15.50
 FROM ventes v
 JOIN clients c ON c.id = v.client_id
-WHERE c.numero_client = 'CLI-0002' AND v.date_vente = '2026-09-23 10:15:00'
+WHERE c.numero_client = '000002' AND v.date_vente = '2026-09-23 10:15:00'
 ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);
 
 INSERT INTO retours (vente_id, client_id, date_retour, motif, montant_rembourse)
 SELECT v.id, c.id, '2026-09-25', 'Piece non conforme', 15.50
 FROM ventes v
 JOIN clients c ON c.id = v.client_id
-WHERE c.numero_client = 'CLI-0002' AND v.date_vente = '2026-09-23 10:15:00'
+WHERE c.numero_client = '000002' AND v.date_vente = '2026-09-23 10:15:00'
   AND NOT EXISTS (SELECT 1 FROM retours r WHERE r.vente_id = v.id);
 
 INSERT INTO retour_lines (retour_id, ligne, reference, designation, quantite, prix_unitaire)

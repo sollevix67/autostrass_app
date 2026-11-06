@@ -1,5 +1,53 @@
 # Passation — Autostrass App
 
+## Numéro client limité à six chiffres — 2026-11-06
+
+**Demande livrée** : seuls les chiffres sont autorisés, avec six caractères
+maximum dans le formulaire, les validations API et l'attribution automatique.
+Les anciens numéros restent lisibles ; leur remplacement doit être explicite
+pour éviter de renuméroter les clients à l'insu de l'utilisateur.
+
+**Implémentation** : validation de 1 à 6 chiffres ASCII dans le formulaire et
+l'API, limite de saisie native et clavier numérique sur mobile. Zéros initiaux
+conservés. Les créations automatiques utilisent `000001` à `999999`, passent
+les numéros occupés et reviennent aux numéros libres de début de plage si
+l'id interne dépasse six chiffres. Une saturation de la plage renvoie une
+erreur explicite, sans insertion partielle. Jeux de démonstration adaptés.
+Champ facultatif à la création (attribution automatique si vide), obligatoire
+dans le formulaire de modification ; un PUT omettant le champ conserve sa
+valeur. Aucune migration nécessaire, la largeur SQL historique est conservée.
+Les anciens numéros restent stockés et lisibles ; le formulaire explique
+qu'ils doivent être remplacés avant d'enregistrer leur modification.
+
+**Validation** : build, lint, typage strict du script et traduction des erreurs
+réussis. **12 scénarios réels** de numérotation, **123 contrôles API** et
+**59 contrôles sécurité** réussis sur MariaDB 11.4.5 jetable, dont la borne
+999999 et un id interne à sept chiffres. Les fixtures des contrôles de borne
+sont nettoyées avant les suites historiques pour préserver leurs identifiants
+sentinelles. **130 contrôles Chromium** réussis sur quatre largeurs et deux
+thèmes : limite native, refus des formats invalides même après contournement
+HTML, correction explicite d'un ancien numéro, création et modification.
+Six captures et relevé JSON actualisés dans `specs/screenshots/client-edit/`.
+`specs/client-modal.md` décrit le contrat et les recettes. Build : 570,75 kB
+JS, 38,12 kB CSS ; avertissement Vite préexistant >500 kB conservé.
+
+**Nettoyage** : bases et API jetables supprimées/arrêtées ; instance MariaDB
+de recette arrêtée proprement sur le port 43318. Aucune écriture sur la base
+applicative ; instances existantes conservées.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste et cache, avec sauvegarde du 2026-11-06 : **2 763 nœuds, 5 648 liens,
+184 communautés**. Identifiants uniques, aucun lien orphelin et empreintes AST
+des **124 fichiers TS/TSX/MJS** applicatifs et scripts conformes au disque.
+Métadonnée de départ `75a2692`. Limites conservées : CSS non analysé, parseur
+SQL absent, analyse sémantique des documents et renommage LLM non relancés.
+
+**Livraison** : changements regroupés sur `main` pour
+`fix(clients): limiter le numero client a six chiffres` ; branche distante
+vérifiée avant publication. `git diff --check` réussi et captures relues.
+
+---
+
 ## Numéro client personnalisable — 2026-11-06
 
 **Demande livrée** : numéro client définissable à la création et modifiable

@@ -7,7 +7,7 @@
  * la lecture, et on ecrit les ecritures ici pour garder le typage strict.
  */
 
-import { asc, eq } from 'drizzle-orm'
+import { asc, eq, sql } from 'drizzle-orm'
 import type { MySql2Database } from 'drizzle-orm/mysql2'
 import * as schema from '../db/schema.js'
 import { toIsoString } from './mapping.js'
@@ -104,8 +104,9 @@ export class ClientRepository {
   }
 
   /**
-   * Sans numéro saisi, on part de l'id attribué et passe les numéros déjà
-   * occupés (notamment par une saisie manuelle). L'index unique arbitre aussi
+   * Sans numéro saisi, on cherche parmi 000001 à 999999 en partant de l'id
+   * modulo cette plage. On passe les numéros occupés et revient au début si
+   * nécessaire. L'index unique arbitre aussi
    * les créations concurrentes. La transaction ne publie jamais de numéro
    * temporaire et annule l'insertion si la génération échoue.
    */
@@ -126,16 +127,25 @@ export class ClientRepository {
           secteur_id: input.secteurId ?? null,
         })
         if (input.numeroClient === undefined) {
-          for (let sequence = result.insertId; ; sequence += 1) {
+          const maximum = 999999
+          const existing = await transaction.select({ numero: schema.clients.numero_client }).from(schema.clients)
+            .where(sql`${schema.clients.numero_client} REGEXP '^[0-9]{6}$'`)
+          const occupied = new Set(existing.map((row) => row.numero))
+          let assigned = false
+          for (let offset = 0; offset < maximum; offset += 1) {
+            const numero = String(((result.insertId - 1 + offset) % maximum) + 1).padStart(6, '0')
+            if (occupied.has(numero)) continue
             try {
               await transaction.update(schema.clients)
-                .set({ numero_client: `CLI-${String(sequence).padStart(4, '0')}` })
+                .set({ numero_client: numero })
                 .where(eq(schema.clients.id, result.insertId))
+              assigned = true
               break
             } catch (error) {
               if (toRepositoryError(error).code !== 'ALREADY_EXISTS') throw error
             }
           }
+          if (!assigned) throw new RepositoryError(409, 'CLIENT_NUMBER_EXHAUSTED', 'Aucun numéro automatique à six chiffres disponible.')
         }
         const [created] = await transaction.select().from(schema.clients).where(eq(schema.clients.id, result.insertId)).limit(1)
         if (!created) throw new RepositoryError(500, 'INTERNAL_ERROR', 'Client illisible après insertion.')

@@ -185,7 +185,7 @@ export function venteSchema(totalHT: number) {
 }
 
 export const clientSchema = z.object({
-  numeroClient: z.string().trim().max(32, 'Le numéro client ne doit pas dépasser 32 caractères.').regex(/^[A-Za-z0-9._/-]*$/, 'Utilisez des lettres, chiffres, points, tirets, barres obliques ou underscores.'),
+  numeroClient: z.string().trim().max(6, 'Le numéro client ne doit pas dépasser 6 chiffres.').regex(/^[0-9]*$/, 'Le numéro client doit contenir uniquement des chiffres.'),
   nom: required('Le nom').max(64, 'Nom trop long.'),
   prenom: required('Le prenom').max(64, 'Prenom trop long.'),
   telephone: z

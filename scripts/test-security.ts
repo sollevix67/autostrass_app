@@ -271,7 +271,7 @@ console.log('\nMass-assignment')
     method: 'POST',
     body: clientPayload({
       id: 999999,
-      numeroClient: 'CLI-CHOISI',
+      numeroClient: '654321',
       createdAt: '1999-01-01T00:00:00.000Z',
       role: 'admin',
       __proto__: { admin: true },
@@ -281,16 +281,16 @@ console.log('\nMass-assignment')
   check('l id est attribue par la base, pas par le corps', created.body?.id !== 999999, created.body?.id)
   // Le numéro est personnalisable ; l'identifiant interne et les métadonnées
   // restent attribués par le serveur.
-  check('le numero client explicite est accepte', created.body?.numeroClient === 'CLI-CHOISI', created.body?.numeroClient)
+  check('le numero client explicite est accepte', created.body?.numeroClient === '654321', created.body?.numeroClient)
   check('la date injectee est ignoree', created.body?.createdAt !== '1999-01-01T00:00:00.000Z', created.body?.createdAt)
   check('aucune propriete admin n est introduite', created.body?.admin === undefined, created.body)
 
   // Mise a jour : un role ne doit pas pouvoir s'introduire sur un client.
   const patched = await call(`/api/clients/${created.body?.id}`, {
     method: 'PUT',
-    body: { nom: 'Modifie', numeroClient: 'CLI-MODIFIE', id: 999998, role: 'admin', actif: true },
+    body: { nom: 'Modifie', numeroClient: '654322', id: 999998, role: 'admin', actif: true },
   })
-  check('le numero peut changer sans modifier l identifiant interne', patched.body?.numeroClient === 'CLI-MODIFIE' && patched.body?.id === created.body?.id)
+  check('le numero peut changer sans modifier l identifiant interne', patched.body?.numeroClient === '654322' && patched.body?.id === created.body?.id)
   check('la mise a jour ignore la cle inconnue « role »', patched.status === 200 && patched.body?.role === undefined, {
     status: patched.status,
     role: patched.body?.role,

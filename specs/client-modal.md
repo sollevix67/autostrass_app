@@ -30,9 +30,11 @@ sans succès local simulé. Les autres vues conservent leur repli local existant
 
 ## Numéro de client
 
-Le numéro accepte jusqu'à 32 caractères : lettres non accentuées, chiffres,
-points, underscores, tirets et barres obliques. Les espaces de bord sont
-retirés et les zéros initiaux conservés. Le numéro est unique ; un doublon
+Le numéro accepte de **1 à 6 chiffres ASCII** (`0` à `9`). Le formulaire
+limite la saisie à six caractères et propose le clavier numérique sur mobile.
+Les validations du formulaire et de l'API refusent lettres, ponctuation,
+espaces internes et chiffres Unicode. Les espaces de bord sont retirés et
+les zéros initiaux conservés. Le numéro est unique ; un doublon
 renvoie `409 CLIENT_NUMBER_EXISTS` et le message « Ce numéro de client est
 déjà utilisé. », sans modifier les autres champs ni fermer le formulaire.
 
@@ -41,17 +43,26 @@ déjà utilisé. », sans modifier les autres champs ni fermer le formulaire.
 | `POST /api/clients` | Attribution automatique | Attribution automatique | Numéro choisi |
 | `PUT /api/clients/:id` | Numéro conservé | Refus 422 | Numéro remplacé |
 
-La génération automatique part de `CLI-` suivi de l'id sur au moins quatre
-chiffres, puis avance jusqu'à un numéro libre. Elle passe ainsi les numéros
-déjà choisis manuellement. Une transaction et l'index unique existant assurent
-la cohérence en cas de concurrence ou d'échec ; aucun numéro temporaire n'est
-publié. Aucune migration nécessaire. Les commandes, ventes et retours restent
-rattachés à l'identifiant interne du client ; leurs lignes ne sont pas modifiées.
+La génération automatique attribue un numéro sur six chiffres, entre
+`000001` et `999999`. Elle part de l'id interne modulo cette plage, passe
+les numéros occupés et revient au début après `999999` : un id interne à sept
+chiffres ne produit jamais un numéro trop long. Une transaction et l'index
+unique existant assurent la cohérence en cas de concurrence ou d'échec ;
+aucun numéro temporaire n'est publié. Une plage saturée renvoie
+`409 CLIENT_NUMBER_EXHAUSTED` sans insertion partielle.
+
+Les anciens numéros alphanumériques restent stockés et lisibles ; leur
+remplacement est explicite. À l'ouverture d'une ancienne fiche, un conseil
+demande un numéro conforme avant sauvegarde. Une requête partielle omettant
+`numeroClient` conserve le numéro existant. La largeur historique de la
+colonne est conservée : aucune migration nécessaire. Les commandes, ventes
+et retours restent rattachés à l'identifiant interne du client ; leurs lignes
+ne sont pas modifiées.
 
 ## Vérification
 
 Build, lint, typage strict du nouveau script API et traduction des erreurs
-réussis. **113 contrôles Chromium** : préremplissage des neuf champs,
+réussis. **130 contrôles Chromium** : préremplissage des neuf champs,
 annulation, rétablissement, focus, validation, refus 422/409/403/404,
 erreur 503, coupure réseau, sauvegarde lente sans double envoi, numéro modifié
 et secteur conservé, remplacement et tri de la ligne, relecture
@@ -59,6 +70,9 @@ après rechargement, passage à un autre client, création et droits des trois
 rôles. Aucun débordement ni erreur JavaScript observés sur quatre largeurs
 (375, 768, 1024, 1440 px) et deux thèmes. L'accès au bouton Enregistrer par
 défilement est vérifié ; création avec numéro automatique ou personnalisé.
+La limite native de six caractères, le refus des valeurs invalides même
+après contournement HTML et la correction explicite d'un ancien numéro sont
+également contrôlés.
 
 Recette reproductible : `npm run build`, puis
 `node scripts/test-clients-ui.mjs`. Playwright et Chromium doivent être
@@ -66,16 +80,18 @@ disponibles ; `PLAYWRIGHT_MODULE` peut désigner l'URL d'un module externe.
 Les réponses API sont simulées dans le navigateur, y compris mises à jour
 et rechargements : aucune écriture MariaDB. Le script utilise le build de
 production et arrête son serveur à la fin. L'avertissement Vite préexistant
-sur le bundle JavaScript persiste (570,55 kB).
+sur le bundle JavaScript persiste (570,75 kB).
 
-**MariaDB réelle jetable** : 10 scénarios dédiés, 123 contrôles API et
+**MariaDB réelle jetable** : 12 scénarios dédiés, 123 contrôles API et
 59 contrôles sécurité réussis. Recette :
 `node --import tsx scripts/test-client-numbers.ts --all`, avec `TEST_DB_HOST`,
 `TEST_DB_PORT`, `TEST_DB_USER`, `TEST_DB_PASSWORD` pointant vers une instance
 de test autorisant la création de bases. Le script crée et supprime sa propre
-base et lance une API isolée. Il contrôle doublons, génération automatique,
-concurrence, annulation après erreur, droits, CSRF et conservation des liens
-métier. Ne pas lancer les suites API historiques sur la base applicative.
+base et lance une API isolée. Il contrôle doublons, génération automatique
+et retour au début après `999999`, limites de longueur et format, compatibilité
+des anciens numéros, concurrence, annulation après erreur, droits, CSRF et
+conservation des liens métier. Ne pas lancer les suites API historiques sur
+la base applicative.
 
 ## Correction Échap dans l'aperçu intégré
 
@@ -101,7 +117,7 @@ Modification : [liste avec actions](screenshots/client-edit/liste-desktop.png),
 [ordinateur sombre](screenshots/client-edit/modification-dark-1440.png),
 [mobile clair](screenshots/client-edit/modification-light-375.png),
 [mobile sombre](screenshots/client-edit/modification-dark-375.png) et
-[relevé des 113 contrôles](screenshots/client-edit/verification.json).
+[relevé des 130 contrôles](screenshots/client-edit/verification.json).
 [Création avec numéro personnalisé](screenshots/client-edit/creation-numero-personnalise.png).
 
 Captures de la création (4 novembre) :

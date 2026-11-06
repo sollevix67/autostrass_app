@@ -1,4 +1,4 @@
-import { useId, type ChangeEvent, type ReactNode } from 'react'
+import { useId, type ChangeEvent, type InputHTMLAttributes, type ReactNode } from 'react'
 
 /**
  * Champs de formulaire reutilisables.
@@ -43,6 +43,9 @@ type CommonProps = {
 }
 
 type InputProps = CommonProps & {
+  inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode']
+  maxLength?: number
+  pattern?: string
   readOnly?: boolean
   type?: string
   step?: string
@@ -54,6 +57,9 @@ type InputProps = CommonProps & {
 }
 
 export function FormInput({
+  inputMode,
+  maxLength,
+  pattern,
   readOnly,
   label,
   name,
@@ -77,6 +83,9 @@ export function FormInput({
   const isNumeric = type === 'number'
 
   const shared = {
+    inputMode,
+    maxLength,
+    pattern,
     readOnly,
     id: name,
     name,

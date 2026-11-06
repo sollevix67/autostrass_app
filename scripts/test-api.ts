@@ -263,7 +263,7 @@ const nouveauClient = {
 }
 const creation = await call('/api/clients', { method: 'POST', token: adminToken!, body: nouveauClient })
 check('POST /api/clients repond 201', creation.status === 201, creation.body)
-check('un numero de dossier est attribue', /^CLI-\d{4}$/.test(creation.body?.numeroClient ?? ''), creation.body?.numeroClient)
+check('un numero de dossier est attribue', /^[0-9]{1,6}$/.test(creation.body?.numeroClient ?? ''), creation.body?.numeroClient)
 const clientId = creation.body?.id as number
 
 const doublon = await call('/api/clients', { method: 'POST', token: adminToken!, body: nouveauClient })

@@ -339,11 +339,16 @@ export default function ClientsView() {
               <FormInput
                 label="N° de client"
                 name="numeroClient"
+                inputMode="numeric"
+                maxLength={6}
+                pattern="[0-9]{1,6}"
                 register={register}
                 error={errors.numeroClient?.message}
                 required={editingClient !== null}
                 placeholder={editingClient ? undefined : 'Attribué automatiquement si vide'}
-                hint="Numéro unique, 32 caractères maximum : lettres, chiffres, . _ / -"
+                hint={editingClient && !/^[0-9]{1,6}$/.test(editingClient.numeroClient)
+                  ? 'Remplacez cet ancien numéro par un numéro unique de 1 à 6 chiffres.'
+                  : 'Numéro unique de 1 à 6 chiffres. Les zéros initiaux sont conservés.'}
               />
               <div className="form-grid-2">
                 <FormInput label="Nom" name="nom" register={register} error={errors.nom?.message} required />
