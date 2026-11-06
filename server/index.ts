@@ -20,6 +20,7 @@ import { createSettingsRouter } from './middleware/settingsRoutes.js'
 import { startupSettings } from './services/settingsStore.js'
 import { validateCertificate } from './services/httpsSettings.js'
 import { createReferentielSettingsRouter } from './middleware/referentielSettingsRoutes.js'
+import { createInventaireRouter } from './middleware/inventaireRoutes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -808,6 +809,7 @@ app.use('/api', createReferentielSettingsRouter())
 // Conformité NF525 : le routeur porte lui-même `requireAuth`, ce qui évite de
 // dependre de l'ordre de montage de `createApiRouter`.
 app.use('/api', createComplianceRouter())
+app.use('/api/inventaires', createInventaireRouter())
 app.use('/api', createApiRouter())
 
 // 404 puis gestionnaire d'erreurs : l'ordre compte, les routes `/api/*` sont

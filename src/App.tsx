@@ -27,6 +27,7 @@ import { LoginView } from './views/LoginView'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
 import StockView from './views/StockView'
+import InventaireView from './views/InventaireView'
 import ReceptionsView from './views/ReceptionsView'
 import VentesComptoirView from './views/VentesComptoirView'
 import CaisseView from './views/CaisseView'
@@ -181,7 +182,7 @@ function AppContent() {
       </aside>
 
       <main className="main-content">
-        <header className="topbar"><button ref={mobileMenuRef} className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu" aria-controls="main-navigation" aria-expanded={mobileNav}><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{parametreTitle(location.pathname) ?? navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
+        <header className="topbar"><button ref={mobileMenuRef} className="mobile-menu" onClick={() => setMobileNav(!mobileNav)} aria-label="Ouvrir le menu" aria-controls="main-navigation" aria-expanded={mobileNav}><Icon name="menu" size="lg" /></button><div className="breadcrumbs"><span>Accueil</span><span>/</span><strong>{(location.pathname === '/stock/inventaire' ? 'Inventaire physique' : parametreTitle(location.pathname)) ?? navigation.find(n => n.path === location.pathname)?.label ?? location.pathname.slice(1).replace(/-/g, ' ')}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Rechercher"><Icon name="search" size="lg" /></button><button className="icon-button notification" aria-label="Notifications"><Icon name="bell" size="lg" /><i></i></button><button className="icon-button" aria-label={themeLabel} title={themeLabel} onClick={cycleTheme}><Icon name={theme === 'dark' ? 'sun' : theme === 'light' ? 'moon' : 'sun'} size="lg" /></button><div className="topbar-divider"></div><div className="topbar-profile"><span className="profile-avatar small">{initials(user.prenom, user.nom)}</span><span>{user.prenom} {user.nom}</span><Icon name="chevron-down" size="sm" /></div></div></header>
         <div className="content-wrap">
           {location.pathname === '/' && (
             <div className="page-heading">
@@ -217,6 +218,7 @@ function AppContent() {
             <Route path="/" element={<DashboardView dashboard={dashboard} apiMode={apiMode} />} />
             <Route path="/catalogue" element={<CatalogueView />} />
             <Route path="/stock" element={<StockView />} />
+            <Route path="/stock/inventaire" element={<InventaireView />} />
             <Route path="/receptions" element={<ReceptionsView />} />
             <Route path="/ventes-comptoir" element={<VentesComptoirView />} />
             <Route path="/caisse" element={<CaisseView />} />

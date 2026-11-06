@@ -103,8 +103,10 @@ un transfert comme tel, sans annoncer un ajustement du stock total.
 
 ## Hors périmètre
 
-L'inventaire physique et la réconciliation des allocations historiques
-restent des tâches séparées. Le transfert n'effectue ni comptage physique ni
+L’inventaire physique est désormais livré séparément dans
+[`inventaire-physique.md`](inventaire-physique.md) (2026-11-06).
+La réconciliation des allocations historiques exige un comptage explicite.
+Le transfert n'effectue ni comptage physique ni
 ajustement du stock total. La création/modification des emplacements conserve
 ses routes existantes.
 

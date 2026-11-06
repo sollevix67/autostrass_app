@@ -5,8 +5,8 @@
  * decrivent la forme des payloads. Toute evolution de l'API se voit ici.
  */
 
-import type { UserRole } from '../types'
-import type { ApiLimits, LoginLimits, DatabaseSettings, HttpsSettings } from '../schemas/parametres'
+import type { UserRole } from '../types/index.js'
+import type { ApiLimits, LoginLimits, DatabaseSettings, HttpsSettings } from '../schemas/parametres.js'
 
 export type ApiParametres = {
   api: ApiLimits
@@ -270,6 +270,34 @@ export type StockTransfertInput = {
   emplacement_id: number | null
   quantite: number
   motif?: string | null
+}
+
+export type InventaireLigne = {
+  emplacementId: number | null
+  chemin: string
+  quantiteAvant: number
+}
+
+export type ApiInventairePreparation = {
+  reference: string
+  designation: string
+  version: string
+  quantiteTotale: number
+  incoherent: boolean
+  lignes: InventaireLigne[]
+}
+
+export type ApiInventaire = {
+  id: number
+  reference: string
+  designation: string
+  utilisateurId: number
+  auteur: string
+  motif: string
+  quantiteAvant: number
+  quantiteComptee: number
+  lignes: Array<InventaireLigne & { quantiteComptee: number }>
+  createdAt: string
 }
 
 /** Retour renvoye par `GET /api/retours`. */

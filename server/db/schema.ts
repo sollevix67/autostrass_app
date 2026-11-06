@@ -31,6 +31,7 @@ import {
   primaryKey,
   index,
   uniqueIndex,
+  json,
 } from 'drizzle-orm/mysql-core'
 
 /**
@@ -668,6 +669,20 @@ export const retourLinesRelations = relations(retourLines, ({ one }) => ({
  * Type d'appui : les lignes stockent la reference en texte, pas l'id.
  */
 export type ArticleRef = { id: number; reference: string }
+
+/** Historique autonome : conservé même après suppression de l’article ou de l’auteur. */
+export const inventairesStock = mysqlTable('inventaires_stock', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  reference: varchar('reference', { length: 64 }).notNull(),
+  designation: varchar('designation', { length: 255 }).notNull(),
+  utilisateurId: int('utilisateur_id', { unsigned: true }).notNull(),
+  auteur: varchar('auteur', { length: 129 }).notNull(),
+  motif: varchar('motif', { length: 255 }).notNull(),
+  quantiteAvant: int('quantite_avant').notNull(),
+  quantiteComptee: int('quantite_comptee').notNull(),
+  lignes: json('lignes').notNull(),
+  createdAt: createdAt().notNull(),
+}, (table) => [index('idx_inventaires_reference').on(table.reference, table.id)])
 
 // ---------------------------------------------------------------------------
 // Étape 2 — injection manuelle des exports attendus par drizzle-kit

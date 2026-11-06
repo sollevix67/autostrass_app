@@ -1,5 +1,79 @@
 # Passation — Autostrass App
 
+## Inventaire physique par référence — 2026-11-06
+
+**Reprise et livraison** : après lecture de la passation sur `main` propre
+(`09dd83a`), implémentation de la prochaine priorité métier : comptage complet
+d’une référence par emplacement et du stock non affecté. Accès depuis Stock,
+recherche référence/désignation/EAN13, saisie explicite des quantités, ajout
+d’un emplacement découvert, motif obligatoire et confirmation des écarts.
+Route `/stock/inventaire`, API `/api/inventaires`, droits admin/magasinier.
+
+**Intégrité** : comparaison d’une version du stock avant validation ; refus
+des comptages obsolètes ou rejoués, des fractions, doublons, omissions et
+dépassements. Transaction atomique pour total, allocations, historique,
+mouvement `INVENTAIRE_PHYSIQUE` et journal d’audit. Verrous compatibles avec
+les transferts et suppressions d’emplacements ; `READ COMMITTED` évite les
+conflits d’intervalle pour plusieurs références sans allocations. Les
+allocations historiques incohérentes ne sont corrigées qu’après un comptage
+complet explicite. Un échec du journal annule toutes les écritures.
+
+**Historique et interface** : conservation autonome de l’auteur, du motif,
+des noms et des quantités avant/après ; filtre par référence et pagination
+de 50 résultats. Aucun endpoint de modification/suppression des comptages.
+Confirmation accessible, protection des liens de navigation pendant la saisie,
+avertissement de fermeture/recharge, blocage pendant la sauvegarde, erreurs
+conservant les champs et nouvelle saisie exigée après conflit. Le bouton
+Précédent du navigateur n’est pas intercepté ; aucun brouillon serveur.
+
+**Migration** : `0008_inventaire_stock`, additive et validée sur MariaDB jetable,
+crée uniquement la table d’historique et son index. **À appliquer sur la base
+applicative avec `npm run db:migrate` avant utilisation**, après contrôle du
+journal et de `0007` encore signalée en attente. Aucune migration ni écriture
+sur la base applicative n’a été effectuée pendant ce chantier.
+
+**Validation** : build, lint, typage strict du nouveau script et traduction
+des erreurs réussis. **14 scénarios inventaire**, **13 scénarios transfert**,
+**123 contrôles API**, **58 contrôles sécurité** réussis sur MariaDB 11.4.5
+locale jetable. **84 contrôles Chromium** réussis : quatre largeurs
+375/768/1024/1440 px, deux thèmes, saisie, Échap/focus, navigation, panne,
+sauvegarde lente, ajustement réel, rechargement, conflit et droits. Aucune
+erreur JavaScript ni débordement horizontal. Les essais de panne/latence sont
+simulés ; les autres appels utilisent l’API réelle. Six captures et relevé
+JSON dans `specs/screenshots/inventaire/`. Build : 568,79 kB JS, 37,94 kB CSS ;
+avertissement Vite préexistant >500 kB conservé.
+
+**Documentation** : [`specs/inventaire-physique.md`](specs/inventaire-physique.md)
+décrit le fonctionnement, les garanties, limites, API, migration, sauvegardes
+et scripts de recette reproductibles. README et feuille de route actualisés.
+
+**Suite** : devis, puis commandes fournisseurs. Le comptage physique sur Zebra,
+les recettes Paramètres avec certificat/Cloudflare réels et les migrations
+applicatives restent à préparer au déploiement. Les campagnes multi-articles
+et brouillons partagés ne sont pas inclus dans ce comptage par référence.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifest, cache et sauvegarde du 2026-11-06 : **2 743 nœuds, 5 609 liens,
+180 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+AST des **122 fichiers TS/TSX/MJS** applicatifs et scripts conformes au disque.
+Métadonnée de départ : `09dd83a` ; les empreintes couvrent le code de cette
+livraison avant son commit. Limites conservées : 13 SQL sans parseur,
+64 fichiers non classifiés (notamment CSS), analyse sémantique des documents
+et renommage LLM des communautés non relancés.
+
+**Nettoyage et livraison** : les bases/API jetables sont supprimées/arrêtées ;
+l’instance MariaDB temporaire est arrêtée (aucun listener sur 43318).
+Le contrôle automatique a refusé la commande de nettoyage récursif
+(`blocked by policy`, sans précision supplémentaire). Le dossier de données
+reste dans `%TEMP%/autostrass-inventaire-verification-20261106`, hors du dépôt.
+La suppression ciblée de `credentials.json` a aussi retourné un code 1 sans
+message : sa présence a été vérifiée, ce fichier d’identifiants de test reste
+dans le même dossier. Aucun identifiant n’est ajouté au dépôt.
+Les vérifications sont terminées. Changements regroupés sur `main` pour le
+commit `feat(stock): ajouter l’inventaire physique par référence`.
+
+---
+
 ## Administration complète des paramètres — 2026-11-05
 
 **Demande livrée** : huit vues et leurs routes sous `/parametres`, avec API,
@@ -765,7 +839,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 > vérifiés pendant ce chantier ; les statuts des autres modules restent
 > historiques et n'ont pas été réaudités.
 
-### 📊 Avancement global : **4 modules implémentés / 13 — recette de déploiement Paramètres restante**
+### 📊 Avancement global : **Inventaire physique et Paramètres livrés — recette de déploiement restante**
 
 > **Étape 1 faite.** Les 13 vues « ⚠️ partiel » sont branchées sur l'API :
 > RHF + Zod + `DataTable` + `ConfirmDialog` + `canWrite()`, et les
@@ -774,7 +848,7 @@ Construire une application de gestion de dépôt automobile (stock, réceptions,
 
 | Module du cahier des charges | Persistance | Écart restant |
 |---|---|---|
-| Stock (backend) | 🟡 En cours | CRUD des emplacements et transferts présents ; transferts fiabilisés et validés le 2026-11-04. Gestion partagée des emplacements dans Stock et Paramètres livrée le 2026-11-05 ; reste l'inventaire physique |
+| Stock (backend) | ✅ Implémenté, déploiement à préparer | Emplacements, transferts et inventaire physique par référence livrés ; comptages et ajustements atomiques avec historique (2026-11-06). Migration `0008` à appliquer ; recette Zebra physique restante. Guide : `specs/inventaire-physique.md` |
 | Catalogue (frontend) | 🟡 En cours | Catégories/sous-catégories administrables, TVA/prix TTC, forcing, délai et EAN13 persistés le 2026-11-05. Restent notamment la recherche dédiée EAN13 et la compatibilité par immatriculation/VIN (API) |
 | Caisse (backend) | ✅ Terminé | Contrôle du fond de caisse, comptage billet par billet, clôture avec écart et conformité NF525 terminés ; documents PDF (factures, bons de commande, etc.) en étape 3 |
 | Devis (backend) | ❌ Non commencé | Tout le module : numérotation, création/modification, envoi email/WhatsApp, transformation en commande client |
@@ -864,7 +938,7 @@ Les `window.alert` / `window.confirm` ont disparu.
 - `POST /api/articles/:reference/transfert` : transfert d'article entre emplacements avec vérification du stock disponible et journalisation dans `stock_movements`
 - Articles CRUD existant (GET, POST, PUT, PATCH quantite, DELETE)
 
-> Reste à faire : inventaire physique (comptage + ajustement de stock).
+> Inventaire physique par référence livré le 2026-11-06 : comptage complet, ajustements et historique. Voir `specs/inventaire-physique.md` ; migration `0008` à appliquer.
 
 **Stock — UI (frontend)** ✅ **TERMINÉE** — `src/views/StockView.tsx`
 - Hiérarchie visuelle des emplacements (indentation par niveau : allée → étagère → place)
@@ -923,7 +997,7 @@ base de données → accès aux emplacements existants → catégories et
 sous-catégories → secteurs → limites API/connexion → certificats HTTPS →
 Turnstile. Les lots PARAM-01 à PARAM-07 sont implémentés ; restent la
 migration applicative et les recettes avec certificat, Cloudflare et PDA réels.
-Les chantiers inventaire physique, devis et commandes fournisseurs restent ouverts.
+L’inventaire physique par référence est livré le 2026-11-06. Les devis et commandes fournisseurs restent ouverts.
 
 ### ❓ Décisions en attente
 

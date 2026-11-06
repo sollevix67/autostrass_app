@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -300,6 +301,7 @@ export default function StockView() {
           <button className="action-btn edit" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
             <Icon name="edit" size="sm" />
           </button>
+          {canTransfer && !offline && <Link className="action-btn" to={`/stock/inventaire?reference=${encodeURIComponent(row.reference)}`} title="Compter" aria-label={`Compter ${row.reference}`}><Icon name="clipboard" size="sm" /></Link>}
           <button className="action-btn transfert" onClick={() => openTransfert(row)} title="Transférer" aria-label={`Transférer ${row.reference}`} disabled={!canTransfer || offline || savingTransfert}>
             <Icon name="truck" size="sm" />
           </button>
@@ -323,6 +325,7 @@ export default function StockView() {
       }
       actions={(
         <>
+          {canTransfer && <Link className="primary-button" to="/stock/inventaire"><Icon name="clipboard" size="sm" /> Inventaire physique</Link>}
           <button
             className="secondary-button"
             onClick={() => {

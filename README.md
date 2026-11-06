@@ -43,6 +43,13 @@ Voir le [guide d'administration et de déploiement](specs/parametres.md) pour
 les droits, sauvegardes, certificats, clés Cloudflare et procédures de
 récupération, et la [feuille de route](specs/parametres-roadmap.md) pour la recette restante.
 
+## Inventaire physique
+
+Le [comptage physique du stock](specs/inventaire-physique.md) est accessible
+dans **Stock → Inventaire physique**. Appliquer la migration `0008` avant
+utilisation. Le magasinier ou l’administrateur compte les emplacements,
+valide l’écart et retrouve le détail dans l’historique.
+
 ## Tests sur une base jetable
 
 ```bash
@@ -50,15 +57,21 @@ npm run test:errors
 npm run build
 npm run test:parametres
 npm run test:stock
+npm run test:inventaire
 npm run test:integration
 ```
 
 `test:stock` vérifie la validation et les transferts réels (conservation,
 concurrence, audit et droits). `test:integration` enchaîne également les
-suites API et sécurité. Ces deux commandes créent leur propre base MariaDB,
+suites API et sécurité, puis les scénarios d’inventaire physique.
+Ces commandes créent leur propre base MariaDB,
 appliquent le schéma, les migrations et les seeds, démarrent une API isolée,
 puis arrêtent cette API et suppriment la base créée, même en cas d'échec.
 Elles n'utilisent jamais `DB_NAME` comme cible.
+
+`test:inventaire` isole les 14 scénarios de comptage : écarts, emplacements,
+concurrence, droits, historique et rollback. La [recette navigateur](specs/inventaire-physique.md)
+décrit également le script optionnel Playwright et les captures de validation.
 
 Configurer `TEST_DB_HOST`, `TEST_DB_PORT`, `TEST_DB_USER` et
 `TEST_DB_PASSWORD` pour utiliser une instance de test ; à défaut, les

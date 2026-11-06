@@ -57,6 +57,13 @@
       "when": 1793906140483,
       "tag": "0007_parametres_referentiels",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1793993538785,
+      "tag": "0008_inventaire_stock",
+      "breakpoints": true
     }
   ]
 }
