@@ -64,6 +64,13 @@
       "when": 1793993538785,
       "tag": "0008_inventaire_stock",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1794001443037,
+      "tag": "0009_fournisseur_siret",
+      "breakpoints": true
     }
   ]
 }

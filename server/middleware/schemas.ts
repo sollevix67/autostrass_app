@@ -194,6 +194,7 @@ const optionalFournisseurField = (schema: z.ZodType<string>) => z.preprocess(
 
 export const fournisseurBodySchema = z.object({
   nom: required('Le nom', 128),
+  siret: optionalFournisseurField(z.string().trim().regex(/^[0-9]{14}$/, 'Le SIRET doit contenir exactement 14 chiffres.')),
   code: optionalFournisseurField(z
     .string({ message: 'Le code fournisseur est requis.' })
     .transform(guarded<string>((value) => sanitizeCode(value, 32, 'Le code fournisseur')))

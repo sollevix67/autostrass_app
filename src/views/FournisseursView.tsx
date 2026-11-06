@@ -31,6 +31,7 @@ import type { ApiFournisseur } from '../services/contracts'
 const EMPTY_FOURNISSEUR = {
   nom: '',
   code: '',
+  siret: '',
   email: '',
   telephone: '',
   adresse: '',
@@ -109,6 +110,13 @@ export default function FournisseursView() {
       render: (row) => <span className={row.code ? 'stock-reference' : 'text-muted'}>{row.code ?? '-'}</span>,
     },
     {
+      key: 'siret',
+      header: 'SIRET',
+      sortable: true,
+      sortValue: (row) => row.siret ?? '',
+      render: (row) => row.siret ?? '-',
+    },
+    {
       key: 'telephone',
       header: 'TELEPHONE',
       sortable: true,
@@ -169,6 +177,7 @@ export default function FournisseursView() {
     form.reset({
       nom: row.nom,
       code: row.code ?? '',
+      siret: row.siret ?? '',
       email: row.email ?? '',
       telephone: row.telephone ?? '',
       adresse: row.adresse ?? '',
@@ -220,6 +229,7 @@ export default function FournisseursView() {
             labels={{
               nom: 'Nom',
               code: 'Code',
+              siret: 'SIRET',
               email: 'Email',
               telephone: 'Telephone',
               adresse: 'Adresse',
@@ -234,6 +244,7 @@ export default function FournisseursView() {
           <div className="form-grid-2">
             <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
             <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
+            <FormInput label="SIRET" name="siret" error={form.formState.errors.siret?.message} register={register} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
             <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
             <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
             <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />
@@ -263,6 +274,7 @@ export default function FournisseursView() {
             labels={{
               nom: 'Nom',
               code: 'Code',
+              siret: 'SIRET',
               email: 'Email',
               telephone: 'Telephone',
               adresse: 'Adresse',
@@ -277,6 +289,7 @@ export default function FournisseursView() {
           <div className="form-grid-2">
             <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
             <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
+            <FormInput label="SIRET" name="siret" error={form.formState.errors.siret?.message} register={register} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
             <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
             <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
             <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />

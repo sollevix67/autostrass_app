@@ -1,17 +1,17 @@
 # Graph Report - autostrass_app  (2026-11-06)
 
 ## Corpus Check
-- 306 files · ~374,005 words
+- 308 files · ~379,823 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 64 file(s) not represented in the graph (top: .csv 53, .css 7, (none) 2)
 
 ## Summary
-- 2786 nodes · 5685 edges · 184 communities (135 shown, 49 thin omitted)
+- 2786 nodes · 5686 edges · 184 communities (135 shown, 49 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 201 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4e5e527c`
+- Built from commit: `ddbafe63`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -784,17 +784,17 @@ Nodes (4): allowScripts, esbuild@0.28.2, overrides, esbuild
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `zod` connect `test-inventaires.ts` to `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `package.json`, `crud.ts`, `react`?**
-  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+- **Why does `drizzle-orm` connect `toRepositoryError` to `dependencies`, `Cash Database Schema`, `SimpleRepository`, `resourceRoutes.ts`, `Document Data Repositories`, `referentielRepositories.ts`, `test-environment.ts`, `package.json`, `Cash Register Repository`, `crud.ts`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `RFC-5321`, `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice` to the rest of the system?**
   _101 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `drizzle-orm` connect `toRepositoryError` to `dependencies`, `Cash Database Schema`, `SimpleRepository`, `resourceRoutes.ts`, `Document Data Repositories`, `referentielRepositories.ts`, `test-environment.ts`, `package.json`, `Cash Register Repository`, `crud.ts`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `Frontend API Hooks`, `dependencies`, `FormFields.tsx`, `CaisseView.tsx`, `settingsStore.ts`, `VentesComptoirView.tsx`, `package.json`, `useAuth.ts`, `App.tsx`, `contracts.ts`, `InventaireView.tsx`?**
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Should `scripts/core.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05563093622795115 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `Frontend API Hooks`, `dependencies`, `FormFields.tsx`, `CaisseView.tsx`, `settingsStore.ts`, `VentesComptoirView.tsx`, `package.json`, `useAuth.ts`, `App.tsx`, `contracts.ts`, `InventaireView.tsx`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `zod` connect `test-inventaires.ts` to `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `package.json`, `crud.ts`, `react`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._

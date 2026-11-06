@@ -1,13 +1,14 @@
 /** Recette fournisseurs sur une base jetable ; --all ajoute API et sécurité. */
 import { deepEqual, equal, ok } from 'node:assert/strict'
+import type { RowDataPacket } from 'mysql2/promise'
 import type { ApiFournisseur } from '../src/services/contracts.js'
 import { fournisseurSchema } from '../src/schemas/index.js'
 import { fournisseurBodySchema, fournisseurPatchSchema, clientBodySchema } from '../server/middleware/schemas.js'
 import { createTestEnvironment } from './lib/test-environment.js'
 
-const empty = { nom: 'Fournisseur minimal', code: '', email: '', telephone: '', adresse: '', ville: '', codePostal: '', delaiLivraison: 0, modeLivraison: 'livraison', actif: true }
-const optionalFields = ['code', 'email', 'telephone', 'adresse', 'ville', 'codePostal'] as const
-const full = { ...empty, nom: 'Fournisseur complet', code: 'FOUR/01', email: 'contact@example.test', telephone: '+33 (0)3 88 00 00 00', adresse: '1 rue du Test', ville: 'Strasbourg', codePostal: '67000', delaiLivraison: 3, modeLivraison: 'express' }
+const empty = { nom: 'Fournisseur minimal', code: '', siret: '', email: '', telephone: '', adresse: '', ville: '', codePostal: '', delaiLivraison: 0, modeLivraison: 'livraison', actif: true }
+const optionalFields = ['code', 'siret', 'email', 'telephone', 'adresse', 'ville', 'codePostal'] as const
+const full = { ...empty, nom: 'Fournisseur complet', code: 'FOUR/01', siret: '01234567890123', email: 'contact@example.test', telephone: '+33 (0)3 88 00 00 00', adresse: '1 rue du Test', ville: 'Strasbourg', codePostal: '67000', delaiLivraison: 3, modeLivraison: 'express' }
 let scenarios = 0
 function passed(label: string) { scenarios++; console.log(`  OK   ${label}`) }
 
@@ -36,6 +37,13 @@ for (const [field, value] of [
   ok(!fournisseurBodySchema.safeParse(input).success, `API ${field}`)
 }
 passed('Valeurs renseignées invalides rejetées par le formulaire et l’API')
+
+for (const siret of ['0123456789012', '012345678901234', '0123456789012A', '012 345 678 90123', '０１２３４５６７８９０１２３', 12345678901234]) {
+  ok(!fournisseurSchema.safeParse({ ...full, siret }).success)
+  ok(!fournisseurBodySchema.safeParse({ ...full, siret }).success)
+}
+equal(fournisseurBodySchema.parse(fournisseurSchema.parse({ ...full, siret: ' 01234567890123 ' })).siret, full.siret)
+passed('SIRET de 14 chiffres : zéros initiaux conservés, mauvais formats et nombres rejetés')
 
 const environment = await createTestEnvironment()
 const { baseUrl } = environment
@@ -74,6 +82,7 @@ try {
   equal(omitted.body!.delaiLivraison, 0)
   equal(omitted.body!.modeLivraison, 'livraison')
   equal(omitted.body!.actif, true)
+  equal(omitted.body!.siret, null)
   const rawEmpty = await call('POST', '', { ...empty, nom: 'Fournisseur chaînes vides' })
   equal(rawEmpty.status, 201)
   passed('Création API avec champs omis ou chaînes vides, valeurs par défaut conservées')
@@ -87,6 +96,13 @@ try {
   for (const field of optionalFields) equal(afterName[field], full[field])
   passed('Création complète et mise à jour partielle préservant les coordonnées')
 
+  equal((await call('PUT', path, { siret: '00123456789012' })).status, 200)
+  const [stored] = await environment.connection.query<RowDataPacket[]>('SELECT nom, siret FROM fournisseurs WHERE id = ?', [created.body!.id])
+  equal(stored[0].siret, '00123456789012')
+  equal(stored[0].nom, 'Fournisseur renommé')
+  equal((await call('GET', path)).body!.siret, stored[0].siret)
+  passed('SIRET modifié seul et relu en base sans perte des zéros initiaux')
+
   for (const blank of ['', null, '  ']) {
     equal((await call('PUT', path, full)).status, 200)
     const cleared = Object.fromEntries(optionalFields.map((field) => [field, blank]))
@@ -97,7 +113,7 @@ try {
   passed('Effacement explicite des coordonnées par chaîne vide, espaces ou null')
 
   const before = (await call('GET', path)).body!
-  for (const [field, value] of [['email', 'invalide'], ['telephone', 'abc123'], ['code', 'CODE AVEC ESPACE'], ['codePostal', 'ABC'], ['delaiLivraison', 1.5], ['nom', '']] as const) {
+  for (const [field, value] of [['siret', '0123456789012'], ['siret', '012345678901234'], ['siret', '0123456789012A'], ['siret', 12345678901234], ['email', 'invalide'], ['telephone', 'abc123'], ['code', 'CODE AVEC ESPACE'], ['codePostal', 'ABC'], ['delaiLivraison', 1.5], ['nom', '']] as const) {
     const invalid = await call('PUT', path, { nom: 'Ne pas enregistrer', [field]: value })
     equal(invalid.status, 422)
     equal(invalid.body!.error, 'VALIDATION_ERROR')
@@ -105,6 +121,7 @@ try {
     deepEqual((await call('GET', path)).body, before)
   }
   equal((await call('POST', '', { ...empty, email: 'invalide' })).status, 422)
+  equal((await call('POST', '', { ...empty, siret: 'invalide' })).status, 422)
   equal((await call('POST', '', { ...empty, nom: '<script>alert(1)</script>' })).status, 422)
   passed('Refus 422 détaillés sans écriture partielle ; protection contre le markup conservée')
 

@@ -46,6 +46,7 @@ export const fournisseurs = mysqlTable('fournisseurs', {
   id: int('id', { unsigned: true }).primaryKey().autoincrement(),
   nom: varchar('nom', { length: 128 }).notNull(),
   code: varchar('code', { length: 32 }),
+  siret: varchar('siret', { length: 14 }),
   email: varchar('email', { length: 255 }),
   telephone: varchar('telephone', { length: 32 }),
   adresse: varchar('adresse', { length: 255 }),

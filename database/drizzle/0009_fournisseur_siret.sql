@@ -1,0 +1,1 @@
+ALTER TABLE `fournisseurs` ADD `siret` varchar(14);

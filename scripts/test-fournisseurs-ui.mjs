@@ -9,8 +9,8 @@ import { preview } from 'vite'
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
 const output = resolve('specs/screenshots/fournisseurs')
 const checks = [], errors = []
-const fields = ['code', 'email', 'telephone', 'adresse', 'ville', 'codePostal']
-const full = { nom: 'Fournisseur complet', code: 'FOUR/01', email: 'contact@example.test', telephone: '+33 (0)3 88 00 00 00', adresse: '1 rue du Test', ville: 'Strasbourg', codePostal: '67000' }
+const fields = ['code', 'siret', 'email', 'telephone', 'adresse', 'ville', 'codePostal']
+const full = { nom: 'Fournisseur complet', code: 'FOUR/01', siret: '01234567890123', email: 'contact@example.test', telephone: '+33 (0)3 88 00 00 00', adresse: '1 rue du Test', ville: 'Strasbourg', codePostal: '67000' }
 let browser, server, releaseWrite
 function check(condition, label) { assert.ok(condition, label); checks.push(label) }
 
@@ -63,6 +63,10 @@ try {
 
   const { context, page, state } = await setup('admin')
   const submit = page.getByRole('button', { name: 'Ajouter le fournisseur', exact: true })
+  check(await page.getByLabel('SIRET', { exact: true }).getAttribute('inputmode') === 'numeric', 'Clavier numérique pour le SIRET')
+  await page.locator('#siret').fill('012345678901234')
+  check(await page.locator('#siret').inputValue() === full.siret, 'SIRET limité à 14 caractères dans le navigateur')
+  await page.locator('#siret').fill('')
   await page.locator('#nom').fill('Fournisseur minimal')
   await submit.click()
   await page.getByRole('cell', { name: 'Fournisseur minimal', exact: true }).waitFor()
@@ -79,8 +83,17 @@ try {
   await page.getByRole('cell', { name: full.nom, exact: true }).waitFor()
   check(state.rows.at(-1).telephone === full.telephone, 'Téléphone avec préfixe, espaces et parenthèses conservé')
   check(state.rows.at(-1).code === 'FOUR/01', 'Code normalisé avant création')
+  check(state.rows.at(-1).siret === full.siret, 'SIRET transmis comme texte avec son zéro initial')
+  check(await page.getByRole('cell', { name: full.siret, exact: true }).count() === 2, 'SIRET visible dans la liste')
   await page.getByRole('button', { name: `Modifier ${full.nom}`, exact: true }).click()
   check(await page.locator('#email').inputValue() === full.email, 'Coordonnées préremplies en modification')
+  check(await page.locator('#siret').inputValue() === full.siret, 'SIRET prérempli en modification')
+  await page.locator('#siret').fill('00123456789012')
+  await page.getByRole('button', { name: 'Enregistrer', exact: true }).click()
+  await submit.waitFor()
+  await page.reload()
+  await page.getByRole('button', { name: `Modifier ${full.nom}`, exact: true }).click()
+  check(await page.locator('#siret').inputValue() === '00123456789012', 'SIRET modifié et relu sans perdre ses zéros initiaux')
   for (const field of fields) await page.locator(`#${field}`).fill('')
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click()
   await submit.waitFor()
@@ -93,7 +106,7 @@ try {
 
   await page.locator('#nom').fill('Saisie conservée')
   const writesBefore = state.writes.length
-  for (const [field, value] of [['email', 'invalide'], ['telephone', 'abc123'], ['code', 'CODE AVEC ESPACE'], ['codePostal', 'ABC'], ['delaiLivraison', '1.5']]) {
+  for (const [field, value] of [['siret', '0123456789012'], ['siret', '0123456789012A'], ['email', 'invalide'], ['telephone', 'abc123'], ['code', 'CODE AVEC ESPACE'], ['codePostal', 'ABC'], ['delaiLivraison', '1.5']]) {
     await page.locator(`#${field}`).fill(value)
     await submit.click()
     await page.locator('.error-summary').waitFor()
@@ -101,6 +114,12 @@ try {
     check(state.writes.length === writesBefore, `Format invalide bloqué avant API : ${field}`)
     await page.locator(`#${field}`).fill(field === 'delaiLivraison' ? '0' : '')
   }
+  await page.locator('#siret').evaluate(input => input.removeAttribute('maxlength'))
+  await page.locator('#siret').fill('012345678901234')
+  await submit.click()
+  check(await page.locator('#siret').getAttribute('aria-invalid') === 'true' && state.writes.length === writesBefore, 'SIRET trop long refusé même sans limite HTML')
+  await page.locator('#siret').fill('')
+  await page.locator('#siret').evaluate(input => input.setAttribute('maxlength', '14'))
 
   for (const failure of [
     { status: 422, body: { error: 'VALIDATION_ERROR', message: 'Donnees invalides.', details: { email: "Format d'email invalide.", code: 'Le code fournisseur contient des caracteres interdits.' } } },
@@ -147,7 +166,10 @@ try {
       check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Aucun débordement global ${theme} ${width}`)
       await submit.scrollIntoViewIfNeeded()
       check(await submit.isVisible(), `Ajout accessible ${theme} ${width}`)
-      if (width !== 768) await page.screenshot({ path: resolve(output, `creation-${theme}-${width}.png`), fullPage: true })
+      if (width !== 768) {
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+        await page.screenshot({ path: resolve(output, `creation-${theme}-${width}.png`), fullPage: true })
+      }
     }
   }
   await context.close()

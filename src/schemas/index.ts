@@ -216,6 +216,7 @@ const optionalFournisseurField = (schema: z.ZodType<string, string>) => z.string
 /** Fournisseur : nom requis, coordonnées facultatives. */
 export const fournisseurSchema = z.object({
   nom: required('Le nom').max(128, 'Nom trop long.'),
+  siret: optionalFournisseurField(z.string().regex(/^[0-9]{14}$/, 'Le SIRET doit contenir exactement 14 chiffres.')),
   code: optionalFournisseurField(z.string()
     .max(32, 'Code trop long.')
     .regex(/^[A-Za-z0-9._/-]+$/, 'Le code accepte les lettres, chiffres, points, tirets, barres obliques et underscores.')),

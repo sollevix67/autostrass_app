@@ -1,7 +1,7 @@
 # Création et modification des fournisseurs — 6 novembre 2026
 
 Le formulaire permet d'enregistrer un fournisseur avec uniquement son nom.
-Le code, l'email, le téléphone, l'adresse, la ville et le code postal sont
+Le code, le SIRET, l'email, le téléphone, l'adresse, la ville et le code postal sont
 facultatifs. Les coordonnées renseignées sont validées ; une erreur apparaît
 près du champ et dans le résumé. Les détails d'un refus API remplacent le
 message générique « Données invalides » dans la bannière.
@@ -18,6 +18,7 @@ ce correctif s'applique aussi aux clients et utilisateurs utilisant ce helper.
 | --- | --- |
 | Nom | Obligatoire, 128 caractères maximum, unique |
 | Code | Facultatif, 32 caractères maximum, lettres ASCII, chiffres et `. _ / -` |
+| SIRET | Facultatif, exactement 14 chiffres ASCII sans espaces, zéros initiaux conservés |
 | Email | Facultatif, format email valide |
 | Téléphone | Facultatif, 6 à 20 caractères, chiffres et séparateurs usuels, `+` uniquement au début |
 | Adresse / ville | Facultatives, 255 / 64 caractères maximum |
@@ -32,6 +33,11 @@ sa valeur ; une chaîne vide, composée d'espaces ou `null` l'efface.
 Le formulaire transmet les valeurs validées et normalisées pour la création
 et la modification, puis réinitialise la saisie après succès confirmé.
 
+Le SIRET est stocké en texte, prérempli en modification et affiché dans une
+colonne triable. Limite de saisie de 14 caractères et clavier numérique mobile.
+La validation contrôle le format, sans vérification de clé Luhn ni interrogation
+d'un registre d'entreprises. Aucune contrainte d'unicité supplémentaire.
+
 Les écritures exigent une réponse API (`allowOfflineWrites: false`). Un refus
 ou une panne conserve les champs et la liste, sans création locale annoncée
 comme enregistrée. Les boutons de sauvegarde et d'effacement sont bloqués
@@ -39,26 +45,35 @@ pendant l'enregistrement. Admin et magasinier peuvent écrire ; caissier en
 lecture seule, avec boutons Modifier/Supprimer désactivés. Authentification,
 CSRF, protections contre le markup et requêtes paramétrées conservés.
 
-Aucune migration nécessaire : les colonnes facultatives sont déjà nullables.
-Aucune donnée applicative n'a été modifiée pendant la recette.
+La migration `0009_fournisseur_siret.sql` ajoute la colonne nullable
+`fournisseurs.siret VARCHAR(14)`. Exécuter `npm run db:migrate` avant de démarrer
+l'API mise à jour. Les fournisseurs existants conservent leurs coordonnées et
+ont un SIRET vide jusqu'à sa saisie. Les tests s'exécutent sur une base jetable.
 
 ## Vérification reproductible
 
 - `npm run build`, `npm run lint`, `npm run test:errors` réussis.
-- `node --import tsx scripts/test-fournisseurs.ts --all` : **9 scénarios** de
+- `node --import tsx scripts/test-fournisseurs.ts --all` : **11 scénarios** de
   contrat et de persistance, **123 contrôles API**, **59 contrôles sécurité**.
   Utiliser `TEST_DB_HOST`, `TEST_DB_PORT`, `TEST_DB_USER`, `TEST_DB_PASSWORD`
   pour une instance MariaDB de test autorisant la création de bases. Le script
   crée/supprime sa base et lance/arrête son API isolée. Ne pas lancer les suites
   API historiques sur la base applicative.
-- Après le build, `node scripts/test-fournisseurs-ui.mjs` : **62 contrôles
+- Après le build, `node scripts/test-fournisseurs-ui.mjs` : **75 contrôles
   Chromium**, API simulée, trois largeurs (375/768/1440 px), clair et sombre.
   Playwright/Chromium requis ; `PLAYWRIGHT_MODULE` accepte un module externe.
   Création minimale/complète, correction/effacement/relecture, validation,
   erreurs 422/409/403/503 et réseau, sauvegarde lente, droits et affichage.
   Le script arrête son serveur en fin de recette.
 
-Build : JavaScript 571,77 kB, CSS 38,12 kB ; avertissement Vite préexistant
+Les contrôles SIRET couvrent les champs vide/omis/null, le format, la limite
+native et son contournement, les zéros initiaux, la création, la modification,
+l'effacement, la conservation lors d'un PUT partiel et la relecture en base.
+Les migrations `0008` précédemment en attente et `0009` ont été appliquées à
+la base configurée après recette : les trois fournisseurs existants sont
+inchangés, avec `siret = NULL`. Une seconde migration ne modifie rien.
+
+Build : JavaScript 572,38 kB, CSS 38,12 kB ; avertissement Vite préexistant
 sur le bundle JavaScript supérieur à 500 kB.
 
 ## Captures

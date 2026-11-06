@@ -91,6 +91,7 @@ export type ApiFournisseur = {
   id: number
   nom: string
   code: string | null
+  siret: string | null
   email: string | null
   telephone: string | null
   adresse: string | null

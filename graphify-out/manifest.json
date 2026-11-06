@@ -390,9 +390,9 @@
     "semantic_hash": "aa03d9e5f68e493673b89978e38152d5"
   },
   "database/drizzle/meta/_journal.json": {
-    "mtime": 1793993538.7858746,
-    "seen": 1793994345.1358562,
-    "ast_hash": "3faea22aecb69c799f2c5a9153840c0b",
+    "mtime": 1794001443.0375316,
+    "seen": 1794001713.5683947,
+    "ast_hash": "c25cd94f856f6d6d4261db9da82fc43c",
     "semantic_hash": ""
   },
   "drizzle.config.ts": {
@@ -486,10 +486,10 @@
     "semantic_hash": ""
   },
   "server/db/schema_step2.ts": {
-    "mtime": 1791107746.2333777,
-    "seen": 1791573312.3151639,
-    "ast_hash": "35411f671d3938cdfb7521719ed2c00d",
-    "semantic_hash": "35411f671d3938cdfb7521719ed2c00d"
+    "mtime": 1794001441.557895,
+    "seen": 1794001713.5738716,
+    "ast_hash": "4d1e7c60d04b133582f22b427d2be7fd",
+    "semantic_hash": ""
   },
   "server/index.ts": {
     "mtime": 1793993605.0015318,
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "server/middleware/schemas.ts": {
-    "mtime": 1794000399.9029117,
-    "seen": 1794000639.1810381,
-    "ast_hash": "4e41f51266e39e3a010a3a1a20c63b8b",
+    "mtime": 1794001441.5604062,
+    "seen": 1794001713.5766776,
+    "ast_hash": "7c96790e7cd4e5615e0c961404dbad13",
     "semantic_hash": ""
   },
   "server/middleware/security.ts": {
@@ -600,9 +600,9 @@
     "semantic_hash": ""
   },
   "server/repositories/referentielRepositories.ts": {
-    "mtime": 1793999262.5244882,
-    "seen": 1793999589.2326434,
-    "ast_hash": "d568757170e30723ed6285e336240a97",
+    "mtime": 1794001441.5594022,
+    "seen": 1794001713.5789015,
+    "ast_hash": "7059cb9fed0a075d36e152ce2034bb63",
     "semantic_hash": ""
   },
   "server/repositories/simpleRepositories.ts": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "src/schemas/index.ts": {
-    "mtime": 1794000399.9014115,
-    "seen": 1794000639.190931,
-    "ast_hash": "285e54203a0f2581f0fc778f370e4039",
+    "mtime": 1794001441.5614083,
+    "seen": 1794001713.5881705,
+    "ast_hash": "5ba926aec8bd042fe276a5a984aad67d",
     "semantic_hash": ""
   },
   "src/services/api.ts": {
@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/services/contracts.ts": {
-    "mtime": 1793993752.858401,
-    "seen": 1793994345.151848,
-    "ast_hash": "5d8f5530c3a7986e0d40c76a8a5546c1",
+    "mtime": 1794001441.5629058,
+    "seen": 1794001713.5887468,
+    "ast_hash": "fdcda11578491313bd2e7949485a1ccd",
     "semantic_hash": ""
   },
   "src/services/resilience.ts": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1794001148.4469018,
-    "seen": 1794001153.50001,
-    "ast_hash": "d5a08d4d5932e87311e0c7ab73706ebe",
+    "mtime": 1794001755.7214522,
+    "seen": 1794001760.7755075,
+    "ast_hash": "f9210f8ae5f6f4751b0c4988d364d834",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1506,9 +1506,9 @@
     "semantic_hash": ""
   },
   "src/views/FournisseursView.tsx": {
-    "mtime": 1794000323.7023785,
-    "seen": 1794000639.1928027,
-    "ast_hash": "62fd7343876cdfd51154bf72af1e9749",
+    "mtime": 1794001441.5639064,
+    "seen": 1794001713.590576,
+    "ast_hash": "dca8d15ebbbd4eeda961632511e1ca5a",
     "semantic_hash": ""
   },
   "PRODUCT.md": {
@@ -2112,57 +2112,63 @@
     "semantic_hash": ""
   },
   "scripts/test-fournisseurs-ui.mjs": {
-    "mtime": 1794000601.8097851,
-    "seen": 1794000639.1760645,
-    "ast_hash": "9ecd16d131ee9571f250718e9e3c7e9b",
+    "mtime": 1794001638.340971,
+    "seen": 1794001713.5712595,
+    "ast_hash": "a57b3fba5eda5fabfc4cb7912e5f62e0",
     "semantic_hash": ""
   },
   "scripts/test-fournisseurs.ts": {
-    "mtime": 1794000367.6464891,
-    "seen": 1794000639.1760685,
-    "ast_hash": "d9313e42f658bb4b1082bf58ca977b43",
+    "mtime": 1794001489.7551258,
+    "seen": 1794001713.571263,
+    "ast_hash": "fbf71eebbc605b9e63fda4435be3bbb5",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/verification.json": {
-    "mtime": 1794001043.9527948,
-    "seen": 1794001105.179337,
-    "ast_hash": "d690244abd676f68d8b87724546a4fb0",
+    "mtime": 1794001645.1568804,
+    "seen": 1794001713.581279,
+    "ast_hash": "4392aad5399af72595dbbe7374f7562a",
     "semantic_hash": ""
   },
   "specs/fournisseurs.md": {
-    "mtime": 1794000601.810285,
-    "seen": 1794000639.2149758,
-    "ast_hash": "5395691eb6027e723e7072c5f321ec4b",
+    "mtime": 1794001638.3419707,
+    "seen": 1794001713.6128495,
+    "ast_hash": "74b8cccfd0ec4c5004c6670229a697ff",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-1440.png": {
-    "mtime": 1794001042.5415783,
-    "seen": 1794001105.2109907,
-    "ast_hash": "2f0dc1648556322e5aaa5b6acba23d6f",
+    "mtime": 1794001643.8116097,
+    "seen": 1794001713.618575,
+    "ast_hash": "3fe540a0c64103b45aab9b31225695c3",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-375.png": {
-    "mtime": 1794001042.3848453,
-    "seen": 1794001105.210994,
-    "ast_hash": "bcdc3739051636635ab7d96fe4ddf3ee",
+    "mtime": 1794001643.661369,
+    "seen": 1794001713.6185772,
+    "ast_hash": "2633fc1a56413389f2d34e688e2acc85",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-1440.png": {
-    "mtime": 1794001042.1058052,
-    "seen": 1794001105.2109957,
-    "ast_hash": "f67ba053419bf4dd1081a754abf5a7c7",
+    "mtime": 1794001643.3835218,
+    "seen": 1794001713.6185787,
+    "ast_hash": "a69ebea20917a85f4fdc0c4610ba6e27",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-375.png": {
-    "mtime": 1794001041.952046,
-    "seen": 1794001105.2109976,
-    "ast_hash": "9042094019e16b0fad36bfd3b7170c17",
+    "mtime": 1794001643.2287855,
+    "seen": 1794001713.6185808,
+    "ast_hash": "7cf6f1bd1d74382666a91d630f49ab82",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/erreur-detaillee.png": {
-    "mtime": 1794001041.2637734,
-    "seen": 1794001105.2109988,
-    "ast_hash": "4d50357db5434f8bf3bc22d98e652833",
+    "mtime": 1794001642.5447795,
+    "seen": 1794001713.6185822,
+    "ast_hash": "94dd76055c9a5b843ef3d614b3885f90",
+    "semantic_hash": ""
+  },
+  "database/drizzle/meta/0009_snapshot.json": {
+    "mtime": 1794001443.0370314,
+    "seen": 1794001713.5683916,
+    "ast_hash": "bf77660f91a21f43b58eb5498ce7967c",
     "semantic_hash": ""
   },
   "package-lock.json": {

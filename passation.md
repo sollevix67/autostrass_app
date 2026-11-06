@@ -1,5 +1,56 @@
 # Passation — Autostrass App
 
+## SIRET des fournisseurs — 2026-11-06
+
+**Demande et contrat** : ajout d'un SIRET facultatif à la création et à la
+modification des fournisseurs, visible dans la liste. Format de 14 chiffres
+ASCII, stocké en texte pour conserver les zéros initiaux. Champ vide effacé
+à `NULL` ; champ omis dans un PUT conservé. Le nom reste le seul champ requis.
+
+**Implémentation** : ajout du champ dans le schéma Drizzle existant
+(`schema_step2.ts`, réexporté par `schema.ts`), le contrat API, le repository,
+les validations et les formulaires. Limite native de 14 caractères, clavier
+numérique et message relié au champ ; colonne triable dans la liste.
+La migration générée `0009_fournisseur_siret.sql` ajoute uniquement
+`fournisseurs.siret VARCHAR(14) NULL` ; aucune conversion des données.
+
+**Validation** : build, lint, typage strict du script et traduction des erreurs
+réussis ; **11 scénarios fournisseurs**, **123 contrôles API** et **59 contrôles
+sécurité** réussis sur MariaDB 11.4.5 jetable. **75 contrôles Chromium** : SIRET
+facultatif, formats, longueur y compris sans limite HTML, zéros initiaux,
+création/modification/effacement/relecture et liste. Trois largeurs, deux
+thèmes, cinq captures et relevé actualisés. Base jetable supprimée et serveur
+MariaDB de recette arrêté proprement. JS : 572,38 kB ; CSS : 38,12 kB.
+
+**Base configurée** : après inspection et recette, migrations `0008` (table
+historique d'inventaire encore absente, ajout uniquement) et `0009` appliquées
+via le migrateur Drizzle. Les **trois fournisseurs existants** ont été comparés
+avant/après : toutes leurs données sont conservées, nouveau champ à `NULL`.
+Type nullable `VARCHAR(14)` vérifié ; seconde migration sans changement.
+Les captures ont été reprises en haut de page pour conserver l'alignement
+de la navigation fixe.
+
+**Activation locale** : le redémarrage de l'API existante sur le port 3001
+a été refusé par le contrôle automatique d'approbation (`blocked by policy`,
+sans autre motif). La commande n'a pas été exécutée ; l'API n'a pas été
+arrêtée. Redémarrer l'API, puis recharger la page pour utiliser le contrat
+SIRET. La migration en base est déjà appliquée.
+
+**Graphify** : `graphify update .` (0.9.103) a actualisé JSON, HTML, rapport,
+manifeste et sauvegarde du jour : **2 786 nœuds, 5 686 liens, 184 communautés**.
+Identifiants uniques, aucun lien orphelin ; empreintes des **126 fichiers
+TS/TSX/MJS** conformes. Métadonnée de départ `ddbafe6`. Limites habituelles
+conservées : CSS non analysé, parseur SQL absent, sémantique documentaire et
+renommage LLM non relancés. Snapshot Drizzle comparé au précédent : seul
+le champ SIRET est ajouté, chaîne de snapshots valide.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(fournisseurs): ajouter le champ SIRET`. `origin/main` vérifié à jour,
+`git diff --check` réussi et captures relues. Pour les autres installations,
+appliquer `npm run db:migrate` avant le redémarrage de l'API.
+
+---
+
 ## Création des fournisseurs : données invalides — 2026-11-06
 
 **Revue finale** : correctif local non encore commité retrouvé à l'ouverture

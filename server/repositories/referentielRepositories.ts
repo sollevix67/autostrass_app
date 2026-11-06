@@ -303,6 +303,7 @@ export type FournisseurRow = {
   id: number
   nom: string
   code: string | null
+  siret: string | null
   email: string | null
   telephone: string | null
   adresse: string | null
@@ -318,6 +319,7 @@ export type FournisseurRow = {
 export type FournisseurInput = {
   nom: string
   code?: string | null
+  siret?: string | null
   email?: string | null
   telephone?: string | null
   adresse?: string | null
@@ -333,6 +335,7 @@ function mapFournisseur(raw: Record<string, unknown>): FournisseurRow {
     id: Number(raw.id),
     nom: String(raw.nom ?? ''),
     code: raw.code ? String(raw.code) : null,
+    siret: raw.siret ? String(raw.siret) : null,
     email: raw.email ? String(raw.email) : null,
     telephone: raw.telephone ? String(raw.telephone) : null,
     adresse: raw.adresse ? String(raw.adresse) : null,
@@ -371,6 +374,7 @@ export class FournisseurRepository {
     return this.base.create({
       nom: input.nom,
       code: input.code ?? null,
+      siret: input.siret ?? null,
       email: input.email ?? null,
       telephone: input.telephone ?? null,
       adresse: input.adresse ?? null,
@@ -389,6 +393,7 @@ export class FournisseurRepository {
         .set({
           ...(input.nom !== undefined && { nom: input.nom }),
           ...(input.code !== undefined && { code: input.code }),
+          ...(input.siret !== undefined && { siret: input.siret }),
           ...(input.email !== undefined && { email: input.email }),
           ...(input.telephone !== undefined && { telephone: input.telephone }),
           ...(input.adresse !== undefined && { adresse: input.adresse }),
