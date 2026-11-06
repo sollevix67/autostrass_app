@@ -281,7 +281,7 @@ const miseAJour = await call(`/api/clients/${clientId}`, {
   body: { ville: 'Lyon' },
 })
 check('PUT met a jour un champ', miseAJour.body?.ville === 'Lyon', miseAJour.body?.ville)
-check('le numero de dossier reste inchange', miseAJour.body?.numeroClient === creation.body?.numeroClient, {
+check('le numero de dossier reste inchange quand il est omis', miseAJour.body?.numeroClient === creation.body?.numeroClient, {
   avant: creation.body?.numeroClient,
   apres: miseAJour.body?.numeroClient,
 })

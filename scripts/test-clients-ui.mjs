@@ -15,7 +15,7 @@ const initial = [
   { id: 17, numeroClient: 'CLI-0017', nom: 'Dupont', prenom: 'Camille', telephone: '0388000017', email: 'camille@example.test', adresse: '17 rue des Artisans', ville: 'Strasbourg', codePostal: '67000', type: 'particulier', secteurId: 4, createdAt: '2026-11-01T10:00:00Z', updatedAt: '2026-11-01T10:00:00Z' },
   { id: 29, numeroClient: 'CLI-0029', nom: 'Moreau', prenom: 'Alex', telephone: '0388000029', email: 'alex@example.test', adresse: '29 rue du Dépôt', ville: 'Colmar', codePostal: '68000', type: 'professionnel', secteurId: null, createdAt: '2026-11-01T10:00:00Z', updatedAt: '2026-11-01T10:00:00Z' },
 ]
-const fields = ['nom', 'prenom', 'telephone', 'email', 'adresse', 'ville', 'codePostal', 'type']
+const fields = ['numeroClient', 'nom', 'prenom', 'telephone', 'email', 'adresse', 'ville', 'codePostal', 'type']
 let browser, server, releaseWrite
 function check(condition, label) { assert.ok(condition, label); checks.push(label) }
 
@@ -47,7 +47,7 @@ try {
       if (method === 'PUT') {
         const id = Number(path.split('/').at(-1))
         assert.equal(path, `/api/clients/${id}`)
-        assert.deepEqual(Object.keys(body).sort(), [...fields].sort(), 'Seules les coordonnées sont transmises')
+        assert.deepEqual(Object.keys(body).sort(), [...fields].sort(), 'Seuls le numéro et les coordonnées sont transmis')
         const previous = state.clients.find((client) => client.id === id)
         assert.ok(previous)
         const updated = { ...previous, ...body, updatedAt: '2026-11-06T12:00:00Z' }
@@ -55,7 +55,8 @@ try {
         return route.fulfill({ status: 200, json: updated })
       }
       if (method === 'POST' && path === '/api/clients') {
-        const created = { ...body, id: 30, numeroClient: 'CLI-0030', secteurId: null }
+        const id = Math.max(...state.clients.map((client) => client.id)) + 1
+        const created = { ...body, id, numeroClient: body.numeroClient || `CLI-${String(id).padStart(4, '0')}`, secteurId: null }
         state.clients.push(created)
         return route.fulfill({ status: 201, json: created })
       }
@@ -91,6 +92,9 @@ try {
       check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Page sans débordement ${theme} ${width}`)
       check(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth && element.getBoundingClientRect().width <= innerWidth), `Dialogue adapté ${theme} ${width}`)
       if (width === 375 || width === 1440) await page.screenshot({ path: resolve(output, `modification-${theme}-${width}.png`), fullPage: true })
+      await save.scrollIntoViewIfNeeded()
+      const button = await save.boundingBox()
+      check(button && button.y >= 0 && button.y + button.height <= 1000, `Enregistrement accessible par défilement ${theme} ${width}`)
     }
   }
   await page.evaluate(() => { document.documentElement.dataset.theme = 'light' })
@@ -116,9 +120,18 @@ try {
   await dialog.locator('.error-summary').waitFor()
   check(state.writes.length === 0, 'Validation avant toute requête')
   await dialog.getByRole('button', { name: 'Rétablir', exact: true }).click()
+  for (const invalid of ['', 'X'.repeat(33), 'NUM AVEC ESPACE']) {
+    await dialog.locator('#numeroClient').fill(invalid)
+    await save.click()
+    await dialog.locator('.error-summary').waitFor()
+    check(await dialog.locator('#numeroClient').getAttribute('aria-invalid') === 'true', `Numéro invalide signalé : longueur ${invalid.length}`)
+    check(state.writes.length === 0, 'Aucun envoi de numéro invalide')
+  }
+  await dialog.getByRole('button', { name: 'Rétablir', exact: true }).click()
   await dialog.locator('#ville').fill('Haguenau')
   for (const failure of [
     { status: 422, body: { error: 'VALIDATION_ERROR', message: 'Coordonnées refusées.' } },
+    { status: 409, body: { error: 'CLIENT_NUMBER_EXISTS', message: 'Ce numéro de client est déjà utilisé.' } },
     { status: 403, body: { error: 'FORBIDDEN' } },
     { status: 404, body: { error: 'NOT_FOUND' } },
     { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } },
@@ -127,13 +140,14 @@ try {
     state.failure = failure
     await save.click()
     await dialog.locator('.error-banner').waitFor()
+    if (failure.status === 409) check((await dialog.locator('.error-banner').textContent()).includes('Ce numéro de client est déjà utilisé.'), 'Message explicite pour un numéro déjà utilisé')
     check(await dialog.locator('#ville').inputValue() === 'Haguenau', `Saisie conservée après ${failure.status ?? failure}`)
     check((await table.textContent()).includes('Strasbourg'), `Liste intacte après ${failure.status ?? failure}`)
     check(await page.locator('.toast-success').count() === 0, `Aucun faux succès après ${failure.status ?? failure}`)
   }
   state.failure = null
   state.slow = true
-  const updated = { nom: 'Zimmermann', prenom: 'Claude', telephone: '0388901234', email: 'claude@example.test', adresse: '8 avenue de la Gare', ville: 'Haguenau', codePostal: '67500', type: 'professionnel' }
+  const updated = { numeroClient: 'PRO/2026-0042', nom: 'Zimmermann', prenom: 'Claude', telephone: '0388901234', email: 'claude@example.test', adresse: '8 avenue de la Gare', ville: 'Haguenau', codePostal: '67500', type: 'professionnel' }
   for (const field of fields) {
     if (field === 'type') await dialog.locator('#type').selectOption(updated.type)
     else await dialog.locator(`#${field}`).fill(updated[field])
@@ -149,13 +163,13 @@ try {
   releaseWrite = undefined
   state.slow = false
   await dialog.waitFor({ state: 'hidden' })
-  await page.getByText('Client CLI-0017 modifié.', { exact: true }).waitFor()
+  await page.getByText(`Client ${updated.numeroClient} modifié.`, { exact: true }).waitFor()
   check(await table.locator('tbody tr').count() === 2, 'La modification ne crée aucun doublon')
   check(state.writes.every((write) => write.method === 'PUT' && write.path === '/api/clients/17'), 'Modification ciblée sur le bon client')
-  check(state.clients[0].numeroClient === 'CLI-0017' && state.clients[0].secteurId === 4, 'Numéro et secteur préservés')
-  check(await table.locator('tbody tr').last().locator('td').first().textContent() === 'CLI-0017', 'Tri de la liste après changement du nom')
+  check(state.clients[0].numeroClient === updated.numeroClient && state.clients[0].id === 17 && state.clients[0].secteurId === 4, 'Numéro changé, identifiant interne et secteur préservés')
+  check(await table.locator('tbody tr').last().locator('td').first().textContent() === updated.numeroClient, 'Tri de la liste après changement du nom')
   await page.reload()
-  const updatedTrigger = page.getByRole('button', { name: 'Modifier Claude Zimmermann (CLI-0017)', exact: true })
+  const updatedTrigger = page.getByRole('button', { name: `Modifier Claude Zimmermann (${updated.numeroClient})`, exact: true })
   await updatedTrigger.click()
   for (const field of fields) check(await dialog.locator(`#${field}`).inputValue() === updated[field], `Relecture API après rechargement ${field}`)
   await page.keyboard.press('Escape')
@@ -165,7 +179,7 @@ try {
 
   await page.getByRole('button', { name: 'Nouveau client', exact: true }).click()
   for (const field of fields.filter((field) => field !== 'type')) check(await dialog.locator(`#${field}`).inputValue() === '', `Création réinitialisée ${field}`)
-  for (const field of fields.filter((field) => field !== 'type')) await dialog.locator(`#${field}`).fill(initial[1][field])
+  for (const field of fields.filter((field) => field !== 'type' && field !== 'numeroClient')) await dialog.locator(`#${field}`).fill(initial[1][field])
   state.failure = { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } }
   await dialog.getByRole('button', { name: 'Ajouter le client', exact: true }).click()
   await dialog.locator('.error-banner').waitFor()
@@ -174,11 +188,18 @@ try {
   await dialog.getByRole('button', { name: 'Ajouter le client', exact: true }).click()
   await dialog.waitFor({ state: 'hidden' })
   check(await table.locator('tbody tr').count() === 3, 'Création toujours fonctionnelle après édition')
+  check(state.clients.at(-1).numeroClient === 'CLI-0030', 'Numéro automatique accepté à la création si champ vide')
+  await page.getByRole('button', { name: 'Nouveau client', exact: true }).click()
+  for (const field of fields.filter((field) => field !== 'type')) await dialog.locator(`#${field}`).fill(field === 'numeroClient' ? '000030' : initial[1][field])
+  await page.screenshot({ path: resolve(output, 'creation-numero-personnalise.png'), fullPage: true })
+  await dialog.getByRole('button', { name: 'Ajouter le client', exact: true }).click()
+  await dialog.waitFor({ state: 'hidden' })
+  check(state.clients.at(-1).numeroClient === '000030', 'Création avec numéro personnalisé et zéros initiaux')
   state.failure = { status: 503, body: { error: 'DATABASE_UNAVAILABLE' } }
   await page.getByRole('button', { name: 'Supprimer Claude Zimmermann', exact: true }).click()
   await page.getByRole('dialog', { name: 'Supprimer ce client ?' }).getByRole('button', { name: 'Supprimer', exact: true }).click()
   await page.locator('.error-banner').waitFor()
-  check(await table.getByRole('cell', { name: 'CLI-0017', exact: true }).isVisible(), 'Suppression refusée sans disparition locale')
+  check(await table.getByRole('cell', { name: updated.numeroClient, exact: true }).isVisible(), 'Suppression refusée sans disparition locale')
   await context.close()
 
   for (const role of ['magasinier', 'caissier']) {

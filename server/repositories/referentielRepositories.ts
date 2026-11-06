@@ -45,7 +45,7 @@ export type ClientInput = {
   ville: string
   codePostal: string
   type: schema.ClientType
-  /** Absent a la creation : derive de l'id. */
+  /** Facultatif à la création : génération automatique si absent. */
   numeroClient?: string
 }
 
@@ -65,6 +65,13 @@ function mapClient(raw: Record<string, unknown>): ClientRow {
     createdAt: toIsoString(raw.created_at as Date | null),
     updatedAt: toIsoString(raw.updated_at as Date | null),
   }
+}
+
+function clientWriteError(error: unknown): RepositoryError {
+  const mapped = toRepositoryError(error)
+  return mapped.code === 'ALREADY_EXISTS'
+    ? new RepositoryError(409, 'CLIENT_NUMBER_EXISTS', 'Ce numéro de client est déjà utilisé.')
+    : mapped
 }
 
 export class ClientRepository {
@@ -97,57 +104,71 @@ export class ClientRepository {
   }
 
   /**
-   * `numero_client` est NOT NULL et unique, or il depend de l'id attribue par
-   * MariaDB : on cree d'abord la ligne avec une valeur temporaire, puis on la
-   * corrige. Deux insertions concurrentes recoivent deux ids distincts, donc
-   * deux numeros distincts — pas de collision.
+   * Sans numéro saisi, on part de l'id attribué et passe les numéros déjà
+   * occupés (notamment par une saisie manuelle). L'index unique arbitre aussi
+   * les créations concurrentes. La transaction ne publie jamais de numéro
+   * temporaire et annule l'insertion si la génération échoue.
    */
   async create(input: ClientInput): Promise<ClientRow> {
     await this.validateSecteur(input.secteurId)
-    const numero = input.numeroClient ?? `TMP-${crypto.randomUUID().slice(0, 8)}`
-    const created = await this.base.create({
-      nom: input.nom,
-      prenom: input.prenom,
-      telephone: input.telephone,
-      email: input.email,
-      adresse: input.adresse,
-      ville: input.ville,
-      code_postal: input.codePostal,
-      type: input.type,
-      numero_client: numero,
-      secteur_id: input.secteurId ?? null,
-    } as never)
-
-    if (input.numeroClient) return created
-
-    const finalNumber = `CLI-${String(created.id).padStart(4, '0')}`
-    await this.db.update(schema.clients).set({ numero_client: finalNumber }).where(eq(schema.clients.id, created.id))
-    return { ...created, numeroClient: finalNumber }
+    try {
+      return await this.db.transaction(async (transaction) => {
+        const [result] = await transaction.insert(schema.clients).values({
+          nom: input.nom,
+          prenom: input.prenom,
+          telephone: input.telephone,
+          email: input.email,
+          adresse: input.adresse,
+          ville: input.ville,
+          code_postal: input.codePostal,
+          type: input.type,
+          numero_client: input.numeroClient ?? `TMP-${crypto.randomUUID().replaceAll('-', '').slice(0, 28)}`,
+          secteur_id: input.secteurId ?? null,
+        })
+        if (input.numeroClient === undefined) {
+          for (let sequence = result.insertId; ; sequence += 1) {
+            try {
+              await transaction.update(schema.clients)
+                .set({ numero_client: `CLI-${String(sequence).padStart(4, '0')}` })
+                .where(eq(schema.clients.id, result.insertId))
+              break
+            } catch (error) {
+              if (toRepositoryError(error).code !== 'ALREADY_EXISTS') throw error
+            }
+          }
+        }
+        const [created] = await transaction.select().from(schema.clients).where(eq(schema.clients.id, result.insertId)).limit(1)
+        if (!created) throw new RepositoryError(500, 'INTERNAL_ERROR', 'Client illisible après insertion.')
+        return mapClient(created as unknown as Record<string, unknown>)
+      })
+    } catch (error) {
+      throw clientWriteError(error)
+    }
   }
 
-  /** Le numero de dossier est imuable : on le retire des mises a jour. */
+  /** Numéro modifiable ; l'id interne conserve toutes les relations métier. */
   async update(id: number, input: Partial<ClientInput>): Promise<ClientRow | null> {
     await this.validateSecteur(input.secteurId, id)
-    const { numeroClient: _ignored, ...rest } = input
     try {
       const [result] = await this.db
         .update(schema.clients)
         .set({
-          ...(rest.nom !== undefined && { nom: rest.nom }),
-          ...(rest.prenom !== undefined && { prenom: rest.prenom }),
-          ...(rest.telephone !== undefined && { telephone: rest.telephone }),
-          ...(rest.email !== undefined && { email: rest.email }),
-          ...(rest.adresse !== undefined && { adresse: rest.adresse }),
-          ...(rest.ville !== undefined && { ville: rest.ville }),
-          ...(rest.codePostal !== undefined && { code_postal: rest.codePostal }),
-          ...(rest.type !== undefined && { type: rest.type }),
-          ...(rest.secteurId !== undefined && { secteur_id: rest.secteurId }),
+          ...(input.numeroClient !== undefined && { numero_client: input.numeroClient }),
+          ...(input.nom !== undefined && { nom: input.nom }),
+          ...(input.prenom !== undefined && { prenom: input.prenom }),
+          ...(input.telephone !== undefined && { telephone: input.telephone }),
+          ...(input.email !== undefined && { email: input.email }),
+          ...(input.adresse !== undefined && { adresse: input.adresse }),
+          ...(input.ville !== undefined && { ville: input.ville }),
+          ...(input.codePostal !== undefined && { code_postal: input.codePostal }),
+          ...(input.type !== undefined && { type: input.type }),
+          ...(input.secteurId !== undefined && { secteur_id: input.secteurId }),
         })
         .where(eq(schema.clients.id, id))
       if (result.affectedRows === 0) return null
       return this.findById(id)
     } catch (error) {
-      throw toRepositoryError(error)
+      throw clientWriteError(error)
     }
   }
 

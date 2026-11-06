@@ -6,13 +6,14 @@ ordinateur et une colonne défilante sur mobile. Le thème clair/sombre
 reprend les tokens de l'application.
 
 Chaque ligne dispose également d'un bouton **Modifier**, ouvrant la même
-fenêtre avec les coordonnées du client sélectionné : nom, prénom, téléphone,
-email, adresse, ville, code postal et type. **Rétablir** annule la saisie et
+fenêtre avec le numéro et les coordonnées du client sélectionné : nom, prénom,
+téléphone, email, adresse, ville, code postal et type. **Rétablir** annule la saisie et
 remet les valeurs à l'ouverture ; **Enregistrer les modifications** appelle
 `PUT /api/clients/:id` puis remplace la ligne dans la liste, sans doublon.
-Le numéro de dossier est affiché dans le titre et reste immuable. Le secteur
-affecté depuis Paramètres est conservé, car il n'est pas transmis par ce
-formulaire. Changer de client ou passer à la création réinitialise la saisie.
+Le numéro de dossier est affiché dans le titre et peut être modifié dans le
+champ **N° de client**. L'identifiant interne et le secteur affecté depuis
+Paramètres sont conservés. Changer de client ou passer à la création
+réinitialise la saisie.
 
 La fermeture est possible avec Annuler, la croix, Échap ou le fond. Le
 focus reste dans la fenêtre puis revient au bouton déclencheur. Les champs
@@ -22,20 +23,42 @@ liste, ferme le dialogue et réinitialise le formulaire.
 
 La création, la modification et la suppression sont réservées aux
 administrateurs et magasiniers ; les boutons sont désactivés pour le caissier.
-Le contrat API reste inchangé. Les écritures Clients exigent une confirmation
-serveur (`useResource` avec `allowOfflineWrites: false`) : erreur réseau,
+Les écritures Clients exigent une confirmation serveur (`useResource` avec
+`allowOfflineWrites: false`) : erreur réseau,
 service indisponible ou refus API conservent le formulaire et la liste,
 sans succès local simulé. Les autres vues conservent leur repli local existant.
 
+## Numéro de client
+
+Le numéro accepte jusqu'à 32 caractères : lettres non accentuées, chiffres,
+points, underscores, tirets et barres obliques. Les espaces de bord sont
+retirés et les zéros initiaux conservés. Le numéro est unique ; un doublon
+renvoie `409 CLIENT_NUMBER_EXISTS` et le message « Ce numéro de client est
+déjà utilisé. », sans modifier les autres champs ni fermer le formulaire.
+
+| Requête | `numeroClient` absent | Vide ou espaces | Numéro renseigné |
+| --- | --- | --- | --- |
+| `POST /api/clients` | Attribution automatique | Attribution automatique | Numéro choisi |
+| `PUT /api/clients/:id` | Numéro conservé | Refus 422 | Numéro remplacé |
+
+La génération automatique part de `CLI-` suivi de l'id sur au moins quatre
+chiffres, puis avance jusqu'à un numéro libre. Elle passe ainsi les numéros
+déjà choisis manuellement. Une transaction et l'index unique existant assurent
+la cohérence en cas de concurrence ou d'échec ; aucun numéro temporaire n'est
+publié. Aucune migration nécessaire. Les commandes, ventes et retours restent
+rattachés à l'identifiant interne du client ; leurs lignes ne sont pas modifiées.
+
 ## Vérification
 
-Build, lint et traduction des erreurs réussis. **90 contrôles Chromium** :
-préremplissage des huit champs, annulation, rétablissement, focus, validation,
-refus 422/403/404, erreur 503, coupure réseau, sauvegarde lente sans double
-envoi, numéro/secteur conservés, remplacement et tri de la ligne, relecture
+Build, lint, typage strict du nouveau script API et traduction des erreurs
+réussis. **113 contrôles Chromium** : préremplissage des neuf champs,
+annulation, rétablissement, focus, validation, refus 422/409/403/404,
+erreur 503, coupure réseau, sauvegarde lente sans double envoi, numéro modifié
+et secteur conservé, remplacement et tri de la ligne, relecture
 après rechargement, passage à un autre client, création et droits des trois
 rôles. Aucun débordement ni erreur JavaScript observés sur quatre largeurs
-(375, 768, 1024, 1440 px) et deux thèmes.
+(375, 768, 1024, 1440 px) et deux thèmes. L'accès au bouton Enregistrer par
+défilement est vérifié ; création avec numéro automatique ou personnalisé.
 
 Recette reproductible : `npm run build`, puis
 `node scripts/test-clients-ui.mjs`. Playwright et Chromium doivent être
@@ -43,7 +66,16 @@ disponibles ; `PLAYWRIGHT_MODULE` peut désigner l'URL d'un module externe.
 Les réponses API sont simulées dans le navigateur, y compris mises à jour
 et rechargements : aucune écriture MariaDB. Le script utilise le build de
 production et arrête son serveur à la fin. L'avertissement Vite préexistant
-sur le bundle JavaScript persiste (569,95 kB).
+sur le bundle JavaScript persiste (570,55 kB).
+
+**MariaDB réelle jetable** : 10 scénarios dédiés, 123 contrôles API et
+59 contrôles sécurité réussis. Recette :
+`node --import tsx scripts/test-client-numbers.ts --all`, avec `TEST_DB_HOST`,
+`TEST_DB_PORT`, `TEST_DB_USER`, `TEST_DB_PASSWORD` pointant vers une instance
+de test autorisant la création de bases. Le script crée et supprime sa propre
+base et lance une API isolée. Il contrôle doublons, génération automatique,
+concurrence, annulation après erreur, droits, CSRF et conservation des liens
+métier. Ne pas lancer les suites API historiques sur la base applicative.
 
 ## Correction Échap dans l'aperçu intégré
 
@@ -69,7 +101,8 @@ Modification : [liste avec actions](screenshots/client-edit/liste-desktop.png),
 [ordinateur sombre](screenshots/client-edit/modification-dark-1440.png),
 [mobile clair](screenshots/client-edit/modification-light-375.png),
 [mobile sombre](screenshots/client-edit/modification-dark-375.png) et
-[relevé des 90 contrôles](screenshots/client-edit/verification.json).
+[relevé des 113 contrôles](screenshots/client-edit/verification.json).
+[Création avec numéro personnalisé](screenshots/client-edit/creation-numero-personnalise.png).
 
 Captures de la création (4 novembre) :
 

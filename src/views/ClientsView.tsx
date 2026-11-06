@@ -23,11 +23,12 @@ import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
 import { useResource } from '../hooks/useResource'
 import { useAuth, canWrite } from '../components/useAuth'
-import { clientSchema, type ClientFormValues } from '../schemas'
+import { clientSchema, clientUpdateSchema, type ClientFormValues } from '../schemas'
 import type { ApiClient } from '../services/contracts'
 
 /** Valeurs initiales du formulaire : jamais de champ `undefined`. */
 const EMPTY_CLIENT: ClientFormValues = {
+  numeroClient: '',
   nom: '',
   prenom: '',
   telephone: '',
@@ -38,9 +39,10 @@ const EMPTY_CLIENT: ClientFormValues = {
   type: 'particulier',
 }
 
-/** N'envoyer que les coordonnées éditables, sans identifiant ni secteur. */
+/** N'envoyer que les champs éditables, sans identifiant interne ni secteur. */
 function clientFormValues(client: ApiClient): ClientFormValues {
   return {
+    numeroClient: client.numeroClient,
     nom: client.nom,
     prenom: client.prenom,
     telephone: client.telephone,
@@ -70,17 +72,17 @@ export default function ClientsView() {
     allowOfflineWrites: false,
   })
 
+  const [editingClient, setEditingClient] = useState<ApiClient | null>(null)
   // `register` de RHF est contravariant sur le nom de champ : on elargit
   // l'instance pour que `FormInput` reste reutilisable.
   const form = useForm<ClientFormValues>({
-    resolver: zodResolver(clientSchema),
+    resolver: zodResolver(editingClient ? clientUpdateSchema : clientSchema),
     defaultValues: EMPTY_CLIENT,
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
   const { setFocus, reset, formState: { errors, isSubmitting } } = form
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingClient, setEditingClient] = useState<ApiClient | null>(null)
   const [submitFailed, setSubmitFailed] = useState(false)
   const clientDialogRef = useRef<HTMLDialogElement>(null)
   const pending = useRef(false)
@@ -311,7 +313,7 @@ export default function ClientsView() {
             </button>
           </div>
           <p id="client-dialog-description" className="modal-desc">
-            {editingClient ? 'Modifiez les coordonnées du client. Son numéro de dossier reste inchangé.' : 'Renseignez les coordonnées du client à ajouter.'}
+            {editingClient ? 'Modifiez le numéro de dossier et les coordonnées du client.' : 'Renseignez les coordonnées du client à ajouter.'}
           </p>
           {offline && <p className="info-banner" role="status">API clients indisponible : les changements ne sont pas enregistrés.</p>}
           {submitFailed && error && <p className="error-banner" role="alert">{error}</p>}
@@ -320,6 +322,7 @@ export default function ClientsView() {
             <ErrorSummary
               errors={errors}
               labels={{
+                numeroClient: 'N° de client',
                 nom: 'Nom',
                 prenom: 'Prenom',
                 telephone: 'Telephone',
@@ -333,6 +336,15 @@ export default function ClientsView() {
 
             <fieldset className="client-form-fields" disabled={busy}>
               <legend className="sr-only">Coordonnées du client</legend>
+              <FormInput
+                label="N° de client"
+                name="numeroClient"
+                register={register}
+                error={errors.numeroClient?.message}
+                required={editingClient !== null}
+                placeholder={editingClient ? undefined : 'Attribué automatiquement si vide'}
+                hint="Numéro unique, 32 caractères maximum : lettres, chiffres, . _ / -"
+              />
               <div className="form-grid-2">
                 <FormInput label="Nom" name="nom" register={register} error={errors.nom?.message} required />
                 <FormInput label="Prénom" name="prenom" register={register} error={errors.prenom?.message} required />

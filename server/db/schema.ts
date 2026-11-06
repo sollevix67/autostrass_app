@@ -134,8 +134,8 @@ export const clients = mysqlTable(
     code_postal: varchar('code_postal', { length: 16 }).notNull(),
     type: varchar('type', { length: 32, enum: CLIENT_TYPES }).notNull().default('particulier'),
     /**
-     * Numero de dossier client. Genere a l'insertion : la sequence est portee
-     * par MariaDB (`AUTO_INCREMENT` sur la cle) et lisible pour un humain.
+     * Numéro client unique, personnalisable ; généré si absent à la création.
+     * Les relations métier utilisent l'identifiant interne, jamais ce numéro.
      */
     numero_client: varchar('numero_client', { length: 32 }).notNull(),
     secteur_id: int('secteur_id', { unsigned: true }).references(() => secteursLivraison.id, { onDelete: 'restrict' }),

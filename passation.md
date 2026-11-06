@@ -1,5 +1,50 @@
 # Passation — Autostrass App
 
+## Numéro client personnalisable — 2026-11-06
+
+**Demande livrée** : numéro client définissable à la création et modifiable
+ensuite. Génération automatique conservée à la création si le champ est vide,
+refus des doublons et contrôle des collisions avec les numéros automatiques.
+Les commandes, ventes et retours référencent l'identifiant interne,
+indépendant du numéro personnalisable.
+
+**Implémentation** : champ texte de 32 caractères maximum, acceptant lettres,
+chiffres et `. _ / -`, avec conservation des zéros initiaux. Obligatoire en
+modification ; facultatif à la création. L'API accepte désormais ce champ,
+retourne `409 CLIENT_NUMBER_EXISTS` en cas de doublon et conserve les droits
+admin/magasinier et le CSRF. La création automatique utilise une transaction
+et passe les numéros occupés : aucune ligne temporaire ne reste après échec.
+Aucune migration nécessaire, l'index unique existant suffit.
+
+**Validation** : build, lint, typage strict du nouveau script et traduction
+des erreurs réussis ; **10 scénarios réels**
+de numérotation, **123 contrôles API** et **59 contrôles sécurité** réussis
+sur MariaDB 11.4.5 jetable, créée et supprimée par le script
+`scripts/test-client-numbers.ts --all`. Les liens commandes/ventes/retours,
+les collisions concurrentes et l'annulation après erreur de génération sont
+contrôlés. **113 contrôles Chromium** passent également : numéro prérempli,
+validation, doublon, changement/relecture, création automatique/personnalisée,
+annulation, panne et droits. Quatre largeurs et deux thèmes, avec accès au
+bouton Enregistrer par défilement, sans erreur JavaScript ni débordement.
+Six captures et relevé JSON actualisés dans `specs/screenshots/client-edit/`.
+`specs/client-modal.md` décrit le contrat et les commandes de recette.
+La base jetable est supprimée et l'instance MariaDB de recette arrêtée
+proprement ; aucune écriture sur la base applicative. Avertissement Vite
+préexistant conservé : bundle JavaScript 570,55 kB (>500 kB).
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste et cache, avec sauvegarde du 2026-11-06 : **2 763 nœuds, 5 650 liens,
+184 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+AST des **124 fichiers TS/TSX/MJS** applicatifs et scripts conformes au disque.
+Métadonnée de départ `9173c1c`. Limites conservées : CSS non analysé, parseur
+SQL absent, analyse sémantique des documents et renommage LLM non relancés.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(clients): permettre la personnalisation du numero client` ; branche
+distante vérifiée à jour avant publication. Serveurs de recette arrêtés.
+
+---
+
 ## Modification des clients — 2026-11-06
 
 **Diagnostic** : la vue Clients ne proposait que création et suppression,

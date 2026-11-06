@@ -185,6 +185,7 @@ export function venteSchema(totalHT: number) {
 }
 
 export const clientSchema = z.object({
+  numeroClient: z.string().trim().max(32, 'Le numéro client ne doit pas dépasser 32 caractères.').regex(/^[A-Za-z0-9._/-]*$/, 'Utilisez des lettres, chiffres, points, tirets, barres obliques ou underscores.'),
   nom: required('Le nom').max(64, 'Nom trop long.'),
   prenom: required('Le prenom').max(64, 'Prenom trop long.'),
   telephone: z
@@ -200,6 +201,10 @@ export const clientSchema = z.object({
     .trim()
     .regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'),
   type: z.enum(['particulier', 'professionnel'], { message: 'Type invalide.' }),
+})
+
+export const clientUpdateSchema = clientSchema.extend({
+  numeroClient: clientSchema.shape.numeroClient.min(1, 'Le numéro client est requis.'),
 })
 
 /** Fournisseur : nom requis, code optionnel, autres champs facultatifs. */

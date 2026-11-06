@@ -159,7 +159,14 @@ const phone = (label: string, optional = false) => {
 // Clients
 // ---------------------------------------------------------------------------
 
+const clientNumberSchema = z.string({ message: 'Le numéro client est requis.' })
+  .transform(guarded<string>((value) => sanitizeCode(value, 32, 'Le numéro client')))
+
 export const clientBodySchema = z.object({
+  numeroClient: z.preprocess(
+    (value) => typeof value === 'string' && normalizeText(value) === '' ? undefined : value,
+    clientNumberSchema.optional(),
+  ),
   secteurId: z.number().int().positive().nullable().optional(),
   nom: required('Le nom', 64),
   prenom: required('Le prenom', 64),
@@ -172,13 +179,10 @@ export const clientBodySchema = z.object({
     .transform(guarded<string>((value) => sanitizeCode(value, 10, 'Le code postal')))
     .pipe(z.string().regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.')),
   type: z.enum(CLIENT_TYPES, { message: 'Type invalide.' }),
-  // `numeroClient` est volontairement ABSENT du schema. Zod etant en mode
-  // « strip », la cle envoyee par le client est simplement ignoree : le
-  // numero de dossier est toujours derive de l'id par le repository.
 })
 
 /** Mise a jour partielle : toutes les clefs sont facultatives. */
-export const clientPatchSchema = clientBodySchema.partial()
+export const clientPatchSchema = clientBodySchema.partial().extend({ numeroClient: clientNumberSchema.optional() })
 
 // ---------------------------------------------------------------------------
 // Fournisseurs
