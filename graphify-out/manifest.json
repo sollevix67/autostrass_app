@@ -852,9 +852,9 @@
     "semantic_hash": "75d0e5f82489c996e437d46b89cb06f5"
   },
   "src/views/StockView.tsx": {
-    "mtime": 1793993723.488554,
-    "seen": 1793994345.1539607,
-    "ast_hash": "3fb4a52c4a53414182a83090cc41ed3a",
+    "mtime": 1793996010.897827,
+    "seen": 1793996106.4813592,
+    "ast_hash": "ef049792dee0f6df4922025c4c2f608e",
     "semantic_hash": ""
   },
   "src/views/UtilisateursView.tsx": {
@@ -1380,15 +1380,15 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1793994335.1280243,
-    "seen": 1793994345.1740196,
-    "ast_hash": "2f7af162a316b392795dcc41ae6d3ba8",
+    "mtime": 1793996101.3844235,
+    "seen": 1793996106.4969926,
+    "ast_hash": "1623c0dc486c0fffd7d478dc784c3442",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
-    "mtime": 1793994334.6338613,
-    "seen": 1793994345.1745105,
-    "ast_hash": "be41549a3d5521e2bba5e860aa23795d",
+    "mtime": 1793996101.3829238,
+    "seen": 1793996106.4978132,
+    "ast_hash": "9b26745d6beb6db6a308c3338eb1c3e6",
     "semantic_hash": ""
   },
   "public/favicon.svg": {
@@ -2025,6 +2025,36 @@
     "mtime": 1793994271.5124657,
     "seen": 1793994345.178343,
     "ast_hash": "a4444a2f9f6debd87141893e81cf2c3f",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/stock-emplacements/verification.json": {
+    "mtime": 1793996067.8116355,
+    "seen": 1793996106.4728687,
+    "ast_hash": "14e2611a283f937e9236ab5bc245de3f",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/stock-emplacements/apres-dark-1440.png": {
+    "mtime": 1793996067.3560884,
+    "seen": 1793996106.5036519,
+    "ast_hash": "47f9e3c160f579520d79ea6829318b88",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/stock-emplacements/apres-dark-375.png": {
+    "mtime": 1793996066.2173402,
+    "seen": 1793996106.5036545,
+    "ast_hash": "8d510dff5b18c77cc7440007683b9348",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/stock-emplacements/apres-light-1440.png": {
+    "mtime": 1793996065.6046786,
+    "seen": 1793996106.503656,
+    "ast_hash": "936339a795a4dca492e204a550bc9b62",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/stock-emplacements/apres-light-375.png": {
+    "mtime": 1793996064.4499874,
+    "seen": 1793996106.5036757,
+    "ast_hash": "501401b8fc43c70360469b8dcdf20231",
     "semantic_hash": ""
   },
   "package-lock.json": {

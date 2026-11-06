@@ -1,0 +1,495 @@
+{
+  "scope": "Chromium, API simulée, aucune écriture MariaDB",
+  "measurements": [
+    {
+      "theme": "light",
+      "width": 375,
+      "pageWidth": 375,
+      "documentWidth": 375,
+      "gridWidth": 343,
+      "panelWidth": 341,
+      "tableWidth": 996.484375,
+      "wrapperWidth": 341,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 768,
+      "pageWidth": 768,
+      "documentWidth": 768,
+      "gridWidth": 736,
+      "panelWidth": 734,
+      "tableWidth": 996.484375,
+      "wrapperWidth": 734,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "pageWidth": 1024,
+      "documentWidth": 1024,
+      "gridWidth": 739,
+      "panelWidth": 737,
+      "tableWidth": 1024.484375,
+      "wrapperWidth": 737,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 1201,
+      "pageWidth": 1201,
+      "documentWidth": 1201,
+      "gridWidth": 881,
+      "panelWidth": 879,
+      "tableWidth": 1024.484375,
+      "wrapperWidth": 879,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "pageWidth": 1440,
+      "documentWidth": 1440,
+      "gridWidth": 1112,
+      "panelWidth": 1110,
+      "tableWidth": 1110,
+      "wrapperWidth": 1110,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "width": 1920,
+      "pageWidth": 1920,
+      "documentWidth": 1920,
+      "gridWidth": 1520,
+      "panelWidth": 1518,
+      "tableWidth": 1518,
+      "wrapperWidth": 1518,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 375,
+      "pageWidth": 375,
+      "documentWidth": 375,
+      "gridWidth": 343,
+      "panelWidth": 341,
+      "tableWidth": 996.484375,
+      "wrapperWidth": 341,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 768,
+      "pageWidth": 768,
+      "documentWidth": 768,
+      "gridWidth": 736,
+      "panelWidth": 734,
+      "tableWidth": 996.484375,
+      "wrapperWidth": 734,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "pageWidth": 1024,
+      "documentWidth": 1024,
+      "gridWidth": 739,
+      "panelWidth": 737,
+      "tableWidth": 1024.484375,
+      "wrapperWidth": 737,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 1201,
+      "pageWidth": 1201,
+      "documentWidth": 1201,
+      "gridWidth": 881,
+      "panelWidth": 879,
+      "tableWidth": 1024.484375,
+      "wrapperWidth": 879,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "pageWidth": 1440,
+      "documentWidth": 1440,
+      "gridWidth": 1112,
+      "panelWidth": 1110,
+      "tableWidth": 1110,
+      "wrapperWidth": 1110,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "width": 1920,
+      "pageWidth": 1920,
+      "documentWidth": 1920,
+      "gridWidth": 1520,
+      "panelWidth": 1518,
+      "tableWidth": 1518,
+      "wrapperWidth": 1518,
+      "badges": [
+        {
+          "text": "A-01 / E-02 / P-03",
+          "width": 106.640625,
+          "height": 23.390625,
+          "scrollWidth": 107,
+          "clientWidth": 107
+        },
+        {
+          "text": "A-01 / E-02 / P-03 ; A-01 / E-03 / P-04 ; B-02 / E-10 / P-12",
+          "width": 240,
+          "height": 38.78125,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA / EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE / PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+          "width": 240,
+          "height": 54.171875,
+          "scrollWidth": 240,
+          "clientWidth": 240
+        },
+        {
+          "text": "-",
+          "width": 22.46875,
+          "height": 23.390625,
+          "scrollWidth": 22,
+          "clientWidth": 22
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "Recherche par emplacement",
+    "Tri par emplacement",
+    "Transfert : lecture des chemins et fermeture Échap",
+    "Chemins multiples et codes longs intégralement conservés",
+    "Emplacement absent",
+    "Aucun débordement global",
+    "Colonnes visibles sur bureau"
+  ],
+  "errors": []
+}

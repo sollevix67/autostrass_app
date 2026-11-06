@@ -17,6 +17,21 @@ non affecté. Un transfert conserve toujours le solde total de l'article.
 - La requête est en lecture seule et les tests API vérifient le refus sans
   authentification ainsi que la forme de la réponse authentifiée.
 
+### Affichage dans Articles en stock — 2026-11-06
+
+Le tableau des articles utilise toute la largeur disponible ; la gestion des
+emplacements se trouve en dessous. Les chemins longs ou multiples de la
+colonne Emplacement reviennent à la ligne dans un badge de 240 px maximum,
+sans troncature du texte renvoyé par l'API. Sur petit écran, le défilement
+horizontal reste dans le tableau et permet d'atteindre toutes les colonnes.
+
+Recette visuelle Chromium avec API simulée : un emplacement, plusieurs
+emplacements, codes de 32 caractères et valeur absente ; recherche par un
+chemin secondaire, tri et lecture des origines dans le transfert. Six
+largeurs (375, 768, 1024, 1201, 1440, 1920 px) et deux thèmes contrôlés.
+Captures et mesures : [`screenshots/stock-emplacements/`](screenshots/stock-emplacements/).
+Les captures mobiles montrent le tableau défilé jusqu'à la colonne Emplacement.
+
 ## Contrat des transferts — 2026-11-04
 
 `GET /api/articles/:reference/emplacements` exige une session authentifiée et

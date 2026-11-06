@@ -1,5 +1,45 @@
 # Passation — Autostrass App
 
+## Affichage des emplacements dans Articles en stock — 2026-11-06
+
+**Diagnostic** : défaut reproduit dans Chromium sur le panneau « Articles en
+stock ». Les chemins d'emplacement étaient réunis dans un badge sans retour
+à la ligne, dans un tableau placé sur une demi-largeur au-delà de 1200 px.
+Avec un code de longueur maximale, à 1440 px le tableau atteignait 1425 px
+pour une zone visible de 594 px : emplacements, quantités et actions masqués
+par le défilement horizontal.
+
+**Correction** : articles puis gestion des emplacements sur toute la largeur.
+Badge d'emplacement limité à 240 px, retours à la ligne et coupure des codes
+longs autorisés ; l'intégralité du texte API reste conservée. Le défilement
+reste local au tableau sur petit écran. Aucun changement de données ni d'API.
+**Validation** : build et lint réussis. Douze rendus Chromium
+(375/768/1024/1201/1440/1920 px, clair/sombre), recherche sur un chemin
+secondaire, tri et lecture des origines du transfert vérifiés avec API
+simulée, sans écriture MariaDB. Aucun débordement global ni erreur JavaScript.
+Codes de 32 caractères, chemins multiples et valeur absente vérifiés ; les
+badges conservent une largeur lisible sur mobile. À 1440 px, les sept colonnes
+tiennent dans les 1110 px disponibles. Quatre captures et mesures JSON dans
+`specs/screenshots/stock-emplacements/` ; captures mobiles défilées jusqu'à
+la colonne Emplacement. Spécification mise à jour. Avertissement Vite
+préexistant conservé : bundle JavaScript de 568,79 kB (>500 kB).
+
+**Graphify** : `graphify update .` (0.9.103) terminé ; manifeste, cache AST
+et état de construction actualisés. La topologie est inchangée : le CLI
+conserve le JSON/HTML et le rapport existants, avec **2 743 nœuds, 5 609 liens,
+180 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+AST des **122 fichiers TS/TSX/MJS** applicatifs et scripts conformes au disque.
+La métadonnée `built_at_commit` reste celle du dernier graphe reconstruit
+(`09dd83a`). Limites conservées : CSS non analysé, parseur SQL absent et
+analyse sémantique des documents non relancée.
+
+**Livraison** : correction et captures regroupées sur `main` pour le commit
+`fix(stock): corriger l'affichage des emplacements des articles`. Branche
+distante vérifiée à jour avant publication ; serveurs de recette temporaires
+arrêtés, instances applicatives existantes conservées.
+
+---
+
 ## Inventaire physique par référence — 2026-11-06
 
 **Reprise et livraison** : après lecture de la passation sur `main` propre

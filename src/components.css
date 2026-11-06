@@ -105,6 +105,8 @@
 .status-disponible, .status-ok, .status-emplacement-etagere, .type-badge.particulier { color: var(--status-success); background: var(--status-success-bg); }
 .status-inservice, .status-emplacement-allee, .type-badge.professionnel, .stock-emplacement-badge { color: var(--status-info); background: var(--status-info-bg); }
 .status-enmaintenance, .status-rupture, .status-emplacement-place { color: var(--status-danger); background: var(--status-danger-bg); }
+/* Un chemin long ou plusieurs emplacements ne doivent pas élargir le tableau. */
+.stock-emplacement-badge { display: inline-block; width: max-content; max-width: 240px; border-radius: var(--radius-sm); white-space: normal; overflow-wrap: anywhere; }
 .role-badge, .offline-chip { color: var(--status-warning); background: var(--status-warning-bg); }
 .offline-chip { margin-block-end: 16px; }
 .offline-chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }

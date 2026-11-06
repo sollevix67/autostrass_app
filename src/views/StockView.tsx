@@ -363,7 +363,7 @@ export default function StockView() {
       </div>
 
       <div className="stock-grid">
-        {/* Panel gauche : Articles */}
+        {/* Articles, puis gestion des emplacements en pleine largeur */}
         <section className="stock-panel">
           <div className="panel-header">
             <h3>Articles en stock</h3>
