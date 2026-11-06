@@ -1,5 +1,46 @@
 # Passation — Autostrass App
 
+## Formulaire fournisseurs en fenêtre contextuelle — 2026-11-06
+
+**Demande** : afficher la liste dès l'ouverture du module et ouvrir le formulaire
+via « Nouveau fournisseur » ou « Modifier », sur le modèle du dialogue Clients.
+Création et modification partagent le formulaire, avec champs préremplis,
+rétablissement, annulation et fermeture après succès uniquement.
+
+**Implémentation** : dialogue natif accessible, focus initial sur Nom et retour
+au déclencheur, fermeture par Annuler/croix/Échap/fond, page sous-jacente inerte.
+Un formulaire commun remplace les deux formulaires intégrés ; erreurs API dans
+la fenêtre, valeurs conservées après refus. Champs, fermetures et doubles envois
+bloqués pendant la sauvegarde. Styles partagés avec Clients sans changement
+de ses sélecteurs existants. Validations, SIRET, droits et contrat API conservés ;
+changement limité au frontend, sans migration nécessaire.
+
+**Validation** : build, lint et traduction des erreurs réussis. **142 contrôles
+Chromium Fournisseurs** : création/modification, préremplissage, cinq modes de
+fermeture, focus, réinitialisation/rétablissement, statut actif, SIRET, erreurs
+422/409/403/503/réseau, conservation de saisie et sauvegarde lente sans double
+envoi. Quatre largeurs (375/768/1024/1440 px), deux thèmes, aucun débordement ni
+erreur JavaScript. Sept captures fournisseurs et relevé actualisés ; captures
+ordinateur/mobile relues. **157 contrôles Clients** réussis avec les styles
+partagés, captures de régression rafraîchies. API simulée, aucune écriture en
+base et serveurs de recette arrêtés. JS : 574,58 kB ; CSS : 38,37 kB.
+Avertissement Vite préexistant >500 kB conservé. Recharger la page pour afficher
+le nouveau bouton et la fenêtre ; aucun redémarrage API requis pour ce changement.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste et sauvegarde du jour : **2 793 nœuds, 5 707 liens, 180 communautés**.
+Identifiants uniques, aucun lien orphelin et empreintes des **127 fichiers
+TS/TSX/MJS** conformes ; ouverture et préremplissage du dialogue présents dans
+le HTML. Métadonnée de départ `a8e24af`. Limites habituelles conservées : CSS
+non indexé, parseur SQL absent, sémantique documentaire et renommage LLM non
+relancés. Le CSS a été vérifié par les recettes Chromium et les captures.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(fournisseurs): ouvrir les formulaires dans une fenetre modale`.
+Branche distante vérifiée à jour, `git diff --check` réussi et captures relues.
+
+---
+
 ## SIRET des clients professionnels — 2026-11-06
 
 **Contrat retenu** : même format que pour les fournisseurs : champ facultatif,

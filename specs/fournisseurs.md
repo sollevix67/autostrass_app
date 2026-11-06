@@ -1,5 +1,18 @@
 # Création et modification des fournisseurs — 6 novembre 2026
 
+La page affiche la liste des fournisseurs. **Nouveau fournisseur** ouvre le
+formulaire dans une fenêtre contextuelle ; **Modifier** ouvre la même fenêtre
+avec les valeurs de la fiche, y compris le SIRET et le statut actif.
+
+Le dialogue suit le modèle Clients : deux colonnes sur ordinateur, une colonne
+défilante sur mobile, focus initial sur Nom et retour au bouton déclencheur à
+la fermeture. Annuler, la croix, Échap et le fond ferment sans enregistrer.
+Effacer réinitialise la création ; Rétablir restaure la fiche en modification.
+Une sauvegarde réussie ferme la fenêtre et actualise la liste. Un refus garde
+la fenêtre et la saisie, avec l'erreur API affichée à l'intérieur. Pendant la
+sauvegarde, les champs, les fermetures et les doubles envois sont bloqués.
+Les caissiers voient la liste et les boutons désactivés, sans dialogue éditable.
+
 Le formulaire permet d'enregistrer un fournisseur avec uniquement son nom.
 Le code, le SIRET, l'email, le téléphone, l'adresse, la ville et le code postal sont
 facultatifs. Les coordonnées renseignées sont validées ; une erreur apparaît
@@ -45,7 +58,8 @@ pendant l'enregistrement. Admin et magasinier peuvent écrire ; caissier en
 lecture seule, avec boutons Modifier/Supprimer désactivés. Authentification,
 CSRF, protections contre le markup et requêtes paramétrées conservés.
 
-La migration `0009_fournisseur_siret.sql` ajoute la colonne nullable
+Le passage en fenêtre contextuelle ne nécessite aucune migration ni modification
+API. La migration antérieure `0009_fournisseur_siret.sql` ajoute la colonne nullable
 `fournisseurs.siret VARCHAR(14)`. Exécuter `npm run db:migrate` avant de démarrer
 l'API mise à jour. Les fournisseurs existants conservent leurs coordonnées et
 ont un SIRET vide jusqu'à sa saisie. Les tests s'exécutent sur une base jetable.
@@ -53,18 +67,25 @@ ont un SIRET vide jusqu'à sa saisie. Les tests s'exécutent sur une base jetabl
 ## Vérification reproductible
 
 - `npm run build`, `npm run lint`, `npm run test:errors` réussis.
-- `node --import tsx scripts/test-fournisseurs.ts --all` : **11 scénarios** de
+- Recette API existante : `node --import tsx scripts/test-fournisseurs.ts --all`,
+  **11 scénarios** de
   contrat et de persistance, **123 contrôles API**, **59 contrôles sécurité**.
   Utiliser `TEST_DB_HOST`, `TEST_DB_PORT`, `TEST_DB_USER`, `TEST_DB_PASSWORD`
   pour une instance MariaDB de test autorisant la création de bases. Le script
   crée/supprime sa base et lance/arrête son API isolée. Ne pas lancer les suites
   API historiques sur la base applicative.
-- Après le build, `node scripts/test-fournisseurs-ui.mjs` : **75 contrôles
-  Chromium**, API simulée, trois largeurs (375/768/1440 px), clair et sombre.
+- Après le build, `node scripts/test-fournisseurs-ui.mjs` : **142 contrôles
+  Chromium**, API simulée, quatre largeurs (375/768/1024/1440 px), clair et sombre.
   Playwright/Chromium requis ; `PLAYWRIGHT_MODULE` accepte un module externe.
   Création minimale/complète, correction/effacement/relecture, validation,
   erreurs 422/409/403/503 et réseau, sauvegarde lente, droits et affichage.
+  Ouverture création/modification, focus et retour au déclencheur, cinq modes
+  de fermeture, réinitialisation/rétablissement, statut actif, nom long et
+  double soumission sont également contrôlés.
   Le script arrête son serveur en fin de recette.
+- `node scripts/test-clients-ui.mjs` : **157 contrôles Clients** réussis après
+  partage des styles des dialogues. Cette modification du frontend n'a écrit
+  aucune donnée MariaDB ; les recettes navigateur utilisent une API simulée.
 
 Les contrôles SIRET couvrent les champs vide/omis/null, le format, la limite
 native et son contournement, les zéros initiaux, la création, la modification,
@@ -73,11 +94,13 @@ Les migrations `0008` précédemment en attente et `0009` ont été appliquées 
 la base configurée après recette : les trois fournisseurs existants sont
 inchangés, avec `siret = NULL`. Une seconde migration ne modifie rien.
 
-Build : JavaScript 572,38 kB, CSS 38,12 kB ; avertissement Vite préexistant
+Build : JavaScript 574,58 kB, CSS 38,37 kB ; avertissement Vite préexistant
 sur le bundle JavaScript supérieur à 500 kB.
 
 ## Captures
 
+[Liste seule](screenshots/fournisseurs/liste-desktop.png) ·
+[Modification préremplie](screenshots/fournisseurs/modification-light-1440.png) ·
 [Erreur détaillée](screenshots/fournisseurs/erreur-detaillee.png) ·
 [Ordinateur clair](screenshots/fournisseurs/creation-light-1440.png) ·
 [Ordinateur sombre](screenshots/fournisseurs/creation-dark-1440.png) ·

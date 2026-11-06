@@ -1,8 +1,8 @@
 /**
  * Vue fournisseurs : liste, creation, mise a jour et suppression.
  *
- * Branchee sur l'API (`/api/fournisseurs`). Le formulaire suit le meme
- * patron que le catalogue : React Hook Form + Zod, resume d'erreurs
+ * Branchee sur l'API (`/api/fournisseurs`). Le formulaire en dialogue suit le meme
+ * patron que les clients : React Hook Form + Zod, resume d'erreurs
  * focusable, et suppression confirmee via `ConfirmDialog` plutot que
  * `window.confirm`.
  *
@@ -13,7 +13,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -49,6 +49,22 @@ const LIVRAISON_MODES = [
   { value: 'franchise', label: 'Franchise' },
 ]
 
+function fournisseurFormValues(row: ApiFournisseur): FournisseurFormValues {
+  return {
+    nom: row.nom,
+    code: row.code ?? '',
+    siret: row.siret ?? '',
+    email: row.email ?? '',
+    telephone: row.telephone ?? '',
+    adresse: row.adresse ?? '',
+    ville: row.ville ?? '',
+    codePostal: row.codePostal ?? '',
+    delaiLivraison: row.delaiLivraison,
+    modeLivraison: row.modeLivraison,
+    actif: row.actif,
+  }
+}
+
 /** Tri alphabétique, l'ordre naturel de lecture d'un annuaire. */
 const byNom = (rows: ApiFournisseur[]) => [...rows].sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 
@@ -70,19 +86,83 @@ export default function FournisseursView() {
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
+  const { reset, setFocus, formState: { errors, isSubmitting } } = form
+  const [editingRow, setEditingRow] = useState<ApiFournisseur | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [submitFailed, setSubmitFailed] = useState(false)
+  const supplierDialogRef = useRef<HTMLDialogElement>(null)
+  const pending = useRef(false)
 
   const canEdit = canWrite(user?.role, 'depot')
+  const busy = saving || isSubmitting
+
+  useEffect(() => {
+    const dialog = supplierDialogRef.current
+    if (!dialogOpen || !canEdit || !dialog) return
+
+    const trigger = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    dialog.showModal()
+    setFocus('nom')
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+      if (trigger?.isConnected) trigger.focus()
+    }
+  }, [dialogOpen, canEdit, setFocus])
+
+  function openSupplierDialog(row: ApiFournisseur | null = null) {
+    if (!canEdit || busy || pending.current) return
+    setEditingRow(row)
+    reset(row ? fournisseurFormValues(row) : EMPTY_FOURNISSEUR)
+    setSubmitFailed(false)
+    setDialogOpen(true)
+  }
+
+  const closeSupplierDialog = useCallback(() => {
+    if (busy || pending.current) return
+    setDialogOpen(false)
+    setEditingRow(null)
+    reset(EMPTY_FOURNISSEUR)
+    setSubmitFailed(false)
+  }, [busy, reset])
+
+  useEffect(() => {
+    if (!dialogOpen) return
+    // Compatibilité avec les aperçus relayant keydown sans cancel natif.
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
+      closeSupplierDialog()
+    }
+    document.addEventListener('keydown', onEscape, true)
+    return () => document.removeEventListener('keydown', onEscape, true)
+  }, [dialogOpen, closeSupplierDialog])
 
   async function handleSubmit(values: FournisseurFormOutput) {
-    if (!canEdit || saving) return
-    const created = await create(values)
-    if (created === null) return
-    form.reset(EMPTY_FOURNISSEUR)
-    toast.success(`Fournisseur ${created.nom} enregistre.`)
+    if (!canEdit || saving || pending.current) return
+    pending.current = true
+    setSubmitFailed(false)
+    try {
+      const saved = editingRow ? await update(editingRow.id, values) : await create(values)
+      if (saved === null) {
+        setSubmitFailed(true)
+        return
+      }
+      setDialogOpen(false)
+      setEditingRow(null)
+      reset(EMPTY_FOURNISSEUR)
+      toast.success(`Fournisseur ${saved.nom} ${editingRow ? 'modifié' : 'enregistré'}.`)
+    } finally {
+      pending.current = false
+    }
   }
 
   async function handleDelete(fournisseur: ApiFournisseur) {
-    if (!canEdit || saving) return
+    if (!canEdit || busy || pending.current) return
     confirm(
       'Supprimer ce fournisseur ?',
       <>Le fournisseur <strong>{fournisseur.nom}</strong> ({fournisseur.code ?? 'sans code'}) sera supprime definitivement.</>,
@@ -158,10 +238,10 @@ export default function FournisseursView() {
       width: '150px',
       render: (row) => (
         <div className="actions-cell">
-          <button type="button" className="action-btn edit" onClick={() => startEditing(row)} disabled={!canEdit || saving} title="Modifier" aria-label={`Modifier ${row.nom}`}>
+          <button type="button" className="action-btn edit" onClick={() => openSupplierDialog(row)} disabled={!canEdit || busy} title="Modifier" aria-label={`Modifier ${row.nom}`} aria-haspopup="dialog">
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} disabled={!canEdit || saving} title="Supprimer" aria-label={`Supprimer ${row.nom}`}>
+          <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} disabled={!canEdit || busy} title="Supprimer" aria-label={`Supprimer ${row.nom}`}>
             <Icon name="trash" size="sm" />
           </button>
         </div>
@@ -169,48 +249,20 @@ export default function FournisseursView() {
     },
   ]
 
-  const [editingRow, setEditingRow] = useState<ApiFournisseur | null>(null)
-
-  function startEditing(row: ApiFournisseur) {
-    if (!canEdit || saving) return
-    setEditingRow(row)
-    form.reset({
-      nom: row.nom,
-      code: row.code ?? '',
-      siret: row.siret ?? '',
-      email: row.email ?? '',
-      telephone: row.telephone ?? '',
-      adresse: row.adresse ?? '',
-      ville: row.ville ?? '',
-      codePostal: row.codePostal ?? '',
-      delaiLivraison: row.delaiLivraison,
-      modeLivraison: row.modeLivraison,
-      actif: row.actif,
-    })
-  }
-
-  function cancelEditing() {
-    setEditingRow(null)
-    form.reset(EMPTY_FOURNISSEUR)
-  }
-
-  async function handleSaveEdit(values: FournisseurFormOutput) {
-    if (!editingRow || !canEdit || saving) return
-    const updated = await update(editingRow.id, values)
-    if (updated === null) return
-    toast.success(`Fournisseur ${updated.nom} mis a jour.`)
-    cancelEditing()
-  }
-
   return (
     <PageLayout
       eyebrow="FOURNISSEURS"
       title="Gestion des fournisseurs"
       description="Consultez et gérez votre base de fournisseurs."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          <button type="button" className="primary-button" onClick={() => openSupplierDialog()} disabled={!canEdit || busy} aria-haspopup="dialog" title={!canEdit ? 'La création de fournisseurs est réservée au dépôt.' : undefined}>
+            <Icon name="plus" size="sm" /> Nouveau fournisseur
+          </button>
+        </>
       }
     >
       {offline && (
@@ -218,101 +270,99 @@ export default function FournisseursView() {
           API fournisseurs indisponible : l'enregistrement nécessite une connexion au serveur.
         </p>
       )}
-      {error !== null && <p className="error-banner" role="alert">{error}</p>}
+      {error !== null && !dialogOpen && <p className="error-banner" role="alert">{error}</p>}
 
-      {editingRow && canEdit ? (
-        <form className="form-card" onSubmit={form.handleSubmit(handleSaveEdit)} noValidate>
-          <h2>Modifier {editingRow.nom}</h2>
-
-          <ErrorSummary
-            errors={form.formState.errors}
-            labels={{
-              nom: 'Nom',
-              code: 'Code',
-              siret: 'SIRET',
-              email: 'Email',
-              telephone: 'Telephone',
-              adresse: 'Adresse',
-              ville: 'Ville',
-              codePostal: 'Code postal',
-              delaiLivraison: 'Delai',
-              modeLivraison: 'Mode de livraison',
-              actif: 'Actif',
-            }}
-          />
-
-          <div className="form-grid-2">
-            <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
-            <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
-            <FormInput label="SIRET" name="siret" error={form.formState.errors.siret?.message} register={register} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
-            <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
-            <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
-            <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />
-            <FormInput label="Ville" name="ville" error={form.formState.errors.ville?.message} register={register} />
-            <FormInput label="Code postal" name="codePostal" error={form.formState.errors.codePostal?.message} register={register} />
-            <FormInput label="Delai (jours)" name="delaiLivraison" error={form.formState.errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
-            <FormSelect label="Mode de livraison" name="modeLivraison" error={form.formState.errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
-          </div>
-
-          <div className="form-actions">
-            <FormCheckbox label="Actif" name="actif" register={register} defaultChecked={editingRow.actif} />
-            <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
-              <Icon name="check" size="sm" /> Enregistrer
-            </button>
-            <button type="button" className="secondary-button" onClick={cancelEditing} disabled={saving || form.formState.isSubmitting}>
-              Annuler
-            </button>
-          </div>
-        </form>
-      ) : canEdit ? (
-        <form className="form-card" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
-          <h2>Nouveau fournisseur</h2>
-          <p className="text-muted">Seul le nom est obligatoire. Les coordonnées peuvent être complétées plus tard.</p>
-
-          <ErrorSummary
-            errors={form.formState.errors}
-            labels={{
-              nom: 'Nom',
-              code: 'Code',
-              siret: 'SIRET',
-              email: 'Email',
-              telephone: 'Telephone',
-              adresse: 'Adresse',
-              ville: 'Ville',
-              codePostal: 'Code postal',
-              delaiLivraison: 'Delai',
-              modeLivraison: 'Mode de livraison',
-              actif: 'Actif',
-            }}
-          />
-
-          <div className="form-grid-2">
-            <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
-            <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
-            <FormInput label="SIRET" name="siret" error={form.formState.errors.siret?.message} register={register} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
-            <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
-            <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
-            <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />
-            <FormInput label="Ville" name="ville" error={form.formState.errors.ville?.message} register={register} />
-            <FormInput label="Code postal" name="codePostal" error={form.formState.errors.codePostal?.message} register={register} />
-            <FormInput label="Delai (jours)" name="delaiLivraison" error={form.formState.errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
-            <FormSelect label="Mode de livraison" name="modeLivraison" error={form.formState.errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
-          </div>
-
-          <div className="form-actions">
-            <FormCheckbox label="Actif" name="actif" register={register} defaultChecked />
-            <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
-              <Icon name="plus" size="sm" /> Ajouter le fournisseur
-            </button>
-            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_FOURNISSEUR)} disabled={saving || form.formState.isSubmitting}>
-              Effacer
+      {canEdit && (
+        <dialog
+          ref={supplierDialogRef}
+          className="modal supplier-modal"
+          aria-labelledby="supplier-dialog-title"
+          aria-describedby="supplier-dialog-description"
+          onKeyDown={(event) => {
+            if (event.key !== 'Tab') return
+            const controls = event.currentTarget.querySelectorAll<HTMLElement>(
+              'button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href]',
+            )
+            const first = controls[0]
+            const last = controls[controls.length - 1]
+            if (!first) {
+              event.preventDefault()
+            } else if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault()
+              last.focus()
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault()
+              first.focus()
+            }
+          }}
+          onCancel={(event) => {
+            event.preventDefault()
+            closeSupplierDialog()
+          }}
+          onMouseDown={(event) => {
+            if (event.target !== event.currentTarget) return
+            const bounds = event.currentTarget.getBoundingClientRect()
+            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+              event.preventDefault()
+              closeSupplierDialog()
+            }
+          }}
+        >
+          <div className="supplier-modal-header">
+            <h2 id="supplier-dialog-title">{editingRow ? `Modifier ${editingRow.nom}` : 'Nouveau fournisseur'}</h2>
+            <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeSupplierDialog} disabled={busy}>
+              <Icon name="close" size="lg" />
             </button>
           </div>
-        </form>
-      ) : (
-        <button type="button" className="secondary-button" disabled>
-          Creation reservee au depot
-        </button>
+          <p id="supplier-dialog-description" className="modal-desc">
+            Seul le nom est obligatoire. Les coordonnées peuvent être complétées plus tard.
+          </p>
+          {offline && <p className="info-banner" role="status">L'enregistrement nécessite une connexion au serveur.</p>}
+          {submitFailed && error && <p className="error-banner" role="alert">{error}</p>}
+          <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate aria-busy={busy}>
+            <ErrorSummary
+              errors={errors}
+              labels={{
+                nom: 'Nom',
+                code: 'Code',
+                siret: 'SIRET',
+                email: 'Email',
+                telephone: 'Téléphone',
+                adresse: 'Adresse',
+                ville: 'Ville',
+                codePostal: 'Code postal',
+                delaiLivraison: 'Délai',
+                modeLivraison: 'Mode de livraison',
+                actif: 'Actif',
+              }}
+            />
+            <fieldset className="supplier-form-fields" disabled={busy}>
+              <legend className="sr-only">Coordonnées du fournisseur</legend>
+              <div className="form-grid-2">
+                <FormInput label="Nom" name="nom" error={errors.nom?.message} register={register} required />
+                <FormInput label="Code" name="code" error={errors.code?.message} register={register} />
+                <FormInput label="SIRET" name="siret" error={errors.siret?.message} register={register} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
+                <FormInput label="Email" name="email" error={errors.email?.message} type="email" register={register} />
+                <FormInput label="Téléphone" name="telephone" error={errors.telephone?.message} type="tel" register={register} />
+                <FormInput label="Adresse" name="adresse" error={errors.adresse?.message} register={register} />
+                <FormInput label="Ville" name="ville" error={errors.ville?.message} register={register} />
+                <FormInput label="Code postal" name="codePostal" error={errors.codePostal?.message} register={register} />
+                <FormInput label="Délai (jours)" name="delaiLivraison" error={errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
+                <FormSelect label="Mode de livraison" name="modeLivraison" error={errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
+              </div>
+              <div className="form-actions">
+                <FormCheckbox label="Actif" name="actif" register={register} />
+                <button type="button" className="secondary-button supplier-form-reset" onClick={() => reset(editingRow ? fournisseurFormValues(editingRow) : EMPTY_FOURNISSEUR)}>
+                  {editingRow ? 'Rétablir' : 'Effacer'}
+                </button>
+                <button type="button" className="secondary-button" onClick={closeSupplierDialog}>Annuler</button>
+                <button type="submit" className="primary-button">
+                  <Icon name={editingRow ? 'check' : 'plus'} size="sm" /> {busy ? 'Enregistrement…' : editingRow ? 'Enregistrer' : 'Ajouter le fournisseur'}
+                </button>
+              </div>
+            </fieldset>
+          </form>
+        </dialog>
       )}
 
       <DataTable

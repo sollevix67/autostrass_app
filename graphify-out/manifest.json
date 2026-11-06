@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1794003166.5075386,
-    "seen": 1794003170.4916606,
-    "ast_hash": "f4aa40d6bed3726eee562494e63afd95",
+    "mtime": 1794004377.3669777,
+    "seen": 1794004381.2460957,
+    "ast_hash": "3ad1f21c6cbae06e9218c74af2645778",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1506,9 +1506,9 @@
     "semantic_hash": ""
   },
   "src/views/FournisseursView.tsx": {
-    "mtime": 1794001441.5639064,
-    "seen": 1794001713.590576,
-    "ast_hash": "dca8d15ebbbd4eeda961632511e1ca5a",
+    "mtime": 1794004114.2203975,
+    "seen": 1794004295.3114696,
+    "ast_hash": "17c931d341d39943f2097e5cc8b24d67",
     "semantic_hash": ""
   },
   "PRODUCT.md": {
@@ -2064,38 +2064,38 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/verification.json": {
-    "mtime": 1794003093.2286425,
-    "seen": 1794003115.8120584,
+    "mtime": 1794004219.2677562,
+    "seen": 1794004295.303538,
     "ast_hash": "f9e3bf619fd391b1245ac39c3fc4fa3d",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/liste-desktop.png": {
-    "mtime": 1794003083.4920995,
-    "seen": 1794003115.8342514,
-    "ast_hash": "2310d947e8bf63d242eebef78dc505ba",
+    "mtime": 1794004207.9333608,
+    "seen": 1794004295.3287518,
+    "ast_hash": "3b7edc4651537c67ee721b78d72eef6d",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-dark-1440.png": {
-    "mtime": 1794003086.2218406,
-    "seen": 1794003115.8342533,
-    "ast_hash": "267f26eeb0bab7cb1d4f80c533d4c8db",
+    "mtime": 1794004210.762542,
+    "seen": 1794004295.3287535,
+    "ast_hash": "7adad42bd7a8871a68e65cce325dfb14",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-dark-375.png": {
-    "mtime": 1794003085.248262,
-    "seen": 1794003115.8342545,
+    "mtime": 1794004209.7398305,
+    "seen": 1794004295.3287551,
     "ast_hash": "890ee231973ffc3fda13e6f6a5756e9c",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-light-1440.png": {
-    "mtime": 1794003084.9245164,
-    "seen": 1794003115.8342564,
-    "ast_hash": "f9c7fb632881865b8d0fe55dec18d324",
+    "mtime": 1794004209.399184,
+    "seen": 1794004295.328757,
+    "ast_hash": "1e2d1233ac4257c4a330439dd11c479c",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-light-375.png": {
-    "mtime": 1794003083.9506736,
-    "seen": 1794003115.8342574,
+    "mtime": 1794004208.4038959,
+    "seen": 1794004295.3287582,
     "ast_hash": "ac1680b653798ce84a3aaa2975d694a9",
     "semantic_hash": ""
   },
@@ -2106,15 +2106,15 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/creation-numero-personnalise.png": {
-    "mtime": 1794003088.5979145,
-    "seen": 1794003115.834249,
-    "ast_hash": "e013ac000ee521972a16b0e1fc7dc04a",
+    "mtime": 1794004214.0411377,
+    "seen": 1794004295.3287497,
+    "ast_hash": "a6faba6654e552bfe5debdb794cb44f5",
     "semantic_hash": ""
   },
   "scripts/test-fournisseurs-ui.mjs": {
-    "mtime": 1794001638.340971,
-    "seen": 1794001713.5712595,
-    "ast_hash": "a57b3fba5eda5fabfc4cb7912e5f62e0",
+    "mtime": 1794004206.2300503,
+    "seen": 1794004295.2972293,
+    "ast_hash": "8e72da129fbaa669b5950783588c5887",
     "semantic_hash": ""
   },
   "scripts/test-fournisseurs.ts": {
@@ -2124,45 +2124,45 @@
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/verification.json": {
-    "mtime": 1794001645.1568804,
-    "seen": 1794001713.581279,
-    "ast_hash": "4392aad5399af72595dbbe7374f7562a",
+    "mtime": 1794004214.8960958,
+    "seen": 1794004295.303965,
+    "ast_hash": "074669a6045e5ccf89f9e91d232e13e5",
     "semantic_hash": ""
   },
   "specs/fournisseurs.md": {
-    "mtime": 1794001638.3419707,
-    "seen": 1794001713.6128495,
-    "ast_hash": "74b8cccfd0ec4c5004c6670229a697ff",
+    "mtime": 1794004290.384125,
+    "seen": 1794004295.3280184,
+    "ast_hash": "acfae9cfb55e841c9a030e7a15c51c43",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-1440.png": {
-    "mtime": 1794001643.8116097,
-    "seen": 1794001713.618575,
-    "ast_hash": "3fe540a0c64103b45aab9b31225695c3",
+    "mtime": 1794004213.1484687,
+    "seen": 1794004295.331237,
+    "ast_hash": "822f846271bb275436b31e0b3f8ead67",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-375.png": {
-    "mtime": 1794001643.661369,
-    "seen": 1794001713.6185772,
-    "ast_hash": "2633fc1a56413389f2d34e688e2acc85",
+    "mtime": 1794004212.8939085,
+    "seen": 1794004295.3312392,
+    "ast_hash": "83635efebec5204f276ce22e3f183e1b",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-1440.png": {
-    "mtime": 1794001643.3835218,
-    "seen": 1794001713.6185787,
-    "ast_hash": "a69ebea20917a85f4fdc0c4610ba6e27",
+    "mtime": 1794004212.6300757,
+    "seen": 1794004295.331241,
+    "ast_hash": "f286324bb868862516c9f233ea37cced",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-375.png": {
-    "mtime": 1794001643.2287855,
-    "seen": 1794001713.6185808,
-    "ast_hash": "7cf6f1bd1d74382666a91d630f49ab82",
+    "mtime": 1794004212.3773854,
+    "seen": 1794004295.3312426,
+    "ast_hash": "208b22ee2cbcdbc3ea83e070bc9cdbb4",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/erreur-detaillee.png": {
-    "mtime": 1794001642.5447795,
-    "seen": 1794001713.6185822,
-    "ast_hash": "94dd76055c9a5b843ef3d614b3885f90",
+    "mtime": 1794004211.1608887,
+    "seen": 1794004295.3312438,
+    "ast_hash": "9b023ebc2df9c8e0216c4e5b98d39351",
     "semantic_hash": ""
   },
   "database/drizzle/meta/0009_snapshot.json": {
@@ -2184,27 +2184,39 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-dark-1440.png": {
-    "mtime": 1794003091.1436203,
-    "seen": 1794003115.8342595,
-    "ast_hash": "b2ce3e9e281b4b0d10d671d66b41fb99",
+    "mtime": 1794004216.9764123,
+    "seen": 1794004295.3287604,
+    "ast_hash": "34bf6a82038f1d5d0490c867b823546f",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-dark-375.png": {
-    "mtime": 1794003091.0194645,
-    "seen": 1794003115.834261,
+    "mtime": 1794004216.8208637,
+    "seen": 1794004295.328762,
     "ast_hash": "65b259ac59b4a30d49c645fedb3e655e",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-light-1440.png": {
-    "mtime": 1794003090.7801857,
-    "seen": 1794003115.8342626,
-    "ast_hash": "e9768684c4d0b03008c5120a1f2b2418",
+    "mtime": 1794004216.5345192,
+    "seen": 1794004295.3287635,
+    "ast_hash": "a3b760535c977fd03decc025a4aaae68",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-light-375.png": {
-    "mtime": 1794003090.6189716,
-    "seen": 1794003115.8342638,
+    "mtime": 1794004216.3286529,
+    "seen": 1794004295.328765,
     "ast_hash": "db256607a113a16462c6d0fe4e10c71a",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/fournisseurs/liste-desktop.png": {
+    "mtime": 1794004207.9473681,
+    "seen": 1794004295.3312466,
+    "ast_hash": "4d6705a7d1d4d747913aa17e543359a3",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/fournisseurs/modification-light-1440.png": {
+    "mtime": 1794004208.6414165,
+    "seen": 1794004295.3312483,
+    "ast_hash": "9c2e9596b17e7506488d766a4c2ce917",
     "semantic_hash": ""
   },
   "package-lock.json": {

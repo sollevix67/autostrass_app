@@ -71,14 +71,16 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .emplacement-dialog { width: min(540px, calc(100vw - 32px)); margin: auto; }
 .emplacement-dialog::backdrop { background: var(--color-overlay); }
 
-/* Création de client : dialogue natif, deux colonnes sur ordinateur. */
-.client-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
-.client-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
-.client-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 10px; }
-.client-modal-header h2 { margin: 0; }
-.client-form-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+/* Clients et fournisseurs : dialogues natifs, deux colonnes sur ordinateur. */
+.client-modal, .supplier-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
+.client-modal::backdrop, .supplier-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
+.client-modal-header, .supplier-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 10px; }
+.client-modal-header h2, .supplier-modal-header h2 { margin: 0; }
+.supplier-modal-header h2 { min-width: 0; overflow-wrap: anywhere; }
+.supplier-modal-header .action-btn { flex-shrink: 0; }
+.client-form-fields, .supplier-form-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 .client-form-fields > .form-group { margin-block-end: 18px; }
-.client-form-reset { margin-inline-end: auto; }
+.client-form-reset, .supplier-form-reset { margin-inline-end: auto; }
 
 @media (max-width: 1024px) {
   .form-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
