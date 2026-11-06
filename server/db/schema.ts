@@ -133,6 +133,7 @@ export const clients = mysqlTable(
     ville: varchar('ville', { length: 64 }).notNull(),
     code_postal: varchar('code_postal', { length: 16 }).notNull(),
     type: varchar('type', { length: 32, enum: CLIENT_TYPES }).notNull().default('particulier'),
+    siret: varchar('siret', { length: 14 }),
     /**
      * Numéro client unique de 1 à 6 chiffres, généré si absent à la création.
      * La largeur historique reste lisible jusqu'à correction des anciens numéros.

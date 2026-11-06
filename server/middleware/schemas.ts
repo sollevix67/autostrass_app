@@ -160,7 +160,13 @@ const clientNumberSchema = z.string({ message: 'Le numéro client est requis.' }
   .trim()
   .regex(/^[0-9]{1,6}$/, 'Le numéro client doit contenir de 1 à 6 chiffres uniquement.')
 
+const optionalSiret = z.preprocess(
+  (value) => typeof value === 'string' && normalizeText(value) === '' ? null : value,
+  z.string().trim().regex(/^[0-9]{14}$/, 'Le SIRET doit contenir exactement 14 chiffres.').nullish(),
+)
+
 export const clientBodySchema = z.object({
+  siret: optionalSiret,
   numeroClient: z.preprocess(
     (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
     clientNumberSchema.optional(),
@@ -194,7 +200,7 @@ const optionalFournisseurField = (schema: z.ZodType<string>) => z.preprocess(
 
 export const fournisseurBodySchema = z.object({
   nom: required('Le nom', 128),
-  siret: optionalFournisseurField(z.string().trim().regex(/^[0-9]{14}$/, 'Le SIRET doit contenir exactement 14 chiffres.')),
+  siret: optionalSiret,
   code: optionalFournisseurField(z
     .string({ message: 'Le code fournisseur est requis.' })
     .transform(guarded<string>((value) => sanitizeCode(value, 32, 'Le code fournisseur')))

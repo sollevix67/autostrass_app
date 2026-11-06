@@ -1,5 +1,54 @@
 # Passation — Autostrass App
 
+## SIRET des clients professionnels — 2026-11-06
+
+**Contrat retenu** : même format que pour les fournisseurs : champ facultatif,
+14 chiffres ASCII et zéros initiaux conservés. Saisie visible uniquement pour
+les professionnels. Un enregistrement comme particulier efface le SIRET ;
+le formulaire avertit avant sauvegarde. Une clé omise dans un PUT préserve
+le SIRET d'un professionnel. Création et modification sont concernées.
+
+**Implémentation** : colonne `clients.siret VARCHAR(14) NULL`, migration
+`0010_client_siret.sql`, contrat API et mapping ajoutés. Champ conditionnel,
+clavier numérique, limite de 14 caractères, validation et colonne triable.
+Une bascule de type non enregistrée conserve la saisie ; une erreur masquée
+ne bloque pas l'enregistrement comme particulier. L'API impose l'absence de
+SIRET pour un particulier dans la même écriture SQL, sans course lecture/écriture.
+Validations SIRET partagées avec les fournisseurs, contrat inchangé pour eux.
+
+**Validation** : build, lint, typage strict des recettes et traduction des
+erreurs réussis. **9 scénarios SIRET client**, **12 scénarios de numérotation**,
+**11 scénarios fournisseurs**, **123 contrôles API** et **59 contrôles sécurité**
+réussis sur MariaDB 11.4.5 jetable. **157 contrôles Chromium** : transitions de
+type, formats, zéros initiaux, création, effacement et relecture, en plus des
+contrôles historiques. Quatre captures SIRET complètent les six captures client,
+sur deux thèmes. JS : 574,38 kB ; CSS : 38,12 kB, avertissement Vite habituel.
+Bases jetables supprimées et instance MariaDB de recette arrêtée proprement.
+
+**Base configurée** : seule `0010` était en attente ; migration appliquée via
+Drizzle. Les **quatre clients existants** ont été comparés avant/après et sont
+intégralement conservés, nouveau SIRET à `NULL`. Définition de colonne vérifiée
+et seconde migration sans changement. Aucun client de test ajouté à cette base.
+
+**Activation locale** : l'API doit être redémarrée pour charger le nouveau
+contrat. Son redémarrage avait été refusé au tour précédent par le contrôle
+automatique (`blocked by policy`, sans motif plus précis) ; aucune nouvelle
+tentative d'arrêt de ce processus. Recharger ensuite le formulaire.
+
+**Graphify** : `graphify update .` (0.9.103) a actualisé JSON, HTML, rapport,
+manifeste et sauvegarde du jour : **2 794 nœuds, 5 707 liens, 185 communautés**.
+Identifiants uniques, aucun lien orphelin et empreintes des **127 fichiers
+TS/TSX/MJS** conformes. Métadonnée de départ `b3ff567`. Limites conservées :
+CSS non analysé, parseur SQL absent, sémantique documentaire et renommage LLM
+non relancés. Snapshot Drizzle comparé : seul `clients.siret` est ajouté.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(clients): ajouter le SIRET des professionnels`. Branche distante
+vérifiée à jour, `git diff --check` réussi et captures relues. Sur les autres
+installations, appliquer `npm run db:migrate` avant de redémarrer l'API.
+
+---
+
 ## SIRET des fournisseurs — 2026-11-06
 
 **Demande et contrat** : ajout d'un SIRET facultatif à la création et à la

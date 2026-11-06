@@ -20,6 +20,7 @@ type Tables = typeof schema
 // ---------------------------------------------------------------------------
 
 export type ClientRow = {
+  siret: string | null
   secteurId: number | null
   id: number
   nom: string
@@ -36,6 +37,7 @@ export type ClientRow = {
 }
 
 export type ClientInput = {
+  siret?: string | null
   secteurId?: number | null
   nom: string
   prenom: string
@@ -51,6 +53,7 @@ export type ClientInput = {
 
 function mapClient(raw: Record<string, unknown>): ClientRow {
   return {
+    siret: raw.siret ? String(raw.siret) : null,
     secteurId: raw.secteur_id == null ? null : Number(raw.secteur_id),
     id: Number(raw.id),
     nom: String(raw.nom ?? ''),
@@ -123,6 +126,7 @@ export class ClientRepository {
           ville: input.ville,
           code_postal: input.codePostal,
           type: input.type,
+          siret: input.type === 'professionnel' ? input.siret ?? null : null,
           numero_client: input.numeroClient ?? `TMP-${crypto.randomUUID().replaceAll('-', '').slice(0, 28)}`,
           secteur_id: input.secteurId ?? null,
         })
@@ -172,6 +176,11 @@ export class ClientRepository {
           ...(input.ville !== undefined && { ville: input.ville }),
           ...(input.codePostal !== undefined && { code_postal: input.codePostal }),
           ...(input.type !== undefined && { type: input.type }),
+          // Le CASE contrôle le type courant dans la même écriture, y compris en concurrence.
+          ...(input.type === 'particulier' ? { siret: null } : input.siret !== undefined ? {
+            siret: input.type === 'professionnel' ? input.siret
+              : sql`CASE WHEN ${schema.clients.type} = 'professionnel' THEN ${input.siret} ELSE NULL END`,
+          } : {}),
           ...(input.secteurId !== undefined && { secteur_id: input.secteurId }),
         })
         .where(eq(schema.clients.id, id))

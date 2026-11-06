@@ -12,7 +12,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -37,6 +37,7 @@ const EMPTY_CLIENT: ClientFormValues = {
   ville: '',
   codePostal: '',
   type: 'particulier',
+  siret: '',
 }
 
 /** N'envoyer que les champs éditables, sans identifiant interne ni secteur. */
@@ -51,6 +52,7 @@ function clientFormValues(client: ApiClient): ClientFormValues {
     ville: client.ville,
     codePostal: client.codePostal,
     type: client.type,
+    siret: client.siret ?? '',
   }
 }
 
@@ -81,7 +83,8 @@ export default function ClientsView() {
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
-  const { setFocus, reset, formState: { errors, isSubmitting } } = form
+  const { setFocus, reset, clearErrors, formState: { errors, isSubmitting } } = form
+  const [clientType, clientSiret] = useWatch({ control: form.control, name: ['type', 'siret'] })
   const [dialogOpen, setDialogOpen] = useState(false)
   const [submitFailed, setSubmitFailed] = useState(false)
   const clientDialogRef = useRef<HTMLDialogElement>(null)
@@ -89,6 +92,10 @@ export default function ClientsView() {
 
   const canEdit = canWrite(user?.role, 'depot')
   const busy = saving || isSubmitting
+
+  useEffect(() => {
+    if (clientType !== 'professionnel') clearErrors('siret')
+  }, [clientType, clearErrors])
 
   useEffect(() => {
     const dialog = clientDialogRef.current
@@ -142,7 +149,8 @@ export default function ClientsView() {
     pending.current = true
     setSubmitFailed(false)
     try {
-      const saved = editingClient ? await update(editingClient.id, values) : await create(values)
+      const payload = { ...values, siret: values.type === 'professionnel' ? values.siret || null : null }
+      const saved = editingClient ? await update(editingClient.id, payload) : await create(payload)
       if (saved === null) {
         setSubmitFailed(true)
         return
@@ -208,6 +216,13 @@ export default function ClientsView() {
       sortable: true,
       sortValue: (row) => row.type,
       render: (row) => <span className={`type-badge ${row.type}`}>{row.type}</span>,
+    },
+    {
+      key: 'siret',
+      header: 'SIRET',
+      sortable: true,
+      sortValue: (row) => row.type === 'professionnel' ? row.siret ?? '' : '',
+      render: (row) => row.type === 'professionnel' ? row.siret ?? '-' : '-',
     },
     {
       key: 'actions',
@@ -331,6 +346,7 @@ export default function ClientsView() {
                 ville: 'Ville',
                 codePostal: 'Code postal',
                 type: 'Type',
+                siret: 'SIRET',
               }}
             />
 
@@ -359,7 +375,13 @@ export default function ClientsView() {
                 <FormInput label="Ville" name="ville" register={register} error={errors.ville?.message} required />
                 <FormInput label="Code postal" name="codePostal" register={register} error={errors.codePostal?.message} required />
                 <FormSelect label="Type" name="type" register={register} options={TYPES} error={errors.type?.message} required />
+                {clientType === 'professionnel' && (
+                  <FormInput label="SIRET" name="siret" register={register} error={errors.siret?.message} inputMode="numeric" maxLength={14} pattern="[0-9]{14}" hint="Facultatif, 14 chiffres sans espaces." />
+                )}
               </div>
+              {clientType === 'particulier' && clientSiret && (
+                <p className="text-muted" role="note">Le SIRET sera effacé à l'enregistrement du client comme particulier.</p>
+              )}
 
               <div className="form-actions">
                 <button type="button" className="secondary-button client-form-reset" onClick={() => reset(editingClient ? clientFormValues(editingClient) : EMPTY_CLIENT)}>

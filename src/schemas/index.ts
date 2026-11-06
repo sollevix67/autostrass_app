@@ -184,7 +184,11 @@ export function venteSchema(totalHT: number) {
   return venteContext(totalHT)
 }
 
+const SIRET_PATTERN = /^[0-9]{14}$/
+const SIRET_MESSAGE = 'Le SIRET doit contenir exactement 14 chiffres.'
+
 export const clientSchema = z.object({
+  siret: z.string().trim().optional(),
   numeroClient: z.string().trim().max(6, 'Le numéro client ne doit pas dépasser 6 chiffres.').regex(/^[0-9]*$/, 'Le numéro client doit contenir uniquement des chiffres.'),
   nom: required('Le nom').max(64, 'Nom trop long.'),
   prenom: required('Le prenom').max(64, 'Prenom trop long.'),
@@ -201,9 +205,12 @@ export const clientSchema = z.object({
     .trim()
     .regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'),
   type: z.enum(['particulier', 'professionnel'], { message: 'Type invalide.' }),
+}).refine((value) => value.type !== 'professionnel' || !value.siret || SIRET_PATTERN.test(value.siret), {
+  message: SIRET_MESSAGE,
+  path: ['siret'],
 })
 
-export const clientUpdateSchema = clientSchema.extend({
+export const clientUpdateSchema = clientSchema.safeExtend({
   numeroClient: clientSchema.shape.numeroClient.min(1, 'Le numéro client est requis.'),
 })
 
@@ -216,7 +223,7 @@ const optionalFournisseurField = (schema: z.ZodType<string, string>) => z.string
 /** Fournisseur : nom requis, coordonnées facultatives. */
 export const fournisseurSchema = z.object({
   nom: required('Le nom').max(128, 'Nom trop long.'),
-  siret: optionalFournisseurField(z.string().regex(/^[0-9]{14}$/, 'Le SIRET doit contenir exactement 14 chiffres.')),
+  siret: optionalFournisseurField(z.string().regex(SIRET_PATTERN, SIRET_MESSAGE)),
   code: optionalFournisseurField(z.string()
     .max(32, 'Code trop long.')
     .regex(/^[A-Za-z0-9._/-]+$/, 'Le code accepte les lettres, chiffres, points, tirets, barres obliques et underscores.')),

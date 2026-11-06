@@ -59,10 +59,42 @@ colonne est conservée : aucune migration nécessaire. Les commandes, ventes
 et retours restent rattachés à l'identifiant interne du client ; leurs lignes
 ne sont pas modifiées.
 
+## SIRET des professionnels
+
+Le champ **SIRET** apparaît uniquement lorsque le type **Professionnel** est
+sélectionné. Il est facultatif et accepte exactement 14 chiffres ASCII,
+sans espaces internes. Les espaces de bord sont retirés et les zéros initiaux
+conservés. La saisie est limitée à 14 caractères, avec clavier numérique sur
+mobile et message d'erreur relié au champ. Le contrôle porte sur le format,
+sans vérification Luhn ni consultation d'un registre externe.
+
+Le SIRET est prérempli en modification et visible dans une colonne triable.
+Une bascule de type sans sauvegarde conserve la saisie. Un enregistrement
+comme **Particulier** efface le SIRET, après indication dans le formulaire ;
+une erreur de SIRET désormais masquée ne bloque pas cette sauvegarde.
+Rétablir et Annuler conservent leur fonctionnement habituel.
+
+| Requête | Effet sur le SIRET |
+| --- | --- |
+| Création professionnelle, SIRET absent/vide/null | `NULL` |
+| Modification professionnelle, clé `siret` omise | Valeur conservée |
+| Modification professionnelle, vide/espaces/null | Valeur effacée |
+| Valeur renseignée pour un professionnel | 14 chiffres, sinon refus 422 détaillé |
+| Création ou passage en particulier | `NULL`, même si un SIRET valide est envoyé |
+| PUT avec SIRET seul sur un particulier | Reste `NULL` |
+
+Le contrôle du type courant lors d'un PUT partiel s'effectue dans la même
+écriture SQL, afin qu'un changement concurrent vers particulier ne laisse
+aucun SIRET. Les autres champs et les relations métier sont conservés.
+La migration `0010_client_siret.sql` ajoute `clients.siret VARCHAR(14) NULL`.
+Exécuter `npm run db:migrate` avant de redémarrer l'API sur les autres
+installations. Sur la base configurée, la migration est appliquée et les
+quatre clients existants ont été vérifiés inchangés, avec SIRET à `NULL`.
+
 ## Vérification
 
 Build, lint, typage strict du nouveau script API et traduction des erreurs
-réussis. **130 contrôles Chromium** : préremplissage des neuf champs,
+réussis. **157 contrôles Chromium** : préremplissage des neuf champs de base,
 annulation, rétablissement, focus, validation, refus 422/409/403/404,
 erreur 503, coupure réseau, sauvegarde lente sans double envoi, numéro modifié
 et secteur conservé, remplacement et tri de la ligne, relecture
@@ -72,7 +104,9 @@ rôles. Aucun débordement ni erreur JavaScript observés sur quatre largeurs
 défilement est vérifié ; création avec numéro automatique ou personnalisé.
 La limite native de six caractères, le refus des valeurs invalides même
 après contournement HTML et la correction explicite d'un ancien numéro sont
-également contrôlés.
+également contrôlés. La recette SIRET vérifie l'affichage conditionnel, les
+formats et le contournement de la limite HTML, les transitions de type,
+l'effacement, la relecture, la création et la conservation après panne.
 
 Recette reproductible : `npm run build`, puis
 `node scripts/test-clients-ui.mjs`. Playwright et Chromium doivent être
@@ -80,10 +114,16 @@ disponibles ; `PLAYWRIGHT_MODULE` peut désigner l'URL d'un module externe.
 Les réponses API sont simulées dans le navigateur, y compris mises à jour
 et rechargements : aucune écriture MariaDB. Le script utilise le build de
 production et arrête son serveur à la fin. L'avertissement Vite préexistant
-sur le bundle JavaScript persiste (570,75 kB).
+sur le bundle JavaScript persiste (574,38 kB).
 
-**MariaDB réelle jetable** : 12 scénarios dédiés, 123 contrôles API et
-59 contrôles sécurité réussis. Recette :
+**MariaDB réelle jetable** : 9 scénarios SIRET via
+`node --import tsx scripts/test-client-siret.ts --all`, 123 contrôles API et
+59 contrôles sécurité réussis. La recette couvre notamment les changements
+de type concurrents, les PUT partiels, les zéros initiaux, les droits et le
+CSRF. Les 11 scénarios fournisseurs sont également réussis après partage de
+leur validation SIRET.
+
+Les 12 scénarios de numérotation restent réussis. Recette :
 `node --import tsx scripts/test-client-numbers.ts --all`, avec `TEST_DB_HOST`,
 `TEST_DB_PORT`, `TEST_DB_USER`, `TEST_DB_PASSWORD` pointant vers une instance
 de test autorisant la création de bases. Le script crée et supprime sa propre
@@ -117,8 +157,13 @@ Modification : [liste avec actions](screenshots/client-edit/liste-desktop.png),
 [ordinateur sombre](screenshots/client-edit/modification-dark-1440.png),
 [mobile clair](screenshots/client-edit/modification-light-375.png),
 [mobile sombre](screenshots/client-edit/modification-dark-375.png) et
-[relevé des 130 contrôles](screenshots/client-edit/verification.json).
+[relevé des 157 contrôles](screenshots/client-edit/verification.json).
 [Création avec numéro personnalisé](screenshots/client-edit/creation-numero-personnalise.png).
+
+SIRET professionnel : [ordinateur clair](screenshots/client-edit/siret-light-1440.png),
+[ordinateur sombre](screenshots/client-edit/siret-dark-1440.png),
+[mobile clair](screenshots/client-edit/siret-light-375.png),
+[mobile sombre](screenshots/client-edit/siret-dark-375.png).
 
 Captures de la création (4 novembre) :
 

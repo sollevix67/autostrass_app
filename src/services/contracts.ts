@@ -56,6 +56,7 @@ export type ApiLine = {
 
 /** Client renvoye par `GET /api/clients`. */
 export type ApiClient = {
+  siret: string | null
   secteurId?: number | null
   id: number
   nom: string
