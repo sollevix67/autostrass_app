@@ -207,38 +207,28 @@ export const clientUpdateSchema = clientSchema.extend({
   numeroClient: clientSchema.shape.numeroClient.min(1, 'Le numéro client est requis.'),
 })
 
-/** Fournisseur : nom requis, code optionnel, autres champs facultatifs. */
+/** Une saisie vide efface le champ facultatif lors de l'enregistrement. */
+const optionalFournisseurField = (schema: z.ZodType<string, string>) => z.string().trim()
+  .transform((value) => value === '' ? null : value)
+  .pipe(schema.nullable())
+  .optional()
+
+/** Fournisseur : nom requis, coordonnées facultatives. */
 export const fournisseurSchema = z.object({
   nom: required('Le nom').max(128, 'Nom trop long.'),
-  code: z
-    .string()
-    .trim()
+  code: optionalFournisseurField(z.string()
     .max(32, 'Code trop long.')
-    .transform((val) => (val === '' ? undefined : val))
-    .optional(),
-  email: z
-    .string()
-    .trim()
-    .min(1, "L'email est requis.")
-    .email("Format d'email invalide.")
-    .optional()
-    .or(z.literal('')),
-  telephone: z
-    .string()
-    .trim()
-    .regex(/^[+0-9\s().-]{6,20}$/, 'Numero de telephone invalide.')
-    .optional()
-    .or(z.literal('')),
-  adresse: required('L\'adresse').max(255, 'Adresse trop longue.'),
-  ville: required('La ville').max(64, 'Ville trop longue.'),
-  codePostal: z
-    .string()
-    .trim()
-    .regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'),
+    .regex(/^[A-Za-z0-9._/-]+$/, 'Le code accepte les lettres, chiffres, points, tirets, barres obliques et underscores.')),
+  email: optionalFournisseurField(z.string().max(254, 'Email trop long.').email("Format d'email invalide.")),
+  telephone: optionalFournisseurField(z.string().regex(/^\+?[0-9 ().-]{6,20}$/, 'Numero de telephone invalide.')),
+  adresse: optionalFournisseurField(z.string().max(255, 'Adresse trop longue.')),
+  ville: optionalFournisseurField(z.string().max(64, 'Ville trop longue.')),
+  codePostal: optionalFournisseurField(z.string().regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.')),
   delaiLivraison: z
     .number({ message: 'Le delai de livraison est requis.' })
     .min(0, 'Le delai de livraison ne peut pas etre negatif.')
     .int('Le delai de livraison doit etre un entier.')
+    .max(2147483647, 'Le delai de livraison est trop grand.')
     .default(0),
   modeLivraison: z
     .enum(['retrait', 'livraison', 'express', 'franchise'], { message: 'Mode de livraison invalide.' }),

@@ -131,8 +131,8 @@ function guarded<T>(run: (value: string) => string) {
 /**
  * Numero de telephone FR : chiffres et separateurs uniquement.
  *
- * `sanitizeCode` ecarte deja tout ce qui n'est pas `[A-Za-z0-9._/-]`, puis on
- * exige la forme telephonique.
+ * Nettoyage textuel puis contrôle du format : les espaces, parenthèses et
+ * le préfixe `+` sont autorisés, contrairement aux codes techniques.
  *
  * La variante facultative doit rester **absente** du schema quand la cle n'est
  * pas fournie. `base.optional().or(z.literal(''))` echouait sur ce cas : le
@@ -146,14 +146,11 @@ function guarded<T>(run: (value: string) => string) {
 const optionalPhone = (label: string) =>
   z.preprocess((value) => (typeof value === 'string' && value.trim() === '' ? undefined : value), phone(label).optional())
 
-const phone = (label: string, optional = false) => {
-  const base = z
+const phone = (label: string) =>
+  z
     .string({ message: `${label} est requis.` })
-    .transform(guarded<string>((value) => sanitizeCode(value, 20, label)))
+    .transform(guarded<string>((value) => sanitizeText(value, 20, label)))
     .pipe(z.string().regex(/^\+?[0-9 ().-]{6,20}$/, 'Numero de telephone invalide.'))
-
-  return optional ? base.optional() : base
-}
 
 // ---------------------------------------------------------------------------
 // Clients
@@ -189,25 +186,31 @@ export const clientPatchSchema = clientBodySchema.partial().extend({ numeroClien
 // Fournisseurs
 // ---------------------------------------------------------------------------
 
+/** Absent : conserver à la modification ; vide ou null : effacer le champ. */
+const optionalFournisseurField = (schema: z.ZodType<string>) => z.preprocess(
+  (value) => typeof value === 'string' && normalizeText(value) === '' ? null : value,
+  schema.nullish(),
+)
+
 export const fournisseurBodySchema = z.object({
   nom: required('Le nom', 128),
-  code: z
+  code: optionalFournisseurField(z
     .string({ message: 'Le code fournisseur est requis.' })
     .transform(guarded<string>((value) => sanitizeCode(value, 32, 'Le code fournisseur')))
-    .pipe(z.string().min(1, 'Le code fournisseur est requis.').max(32, 'Le code fournisseur ne doit pas depasser 32 caracteres.'))
-    .optional(),
-  email: email().optional(),
-  telephone: optionalPhone('Le telephone'),
-  adresse: optionalText("L'adresse", 255),
-  ville: optionalText('La ville', 64),
-  codePostal: z
+    .pipe(z.string().min(1, 'Le code fournisseur est requis.').max(32, 'Le code fournisseur ne doit pas depasser 32 caracteres.'))),
+  email: optionalFournisseurField(email()),
+  telephone: optionalFournisseurField(phone('Le telephone')),
+  adresse: optionalFournisseurField(required("L'adresse", 255)),
+  ville: optionalFournisseurField(required('La ville', 64)),
+  codePostal: optionalFournisseurField(z
     .string({ message: 'Le code postal est requis.' })
     .transform(guarded<string>((value) => sanitizeCode(value, 10, 'Le code postal')))
-    .pipe(z.string().regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'))
-    .optional(),
+    .pipe(z.string().regex(/^[0-9]{4,10}$/, 'Le code postal doit contenir 4 a 10 chiffres.'))),
   delaiLivraison: z
     .number({ message: 'Le delai de livraison est requis.' })
     .min(0, 'Le delai de livraison ne peut pas etre negatif.')
+    .int('Le delai de livraison doit etre un entier.')
+    .max(2147483647, 'Le delai de livraison est trop grand.')
     .optional(),
   modeLivraison: z.enum(DELIVERY_MODES, { message: 'Mode de livraison invalide.' }).optional(),
   actif: z.boolean().optional(),

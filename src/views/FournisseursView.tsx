@@ -24,7 +24,7 @@ import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { FormInput, FormSelect, FormCheckbox, type FieldRegister } from '../components/forms/FormFields'
 import { useResource } from '../hooks/useResource'
 import { useAuth, canWrite } from '../components/useAuth'
-import { fournisseurSchema, type FournisseurFormOutput } from '../schemas'
+import { fournisseurSchema, type FournisseurFormValues, type FournisseurFormOutput } from '../schemas'
 import type { ApiFournisseur } from '../services/contracts'
 
 /** Valeurs initiales du formulaire : jamais de champ `undefined`. */
@@ -58,13 +58,14 @@ export default function FournisseursView() {
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiFournisseur>({
     path: '/fournisseurs',
     sort: byNom,
+    allowOfflineWrites: false,
   })
 
   // `register` de RHF est contravariant sur le nom de champ : on elargit
   // l'instance pour que `FormInput` reste reutilisable.
-  const form = useForm<FournisseurFormOutput>({
-      resolver: zodResolver(fournisseurSchema) as any,
-      defaultValues: EMPTY_FOURNISSEUR,
+  const form = useForm<FournisseurFormValues, unknown, FournisseurFormOutput>({
+    resolver: zodResolver(fournisseurSchema),
+    defaultValues: EMPTY_FOURNISSEUR,
     mode: 'onSubmit',
   })
   const register = form.register as unknown as FieldRegister
@@ -72,13 +73,15 @@ export default function FournisseursView() {
   const canEdit = canWrite(user?.role, 'depot')
 
   async function handleSubmit(values: FournisseurFormOutput) {
-      const created = await create(values)
-      if (created === null) return
-      form.reset(EMPTY_FOURNISSEUR)
-      toast.success(`Fournisseur ${created.nom} enregistre.`)
-    }
+    if (!canEdit || saving) return
+    const created = await create(values)
+    if (created === null) return
+    form.reset(EMPTY_FOURNISSEUR)
+    toast.success(`Fournisseur ${created.nom} enregistre.`)
+  }
 
-    async function handleDelete(fournisseur: ApiFournisseur) {
+  async function handleDelete(fournisseur: ApiFournisseur) {
+    if (!canEdit || saving) return
     confirm(
       'Supprimer ce fournisseur ?',
       <>Le fournisseur <strong>{fournisseur.nom}</strong> ({fournisseur.code ?? 'sans code'}) sera supprime definitivement.</>,
@@ -147,10 +150,10 @@ export default function FournisseursView() {
       width: '150px',
       render: (row) => (
         <div className="actions-cell">
-          <button type="button" className="action-btn edit" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.nom}`}>
+          <button type="button" className="action-btn edit" onClick={() => startEditing(row)} disabled={!canEdit || saving} title="Modifier" aria-label={`Modifier ${row.nom}`}>
             <Icon name="edit" size="sm" />
           </button>
-          <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} disabled={saving} title="Supprimer" aria-label={`Supprimer ${row.nom}`}>
+          <button type="button" className="action-btn delete" onClick={() => handleDelete(row)} disabled={!canEdit || saving} title="Supprimer" aria-label={`Supprimer ${row.nom}`}>
             <Icon name="trash" size="sm" />
           </button>
         </div>
@@ -161,6 +164,7 @@ export default function FournisseursView() {
   const [editingRow, setEditingRow] = useState<ApiFournisseur | null>(null)
 
   function startEditing(row: ApiFournisseur) {
+    if (!canEdit || saving) return
     setEditingRow(row)
     form.reset({
       nom: row.nom,
@@ -181,30 +185,12 @@ export default function FournisseursView() {
     form.reset(EMPTY_FOURNISSEUR)
   }
 
-  const [savingEdit, setSavingEdit] = useState(false)
-
-  async function handleSaveEdit() {
-    if (!editingRow) return
-    setSavingEdit(true)
-    const ok = await update(editingRow.id, {
-          nom: form.getValues().nom,
-          code: form.getValues().code,
-          email: form.getValues().email,
-          telephone: form.getValues().telephone,
-          adresse: form.getValues().adresse,
-          ville: form.getValues().ville,
-          codePostal: form.getValues().codePostal,
-          delaiLivraison: form.getValues().delaiLivraison,
-          modeLivraison: form.getValues().modeLivraison,
-          actif: form.getValues().actif,
-    })
-    setSavingEdit(false)
-    if (ok) {
-      toast.success(`Fournisseur ${editingRow.nom} mis a jour.`)
-      setEditingRow(null)
-    } else {
-      toast.error(`Echec de la mise a jour de ${editingRow.nom}.`)
-    }
+  async function handleSaveEdit(values: FournisseurFormOutput) {
+    if (!editingRow || !canEdit || saving) return
+    const updated = await update(editingRow.id, values)
+    if (updated === null) return
+    toast.success(`Fournisseur ${updated.nom} mis a jour.`)
+    cancelEditing()
   }
 
   return (
@@ -220,13 +206,12 @@ export default function FournisseursView() {
     >
       {offline && (
         <p className="info-banner" role="status">
-          API fournisseurs indisponible : affichage local uniquement, les modifications ne sont pas
-          enregistrees.
+          API fournisseurs indisponible : l'enregistrement nécessite une connexion au serveur.
         </p>
       )}
       {error !== null && <p className="error-banner" role="alert">{error}</p>}
 
-      {editingRow ? (
+      {editingRow && canEdit ? (
         <form className="form-card" onSubmit={form.handleSubmit(handleSaveEdit)} noValidate>
           <h2>Modifier {editingRow.nom}</h2>
 
@@ -247,23 +232,23 @@ export default function FournisseursView() {
           />
 
           <div className="form-grid-2">
-            <FormInput label="Nom" name="nom" register={register} required />
-            <FormInput label="Code" name="code" register={register} />
-            <FormInput label="Email" name="email" type="email" register={register} />
-            <FormInput label="Telephone" name="telephone" type="tel" register={register} />
-            <FormInput label="Adresse" name="adresse" register={register} />
-            <FormInput label="Ville" name="ville" register={register} />
-            <FormInput label="Code postal" name="codePostal" register={register} />
-            <FormInput label="Delai (jours)" name="delaiLivraison" type="number" register={register} />
-            <FormSelect label="Mode de livraison" name="modeLivraison" register={register} options={LIVRAISON_MODES} />
+            <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
+            <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
+            <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
+            <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
+            <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />
+            <FormInput label="Ville" name="ville" error={form.formState.errors.ville?.message} register={register} />
+            <FormInput label="Code postal" name="codePostal" error={form.formState.errors.codePostal?.message} register={register} />
+            <FormInput label="Delai (jours)" name="delaiLivraison" error={form.formState.errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
+            <FormSelect label="Mode de livraison" name="modeLivraison" error={form.formState.errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
           </div>
 
           <div className="form-actions">
             <FormCheckbox label="Actif" name="actif" register={register} defaultChecked={editingRow.actif} />
-            <button type="submit" className="primary-button" disabled={savingEdit || form.formState.isSubmitting}>
+            <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
               <Icon name="check" size="sm" /> Enregistrer
             </button>
-            <button type="button" className="secondary-button" onClick={cancelEditing}>
+            <button type="button" className="secondary-button" onClick={cancelEditing} disabled={saving || form.formState.isSubmitting}>
               Annuler
             </button>
           </div>
@@ -271,6 +256,7 @@ export default function FournisseursView() {
       ) : canEdit ? (
         <form className="form-card" onSubmit={form.handleSubmit(handleSubmit)} noValidate>
           <h2>Nouveau fournisseur</h2>
+          <p className="text-muted">Seul le nom est obligatoire. Les coordonnées peuvent être complétées plus tard.</p>
 
           <ErrorSummary
             errors={form.formState.errors}
@@ -289,15 +275,15 @@ export default function FournisseursView() {
           />
 
           <div className="form-grid-2">
-            <FormInput label="Nom" name="nom" register={register} required />
-            <FormInput label="Code" name="code" register={register} />
-            <FormInput label="Email" name="email" type="email" register={register} />
-            <FormInput label="Telephone" name="telephone" type="tel" register={register} />
-            <FormInput label="Adresse" name="adresse" register={register} />
-            <FormInput label="Ville" name="ville" register={register} />
-            <FormInput label="Code postal" name="codePostal" register={register} />
-            <FormInput label="Delai (jours)" name="delaiLivraison" type="number" register={register} />
-            <FormSelect label="Mode de livraison" name="modeLivraison" register={register} options={LIVRAISON_MODES} />
+            <FormInput label="Nom" name="nom" error={form.formState.errors.nom?.message} register={register} required />
+            <FormInput label="Code" name="code" error={form.formState.errors.code?.message} register={register} />
+            <FormInput label="Email" name="email" error={form.formState.errors.email?.message} type="email" register={register} />
+            <FormInput label="Telephone" name="telephone" error={form.formState.errors.telephone?.message} type="tel" register={register} />
+            <FormInput label="Adresse" name="adresse" error={form.formState.errors.adresse?.message} register={register} />
+            <FormInput label="Ville" name="ville" error={form.formState.errors.ville?.message} register={register} />
+            <FormInput label="Code postal" name="codePostal" error={form.formState.errors.codePostal?.message} register={register} />
+            <FormInput label="Delai (jours)" name="delaiLivraison" error={form.formState.errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
+            <FormSelect label="Mode de livraison" name="modeLivraison" error={form.formState.errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
           </div>
 
           <div className="form-actions">
@@ -305,7 +291,7 @@ export default function FournisseursView() {
             <button type="submit" className="primary-button" disabled={saving || form.formState.isSubmitting}>
               <Icon name="plus" size="sm" /> Ajouter le fournisseur
             </button>
-            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_FOURNISSEUR)}>
+            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_FOURNISSEUR)} disabled={saving || form.formState.isSubmitting}>
               Effacer
             </button>
           </div>

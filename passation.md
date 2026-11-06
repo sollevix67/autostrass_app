@@ -1,5 +1,61 @@
 # Passation — Autostrass App
 
+## Création des fournisseurs : données invalides — 2026-11-06
+
+**Revue finale** : correctif local non encore commité retrouvé à l'ouverture
+du dépôt et conservé. Incompatibilités email/téléphone confirmées par comparaison
+avec `HEAD` ; nouvelle recette complète réussie avant publication : build,
+lint, typage strict, erreurs, fournisseurs, API, sécurité et Chromium. Captures
+de l'erreur détaillée et du formulaire mobile relues. Base jetable supprimée
+et MariaDB de recette arrêté proprement après cette nouvelle exécution.
+
+**Diagnostic** : incompatibilité reproduite entre formulaire et API : email
+facultatif envoyé vide mais refusé côté serveur ; téléphone avec espaces,
+parenthèses ou préfixe `+` rejeté par le nettoyeur de codes techniques.
+L'adresse, la ville et le code postal sont aussi requis dans le formulaire
+malgré leur caractère facultatif dans le contrat API. Le message générique
+masque les détails de validation déjà renvoyés par le serveur.
+
+**Correction** : seul le nom est requis. Champs facultatifs vides normalisés
+en `null` ; une clé omise dans un PUT conserve sa valeur, une saisie effacée
+supprime effectivement la coordonnée. Formats de code, téléphone, code postal
+et délai alignés ; erreurs reliées aux champs et détails API affichés. Le
+nettoyeur téléphonique partagé conserve les séparateurs autorisés. Modification
+avec les valeurs validées, réinitialisation après succès et confirmation API
+obligatoire pour les écritures. Boutons d'écriture désactivés pour le caissier.
+Aucune migration nécessaire ; protections de sécurité conservées.
+
+**Validation** : build, lint, typage strict du script et traduction des erreurs
+réussis. **9 scénarios** de contrat et persistance fournisseurs, **123 contrôles
+API** et **59 contrôles sécurité** réussis sur MariaDB 11.4.5 jetable.
+**62 contrôles Chromium** avec API simulée, trois largeurs et deux thèmes :
+création minimale/complète, modification/effacement/relecture, formats,
+erreurs détaillées, conservation de la saisie après refus/panne, sauvegarde
+lente et droits. Aucun débordement global ni erreur JavaScript. Cinq captures
+et relevé JSON dans `specs/screenshots/fournisseurs/` ; contrat et commandes
+documentés dans `specs/fournisseurs.md`. Build : 571,77 kB JS, 38,12 kB CSS ;
+avertissement Vite préexistant >500 kB conservé.
+
+**Nettoyage** : base jetable supprimée, API isolée arrêtée et instance MariaDB
+de recette arrêtée proprement sur le port 43318. Données et instances
+applicatives existantes conservées.
+
+**Graphify** : `graphify update .` (0.9.103) exécuté ; graphe JSON, HTML,
+rapport et manifeste contrôlés : **2 786 nœuds, 5 685 liens, 184 communautés**.
+Identifiants uniques, aucun lien orphelin et empreintes des **126 fichiers
+TS/TSX/MJS** applicatifs et scripts conformes au disque. Métadonnée de départ
+`4e5e527`. Limites conservées : CSS non analysé, parseur SQL absent, analyse
+sémantique des documents et renommage LLM non relancés. Le cache AST a été
+purgé automatiquement par Graphify ; cela ne modifie pas le graphe validé.
+
+**Livraison** : changements regroupés sur `main` pour
+`fix(fournisseurs): accepter les coordonnees facultatives et les telephones`.
+`origin/main` vérifié à jour avant publication ; `git diff --check` réussi.
+Si une API était déjà lancée sans surveillance des fichiers, la redémarrer
+pour charger la validation corrigée, puis recharger le formulaire.
+
+---
+
 ## Numéro client limité à six chiffres — 2026-11-06
 
 **Demande livrée** : seuls les chiffres sont autorisés, avec six caractères

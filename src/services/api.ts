@@ -71,8 +71,12 @@ export class ApiError extends Error {
         return 'La base de donnees est injoignable. Verifiez la connexion MariaDB.'
       case 'NOT_FOUND':
         return "L'élément demandé est introuvable."
-      case 'VALIDATION_ERROR':
-        return this.message
+      case 'VALIDATION_ERROR': {
+        const messages = this.details && typeof this.details === 'object' && !Array.isArray(this.details)
+          ? Object.values(this.details).filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+          : []
+        return messages.length ? [...new Set(messages)].join(' ') : this.message
+      }
       case 'NETWORK_ERROR':
         return "Impossible de joindre le serveur. Verifiez que l'API est demarree."
       case 'UNAUTHENTICATED':
