@@ -1,13 +1,13 @@
 /**
- * Vue clients : liste, creation et suppression.
+ * Vue clients : liste, création, modification et suppression.
  *
  * Branchee sur l'API (`/api/clients`). Le formulaire en fenêtre modale suit le meme patron que
  * le catalogue : React Hook Form + Zod, resume d'erreurs focusable, et
  * suppression confirmee via `ConfirmDialog` plutot que `window.confirm`.
  *
  * L'écriture est réservée au dépôt : un caissier voit la liste mais pas le
- * formulaire de creation. Le bouton reste visible et desactive plutot que
- * masque, pour que la limite de droits soit lisible sans deviner.
+ * formulaire d'édition. Les boutons restent visibles et désactivés plutôt que
+ * masqués, pour que la limite de droits soit lisible sans deviner.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -38,6 +38,20 @@ const EMPTY_CLIENT: ClientFormValues = {
   type: 'particulier',
 }
 
+/** N'envoyer que les coordonnées éditables, sans identifiant ni secteur. */
+function clientFormValues(client: ApiClient): ClientFormValues {
+  return {
+    nom: client.nom,
+    prenom: client.prenom,
+    telephone: client.telephone,
+    email: client.email,
+    adresse: client.adresse,
+    ville: client.ville,
+    codePostal: client.codePostal,
+    type: client.type,
+  }
+}
+
 const TYPES = [
   { value: 'particulier', label: 'Particulier' },
   { value: 'professionnel', label: 'Professionnel' },
@@ -50,9 +64,10 @@ export default function ClientsView() {
   const { user } = useAuth()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
-  const { rows, loading, saving, error, offline, reload, create, remove } = useResource<ApiClient>({
+  const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiClient>({
     path: '/clients',
     sort: byNom,
+    allowOfflineWrites: false,
   })
 
   // `register` de RHF est contravariant sur le nom de champ : on elargit
@@ -64,16 +79,18 @@ export default function ClientsView() {
   })
   const register = form.register as unknown as FieldRegister
   const { setFocus, reset, formState: { errors, isSubmitting } } = form
-  const [createOpen, setCreateOpen] = useState(false)
-  const [createFailed, setCreateFailed] = useState(false)
-  const createDialogRef = useRef<HTMLDialogElement>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingClient, setEditingClient] = useState<ApiClient | null>(null)
+  const [submitFailed, setSubmitFailed] = useState(false)
+  const clientDialogRef = useRef<HTMLDialogElement>(null)
+  const pending = useRef(false)
 
   const canEdit = canWrite(user?.role, 'depot')
   const busy = saving || isSubmitting
 
   useEffect(() => {
-    const dialog = createDialogRef.current
-    if (!createOpen || !canEdit || !dialog) return
+    const dialog = clientDialogRef.current
+    if (!dialogOpen || !canEdit || !dialog) return
 
     const trigger = document.activeElement as HTMLElement | null
     const previousOverflow = document.body.style.overflow
@@ -87,48 +104,58 @@ export default function ClientsView() {
       document.body.style.overflow = previousOverflow
       if (trigger?.isConnected) trigger.focus()
     }
-  }, [createOpen, canEdit, setFocus])
+  }, [dialogOpen, canEdit, setFocus])
 
-  function openCreateDialog() {
-    form.reset(EMPTY_CLIENT)
-    setCreateFailed(false)
-    setCreateOpen(true)
+  function openClientDialog(client: ApiClient | null = null) {
+    if (!canEdit || busy || pending.current) return
+    setEditingClient(client)
+    reset(client ? clientFormValues(client) : EMPTY_CLIENT)
+    setSubmitFailed(false)
+    setDialogOpen(true)
   }
 
-  const closeCreateDialog = useCallback(() => {
-    if (busy) return
-    setCreateOpen(false)
+  const closeClientDialog = useCallback(() => {
+    if (busy || pending.current) return
+    setDialogOpen(false)
+    setEditingClient(null)
     reset(EMPTY_CLIENT)
-    setCreateFailed(false)
+    setSubmitFailed(false)
   }, [busy, reset])
 
   useEffect(() => {
-    if (!createOpen) return
+    if (!dialogOpen) return
     // Certains aperçus relaient keydown sans déclencher le cancel natif du dialogue.
     const onEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       event.preventDefault()
       event.stopPropagation()
-      closeCreateDialog()
+      closeClientDialog()
     }
     document.addEventListener('keydown', onEscape, true)
     return () => document.removeEventListener('keydown', onEscape, true)
-  }, [createOpen, closeCreateDialog])
+  }, [dialogOpen, closeClientDialog])
 
   async function handleSubmit(values: ClientFormValues) {
-    if (!canEdit || saving) return
-    setCreateFailed(false)
-    const created = await create(values)
-    if (created === null) {
-      setCreateFailed(true)
-      return
+    if (!canEdit || saving || pending.current) return
+    pending.current = true
+    setSubmitFailed(false)
+    try {
+      const saved = editingClient ? await update(editingClient.id, values) : await create(values)
+      if (saved === null) {
+        setSubmitFailed(true)
+        return
+      }
+      setDialogOpen(false)
+      setEditingClient(null)
+      reset(EMPTY_CLIENT)
+      toast.success(`Client ${saved.numeroClient} ${editingClient ? 'modifié' : 'enregistré'}.`)
+    } finally {
+      pending.current = false
     }
-    setCreateOpen(false)
-    form.reset(EMPTY_CLIENT)
-    toast.success(`Client ${created.numeroClient} enregistre.`)
   }
 
   async function handleDelete(client: ApiClient) {
+    if (!canEdit || busy || pending.current) return
     confirm(
       'Supprimer ce client ?',
       <>
@@ -184,16 +211,29 @@ export default function ClientsView() {
       key: 'actions',
       header: 'ACTIONS',
       render: (row) => (
-        <button
-          type="button"
-          className="action-btn delete"
-          onClick={() => handleDelete(row)}
-          disabled={saving}
-          title="Supprimer"
-          aria-label={`Supprimer ${row.prenom} ${row.nom}`}
-        >
-          <Icon name="trash" size="sm" />
-        </button>
+        <div className="actions-cell">
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => openClientDialog(row)}
+            disabled={!canEdit || busy}
+            title={!canEdit ? 'La modification des clients est réservée au dépôt.' : 'Modifier'}
+            aria-label={`Modifier ${row.prenom} ${row.nom} (${row.numeroClient})`}
+            aria-haspopup="dialog"
+          >
+            <Icon name="edit" size="sm" /> Modifier
+          </button>
+          <button
+            type="button"
+            className="action-btn delete"
+            onClick={() => handleDelete(row)}
+            disabled={!canEdit || busy}
+            title="Supprimer"
+            aria-label={`Supprimer ${row.prenom} ${row.nom}`}
+          >
+            <Icon name="trash" size="sm" />
+          </button>
+        </div>
       ),
     },
   ]
@@ -211,7 +251,7 @@ export default function ClientsView() {
           <button
             type="button"
             className="primary-button"
-            onClick={openCreateDialog}
+            onClick={() => openClientDialog()}
             disabled={!canEdit || busy}
             aria-haspopup="dialog"
             title={!canEdit ? 'La création de clients est réservée au dépôt.' : undefined}
@@ -223,18 +263,17 @@ export default function ClientsView() {
     >
       {offline && (
         <p className="info-banner" role="status">
-          API clients indisponible : affichage local uniquement, les modifications ne sont pas
-          enregistrees.
+          API clients indisponible : les changements ne sont pas enregistrés. Réessayez lorsque la connexion est rétablie.
         </p>
       )}
-      {error !== null && !createOpen && <p className="error-banner" role="alert">{error}</p>}
+      {error !== null && !dialogOpen && <p className="error-banner" role="alert">{error}</p>}
 
       {canEdit && (
         <dialog
-          ref={createDialogRef}
+          ref={clientDialogRef}
           className="modal client-modal"
-          aria-labelledby="new-client-title"
-          aria-describedby="new-client-description"
+          aria-labelledby="client-dialog-title"
+          aria-describedby="client-dialog-description"
           onKeyDown={(event) => {
             if (event.key !== 'Tab') return
             const controls = event.currentTarget.querySelectorAll<HTMLElement>(
@@ -254,26 +293,29 @@ export default function ClientsView() {
           }}
           onCancel={(event) => {
             event.preventDefault()
-            closeCreateDialog()
+            closeClientDialog()
           }}
           onMouseDown={(event) => {
             if (event.target !== event.currentTarget) return
             const bounds = event.currentTarget.getBoundingClientRect()
             if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
-              closeCreateDialog()
+              event.preventDefault()
+              closeClientDialog()
             }
           }}
         >
           <div className="client-modal-header">
-            <h2 id="new-client-title">Nouveau client</h2>
-            <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeCreateDialog} disabled={busy}>
+            <h2 id="client-dialog-title">{editingClient ? `Modifier le client ${editingClient.numeroClient}` : 'Nouveau client'}</h2>
+            <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeClientDialog} disabled={busy}>
               <Icon name="close" size="lg" />
             </button>
           </div>
-          <p id="new-client-description" className="modal-desc">Renseignez les coordonnées du client à ajouter.</p>
-          {offline && <p className="info-banner" role="status">API clients indisponible : les modifications restent locales.</p>}
-          {createFailed && error && <p className="error-banner" role="alert">{error}</p>}
-          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate aria-busy={busy}>
+          <p id="client-dialog-description" className="modal-desc">
+            {editingClient ? 'Modifiez les coordonnées du client. Son numéro de dossier reste inchangé.' : 'Renseignez les coordonnées du client à ajouter.'}
+          </p>
+          {offline && <p className="info-banner" role="status">API clients indisponible : les changements ne sont pas enregistrés.</p>}
+          {submitFailed && error && <p className="error-banner" role="alert">{error}</p>}
+          <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate aria-busy={busy}>
 
             <ErrorSummary
               errors={errors}
@@ -290,7 +332,7 @@ export default function ClientsView() {
             />
 
             <fieldset className="client-form-fields" disabled={busy}>
-              <legend className="sr-only">Coordonnées du nouveau client</legend>
+              <legend className="sr-only">Coordonnées du client</legend>
               <div className="form-grid-2">
                 <FormInput label="Nom" name="nom" register={register} error={errors.nom?.message} required />
                 <FormInput label="Prénom" name="prenom" register={register} error={errors.prenom?.message} required />
@@ -303,14 +345,14 @@ export default function ClientsView() {
               </div>
 
               <div className="form-actions">
-                <button type="button" className="secondary-button client-form-reset" onClick={() => form.reset(EMPTY_CLIENT)}>
-                  Effacer
+                <button type="button" className="secondary-button client-form-reset" onClick={() => reset(editingClient ? clientFormValues(editingClient) : EMPTY_CLIENT)}>
+                  {editingClient ? 'Rétablir' : 'Effacer'}
                 </button>
-                <button type="button" className="secondary-button" onClick={closeCreateDialog}>
+                <button type="button" className="secondary-button" onClick={closeClientDialog}>
                   Annuler
                 </button>
                 <button type="submit" className="primary-button">
-                  <Icon name="plus" size="sm" /> {busy ? 'Enregistrement…' : 'Ajouter le client'}
+                  <Icon name={editingClient ? 'check' : 'plus'} size="sm" /> {busy ? 'Enregistrement…' : editingClient ? 'Enregistrer les modifications' : 'Ajouter le client'}
                 </button>
               </div>
             </fieldset>
@@ -319,7 +361,7 @@ export default function ClientsView() {
       )}
       {!canEdit && (
         <p className="info-banner" role="note">
-          <Icon name="alert" size="sm" /> La saisie de nouveaux clients est reservee au depot.
+          <Icon name="alert" size="sm" /> La gestion des clients est réservée au dépôt.
           Consultez la liste ci-dessous.
         </p>
       )}

@@ -1,5 +1,48 @@
 # Passation — Autostrass App
 
+## Modification des clients — 2026-11-06
+
+**Diagnostic** : la vue Clients ne proposait que création et suppression,
+alors que `PUT /api/clients/:id` et `useResource.update` existent déjà.
+Ajout d'une action Modifier ouvrant le formulaire prérempli.
+Le numéro client reste immuable et le secteur, géré dans Paramètres, est
+préservé.
+
+**Implémentation** : action Modifier explicite dans chaque ligne ; fenêtre
+commune création/modification, validation Zod, rétablissement des valeurs
+initiales, annulation et protection des doubles envois. Actions d'écriture
+désactivées pour les caissiers. Les écritures Clients exigent désormais une
+confirmation API (`allowOfflineWrites: false`) : une panne conserve les
+valeurs saisies et la liste d'origine, sans annoncer de faux succès.
+Le comportement par défaut des autres vues est conservé.
+
+**Validation** : build, lint et traduction des erreurs réussis. **90 contrôles
+Chromium** via `scripts/test-clients-ui.mjs` sur le build de production :
+huit champs préremplis, annulation/rétablissement, focus, validation, refus
+422/403/404, panne 503 et réseau, sauvegarde lente et double envoi, PUT ciblé,
+numéro/secteur préservés, tri, rechargement et création après modification.
+Quatre largeurs (375/768/1024/1440 px), deux thèmes et droits UI des trois
+rôles. API entièrement simulée, aucune écriture MariaDB. Le clic sur le fond
+restitue désormais correctement le focus au bouton déclencheur.
+Cinq captures et relevé JSON dans `specs/screenshots/client-edit/` ;
+`specs/client-modal.md` décrit le fonctionnement et la recette reproductible.
+Les serveurs de recette sont arrêtés. Avertissement Vite préexistant :
+bundle JavaScript de 569,95 kB (>500 kB).
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste et cache, avec sauvegarde du 2026-11-06 : **2 752 nœuds, 5 623 liens,
+183 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+AST des **123 fichiers TS/TSX/MJS** applicatifs et scripts conformes au disque.
+Métadonnée de départ `9667cd6`. Limites conservées : CSS non analysé, parseur
+SQL absent, analyse sémantique des documents et renommage LLM non relancés.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(clients): ajouter la modification des fiches clients`, branche distante
+vérifiée à jour avant publication. La retouche rédactionnelle de `TODO.md`
+apparue pendant le travail est conservée dans cette publication.
+
+---
+
 ## Affichage des emplacements dans Articles en stock — 2026-11-06
 
 **Diagnostic** : défaut reproduit dans Chromium sur le panneau « Articles en

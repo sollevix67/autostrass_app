@@ -51,7 +51,7 @@ J'aimerais créer une application en Typescript/ViteJS/ReactJS/NestJS (frontend/
         - Génération de bons de livraison pour les retours refusés avec motifs du refus
 
     - Carnet d'adresses clients (backend)
-        - Autocompletion via api-adresse.data.gouv.fr ou via numéro siren/siret
+        - Autocompletion via api-adresse.data.gouv.fr ou via le numéro siren/siret
         - Suivi par client des devis, commandes, livraisons
         - Suivi par client des factures payées et à payer
         - Suspension, limitation du compte (blocage livraison, paiement direct uniquement)

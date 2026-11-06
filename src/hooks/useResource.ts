@@ -19,7 +19,7 @@ export type ResourceState<TRow> = {
   loading: boolean
   saving: boolean
   error: string | null
-  /** `true` si l'API est injoignable : les ecritures restent locales. */
+  /** `true` si l'API est injoignable ; le repli local dépend des options. */
   offline: boolean
   reload: () => void
   create: (payload: unknown) => Promise<TRow | null>
@@ -34,6 +34,8 @@ type Options<TRow> = {
   fallback?: TRow[]
   /** Tri applique a la liste renvoyee. */
   sort?: (rows: TRow[]) => TRow[]
+  /** Autorise le repli local des écritures ; false exige une confirmation API. */
+  allowOfflineWrites?: boolean
 }
 
 /**
@@ -50,7 +52,7 @@ function shouldDegrade(error: unknown): boolean {
 }
 
 export function useResource<TRow extends { id: number }>(options: Options<TRow>): ResourceState<TRow> {
-  const { path, fallback = [], sort } = options
+  const { path, fallback = [], sort, allowOfflineWrites = true } = options
 
   const [rows, setRows] = useState<TRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -104,9 +106,9 @@ export function useResource<TRow extends { id: number }>(options: Options<TRow>)
   }, [sort])
 
   /**
-   * Execute une ecriture. Hors ligne, la reponse est consideree comme
-   * réussie et l'état local est mis à jour : l'UI reste utilisable si la
-   * base est coupee, et le bandeau d'information previent l'utilisateur.
+   * Exécute une écriture. Si le repli hors ligne est autorisé, l'état local
+   * est mis à jour en cas d'API indisponible. Sinon, la liste reste intacte
+   * et l'erreur est renvoyée pour permettre une nouvelle tentative.
    */
   const write = useCallback(
     async <T,>(run: () => Promise<T>, apply: (result: T) => void, offlinePatch: T | null): Promise<T | null> => {
@@ -119,18 +121,19 @@ export function useResource<TRow extends { id: number }>(options: Options<TRow>)
         return result
       } catch (cause) {
         if (isAbortError(cause)) return null
-        if (shouldDegrade(cause) && offlinePatch !== null) {
+        if (allowOfflineWrites && shouldDegrade(cause) && offlinePatch !== null) {
           apply(offlinePatch)
           setOffline(true)
           return offlinePatch
         }
+        if (shouldDegrade(cause) && !(cause instanceof ApiError && cause.status === 404)) setOffline(true)
         setError(toErrorMessage(cause))
         return null
       } finally {
         setSaving(false)
       }
     },
-    [],
+    [allowOfflineWrites],
   )
 
   const create = useCallback(
@@ -167,21 +170,23 @@ export function useResource<TRow extends { id: number }>(options: Options<TRow>)
         await api.delete(`${path}/${id}`)
         setRows((current) => current.filter((item) => item.id !== id))
         setError(null)
+        setOffline(false)
         return true
       } catch (cause) {
         if (isAbortError(cause)) return false
-        if (shouldDegrade(cause)) {
+        if (allowOfflineWrites && shouldDegrade(cause)) {
           setRows((current) => current.filter((item) => item.id !== id))
           setOffline(true)
           return true
         }
+        if (shouldDegrade(cause) && !(cause instanceof ApiError && cause.status === 404)) setOffline(true)
         setError(toErrorMessage(cause))
         return false
       } finally {
         setSaving(false)
       }
     },
-    [path],
+    [path, allowOfflineWrites],
   )
 
   return { rows, loading, saving, error, offline, reload, create, update, remove }
