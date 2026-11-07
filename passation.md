@@ -29,7 +29,8 @@ présent dans le HTML ; métadonnée de départ `8e5c950`. Limites habituelles
 conservées : CSS non indexé, parseur SQL absent, sémantique documentaire
 et renommage LLM non relancés.
 
-**Livraison** : correction validée pour commit et push sur `main`.
+**Livraison** : commit `9378a9e` — `fix(pdf): definir les politiques d'acces
+aux ressources` — publié sur `origin/main` par `git push origin main`.
 Redémarrer l'API (`npm run dev` ou `npm run dev:api`) pour charger les
 politiques : les commandes actuelles utilisent `tsx` sans surveillance.
 
