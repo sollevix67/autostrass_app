@@ -1,5 +1,40 @@
 # Passation — Autostrass App
 
+## Politiques d'accès aux ressources PDF — 2026-11-07
+
+**Signalement** : avertissements `No URL access policy defined` et
+`No local access policy defined` dans la console du serveur.
+
+**Diagnostic et correction** : `pdfmake` 0.3.11 émet ces deux messages à
+chaque génération de facture lorsque les politiques ne sont pas définies.
+Le service `pdfInvoice.ts` bloque désormais les téléchargements externes
+et autorise uniquement les quatre fichiers de police Roboto fournis par
+le paquet. Les types des callbacks reflètent leurs arguments réels.
+Contenu des factures et calculs inchangés ; aucune migration.
+
+**Validation** : `npm run test:pdf` réussi : génération de vrais PDF
+(client de passage, client identifié, 80 lignes sur plusieurs pages,
+quatre styles Roboto), URL HTTP/HTTPS refusées avant tout téléchargement,
+fichiers non autorisés refusés avant lecture et aucune alerte de politique
+d'accès. Une génération après ces refus réussit également. Tests sans API
+ni MariaDB ; serveur HTTP de recette local arrêté. Build, lint,
+`test:errors` et `git diff --check` réussis. Avertissement Vite préexistant
+sur le paquet JavaScript supérieur à 500 kB inchangé.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré les artefacts et la
+sauvegarde du jour : **2 802 nœuds, 5 724 liens, 171 communautés**.
+Identifiants uniques, aucun lien orphelin et empreintes des **130 fichiers
+TS/TSX/MJS** conformes, dont le service PDF et son nouveau test. Service
+présent dans le HTML ; métadonnée de départ `8e5c950`. Limites habituelles
+conservées : CSS non indexé, parseur SQL absent, sémantique documentaire
+et renommage LLM non relancés.
+
+**Livraison** : correction validée pour commit et push sur `main`.
+Redémarrer l'API (`npm run dev` ou `npm run dev:api`) pour charger les
+politiques : les commandes actuelles utilisent `tsx` sans surveillance.
+
+---
+
 ## Formulaire réceptions en fenêtre contextuelle — 2026-11-07
 
 **Demande** : ouvrir « Nouvelle réception » dans une fenêtre contextuelle.

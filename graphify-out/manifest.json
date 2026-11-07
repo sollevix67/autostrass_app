@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1793993837.8900783,
-    "seen": 1793994345.1360564,
-    "ast_hash": "e8e5cc900b94327dead74884bba4353d",
+    "mtime": 1794090481.6409166,
+    "seen": 1794090518.2266383,
+    "ast_hash": "4d3b19d4211d94fd0bec73c6dd14cc92",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1794089724.9363122,
-    "seen": 1794089732.0973842,
-    "ast_hash": "02a93b5087ea52a2959a8d7bbf556721",
+    "mtime": 1794090513.4234154,
+    "seen": 1794090518.2572777,
+    "ast_hash": "79d287f44d8765a7af9561933d8e02f1",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1494,15 +1494,15 @@
     "semantic_hash": ""
   },
   "server/services/pdfInvoice.ts": {
-    "mtime": 1792322366.3474574,
-    "seen": 1792931406.969828,
-    "ast_hash": "372484a50877bf4068686cc96222aa78",
+    "mtime": 1794090481.6384053,
+    "seen": 1794090518.2343755,
+    "ast_hash": "fd72bf0858dfe56ee87c4ca2d7e28af7",
     "semantic_hash": ""
   },
   "server/types/pdfmake.d.ts": {
-    "mtime": 1791832391.8611596,
-    "seen": 1792931406.9698312,
-    "ast_hash": "a307786ebaa7cb0f1db574de7d14573a",
+    "mtime": 1794090481.6399145,
+    "seen": 1794090518.2346225,
+    "ast_hash": "a32c678bac2e1055ec06a39eba82e227",
     "semantic_hash": ""
   },
   "src/views/FournisseursView.tsx": {
@@ -2289,6 +2289,12 @@
     "mtime": 1794089702.7928278,
     "seen": 1794089732.1085212,
     "ast_hash": "539e80d0bb4ae0c72546531a98d90c96",
+    "semantic_hash": ""
+  },
+  "scripts/test-pdf-invoice.ts": {
+    "mtime": 1794090481.6414149,
+    "seen": 1794090518.229352,
+    "ast_hash": "b16d2263b75dd0718eee0a9c17bba1fa",
     "semantic_hash": ""
   },
   "package-lock.json": {

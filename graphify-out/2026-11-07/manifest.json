@@ -840,9 +840,9 @@
     "semantic_hash": ""
   },
   "src/views/ReceptionsView.tsx": {
-    "mtime": 1792328845.5686696,
-    "seen": 1792931406.9711456,
-    "ast_hash": "a84c57c329bc21eff9b6243c4c359fb6",
+    "mtime": 1794089605.445627,
+    "seen": 1794089732.0793128,
+    "ast_hash": "067ef2da14cdfb38a1e5c808adbe66fb",
     "semantic_hash": ""
   },
   "src/views/RetoursView.tsx": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1794037977.5125852,
-    "seen": 1794037986.9283018,
-    "ast_hash": "68516da7696c9bd3cec04839ba6794ca",
+    "mtime": 1794089724.9363122,
+    "seen": 1794089732.0973842,
+    "ast_hash": "02a93b5087ea52a2959a8d7bbf556721",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2253,6 +2253,42 @@
     "mtime": 1794037931.934533,
     "seen": 1794037986.9298174,
     "ast_hash": "7813ece21081f47a6336f49fc67279e7",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/verification.json": {
+    "mtime": 1794089705.8382583,
+    "seen": 1794089732.0725317,
+    "ast_hash": "02dec97e76646dcef474c2e9c0f90230",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/creation-dark-1440.png": {
+    "mtime": 1794089704.6756232,
+    "seen": 1794089732.108514,
+    "ast_hash": "fcb9a066110c4861de63136f09b091d2",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/creation-dark-375.png": {
+    "mtime": 1794089704.5654008,
+    "seen": 1794089732.1085165,
+    "ast_hash": "26408dc9d61ac8169c3726f43030eb84",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/creation-light-1440.png": {
+    "mtime": 1794089704.507832,
+    "seen": 1794089732.108518,
+    "ast_hash": "d8e60e07b69cafd7f84a3e4d31c17687",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/creation-light-375.png": {
+    "mtime": 1794089704.39872,
+    "seen": 1794089732.1085198,
+    "ast_hash": "74c83fc3dc5eee8701511ec0ef86ec77",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/reception-modal/liste-desktop.png": {
+    "mtime": 1794089702.7928278,
+    "seen": 1794089732.1085212,
+    "ast_hash": "539e80d0bb4ae0c72546531a98d90c96",
     "semantic_hash": ""
   },
   "package-lock.json": {

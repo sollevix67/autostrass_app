@@ -7,7 +7,11 @@ import { createRequire } from 'node:module'
 // Les polices standard de pdfmake (Roboto) sont chargees via le fichier CJS
 // fourni par le paquet : `pdfmake/fonts/Roboto.js` contient les chemins TTF.
 const require_ = createRequire(import.meta.url)
-const fontsDef = require_('pdfmake/fonts/Roboto.js')
+const fontsDef: Record<string, Record<string, string>> = require_('pdfmake/fonts/Roboto.js')
+const allowedFontFiles = new Set(Object.values(fontsDef).flatMap((family) => Object.values(family)))
+// Les factures n'utilisent aucune ressource distante ni aucun autre fichier local.
+pdfmake.setUrlAccessPolicy(() => false)
+pdfmake.setLocalAccessPolicy((filePath: string) => allowedFontFiles.has(filePath))
 pdfmake.setFonts(fontsDef)
 
 export type VenteForPdf = {
