@@ -35,9 +35,11 @@ dans le graphe et vue Réceptions dans le HTML. Métadonnée de départ `f947e39
 Limites habituelles : CSS non indexé, parseur SQL absent, analyse sémantique
 documentaire et renommage LLM non relancés.
 
-**Livraison** : changements regroupés sur `main` pour
-`feat(receptions): ouvrir le formulaire dans une fenetre modale`.
-Branche distante vérifiée à jour, captures relues et `git diff --check` réussi.
+**Livraison** : commit `e8cc9f9` —
+`feat(receptions): ouvrir le formulaire dans une fenetre modale` — publié
+sur `origin/main` par `git push origin main`. Branche distante vérifiée
+avant publication, captures relues et `git diff --check` réussi.
+Recharger la page pour afficher le bouton « Nouvelle réception ».
 
 ---
 
