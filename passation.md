@@ -1,5 +1,78 @@
 # Passation — Autostrass App
 
+## Reprise des fichiers en attente de commit — 2026-11-07
+
+**État constaté** : 20 fichiers déjà indexés sur `main`, correspondant au
+formulaire catalogue en fenêtre contextuelle, à ses captures de validation
+et aux artefacts Graphify. Diff applicatif et relevé de recette relus.
+La précédente tentative de livraison avait échoué lors de la signature GPG.
+
+**Contrôles relancés** : `npm run build`, `npm run lint`, `npm run test:errors`
+et `git diff --check` réussis. Avertissement Vite préexistant pour le paquet
+JavaScript de 576,95 kB. Les 79 contrôles Chromium déjà documentés et leurs
+captures sont conservés ; cette reprise n'a pas modifié le code applicatif.
+
+**Graphify vérifié** : les empreintes des 129 fichiers TS/TSX/MJS correspondent
+aux sources actuelles, dont `CatalogueView.tsx`. Graphe de 2 793 nœuds et
+5 707 liens, aucun doublon d'identifiant ni lien orphelin ; vue HTML présente
+avec le catalogue. Pas de réindexation nécessaire du code. Limites CSS et
+analyse sémantique documentaire inchangées, détaillées dans l'entrée suivante.
+
+**Livraison préparée** : `git fetch origin` réussi, `main` et `origin/main`
+alignés avant commit. Tous les changements sont regroupés pour
+`feat(catalogue): ouvrir le formulaire article dans une fenetre modale`,
+avec une nouvelle tentative de signature GPG selon la configuration existante.
+
+---
+
+## Formulaire catalogue en fenêtre contextuelle — 2026-11-07
+
+**Demande** : ouvrir « Nouvel article » dans une fenêtre contextuelle.
+Le formulaire existant sert aussi à modifier un article : les deux accès
+utilisent le même dialogue, sur le modèle Clients/Fournisseurs.
+
+**Implémentation** : bouton « Nouvel article » dans l'en-tête, formulaire
+commun de création/modification dans un dialogue natif. Annuler, croix,
+Échap et fond ferment la fenêtre ; focus contenu puis restitué au déclencheur.
+Focus initial sur Référence en création et Désignation en modification.
+Champs et fermeture bloqués pendant la sauvegarde, protection contre les
+doubles envois. Les erreurs refusées par l'API restent dans le dialogue ;
+réinitialisation après succès et rétablissement en modification. Styles
+partagés et message de liste vide adaptés. La validation initiale se déclenche
+à la soumission, comme pour les fournisseurs : le résumé d'erreurs ne doit
+pas détourner le focus ni interrompre un clic lors de la sortie d'un champ vide.
+Changement frontend uniquement, sans migration ; schéma, contrat API et
+repli local historique de `useCatalogue` inchangés.
+
+**Validation** : build, lint et `test:errors` réussis. **79 contrôles Chromium**
+sur le build de production : cinq modes de fermeture, focus et tabulation,
+création/modification, préremplissage, rétablissement, référence immuable,
+validation et sous-catégorie, refus API conservant la saisie, sauvegarde lente
+sans double envoi, indisponibilité TVA puis Réessayer. Quatre largeurs
+(375/768/1024/1440 px), deux thèmes, aucune erreur JavaScript ni débordement.
+API simulée, aucune écriture MariaDB. Cinq captures et relevé disponibles dans
+`specs/screenshots/catalogue-modal/` ; ordinateur clair et mobile sombre relus.
+Serveur de recette arrêté. JS : 576,95 kB ; CSS : 38,55 kB ; avertissement Vite
+préexistant sur le paquet >500 kB. Recharger la page pour afficher le bouton.
+
+**Graphify** : `graphify update .` (0.9.103) a réindexé le code et régénéré les
+artefacts, avec sauvegarde du 7 novembre. **2 793 nœuds, 5 707 liens,
+180 communautés**, identifiants uniques et aucun lien orphelin. Empreintes des
+**129 fichiers TS/TSX/MJS** conformes, dont `CatalogueView.tsx` ; la structure
+du graphe reste stable car les gestionnaires sont internes au composant.
+Métadonnée de départ `04e778a`. Limites habituelles : CSS non indexé,
+parseur SQL absent et analyse sémantique documentaire non relancée.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(catalogue): ouvrir le formulaire article dans une fenetre modale`.
+Captures relues et `git diff --check` réussi.
+Branche distante vérifiée à jour avant commit. Première tentative interrompue
+par expiration de la signature GPG (`commit.gpgsign=true`) ; changements
+laissés indexés à cette étape, sans commit ni push. Reprise de la livraison
+documentée dans l'entrée ci-dessus.
+
+---
+
 ## Formulaire fournisseurs en fenêtre contextuelle — 2026-11-06
 
 **Demande** : afficher la liste dès l'ouverture du module et ouvrir le formulaire

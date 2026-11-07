@@ -804,9 +804,9 @@
     "semantic_hash": ""
   },
   "src/views/CatalogueView.tsx": {
-    "mtime": 1793907456.3466816,
-    "seen": 1793908006.271457,
-    "ast_hash": "29708013aa76eb5eb8f3a7c7d532de52",
+    "mtime": 1794037887.8271604,
+    "seen": 1794037986.9077473,
+    "ast_hash": "1b56db66dfe1d220bfbfb20f26915d85",
     "semantic_hash": ""
   },
   "src/views/ClientsView.tsx": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
   },
   "passation.md": {
-    "mtime": 1794004377.3669777,
-    "seen": 1794004381.2460957,
-    "ast_hash": "3ad1f21c6cbae06e9218c74af2645778",
+    "mtime": 1794037977.5125852,
+    "seen": 1794037986.9283018,
+    "ast_hash": "68516da7696c9bd3cec04839ba6794ca",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2217,6 +2217,42 @@
     "mtime": 1794004208.6414165,
     "seen": 1794004295.3312483,
     "ast_hash": "9c2e9596b17e7506488d766a4c2ce917",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/verification.json": {
+    "mtime": 1794037935.4707189,
+    "seen": 1794037986.8978496,
+    "ast_hash": "51f0fd5844218f2923e4a9c25957bbcf",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/creation-dark-1440.png": {
+    "mtime": 1794037934.8907745,
+    "seen": 1794037986.9298112,
+    "ast_hash": "b290e897ae272254be290078f692c6e2",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/creation-dark-375.png": {
+    "mtime": 1794037934.6522741,
+    "seen": 1794037986.929813,
+    "ast_hash": "782b063d45efcf891f6f97a6359cf77c",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/creation-light-1440.png": {
+    "mtime": 1794037934.3963692,
+    "seen": 1794037986.9298146,
+    "ast_hash": "1d9298ff4517a7e732ff009a40a8bf8b",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/creation-light-375.png": {
+    "mtime": 1794037934.1204066,
+    "seen": 1794037986.929816,
+    "ast_hash": "048b5c866751b677b1dcd811638bc7c5",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/catalogue-modal/liste-desktop.png": {
+    "mtime": 1794037931.934533,
+    "seen": 1794037986.9298174,
+    "ast_hash": "7813ece21081f47a6336f49fc67279e7",
     "semantic_hash": ""
   },
   "package-lock.json": {
