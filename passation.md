@@ -1,5 +1,46 @@
 # Passation — Autostrass App
 
+## Formulaire réceptions en fenêtre contextuelle — 2026-11-07
+
+**Demande** : ouvrir « Nouvelle réception » dans une fenêtre contextuelle.
+
+**Implémentation** : liste visible dès l'arrivée et bouton dans l'en-tête.
+Le formulaire existant utilise un dialogue natif, avec les styles partagés
+du catalogue et des fournisseurs. Focus initial sur Fournisseur, tabulation
+contenue, restitution du focus au déclencheur et fermeture par Annuler,
+croix, Échap ou fond. Champs et fermeture bloqués pendant l'enregistrement,
+protection contre les doubles envois, erreurs API dans la fenêtre et saisie
+conservée après refus. Réinitialisation à l'ouverture et après succès.
+Contrat API, validations des lignes et droits dépôt inchangés ; aucune
+migration. Le repli local historique de `useResource` reste inchangé.
+
+**Validation** : `npm run build`, `npm run lint`, `npm run test:errors` et
+`git diff --check` réussis. Avertissement Vite préexistant pour le paquet
+JavaScript supérieur à 500 kB (579,35 kB ; CSS 38,76 kB).
+**62 contrôles Chromium** sur le build de production : ouverture, cinq modes
+de fermeture, focus, tabulation, ajout/suppression des lignes, total HT,
+réinitialisation, validation, refus API 422/409/403 conservant la saisie,
+sauvegarde lente sans double envoi, succès et relecture de l'historique.
+Droits admin/magasinier et lecture seule caissier vérifiés. Quatre largeurs
+(375/768/1024/1440 px), deux thèmes, aucun débordement ni erreur JavaScript.
+API simulée, aucune écriture MariaDB. Cinq captures et relevé disponibles
+dans `specs/screenshots/reception-modal/` ; ordinateur clair et mobile sombre
+relus. Serveur de recette arrêté.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste, cache AST et sauvegarde du jour. **2 794 nœuds, 5 711 liens,
+179 communautés**, identifiants uniques et aucun lien orphelin. Empreintes
+des **129 fichiers TS/TSX/MJS** conformes ; `openReceptionDialog()` présent
+dans le graphe et vue Réceptions dans le HTML. Métadonnée de départ `f947e39`.
+Limites habituelles : CSS non indexé, parseur SQL absent, analyse sémantique
+documentaire et renommage LLM non relancés.
+
+**Livraison** : changements regroupés sur `main` pour
+`feat(receptions): ouvrir le formulaire dans une fenetre modale`.
+Branche distante vérifiée à jour, captures relues et `git diff --check` réussi.
+
+---
+
 ## Reprise des fichiers en attente de commit — 2026-11-07
 
 **État constaté** : 20 fichiers déjà indexés sur `main`, correspondant au

@@ -1,7 +1,7 @@
 /**
  * Vue receptions : saisie des articles recus et historique.
  *
- * Branchee sur l'API (`/api/receptions`). Le formulaire suit le meme patron que
+ * Branchee sur l'API (`/api/receptions`). Le formulaire en fenêtre modale suit le meme patron que
  * le catalogue : React Hook Form + Zod + `useFieldArray`, resume d'erreurs
  * focusable, et suppression confirmee par `ConfirmDialog`.
  *
@@ -10,6 +10,7 @@
  * n'est jamais saisi, il est recalcule par le serveur a partir des lignes.
  */
 
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
@@ -53,13 +54,18 @@ export default function ReceptionsView() {
     control,
     handleSubmit,
     reset,
+    setFocus,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ReceptionFormValues>({
     resolver: zodResolver(receptionSchema) as any,
     mode: 'onSubmit',
     defaultValues: EMPTY_RECEPTION,
   })
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [submitFailed, setSubmitFailed] = useState(false)
+  const receptionDialogRef = useRef<HTMLDialogElement>(null)
+  const pending = useRef(false)
 
   /**
    * `useFieldArray` gere les cles de ligne et l'insertion/suppression. La cle
@@ -79,19 +85,75 @@ export default function ReceptionsView() {
   )
 
   const canEdit = canWrite(user?.role, 'depot')
+  const busy = saving || isSubmitting
+
+  useEffect(() => {
+    const dialog = receptionDialogRef.current
+    if (!dialogOpen || !canEdit || !dialog) return
+
+    const trigger = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    dialog.showModal()
+    setFocus('fournisseur')
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+      if (trigger?.isConnected) trigger.focus()
+    }
+  }, [dialogOpen, canEdit, setFocus])
+
+  function openReceptionDialog() {
+    if (!canEdit || busy || pending.current) return
+    reset({ ...EMPTY_RECEPTION, dateReception: today() })
+    setSubmitFailed(false)
+    setDialogOpen(true)
+  }
+
+  const closeReceptionDialog = useCallback(() => {
+    if (busy || pending.current) return
+    setDialogOpen(false)
+    reset(EMPTY_RECEPTION)
+    setSubmitFailed(false)
+  }, [busy, reset])
+
+  useEffect(() => {
+    if (!dialogOpen) return
+    // Compatibilité avec les aperçus relayant keydown sans cancel natif.
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
+      closeReceptionDialog()
+    }
+    document.addEventListener('keydown', onEscape, true)
+    return () => document.removeEventListener('keydown', onEscape, true)
+  }, [dialogOpen, closeReceptionDialog])
 
   const onSubmit = handleSubmit(async (values) => {
-    const created = await create({
-      fournisseur: values.fournisseur,
-      dateReception: values.dateReception,
-      notes: values.notes,
-      articles: values.articles,
-    })
-    if (created === null) return
-    reset(EMPTY_RECEPTION)
-    toast.success(
-      `Reception enregistree (${created.articles.length} ligne(s), ${formatEuros(created.totalHT)} HT).`,
-    )
+    if (!canEdit || saving || pending.current) return
+    pending.current = true
+    setSubmitFailed(false)
+    try {
+      const created = await create({
+        fournisseur: values.fournisseur,
+        dateReception: values.dateReception,
+        notes: values.notes,
+        articles: values.articles,
+      })
+      if (created === null) {
+        setSubmitFailed(true)
+        return
+      }
+      setDialogOpen(false)
+      reset(EMPTY_RECEPTION)
+      toast.success(
+        `Reception enregistree (${created.articles.length} ligne(s), ${formatEuros(created.totalHT)} HT).`,
+      )
+    } finally {
+      pending.current = false
+    }
   })
 
   const handleDeleteHistory = (reception: ApiReception) => {
@@ -162,25 +224,71 @@ export default function ReceptionsView() {
   return (
     <PageLayout
       eyebrow="RECEPTIONS"
-      title="Enregistrer une reception"
-      description="Ajoutez les articles recus de vos fournisseurs."
+      title="Réceptions fournisseurs"
+      description="Consultez l'historique et enregistrez les articles reçus de vos fournisseurs."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && (
+            <button type="button" className="primary-button" onClick={openReceptionDialog} disabled={busy} aria-haspopup="dialog">
+              <Icon name="plus" size="sm" /> Nouvelle réception
+            </button>
+          )}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
-        offline={offline}
+        error={dialogOpen ? null : error}
+        offline={!dialogOpen && offline}
         readOnly={canEdit ? null : 'La saisie des receptions est reservee au depot. Consultez l\'historique ci-dessous.'}
         resource="receptions"
       />
 
       {canEdit && (
-        <section className="form-card">
-          <h2>Nouvelle reception</h2>
-          <form onSubmit={onSubmit} noValidate>
+        <dialog
+          ref={receptionDialogRef}
+          className="modal reception-modal"
+          aria-labelledby="reception-dialog-title"
+          onKeyDown={(event) => {
+            if (event.key !== 'Tab') return
+            const controls = event.currentTarget.querySelectorAll<HTMLElement>(
+              'button:not(:disabled), input:not(:disabled), select:not(:disabled), a[href]',
+            )
+            const first = controls[0]
+            const last = controls[controls.length - 1]
+            if (!first) {
+              event.preventDefault()
+            } else if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault()
+              last.focus()
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault()
+              first.focus()
+            }
+          }}
+          onCancel={(event) => {
+            event.preventDefault()
+            closeReceptionDialog()
+          }}
+          onMouseDown={(event) => {
+            if (event.target !== event.currentTarget) return
+            const bounds = event.currentTarget.getBoundingClientRect()
+            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+              event.preventDefault()
+              closeReceptionDialog()
+            }
+          }}
+        >
+          <div className="reception-modal-header">
+            <h2 id="reception-dialog-title">Nouvelle réception</h2>
+            <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeReceptionDialog} disabled={busy}>
+              <Icon name="close" size="lg" />
+            </button>
+          </div>
+          <ResourceBanners error={submitFailed ? error : null} offline={offline} readOnly={null} resource="receptions" />
+          <form onSubmit={onSubmit} noValidate aria-busy={busy}>
             {/*
               Erreur de collection : Zod la place sur `articles`. On affiche un
               resume global au-dessus des lignes ; chaque ligne garde son
@@ -194,105 +302,109 @@ export default function ReceptionsView() {
               </p>
             )}
 
-            <div className="form-grid-2">
-              <FormSelect
-                label="Fournisseur"
-                name="fournisseur"
-                options={SUPPLIER_OPTIONS}
-                register={reg}
-                error={errors.fournisseur?.message}
-                required
-              />
-              <FormInput
-                label="Date de reception"
-                name="dateReception"
-                type="date"
-                register={reg}
-                error={errors.dateReception?.message}
-                required
-              />
-            </div>
+            <fieldset className="reception-form-fields" disabled={busy}>
+              <legend className="sr-only">Détails de la réception</legend>
+              <div className="form-grid-2">
+                <FormSelect
+                  label="Fournisseur"
+                  name="fournisseur"
+                  options={SUPPLIER_OPTIONS}
+                  register={reg}
+                  error={errors.fournisseur?.message}
+                  required
+                />
+                <FormInput
+                  label="Date de reception"
+                  name="dateReception"
+                  type="date"
+                  register={reg}
+                  error={errors.dateReception?.message}
+                  required
+                />
+              </div>
 
-            <h3 className="sub-heading">Articles recus</h3>
+              <h3 className="sub-heading">Articles recus</h3>
 
-            {fields.map((field, index) => {
-              const lineErrors = errors.articles?.[index]
-              return (
-                <div key={field.id} className="reception-article">
-                  <div className="form-grid-2">
-                    <FormInput
-                      label="Reference"
-                      name={`articles.${index}.reference`}
-                      register={reg}
-                      error={lineErrors?.reference?.message}
-                      required
-                      placeholder="ex: BRK-0428"
-                    />
-                    <FormInput
-                      label="Designation"
-                      name={`articles.${index}.designation`}
-                      register={reg}
-                      error={lineErrors?.designation?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Quantite recue"
-                      name={`articles.${index}.quantite`}
-                      type="number"
-                      min="1"
-                      register={reg}
-                      error={lineErrors?.quantite?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Prix unitaire"
-                      name={`articles.${index}.prixUnitaire`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      register={reg}
-                      error={lineErrors?.prixUnitaire?.message}
-                      required
-                    />
+              {fields.map((field, index) => {
+                const lineErrors = errors.articles?.[index]
+                return (
+                  <div key={field.id} className="reception-article">
+                    <div className="form-grid-2">
+                      <FormInput
+                        label="Reference"
+                        name={`articles.${index}.reference`}
+                        register={reg}
+                        error={lineErrors?.reference?.message}
+                        required
+                        placeholder="ex: BRK-0428"
+                      />
+                      <FormInput
+                        label="Designation"
+                        name={`articles.${index}.designation`}
+                        register={reg}
+                        error={lineErrors?.designation?.message}
+                        required
+                      />
+                      <FormInput
+                        label="Quantite recue"
+                        name={`articles.${index}.quantite`}
+                        type="number"
+                        min="1"
+                        register={reg}
+                        error={lineErrors?.quantite?.message}
+                        required
+                      />
+                      <FormInput
+                        label="Prix unitaire"
+                        name={`articles.${index}.prixUnitaire`}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        register={reg}
+                        error={lineErrors?.prixUnitaire?.message}
+                        required
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className="action-btn delete"
+                      onClick={() => removeLine(index)}
+                      aria-label={`Retirer la ligne ${index + 1}`}
+                      disabled={fields.length === 1}
+                      title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
+                    >
+                      <Icon name="close" size="sm" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className="action-btn delete"
-                    onClick={() => removeLine(index)}
-                    aria-label={`Retirer la ligne ${index + 1}`}
-                    disabled={fields.length === 1}
-                    title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
-                  >
-                    <Icon name="close" size="sm" />
-                  </button>
-                </div>
-              )
-            })}
+                )
+              })}
 
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => append(EMPTY_LINE)}
-              disabled={fields.length >= 200}
-              title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
-            >
-              <Icon name="plus" size="sm" /> Ajouter un article
-            </button>
-
-            <div className="reception-total">
-              <strong>Total HT : {formatEuros(totalHT)}</strong>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={saving}>
-                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer la reception'}
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => append(EMPTY_LINE)}
+                disabled={fields.length >= 200}
+                title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
+              >
+                <Icon name="plus" size="sm" /> Ajouter un article
               </button>
-              <button type="button" className="secondary-button" onClick={() => reset(EMPTY_RECEPTION)}>
-                Effacer
-              </button>
-            </div>
+
+              <div className="reception-total">
+                <strong>Total HT : {formatEuros(totalHT)}</strong>
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="secondary-button reception-form-reset" onClick={() => reset({ ...EMPTY_RECEPTION, dateReception: today() })}>
+                  Effacer
+                </button>
+                <button type="button" className="secondary-button" onClick={closeReceptionDialog}>Annuler</button>
+                <button type="submit" className="primary-button">
+                  <Icon name="check" size="sm" /> {busy ? 'Enregistrement...' : 'Enregistrer la réception'}
+                </button>
+              </div>
+            </fieldset>
           </form>
-        </section>
+        </dialog>
       )}
 
       <DataTable
