@@ -18,10 +18,12 @@ aux sources actuelles, dont `CatalogueView.tsx`. Graphe de 2 793 nœuds et
 avec le catalogue. Pas de réindexation nécessaire du code. Limites CSS et
 analyse sémantique documentaire inchangées, détaillées dans l'entrée suivante.
 
-**Livraison préparée** : `git fetch origin` réussi, `main` et `origin/main`
-alignés avant commit. Tous les changements sont regroupés pour
-`feat(catalogue): ouvrir le formulaire article dans une fenetre modale`,
-avec une nouvelle tentative de signature GPG selon la configuration existante.
+**Livraison effectuée** : les 20 fichiers ont été enregistrés dans le commit
+`eab9c75` — `feat(catalogue): ouvrir le formulaire article dans une fenetre modale`.
+Signature GPG réussie et vérifiée par `git verify-commit HEAD`, sans changement
+de configuration. `git push origin main` réussi ; `main` et `origin/main`
+alignés, aucun fichier restant en attente après cette livraison.
+La présente mise à jour documentaire consigne le résultat du commit et du push.
 
 ---
 
