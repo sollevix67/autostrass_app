@@ -444,9 +444,9 @@
     "semantic_hash": ""
   },
   "scripts/test-api.ts": {
-    "mtime": 1793999347.02555,
-    "seen": 1793999589.2267392,
-    "ast_hash": "4dd8c74bd551c22c270f0b401d66e942",
+    "mtime": 1794128468.8963242,
+    "seen": 1794128933.0034847,
+    "ast_hash": "c6aa5f900d8265d4242aa7f046d694d9",
     "semantic_hash": ""
   },
   "scripts/test-security.ts": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "server/middleware/resourceRoutes.ts": {
-    "mtime": 1793566862.0448146,
-    "seen": 1793818743.6531742,
-    "ast_hash": "4288b0aac2dfb9bd48165973fddff949",
+    "mtime": 1794128468.8953242,
+    "seen": 1794128933.0080466,
+    "ast_hash": "2fe4803cfcf09d2470089f68d82d2d59",
     "semantic_hash": ""
   },
   "server/middleware/sanitize.ts": {
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "server/middleware/schemas.ts": {
-    "mtime": 1794002841.8575096,
-    "seen": 1794003115.8099868,
-    "ast_hash": "eb2c284e66c2a349b2d7c860badc51b5",
+    "mtime": 1794128468.8943253,
+    "seen": 1794128933.0081694,
+    "ast_hash": "36b7562b981082b6bd57ef977d243a97",
     "semantic_hash": ""
   },
   "server/middleware/security.ts": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "src/schemas/index.ts": {
-    "mtime": 1794002841.8605113,
-    "seen": 1794003115.8169658,
-    "ast_hash": "1034c63e92794c624e9e4027da6c89f1",
+    "mtime": 1794128468.8933253,
+    "seen": 1794128933.0165346,
+    "ast_hash": "49f4d86100662e6d29df5456aeb81fbe",
     "semantic_hash": ""
   },
   "src/services/api.ts": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "src/views/VentesComptoirView.tsx": {
-    "mtime": 1792328845.5686696,
-    "seen": 1792931406.9711561,
-    "ast_hash": "6242302b18bffe6ca1febe010deed1f9",
+    "mtime": 1794128468.8918245,
+    "seen": 1794128933.0193102,
+    "ast_hash": "52e086664375111558de343f61d88c21",
     "semantic_hash": ""
   },
   "tsconfig.app.json": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794127064.1622543,
-    "seen": 1794127073.5396173,
-    "ast_hash": "1d228900c5a66e83abcf3c3b3dc2922d",
+    "mtime": 1794128927.0598423,
+    "seen": 1794128933.0337734,
+    "ast_hash": "1cdb61891f55d4a414cc55744899a7f9",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2304,8 +2304,8 @@
     "semantic_hash": ""
   },
   "specs/screenshots/validation-fr/verification.json": {
-    "mtime": 1794127027.095949,
-    "seen": 1794127073.5088203,
+    "mtime": 1794127098.5730033,
+    "seen": 1794128933.012696,
     "ast_hash": "59dac8d08a78aacf2a4cfaca8597e6c7",
     "semantic_hash": ""
   },
@@ -2316,15 +2316,33 @@
     "semantic_hash": ""
   },
   "specs/screenshots/validation-fr/emplacement-desktop.png": {
-    "mtime": 1794127026.0929427,
-    "seen": 1794127073.5561087,
-    "ast_hash": "bf10ab5599fbf9e98f4605a326b9f8d2",
+    "mtime": 1794127097.6851177,
+    "seen": 1794128933.0446007,
+    "ast_hash": "50620da6732c414ed1266b1bbea55858",
     "semantic_hash": ""
   },
   "specs/screenshots/validation-fr/emplacement-mobile-dark.png": {
-    "mtime": 1794127026.1956394,
-    "seen": 1794127073.556113,
+    "mtime": 1794127097.7597291,
+    "seen": 1794128933.0446043,
     "ast_hash": "21e202f395bcdefe19fcd367dd57c8cb",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/ventes-utilisateur/verification.json": {
+    "mtime": 1794128897.9913292,
+    "seen": 1794128933.0126987,
+    "ast_hash": "821d30040cc911bf946029e41cd4c8de",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/ventes-utilisateur/comptoir-desktop.png": {
+    "mtime": 1794128896.509367,
+    "seen": 1794128933.0446064,
+    "ast_hash": "3949b52cd8487372a259df927154a852",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/ventes-utilisateur/comptoir-mobile-dark.png": {
+    "mtime": 1794128896.5739374,
+    "seen": 1794128933.0446084,
+    "ast_hash": "32421d9675fa1d0c18304ecdedae9122",
     "semantic_hash": ""
   },
   "package-lock.json": {
