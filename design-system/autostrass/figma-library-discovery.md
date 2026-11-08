@@ -2,7 +2,7 @@
 
 Date : 2026-11-08. Exécution : `ds-autostrass-2026-11-08`.
 
-Statut : **P0.a terminé ; P0.b à P0.f en attente**. Le périmètre ci-dessous est une proposition, à confirmer après inspection du fichier Figma cible. Aucun objet Figma créé.
+Statut : **P0.a–P0.c, P0.e et P0.f réalisés ; P0.d attend l'approbation**. Le périmètre ci-dessous reste une proposition. Le fichier Design [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe) est créé et inspecté ; aucun composant, variable ou style créé.
 
 ## P0.a — Sources et tokens
 
@@ -126,22 +126,53 @@ Fira Sans pour le corps et Fira Code pour les titres et références. Le CSS n'e
 
 Certaines dimensions de composants sont littérales : bouton 9 × 16 px de padding et 40 px de hauteur minimale, champ 10 × 12 px et 42 px, dialogue 28 px de padding puis 22/20 px selon la largeur. Ces valeurs ne correspondent pas toutes aux tokens d'espacement existants. P0.d devra arrêter une solution pour les liaisons Figma sans arrondir ni modifier silencieusement le code. Sur pointeur grossier, les classes visées par `@media (pointer: coarse)` passent à 44 px minimum ; le focus commun utilise un contour de 3 px avec un décalage de 3 px.
 
-## P0.b–P0.f — Inspections et décisions en attente
+## P0.b–P0.f — Découverte distante et périmètre proposé
 
 | Étape | Travail restant / critère |
 |---|---|
-| P0.b | Recevoir l'URL du fichier Design Figma et accéder aux outils MCP ; inventorier pages, variables, composants, styles et conventions, sans mutation. Aucun lien cible trouvé dans le dépôt. |
-| P0.c | Appeler get_libraries, parcourir la pagination puis search_design_system ; rechercher aussi les composants avant leur création. L'absence d'outils ne prouve pas l'absence de bibliothèques. |
-| P0.d | Fixer la liste exacte des tokens, styles et composants ; définir les dimensions littérales et leurs liaisons ; faire approuver le périmètre concret après découverte. |
-| P0.e | Comparer valeurs, alias, états et conventions avec Figma ; enregistrer et résoudre les conflits avec leur provenance. |
-| P0.f | Présenter les éléments code uniquement, Figma uniquement et les conflits résolus ; aucun de ces écarts n'est encore établi, faute d'inspection Figma. |
+| P0.b | Réalisé : fichier `UP7nQVTU4dlyfEiQdG2IYe`, une page `Page 1` (`0:1`) vide, aucun objet local. Fira Sans et Fira Code disponibles. |
+| P0.c | Réalisé : neuf bibliothèques ajoutées, aucune autre à ajouter, pagination terminée ; 22 recherches traitées dans trois bibliothèques pertinentes. Rechercher de nouveau chaque composant avant création. |
+| P0.d | Proposition ci-dessous à approuver : ensemble exact des 66 tokens de la table, 12 styles de texte et les 16 familles recensées. Architecture des primitives et dimensions littérales explicitées. |
+| P0.e | Réalisé pour le fichier cible : aucun conflit local, car aucune variable, aucun style et aucun composant existant. Compatibilité des candidats distants non établie. |
+| P0.f | Code uniquement : les 66 tokens et 16 familles. Figma uniquement dans le fichier cible : la page vide. Aucun conflit local à résoudre ; les candidats de bibliothèques restent distincts des objets locaux. |
+
+La bibliothèque d'équipe, Material 3 Design Kit et Simple Design System ont été recherchées. Les six bibliothèques Apple listées concernent d'autres plateformes et ne font pas partie de ce périmètre web. Le serveur limite un lot à 20 requêtes : les deux requêtes de styles non traitées dans le premier lot ont été exécutées dans un second lot. Les preuves et clés exactes sont conservées dans [figma-discovery.json](figma-discovery.json).
+
+| Recherche | Résultat et implication |
+|---|---|
+| Icon, Button | 20 candidats chacun, dont les boutons et boutons à icône Material 3/Simple Design System ; la recherche Icon n'a pas fourni les 27 tracés Autostrass. Ne pas assimiler pertinence de recherche et compatibilité. |
+| Badge | Sept candidats, dont les badges de notification Material 3 ; usage distinct des étiquettes métier Autostrass. |
+| Les 13 autres familles | Aucun résultat pour les noms recherchés ; cela ne constitue pas un inventaire exhaustif des équivalents. Aucun autre terme tenté après résultat vide. |
+| Couleur primaire, surface | 20 candidats Material 3 chacun, avec une taxonomie M3 et certains scopes ALL_SCOPES ; aucune valeur Autostrass vérifiée ou importée. |
+| Espacements | Aucun résultat pour cette recherche. |
+| Corps, titre, ombres | 16, un et 20 candidats. Le style Body de la bibliothèque d'équipe est identifié ; polices, dimensions et valeurs des styles distants non inspectées. Certaines réponses « shadow » sont des styles FILL, et non des ombres EFFECT. |
+
+**Proposition v1 à approuver — valeurs du code conservées.** Les noms Figma des variables reprennent le nom CSS sans `--`, avec `/` à la place des tirets : par exemple `--color-primary` → `color/primary`, `--space-xs` → `space/xs`. La syntaxe WEB reste exactement `var(--nom-css)`.
+
+| Collection proposée | Variables et modes |
+|---|---|
+| Color | Les 49 tokens de couleur de la table, modes Light/Dark ; préserver les 11 alias de couleur et les valeurs héritées. |
+| Dimensions | Les sept tokens `--space-*` et quatre `--radius-*`, un mode Value ; scopes GAP et CORNER_RADIUS respectivement. |
+| Typography | Les trois `--font-*`, un mode Value ; Fira Sans/Fira Code, alias font/display → font/mono, scope FONT_FAMILY. |
+
+Cette proposition représente **63 variables**, sans ajouter de primitives absentes du CSS. Une architecture Figma séparant primitives et sémantique ajouterait **59 couleurs brutes distinctes**, soit **122 variables** au total. Ces primitives n'ont pas de nom CSS propre : leur syntaxe de code nécessite une convention explicite, sans inventer de `--color-*` dans l'application. Le choix entre ces architectures fait partie de P0.d ; aucune des deux n'a été créée.
+
+Les trois tokens d'ombre deviennent six styles d'effet : `Shadow/Light/{sm,md,lg}` et `Shadow/Dark/{sm,md,lg}`. Les styles de texte proposés sont `Body`, `Heading/Page/Min`, `Heading/Page/Max`, `Heading/Card`, `Heading/Dialog`, `Field/Label`, `Field/Input/Desktop`, `Field/Input/Mobile`, `Button/Standard`, `Button/Compact`, `Badge` et `Table/Header`. Ils représentent les neuf usages recensés, avec les deux bornes du titre responsive et les tailles mobile/compacte séparées ; le `clamp()` intermédiaire reste documenté, sans taille arbitraire.
+
+Les 16 familles sont exactement celles de la table P0.a, construites dans l'ordre de leurs dépendances. Les dimensions littérales resteront exactes et documentées, sans arrondi vers un token voisin ; la géométrie fixe et la matrice de chaque famille seront vérifiées avant sa création. Les propriétés de contenu ne deviennent pas des variantes. Les candidats distants devront être inspectés avant tout choix d'import/réutilisation ; aucune compatibilité ni décision de remplacement n'est affirmée à ce stade.
 
 Les couleurs et valeurs de modes viennent du code ; les conventions d'organisation Figma seront respectées lorsqu'elles auront été inspectées. La police native des champs et cases, les tailles responsives et les états visuels devront être vérifiés, sans substitution silencieuse.
 
 ## Reprise et vérifications
 
-État local persistant : `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json`. Il contient les 66 tokens avec leurs lignes, alias et valeurs sombres, les empreintes SHA-256 des sources consultées, les tâches en attente et un registre d'identifiants Figma vide. Relire cet état à la reprise et refaire une inspection Figma avant toute création.
+État local persistant : `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json`. Il contient les 66 tokens avec leurs lignes, alias et valeurs sombres, les empreintes SHA-256 des sources consultées, le fichier cible, la page `0:1` et les décisions P0.d en attente. Le registre des composants, variables et styles est vide. Relire cet état à la reprise et refaire une inspection Figma avant toute création.
 
-Graphify : 132 sources TS/TSX/MJS versionnées hors `.github/` présentes dans le manifeste et empreintes MD5 AST conformes. 2 820 nœuds, 5 752 liens, 180 communautés ; aucun identifiant en double ni lien orphelin. Les données JSON embarquées dans le HTML ont les mêmes identifiants de nœuds et le même nombre de liens, sans nœud manquant ni lien orphelin. Les sources applicatives sont inchangées. Limites existantes : CSS non indexé et analyse sémantique documentaire non relancée.
+**Reprise du 8 novembre après compaction.** Les 15 empreintes SHA-256 correspondent aux sources actuelles ; recomptage de `src/tokens.css` : 66 tokens de base, 35 surcharges sombres et 12 alias. Fichier cible et page enregistrés ; aucun composant créé.
+
+Le plugin Figma 2.0.20 est installé et activé. Après le diagnostic CLI initial `not_logged_in`, les outils sont devenus accessibles dans la session et `whoami` a confirmé la connexion effective. Le connecteur est confirmé connecté par l'utilisateur. La tentative OAuth CLI encore en attente a été arrêtée ; aucun secret ni lien OAuth temporaire conservé dans le dépôt.
+
+Le fichier Design `Untitled` est créé dans le plan unique retourné par `whoami`. Session MCP de la découverte : `c0f4f118-6a6b-48c7-ab25-f662c95181cd`. À la reprise, ouvrir une session puis revérifier le fichier en lecture seule avant création ; `get_libraries` précède toujours `search_design_system`.
+
+Graphify : voir les métriques de la dernière vérification dans [passation.md](../../passation.md#graphify-et-dernière-intervention). Les sources applicatives sont inchangées. Limites existantes : CSS non indexé et analyse sémantique documentaire non relancée.
 
 La phase 0 reste ouverte. Les phases 1 à 4 ne démarrent qu'après validation de la découverte et accord explicite sur le périmètre, conformément au skill invoqué.

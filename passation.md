@@ -9,9 +9,10 @@ nécessairement toutes ses exigences métier.
 
 ## Reprise prioritaire
 
-1. **Figma** : rétablir l'accès aux outils MCP et obtenir le fichier/cadre cible
-   pour l'inspection, la bibliothèque et l'intégration. Aucun fichier Figma créé.
-   Les paramètres de création demandés sont `design` / `Untitled` ; voir ci-dessous.
+1. **Figma** : valider le périmètre de la bibliothèque avant la phase 1.
+   Accès MCP opérationnel, fichier `design` / `Untitled` créé et inspecté ;
+   P0.a–P0.c, P0.e et P0.f réalisés. P0.d attend l'accord sur la proposition
+   documentée ci-dessous. Aucun cadre d'écran applicatif créé ou fourni.
 2. **Métier** : devis, puis commandes fournisseurs, avec numérotation, conversion
    et attribution des réceptions. Compléter ensuite les documents PDF manquants.
 3. **Déploiement** : vérifier le journal des migrations de chaque installation,
@@ -211,23 +212,44 @@ droits et intégrité fiscale. Aucune nouvelle recette applicative pour cette co
 
 ## Figma : état de reprise
 
-Au 8 novembre, aucun outil MCP Figma ni `ToolSearch` n'était exposé et aucun fichier
-cible n'avait été fourni. Création, inspection et intégration distantes restent à faire.
+**Reprise du 8 novembre, après compaction** : le plugin Figma **2.0.20** est
+installé et activé. Les outils MCP Figma sont devenus disponibles dans la session,
+et `whoami` a confirmé l'accès connecté, avec une seule équipe sélectionnée
+automatiquement. Le diagnostic CLI initial indiquait `not_logged_in` ; la tentative
+`codex mcp login figma`, restée en attente, a été arrêtée après confirmation de
+l'accès effectif du connecteur. Ne pas confondre ces deux états d'authentification.
+Aucun lien OAuth temporaire ni secret conservé dans le dépôt.
 
-- **Nouveau fichier** : compétence `figma-create-new-file`, paramètres `design` /
-  `Untitled`. Appeler `whoami` ; plan unique choisi automatiquement, sinon demander
-  le plan à l'utilisateur ; puis `create_new_file` et restituer l'URL.
-- **Inspection** : URL cible, puis `figma-use` pour pages, composants, variantes,
-  instances, variables/modes, styles et contrôle visuel des écrans.
-- **Bibliothèque** : P0.a terminé ; P0.b–P0.f en attente de l'inventaire distant,
-  `get_libraries`, `search_design_system` et comparaison code/Figma. Confirmer le
-  périmètre après inspection, avec accord explicite avant la phase 1 requis par
-  `figma-generate-library`. Inventaire :
+**Fichier cible créé** : [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe),
+clé `UP7nQVTU4dlyfEiQdG2IYe`, type `design`. Session MCP de cette découverte :
+`c0f4f118-6a6b-48c7-ab25-f662c95181cd`. Inspection sans mutation : une page
+`Page 1` (`0:1`), vide ; zéro composant, instance, cadre, collection, variable
+ou style local. Fira Sans et Fira Code sont disponibles, avec Regular, Medium
+et SemiBold. Aucun conflit local code/Figma.
+
+- **Inspection** : P0.b terminé pour le nouveau fichier vide. À la reprise,
+  `create_session`, puis `figma-use` en lecture seule pour revérifier l'état avant
+  toute création ; conserver les identifiants réels du registre.
+- **Bibliothèque** : P0.a–P0.c, P0.e et P0.f réalisés ; **P0.d attend l'approbation**.
+  `get_libraries` : neuf bibliothèques ajoutées, aucune autre à ajouter et aucune
+  pagination restante. Recherche dans la bibliothèque d'équipe, Material 3 et
+  Simple Design System : **22 requêtes**, par lots de 20 puis 2. Candidats pour
+  boutons, badges, couleurs et styles ; compatibilité non vérifiée, aucun import.
+  Les résultats vides par nom ne prouvent pas l'absence d'équivalents.
+  Inventaire et proposition :
   [figma-library-discovery.md](design-system/autostrass/figma-library-discovery.md),
-  **66 tokens**, **35 surcharges sombres**, **12 alias**, 16 familles proposées,
-  27 tracés d'icônes. Reprise locale :
+  preuves : [figma-discovery.json](design-system/autostrass/figma-discovery.json).
+  Proposition : **63 variables correspondant aux 66 tokens CSS** (49 couleurs,
+  11 dimensions, 3 familles de polices ; les trois ombres deviennent six styles
+  d'effet clair/sombre), **12 styles de texte** et **16 familles**, dont 27 icônes.
+  Le modèle CSS existant et ses 12 alias seraient conservés ; l'alternative avec
+  59 primitives de couleur supplémentaires doit être décidée à ce checkpoint.
+  Accord explicite avant la phase 1 requis par `figma-generate-library`.
+  Reprise locale :
   `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` (15 empreintes sources,
-  registre Figma vide).
+  fichier cible et page enregistrés, aucun composant créé).
+  Les **15 empreintes SHA-256 sont conformes** à la reprise ;
+  les **66 tokens**, **35 surcharges sombres** et **12 alias** ont été recomptés.
 - **Intégration** : URL du cadre avec `node-id` et page cible ; charger
   `figma-design-to-code`, appeler `get_design_context` avant le code et réutiliser
   les composants/tokens existants dans les deux thèmes.
@@ -254,12 +276,13 @@ effectué pendant cette intervention.
 
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. `graphify update .` **0.9.104** a actualisé JSON, HTML,
-rapport, manifeste, cache et sauvegarde du jour : **132 sources TS/TSX/MJS**
+rapport, manifeste, cache et sauvegarde du jour pendant la reprise Figma :
+**132 sources TS/TSX/MJS**
 conformes, **2 827 nœuds**, **5 759 liens**, **168 communautés**, aucun identifiant
-en double ni lien orphelin ; HTML cohérent avec le JSON. Les références de lignes
-de cette passation sont recalées sur les sections condensées. Métadonnée de
-départ `37ac916`. Limites : CSS non indexé, 15 SQL sans parseur, extraction
-sémantique globale et renommage LLM non relancés ; le graphe ne prouve pas
+en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
+de liens, sans lien HTML orphelin. Métadonnée de départ **`e0268fd`**.
+Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
+et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
 
 **8 novembre — compaction** : suppression des doublons et états périmés,
@@ -267,3 +290,14 @@ regroupement des livraisons/validations, conservation des contrats, migrations,
 blocages et liens de reprise. Ancien journal : **2 476 lignes, 154 252 octets**.
 Modification documentaire uniquement, sans changement applicatif ni migration.
 Livraison prévue par commit et push sur `origin/main` ; tête initiale `37ac916`.
+
+**8 novembre — reprise Figma** : accès effectif confirmé par `whoami`, fichier
+`Untitled` créé, session ouverte, inventaire distant et recherches de bibliothèques
+réalisés. Résultats et périmètre proposés consignés, registre local actualisé.
+P0.d attend la validation du périmètre avant la création de la bibliothèque.
+Validation : 15 empreintes sources Figma et 132 empreintes MD5 de sources du
+graphe conformes ; preuves JSON de découverte cohérentes avec les 22 recherches
+et les neuf bibliothèques ; `git diff --check` réussi. Aucun test applicatif requis
+pour ces changements documentaires.
+Modification documentaire uniquement dans le dépôt, sans changement applicatif
+ni migration ; tête initiale `e0268fd`, livraison par commit et push sur `origin/main`.

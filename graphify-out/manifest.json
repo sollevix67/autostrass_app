@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794132018.6506193,
-    "seen": 1794132043.8705866,
-    "ast_hash": "ef27633e5146418c5cc3c56bfa243deb",
+    "mtime": 1794133869.4289296,
+    "seen": 1794133893.6594136,
+    "ast_hash": "8e69c29706d725dd9f25aae03efa9c55",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2346,9 +2346,15 @@
     "semantic_hash": ""
   },
   "design-system/autostrass/figma-library-discovery.md": {
-    "mtime": 1794131168.396948,
-    "seen": 1794131921.6085591,
-    "ast_hash": "ce956d5a1c7168d81e99330cba50a7e2",
+    "mtime": 1794133760.6641927,
+    "seen": 1794133785.0822515,
+    "ast_hash": "dbc1e7d3c0e5f730895beae59c8f1eeb",
+    "semantic_hash": ""
+  },
+  "design-system/autostrass/figma-discovery.json": {
+    "mtime": 1794133869.823573,
+    "seen": 1794133893.6156602,
+    "ast_hash": "e45aa2197414a00d468ca988265c6a77",
     "semantic_hash": ""
   },
   "package-lock.json": {
