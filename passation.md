@@ -1,5 +1,34 @@
 # Passation — Autostrass App
 
+## Création d'un fichier Figma — prérequis — 2026-11-08
+
+**Demande** : utiliser `figma:figma-create-new-file` sans argument. La
+compétence locale a été lue ; les paramètres par défaut sont
+`editorType: design` et `fileName: Untitled`, dans les brouillons Figma.
+
+**Prérequis manquants** : aucun outil MCP Figma ni outil de découverte
+`ToolSearch` n'est exposé dans cette session. `whoami` et `create_new_file`
+sont donc indisponibles ; aucun fichier distant n'a été créé. À la reprise,
+appeler `whoami` pour résoudre le `planKey` : sélection automatique si un
+seul plan existe, choix de l'utilisateur si plusieurs plans sont proposés.
+Appeler ensuite `create_new_file` avec les paramètres ci-dessus et restituer
+l'URL obtenue. Aucun nom, type d'éditeur ou plan supplémentaire n'a été fourni.
+
+**Graphify vérifié** : les empreintes MD5 des **132 sources TS/TSX/MJS**
+versionnées hors `.github/` correspondent au manifeste. **2 820 nœuds,
+5 752 liens, 180 communautés**, identifiants uniques et aucun lien orphelin.
+Les données JSON embarquées dans `graph.html` contiennent les mêmes nœuds
+et les mêmes couples source/cible. Code inchangé : aucune réindexation AST
+nécessaire. Métadonnée de départ `9ac548e` ; analyse sémantique documentaire
+non relancée et limites existantes conservées.
+
+**Livraison** : mise à jour de cette passation destinée à un commit
+documentaire et à un push sur `origin/main`, dont la tête initiale
+`fcdb55b` correspond au HEAD local. Build et tests applicatifs non relancés
+pour cette modification documentaire.
+
+---
+
 ## Inspection complète Figma — prérequis — 2026-11-08
 
 **Demande** : utiliser `figma:figma-use`, puis « inspecter tout ». Le périmètre
