@@ -38,9 +38,11 @@ navigateur présents dans le graphe, `installFrenchValidation()` dans le HTML.
 Métadonnée de départ `0121a51`. Limites habituelles : CSS non indexé,
 parseur SQL absent, analyse sémantique documentaire et renommage LLM non relancés.
 
-**Livraison** : changements vérifiés et regroupés sur `main` pour
-`fix(forms): afficher les validations en francais`. Branche distante à jour,
-`git diff --check` réussi. Recharger la page après mise à jour du frontend.
+**Livraison** : commit `d7eea82` — `fix(forms): afficher les validations en
+francais` — publié sur `origin/main` par `git push origin main`.
+Branche distante vérifiée avant publication, `git diff --check` réussi.
+Recharger la page après mise à jour du frontend. Cette mise à jour
+documentaire consigne le résultat du commit et du push.
 
 ---
 
