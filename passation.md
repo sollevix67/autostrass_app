@@ -1,5 +1,52 @@
 # Passation — Autostrass App
 
+## Préparation de la bibliothèque Figma — 2026-11-08
+
+**Demande** : appliquer `figma:figma-generate-library` au projet Autostrass.
+Les compétences `figma-generate-library` et `figma-use`, la référence de
+découverte et les consignes du dépôt ont été consultées. La checklist P0.a
+à P0.f a été présentée avant toute création Figma.
+
+**P0.a — Inventaire local** : `src/tokens.css` définit **66 tokens CSS** :
+49 couleurs, 3 polices, 7 espacements, 4 rayons et 3 ombres. Le thème sombre
+comporte **35 surcharges** ; les **12 alias** existants doivent être conservés.
+Fira Sans et Fira Code sont les polices de référence. Les composants React
+partagés et les classes CSS de boutons, badges, tableaux, champs et dialogues
+ont été inspectés ; aucun changement applicatif effectué.
+
+**P0.b–P0.f — Prérequis** : aucun fichier Figma cible n'est référencé dans
+les sources et aucun outil MCP Figma n'est exposé dans cette session.
+L'URL du fichier cible a été demandée à l'utilisateur. L'inventaire Figma,
+`get_libraries`, `search_design_system` et la comparaison code/Figma restent
+à effectuer. Le périmètre ne peut pas être verrouillé ni la phase 0 validée
+avant ces inspections. La compétence impose ensuite un accord explicite sur
+le périmètre avant la phase 1 ; aucune création Figma n'a été effectuée.
+
+**Graphify vérifié** : empreintes MD5 AST des **132 sources TS/TSX/MJS**
+hors `.github/` conformes au manifeste ; tous les fichiers versionnés de ces
+types sont indexés. **2 820 nœuds, 5 752 liens, 180 communautés**, aucun
+identifiant en double ni lien orphelin. Après décodage des données JSON
+embarquées, le HTML contient les mêmes 2 820 identifiants et 5 752 liens,
+sans nœud manquant ni lien orphelin. Code inchangé : aucune réindexation AST
+nécessaire. Limites existantes : CSS non indexé et analyse
+sémantique documentaire non relancée.
+
+**Artefacts et validation** : inventaire détaillé dans
+`design-system/autostrass/figma-library-discovery.md`, avec les 66 tokens et
+leurs valeurs claires/sombres, 16 familles proposées, 27 tracés d'icônes,
+les sources et les décisions restantes. État de reprise local enregistré
+dans `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` : inventaire,
+15 empreintes SHA-256 de sources et registre Figma vide. Unicité des tokens,
+présence des 66 lignes dans le document, intégrité des alias et empreintes
+des sources vérifiées. Aucun build ni test applicatif relancé pour cette
+modification documentaire.
+
+**Livraison** : diff documentaire vérifié ; `origin/main` correspond au HEAD
+initial `3563c76`. Changements préparés pour un commit documentaire et sa
+publication sur `origin/main`, conformément aux consignes du dépôt.
+
+---
+
 ## Préparation de l'intégration Figma — 2026-11-08
 
 **Demande** : inspecter un design Figma et l'implémenter dans l'application.
