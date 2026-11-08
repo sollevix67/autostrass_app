@@ -1,0 +1,1039 @@
+{
+  "runId": "ds-autostrass-2026-11-08",
+  "date": "2026-11-08",
+  "fileKey": "UP7nQVTU4dlyfEiQdG2IYe",
+  "fileUrl": "https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe",
+  "sessionId": "82b3d40c-67bb-4e75-845b-cf6fd28f137d",
+  "phase": "phase1",
+  "step": "P1.g",
+  "status": "blocked",
+  "approvedScope": {
+    "architecture": "separate-light-dark-collections",
+    "variables": 112,
+    "effectStyles": 6,
+    "textStyles": 12,
+    "componentFamilies": 16,
+    "iconPaths": 27,
+    "userReply": "Adapter au plan Starter : séparer les couleurs claires et sombres, soit 112 variables"
+  },
+  "entities": {
+    "collections": {
+      "Color Light": {
+        "id": "VariableCollectionId:5:2",
+        "name": "Color Light",
+        "modeId": "5:0"
+      },
+      "Color Dark": {
+        "id": "VariableCollectionId:5:3",
+        "name": "Color Dark",
+        "modeId": "5:1"
+      },
+      "Dimensions": {
+        "id": "VariableCollectionId:5:4",
+        "name": "Dimensions",
+        "modeId": "5:2"
+      },
+      "Typography": {
+        "id": "VariableCollectionId:5:5",
+        "name": "Typography",
+        "modeId": "5:3"
+      }
+    },
+    "variables": {
+      "Color Light/color/primary": {
+        "id": "VariableID:6:2",
+        "name": "color/primary",
+        "cssName": "--color-primary",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/primary/hover": {
+        "id": "VariableID:6:3",
+        "name": "color/primary/hover",
+        "cssName": "--color-primary-hover",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/on/primary": {
+        "id": "VariableID:6:4",
+        "name": "color/on/primary",
+        "cssName": "--color-on-primary",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/secondary": {
+        "id": "VariableID:6:5",
+        "name": "color/secondary",
+        "cssName": "--color-secondary",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/accent": {
+        "id": "VariableID:6:6",
+        "name": "color/accent",
+        "cssName": "--color-accent",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/on/accent": {
+        "id": "VariableID:6:7",
+        "name": "color/on/accent",
+        "cssName": "--color-on-accent",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/background": {
+        "id": "VariableID:6:8",
+        "name": "color/background",
+        "cssName": "--color-background",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/surface": {
+        "id": "VariableID:6:9",
+        "name": "color/surface",
+        "cssName": "--color-surface",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/surface/sunken": {
+        "id": "VariableID:6:10",
+        "name": "color/surface/sunken",
+        "cssName": "--color-surface-sunken",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/muted": {
+        "id": "VariableID:6:11",
+        "name": "color/muted",
+        "cssName": "--color-muted",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/border": {
+        "id": "VariableID:6:12",
+        "name": "color/border",
+        "cssName": "--color-border",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/border/strong": {
+        "id": "VariableID:6:13",
+        "name": "color/border/strong",
+        "cssName": "--color-border-strong",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/ring": {
+        "id": "VariableID:6:14",
+        "name": "color/ring",
+        "cssName": "--color-ring",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/overlay": {
+        "id": "VariableID:6:15",
+        "name": "color/overlay",
+        "cssName": "--color-overlay",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/text/strong": {
+        "id": "VariableID:6:16",
+        "name": "text/strong",
+        "cssName": "--text-strong",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/text/body": {
+        "id": "VariableID:6:17",
+        "name": "text/body",
+        "cssName": "--text-body",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/text/muted": {
+        "id": "VariableID:6:18",
+        "name": "text/muted",
+        "cssName": "--text-muted",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/text/faint": {
+        "id": "VariableID:6:19",
+        "name": "text/faint",
+        "cssName": "--text-faint",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar": {
+        "id": "VariableID:6:20",
+        "name": "color/sidebar",
+        "cssName": "--color-sidebar",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/hover": {
+        "id": "VariableID:6:21",
+        "name": "color/sidebar/hover",
+        "cssName": "--color-sidebar-hover",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/text": {
+        "id": "VariableID:6:22",
+        "name": "color/sidebar/text",
+        "cssName": "--color-sidebar-text",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/text/strong": {
+        "id": "VariableID:6:23",
+        "name": "color/sidebar/text/strong",
+        "cssName": "--color-sidebar-text-strong",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/muted": {
+        "id": "VariableID:6:24",
+        "name": "color/sidebar/muted",
+        "cssName": "--color-sidebar-muted",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/border": {
+        "id": "VariableID:6:25",
+        "name": "color/sidebar/border",
+        "cssName": "--color-sidebar-border",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/divider": {
+        "id": "VariableID:6:26",
+        "name": "color/sidebar/divider",
+        "cssName": "--color-sidebar-divider",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/sidebar/ring": {
+        "id": "VariableID:6:27",
+        "name": "color/sidebar/ring",
+        "cssName": "--color-sidebar-ring",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/success": {
+        "id": "VariableID:6:28",
+        "name": "status/success",
+        "cssName": "--status-success",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/success/bg": {
+        "id": "VariableID:6:29",
+        "name": "status/success/bg",
+        "cssName": "--status-success-bg",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/warning": {
+        "id": "VariableID:6:30",
+        "name": "status/warning",
+        "cssName": "--status-warning",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/warning/bg": {
+        "id": "VariableID:6:31",
+        "name": "status/warning/bg",
+        "cssName": "--status-warning-bg",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/info": {
+        "id": "VariableID:6:32",
+        "name": "status/info",
+        "cssName": "--status-info",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/info/bg": {
+        "id": "VariableID:6:33",
+        "name": "status/info/bg",
+        "cssName": "--status-info-bg",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/danger": {
+        "id": "VariableID:6:34",
+        "name": "status/danger",
+        "cssName": "--status-danger",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/danger/hover": {
+        "id": "VariableID:6:35",
+        "name": "status/danger/hover",
+        "cssName": "--status-danger-hover",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/danger/bg": {
+        "id": "VariableID:6:36",
+        "name": "status/danger/bg",
+        "cssName": "--status-danger-bg",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/danger/border": {
+        "id": "VariableID:6:37",
+        "name": "status/danger/border",
+        "cssName": "--status-danger-border",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/status/neutral": {
+        "id": "VariableID:6:38",
+        "name": "status/neutral",
+        "cssName": "--status-neutral",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/on/destructive": {
+        "id": "VariableID:6:39",
+        "name": "color/on/destructive",
+        "cssName": "--color-on-destructive",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/foreground": {
+        "id": "VariableID:6:40",
+        "name": "color/foreground",
+        "cssName": "--color-foreground",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/card": {
+        "id": "VariableID:6:41",
+        "name": "color/card",
+        "cssName": "--color-card",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/card/foreground": {
+        "id": "VariableID:6:42",
+        "name": "color/card/foreground",
+        "cssName": "--color-card-foreground",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/muted/foreground": {
+        "id": "VariableID:6:43",
+        "name": "color/muted/foreground",
+        "cssName": "--color-muted-foreground",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/color/destructive": {
+        "id": "VariableID:6:44",
+        "name": "color/destructive",
+        "cssName": "--color-destructive",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/text/on/dark": {
+        "id": "VariableID:6:45",
+        "name": "text/on/dark",
+        "cssName": "--text-on-dark",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/accent/blue": {
+        "id": "VariableID:6:46",
+        "name": "accent/blue",
+        "cssName": "--accent-blue",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/accent/coral": {
+        "id": "VariableID:6:47",
+        "name": "accent/coral",
+        "cssName": "--accent-coral",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/accent/yellow": {
+        "id": "VariableID:6:48",
+        "name": "accent/yellow",
+        "cssName": "--accent-yellow",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/accent/green": {
+        "id": "VariableID:6:49",
+        "name": "accent/green",
+        "cssName": "--accent-green",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Light/accent/coral/soft": {
+        "id": "VariableID:6:50",
+        "name": "accent/coral/soft",
+        "cssName": "--accent-coral-soft",
+        "collection": "Color Light",
+        "type": "COLOR"
+      },
+      "Color Dark/color/primary": {
+        "id": "VariableID:6:51",
+        "name": "color/primary",
+        "cssName": "--color-primary",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/primary/hover": {
+        "id": "VariableID:6:52",
+        "name": "color/primary/hover",
+        "cssName": "--color-primary-hover",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/on/primary": {
+        "id": "VariableID:6:53",
+        "name": "color/on/primary",
+        "cssName": "--color-on-primary",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/secondary": {
+        "id": "VariableID:6:54",
+        "name": "color/secondary",
+        "cssName": "--color-secondary",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/accent": {
+        "id": "VariableID:6:55",
+        "name": "color/accent",
+        "cssName": "--color-accent",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/on/accent": {
+        "id": "VariableID:6:56",
+        "name": "color/on/accent",
+        "cssName": "--color-on-accent",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/background": {
+        "id": "VariableID:6:57",
+        "name": "color/background",
+        "cssName": "--color-background",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/surface": {
+        "id": "VariableID:6:58",
+        "name": "color/surface",
+        "cssName": "--color-surface",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/surface/sunken": {
+        "id": "VariableID:6:59",
+        "name": "color/surface/sunken",
+        "cssName": "--color-surface-sunken",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/muted": {
+        "id": "VariableID:6:60",
+        "name": "color/muted",
+        "cssName": "--color-muted",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/border": {
+        "id": "VariableID:6:61",
+        "name": "color/border",
+        "cssName": "--color-border",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/border/strong": {
+        "id": "VariableID:6:62",
+        "name": "color/border/strong",
+        "cssName": "--color-border-strong",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/ring": {
+        "id": "VariableID:6:63",
+        "name": "color/ring",
+        "cssName": "--color-ring",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/overlay": {
+        "id": "VariableID:6:64",
+        "name": "color/overlay",
+        "cssName": "--color-overlay",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/text/strong": {
+        "id": "VariableID:6:65",
+        "name": "text/strong",
+        "cssName": "--text-strong",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/text/body": {
+        "id": "VariableID:6:66",
+        "name": "text/body",
+        "cssName": "--text-body",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/text/muted": {
+        "id": "VariableID:6:67",
+        "name": "text/muted",
+        "cssName": "--text-muted",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/text/faint": {
+        "id": "VariableID:6:68",
+        "name": "text/faint",
+        "cssName": "--text-faint",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar": {
+        "id": "VariableID:6:69",
+        "name": "color/sidebar",
+        "cssName": "--color-sidebar",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/hover": {
+        "id": "VariableID:6:70",
+        "name": "color/sidebar/hover",
+        "cssName": "--color-sidebar-hover",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/text": {
+        "id": "VariableID:6:71",
+        "name": "color/sidebar/text",
+        "cssName": "--color-sidebar-text",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/text/strong": {
+        "id": "VariableID:6:72",
+        "name": "color/sidebar/text/strong",
+        "cssName": "--color-sidebar-text-strong",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/muted": {
+        "id": "VariableID:6:73",
+        "name": "color/sidebar/muted",
+        "cssName": "--color-sidebar-muted",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/border": {
+        "id": "VariableID:6:74",
+        "name": "color/sidebar/border",
+        "cssName": "--color-sidebar-border",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/divider": {
+        "id": "VariableID:6:75",
+        "name": "color/sidebar/divider",
+        "cssName": "--color-sidebar-divider",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/sidebar/ring": {
+        "id": "VariableID:6:76",
+        "name": "color/sidebar/ring",
+        "cssName": "--color-sidebar-ring",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/success": {
+        "id": "VariableID:6:77",
+        "name": "status/success",
+        "cssName": "--status-success",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/success/bg": {
+        "id": "VariableID:6:78",
+        "name": "status/success/bg",
+        "cssName": "--status-success-bg",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/warning": {
+        "id": "VariableID:6:79",
+        "name": "status/warning",
+        "cssName": "--status-warning",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/warning/bg": {
+        "id": "VariableID:6:80",
+        "name": "status/warning/bg",
+        "cssName": "--status-warning-bg",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/info": {
+        "id": "VariableID:6:81",
+        "name": "status/info",
+        "cssName": "--status-info",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/info/bg": {
+        "id": "VariableID:6:82",
+        "name": "status/info/bg",
+        "cssName": "--status-info-bg",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/danger": {
+        "id": "VariableID:6:83",
+        "name": "status/danger",
+        "cssName": "--status-danger",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/danger/hover": {
+        "id": "VariableID:6:84",
+        "name": "status/danger/hover",
+        "cssName": "--status-danger-hover",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/danger/bg": {
+        "id": "VariableID:6:85",
+        "name": "status/danger/bg",
+        "cssName": "--status-danger-bg",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/danger/border": {
+        "id": "VariableID:6:86",
+        "name": "status/danger/border",
+        "cssName": "--status-danger-border",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/status/neutral": {
+        "id": "VariableID:6:87",
+        "name": "status/neutral",
+        "cssName": "--status-neutral",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/on/destructive": {
+        "id": "VariableID:6:88",
+        "name": "color/on/destructive",
+        "cssName": "--color-on-destructive",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/foreground": {
+        "id": "VariableID:6:89",
+        "name": "color/foreground",
+        "cssName": "--color-foreground",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/card": {
+        "id": "VariableID:6:90",
+        "name": "color/card",
+        "cssName": "--color-card",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/card/foreground": {
+        "id": "VariableID:6:91",
+        "name": "color/card/foreground",
+        "cssName": "--color-card-foreground",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/muted/foreground": {
+        "id": "VariableID:6:92",
+        "name": "color/muted/foreground",
+        "cssName": "--color-muted-foreground",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/color/destructive": {
+        "id": "VariableID:6:93",
+        "name": "color/destructive",
+        "cssName": "--color-destructive",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/text/on/dark": {
+        "id": "VariableID:6:94",
+        "name": "text/on/dark",
+        "cssName": "--text-on-dark",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/accent/blue": {
+        "id": "VariableID:6:95",
+        "name": "accent/blue",
+        "cssName": "--accent-blue",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/accent/coral": {
+        "id": "VariableID:6:96",
+        "name": "accent/coral",
+        "cssName": "--accent-coral",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/accent/yellow": {
+        "id": "VariableID:6:97",
+        "name": "accent/yellow",
+        "cssName": "--accent-yellow",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/accent/green": {
+        "id": "VariableID:6:98",
+        "name": "accent/green",
+        "cssName": "--accent-green",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Color Dark/accent/coral/soft": {
+        "id": "VariableID:6:99",
+        "name": "accent/coral/soft",
+        "cssName": "--accent-coral-soft",
+        "collection": "Color Dark",
+        "type": "COLOR"
+      },
+      "Typography/font/sans": {
+        "id": "VariableID:6:100",
+        "name": "font/sans",
+        "cssName": "--font-sans",
+        "collection": "Typography",
+        "type": "STRING"
+      },
+      "Typography/font/mono": {
+        "id": "VariableID:6:101",
+        "name": "font/mono",
+        "cssName": "--font-mono",
+        "collection": "Typography",
+        "type": "STRING"
+      },
+      "Typography/font/display": {
+        "id": "VariableID:6:102",
+        "name": "font/display",
+        "cssName": "--font-display",
+        "collection": "Typography",
+        "type": "STRING"
+      },
+      "Dimensions/space/xs": {
+        "id": "VariableID:6:103",
+        "name": "space/xs",
+        "cssName": "--space-xs",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/sm": {
+        "id": "VariableID:6:104",
+        "name": "space/sm",
+        "cssName": "--space-sm",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/md": {
+        "id": "VariableID:6:105",
+        "name": "space/md",
+        "cssName": "--space-md",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/lg": {
+        "id": "VariableID:6:106",
+        "name": "space/lg",
+        "cssName": "--space-lg",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/xl": {
+        "id": "VariableID:6:107",
+        "name": "space/xl",
+        "cssName": "--space-xl",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/2xl": {
+        "id": "VariableID:6:108",
+        "name": "space/2xl",
+        "cssName": "--space-2xl",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/space/3xl": {
+        "id": "VariableID:6:109",
+        "name": "space/3xl",
+        "cssName": "--space-3xl",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/radius/sm": {
+        "id": "VariableID:6:110",
+        "name": "radius/sm",
+        "cssName": "--radius-sm",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/radius/md": {
+        "id": "VariableID:6:111",
+        "name": "radius/md",
+        "cssName": "--radius-md",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/radius/lg": {
+        "id": "VariableID:6:112",
+        "name": "radius/lg",
+        "cssName": "--radius-lg",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      },
+      "Dimensions/radius/pill": {
+        "id": "VariableID:6:113",
+        "name": "radius/pill",
+        "cssName": "--radius-pill",
+        "collection": "Dimensions",
+        "type": "FLOAT"
+      }
+    },
+    "styles": {
+      "Shadow/Light/sm": {
+        "id": "S:b6b1bfbfc2c4f1c2b2dc222236c4fc01ccd1d864,",
+        "name": "Shadow/Light/sm",
+        "type": "EFFECT"
+      },
+      "Shadow/Light/md": {
+        "id": "S:a155b1d467c050f71570ae0ba827af97dcb50362,",
+        "name": "Shadow/Light/md",
+        "type": "EFFECT"
+      },
+      "Shadow/Light/lg": {
+        "id": "S:4980fdc922525d4777166876dffede5f56fbf8fc,",
+        "name": "Shadow/Light/lg",
+        "type": "EFFECT"
+      },
+      "Shadow/Dark/sm": {
+        "id": "S:52920e6fb5779d52cb5da05508db7d592a8da9b7,",
+        "name": "Shadow/Dark/sm",
+        "type": "EFFECT"
+      },
+      "Shadow/Dark/md": {
+        "id": "S:b2be13c9badbb7c934bb374ece4f29d4060c6262,",
+        "name": "Shadow/Dark/md",
+        "type": "EFFECT"
+      },
+      "Shadow/Dark/lg": {
+        "id": "S:9eee89e3f4066158ba29d5c1030df76324609006,",
+        "name": "Shadow/Dark/lg",
+        "type": "EFFECT"
+      },
+      "Body": {
+        "id": "S:e1f374bdb8f5cf6d1c5b005d42750297df3ea18e,",
+        "name": "Body",
+        "type": "TEXT"
+      },
+      "Heading/Page/Min": {
+        "id": "S:e07926c63012b18cb9fb234e4917fd5b148c7f95,",
+        "name": "Heading/Page/Min",
+        "type": "TEXT"
+      },
+      "Heading/Page/Max": {
+        "id": "S:63355bcbfc4da860495799cfba49f9d06886c898,",
+        "name": "Heading/Page/Max",
+        "type": "TEXT"
+      },
+      "Heading/Card": {
+        "id": "S:a0eab9316c57584d6b7584f49b1c24f1817d0f8b,",
+        "name": "Heading/Card",
+        "type": "TEXT"
+      },
+      "Heading/Dialog": {
+        "id": "S:c6b59a7149a9344b3066db74a35afe4d24f83146,",
+        "name": "Heading/Dialog",
+        "type": "TEXT"
+      },
+      "Field/Label": {
+        "id": "S:8354d018a476fc099745c12e7e0bd17fc49e0fb1,",
+        "name": "Field/Label",
+        "type": "TEXT"
+      },
+      "Field/Input/Desktop": {
+        "id": "S:58f2dff8a67a3cf635a9d76c0f96d32fdbdb0d3a,",
+        "name": "Field/Input/Desktop",
+        "type": "TEXT"
+      },
+      "Field/Input/Mobile": {
+        "id": "S:5bba86b18abd92fe6fea8262e35df99ff88d45b2,",
+        "name": "Field/Input/Mobile",
+        "type": "TEXT"
+      },
+      "Button/Standard": {
+        "id": "S:58075b0edcb8a909b4187cc5beccefba848100c9,",
+        "name": "Button/Standard",
+        "type": "TEXT"
+      },
+      "Button/Compact": {
+        "id": "S:1a499a730c69e7bcdecee4d852edb83fecb4a6c7,",
+        "name": "Button/Compact",
+        "type": "TEXT"
+      },
+      "Badge": {
+        "id": "S:0cac7fc6f9faada6229cf6814d0e08966755aa06,",
+        "name": "Badge",
+        "type": "TEXT"
+      },
+      "Table/Header": {
+        "id": "S:d96432cfa2ce0c6ba50f4f6299e5b77e2ee460fe,",
+        "name": "Table/Header",
+        "type": "TEXT"
+      }
+    },
+    "pages": {
+      "Page 1": "0:1"
+    },
+    "components": {},
+    "boards": {}
+  },
+  "completedSteps": [
+    "P0.a",
+    "P0.b",
+    "P0.c",
+    "P0.d",
+    "P0.e",
+    "P0.f",
+    "P1.a",
+    "P1.b:Color Light:1",
+    "P1.b:Color Dark:2",
+    "P1.b:Color Dark:3",
+    "P1.b:Typography:4",
+    "P1.f:effects",
+    "P1.f:text:0",
+    "P1.f:text:1"
+  ],
+  "createdNodeIds": [],
+  "validations": [],
+  "pendingValidations": [
+    "P1.b",
+    "P1.c",
+    "P1.d",
+    "P1.e",
+    "P1.f"
+  ],
+  "literalGeometryPolicy": "Dimensions CSS littérales conservées exactement et documentées ; aucun arrondi vers un token voisin.",
+  "creationSummary": {
+    "collections": 4,
+    "variables": 112,
+    "aliases": 23,
+    "effectStyles": 6,
+    "textStyles": 12,
+    "componentFamilies": 0,
+    "canvasPages": 1,
+    "canvasNodes": 0,
+    "countsByCollection": {
+      "Color Light": 49,
+      "Color Dark": 49,
+      "Dimensions": 11,
+      "Typography": 3
+    }
+  },
+  "verificationAttempts": [
+    {
+      "step": "P1.g",
+      "status": "failed",
+      "reason": "Strict fontName JSON comparison rejected additional Fira Code variationSettings metadata.",
+      "checksReached": "All 112 variable checks completed before Heading/Page/Min comparison failed.",
+      "complete": false
+    },
+    {
+      "step": "P1.f",
+      "status": "inspected",
+      "scope": "12 text styles and 6 effect styles read after the first verification failure.",
+      "notes": "Expected properties observed with additional font/effect metadata and float32 precision; the corrected end-to-end check remains pending.",
+      "complete": false
+    },
+    {
+      "step": "P1.g",
+      "status": "blocked",
+      "script": "design-system/autostrass/figma-scripts/check-foundations.js",
+      "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
+      "executed": false
+    }
+  ],
+  "blocker": {
+    "code": "FIGMA_MCP_STARTER_READ_QUOTA",
+    "date": "2026-11-08",
+    "plan": "Starter",
+    "seat": "View",
+    "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
+    "documentation": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/",
+    "documentedLimit": "Up to 20 read tool calls per month",
+    "exemptions": [
+      "add_code_connect_map",
+      "create_new_file",
+      "generate_figma_design",
+      "whoami"
+    ],
+    "interpretation": "The corrected foundation read check was rejected. Write exemptions do not establish that use_figma writes or mandatory validation are available.",
+    "resetDate": null
+  },
+  "resume": {
+    "step": "P1.g",
+    "prerequisites": "Figma read access available again; reuse the existing file and approved Starter architecture.",
+    "script": "design-system/autostrass/figma-scripts/check-foundations.js",
+    "invocation": "Load figma-use and figma-generate-library, create_session, embed the plan JSON and validation function, then return await validateFoundations(expected).",
+    "afterValidation": [
+      "Persist successful validation and actual identifiers",
+      "P2: documentation and visual verification",
+      "P3: 16 families, separately in dependency order",
+      "P4: integration and QA"
+    ],
+    "preserveExistingEntities": true
+  },
+  "localVerification": {
+    "date": "2026-11-08",
+    "scope": "Repository artifacts only; does not replace the pending remote Figma check.",
+    "variablesCssParity": 112,
+    "aliasesResolvedInPlan": 23,
+    "stylesRegistered": 18,
+    "entityIdsUnique": true,
+    "checkerSyntaxPassed": true,
+    "graphify": {
+      "version": "0.9.104",
+      "nodes": 2832,
+      "edges": 5764,
+      "communities": 164,
+      "md5Sources": 133,
+      "htmlJsonConsistent": true
+    },
+    "applicationSourcesUnchangedFrom": "6fdba67"
+  }
+}

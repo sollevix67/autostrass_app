@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794134716.4720225,
-    "seen": 1794134747.973069,
-    "ast_hash": "6c2d283995873b9cc62ac613e2473e2c",
+    "mtime": 1794136969.5124931,
+    "seen": 1794136973.3316092,
+    "ast_hash": "e076c9087c4e93ba0c1289b2a3c5d78a",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2346,15 +2346,33 @@
     "semantic_hash": ""
   },
   "design-system/autostrass/figma-library-discovery.md": {
-    "mtime": 1794134716.4730272,
-    "seen": 1794134747.9714615,
-    "ast_hash": "d3c5b3757fc5cad03c0eaa1efccf2329",
+    "mtime": 1794136877.0087392,
+    "seen": 1794136881.9651537,
+    "ast_hash": "59ab06d0de28357377d46c8563544993",
     "semantic_hash": ""
   },
   "design-system/autostrass/figma-discovery.json": {
     "mtime": 1794134716.8519218,
     "seen": 1794134747.9277787,
     "ast_hash": "b292db6deb9fa2f28e2086bc794ccb95",
+    "semantic_hash": ""
+  },
+  "design-system/autostrass/figma-foundation-plan.json": {
+    "mtime": 1794136170.0743856,
+    "seen": 1794136881.936979,
+    "ast_hash": "c23488f89878fa470cc181612fb6e9c7",
+    "semantic_hash": ""
+  },
+  "design-system/autostrass/figma-library-state.json": {
+    "mtime": 1794136969.500481,
+    "seen": 1794136973.3014064,
+    "ast_hash": "683d0845a78da4ed74b37fcbc3f2457d",
+    "semantic_hash": ""
+  },
+  "design-system/autostrass/figma-scripts/check-foundations.js": {
+    "mtime": 1794136453.0999036,
+    "seen": 1794136881.9369826,
+    "ast_hash": "569accb43f54ca59ab28cbd93244cf79",
     "semantic_hash": ""
   },
   "package-lock.json": {

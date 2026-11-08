@@ -9,11 +9,11 @@ nécessairement toutes ses exigences métier.
 
 ## Reprise prioritaire
 
-1. **Figma** : lever la limite d'un mode du fichier avant de reprendre P1.a.
-   Accès MCP opérationnel, fichier `design` / `Untitled` créé et inspecté ;
-   P0.a–P0.f réalisés. P0.d validé par l'utilisateur (« Oui ») pour la proposition
-   documentée ci-dessous. Le plan Starter refuse Light/Dark ; aucune collection,
-   variable ou style créé. Deux possibilités de reprise sont documentées.
+1. **Figma** : reprendre le contrôle final P1.g dès que l'accès de lecture est
+   disponible. Architecture Starter approuvée ; quatre collections, 112 variables,
+   six styles d'ombre et 12 styles de texte créés dans `Untitled`. Le quota MCP
+   Starter refuse le vérificateur corrigé ; P1 reste incomplet. Aucune page de
+   documentation ni aucun composant créé. Réutiliser les identifiants du registre.
 2. **Métier** : devis, puis commandes fournisseurs, avec numérotation, conversion
    et attribution des réceptions. Compléter ensuite les documents PDF manquants.
 3. **Déploiement** : vérifier le journal des migrations de chaque installation,
@@ -221,49 +221,65 @@ automatiquement. Le diagnostic CLI initial indiquait `not_logged_in` ; la tentat
 l'accès effectif du connecteur. Ne pas confondre ces deux états d'authentification.
 Aucun lien OAuth temporaire ni secret conservé dans le dépôt.
 
-**Fichier cible créé** : [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe),
-clé `UP7nQVTU4dlyfEiQdG2IYe`, type `design`. Session MCP de cette découverte :
-`c0f4f118-6a6b-48c7-ab25-f662c95181cd`. Inspection sans mutation : une page
-`Page 1` (`0:1`), vide ; zéro composant, instance, cadre, collection, variable
-ou style local. Fira Sans et Fira Code sont disponibles, avec Regular, Medium
-et SemiBold. Aucun conflit local code/Figma.
+**Fichier cible** : [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe),
+clé `UP7nQVTU4dlyfEiQdG2IYe`, type `design`. Session de construction :
+`82b3d40c-67bb-4e75-845b-cf6fd28f137d`. Le canevas reste une page
+`Page 1` (`0:1`) vide ; les variables et styles locaux existent désormais.
+Fira Sans et Fira Code sont disponibles, avec Regular, Medium et SemiBold.
 
-- **Inspection** : P0.b terminé pour le nouveau fichier vide. À la reprise,
-  `create_session`, puis `figma-use` en lecture seule pour revérifier l'état avant
-  toute création ; conserver les identifiants réels du registre.
-- **Bibliothèque** : **P0.a–P0.f réalisés, périmètre approuvé le 8 novembre**.
-  `get_libraries` : neuf bibliothèques ajoutées, aucune autre à ajouter et aucune
-  pagination restante. Recherche dans la bibliothèque d'équipe, Material 3 et
-  Simple Design System : **22 requêtes**, par lots de 20 puis 2. Candidats pour
-  boutons, badges, couleurs et styles ; compatibilité non vérifiée, aucun import.
-  Les résultats vides par nom ne prouvent pas l'absence d'équivalents.
-  Inventaire et proposition :
-  [figma-library-discovery.md](design-system/autostrass/figma-library-discovery.md),
-  preuves : [figma-discovery.json](design-system/autostrass/figma-discovery.json).
-  Proposition : **63 variables correspondant aux 66 tokens CSS** (49 couleurs,
-  11 dimensions, 3 familles de polices ; les trois ombres deviennent six styles
-  d'effet clair/sombre), **12 styles de texte** et **16 familles**, dont 27 icônes.
-  Le modèle CSS existant et ses 12 alias sont approuvés ; aucune couche de
-  primitives supplémentaire. Accord explicite reçu (« Oui ») avant la phase 1.
-  **P1.a tenté, bloqué par le plan** : `addMode('Dark')` renvoie exactement
-  `Error: in addMode: Limited to 1 modes only`. `whoami` confirme une seule
-  équipe, plan **Starter**, siège **View**. Relecture après l'échec atomique :
-  zéro collection, variable, style de texte ou style d'effet ; aucune création
-  partielle. Session de cette tentative : `013a854e-8718-4bfc-b306-a9a7f1a90565`.
-  Reprise du périmètre approuvé : fichier sur un plan permettant deux modes,
-  puis relire le fichier et retenter P1.a. Alternative à faire approuver :
-  `Color Light` et `Color Dark` séparées, 49 variables chacune, avec Dimensions
-  et Typography partagées, soit **112 variables / quatre collections à un mode**.
-  Cette alternative change l'architecture et la sélection du thème ; elle
-  n'a pas été créée. Les phases suivantes attendent des fondations vérifiées.
-  Reprise locale :
-  `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` (15 empreintes sources,
-  fichier cible et page enregistrés, aucun composant créé).
-  Les **15 empreintes SHA-256 sont conformes** à la reprise ;
-  les **66 tokens**, **35 surcharges sombres** et **12 alias** ont été recomptés.
-- **Intégration** : URL du cadre avec `node-id` et page cible ; charger
-  `figma-design-to-code`, appeler `get_design_context` avant le code et réutiliser
-  les composants/tokens existants dans les deux thèmes.
+**P0.a–P0.f réalisés et approuvés** : neuf bibliothèques ajoutées, pagination
+terminée et 22 recherches ; candidats distants non importés, compatibilité encore
+à vérifier par composant. Les résultats vides par nom ne prouvent pas l'absence
+d'équivalents. Inventaire :
+[figma-library-discovery.md](design-system/autostrass/figma-library-discovery.md),
+preuves initiales : [figma-discovery.json](design-system/autostrass/figma-discovery.json).
+L'accord « Oui » couvre six styles d'ombre, 12 styles de texte et 16 familles,
+dont 27 icônes. Le refus initial `Limited to 1 modes only` a été résolu par
+l'adaptation explicitement choisie : 112 variables dans quatre collections à
+un mode Value. Le modèle CSS et les dimensions littérales restent exacts.
+
+| P1 — créations réussies | Nombre |
+|---|---|
+| Color Light | 49 variables, dont 11 alias |
+| Color Dark | 49 variables, dont 11 alias |
+| Dimensions | 11 variables, espacements et rayons |
+| Typography | 3 variables, dont l'alias font/display → font/mono |
+| Styles d'effet | `Shadow/Light/{sm,md,lg}` et `Shadow/Dark/{sm,md,lg}` |
+| Styles de texte | Body, Heading/Page/Min, Heading/Page/Max, Heading/Card, Heading/Dialog, Field/Label, Field/Input/Desktop, Field/Input/Mobile, Button/Standard, Button/Compact, Badge, Table/Header |
+
+**P1.g — contrôle final incomplet** : le premier script a parcouru les 112
+variables avant d'échouer sur la comparaison JSON intégrale de `fontName` pour
+Heading/Page/Min. Figma ajoute `variationSettings` à Fira Code ; une lecture
+suivante des 18 styles a montré les propriétés attendues, avec métadonnées
+supplémentaires et précision float32. Le
+[vérificateur corrigé](design-system/autostrass/figma-scripts/check-foundations.js)
+compare les propriétés attendues et tolère un écart numérique de 0,00001.
+Son exécution a été refusée : **`You've reached the Figma MCP tool call limit
+on the Starter plan.`** Aucun résultat de validation globale réussi enregistré.
+
+La [documentation Figma](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/),
+consultée le 8 novembre, indique jusqu'à **20 appels de lecture par mois** pour
+Starter et les sièges View/Collab. Certaines écritures et `whoami` sont exemptés ;
+cela ne garantit pas la disponibilité des écritures `use_figma`. Le contrôle
+requis est effectivement refusé. La date de réinitialisation n'est pas connue.
+Ne pas ajouter de mutation artificielle au contrôle pour contourner le quota.
+
+**Reprise** : relire le
+[registre versionné](design-system/autostrass/figma-library-state.json) et le
+[plan exact](design-system/autostrass/figma-foundation-plan.json), puis ouvrir
+`create_session` lorsque la lecture est disponible. Charger `figma-use` et
+`figma-generate-library`, incorporer le plan et la fonction de vérification au
+script, puis `return await validateFoundations(expected)`. Confirmer les
+identifiants réels et persister le résultat avant P2. L'ancien registre
+`%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` est absent ; le registre
+versionné le remplace. Les 15 sources de découverte ont été comparées au commit
+`6fdba67`, sans changement ; 66 tokens, 35 surcharges sombres et 12 alias CSS.
+
+P2 reste à créer : couverture, guide et documentation des fondations avec captures.
+P3 : construire les 16 familles séparément, icônes exactes d'abord, puis vérifier
+structure et rendu ; INSTANCE_SWAP pour les icônes imbriquées. P4 : accessibilité,
+noms, liaisons et Code Connect. Aucun composant ni aucune documentation Figma
+créé avant la réussite du contrôle des fondations.
 
 ## Limites et points à confirmer
 
@@ -287,11 +303,12 @@ effectué pendant cette intervention.
 
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. `graphify update .` **0.9.104** a actualisé JSON, HTML,
-rapport, manifeste, cache et sauvegarde du jour après la tentative P1.a :
-**132 sources TS/TSX/MJS**
-conformes, **2 828 nœuds**, **5 760 liens**, **171 communautés**, aucun identifiant
+rapport, manifeste, cache et sauvegarde du jour après les fondations Starter :
+**133 empreintes sources conformes** (132 TS/TSX/MJS et le vérificateur JS),
+**2 832 nœuds**, **5 764 liens**, **164 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
-de liens, sans lien HTML orphelin. Métadonnée de départ **`8d9ae49`**.
+de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
+**`6fdba67`**. Le vérificateur Figma est indexé dans le graphe.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
@@ -324,3 +341,19 @@ sans doublon ni lien orphelin ; accord et état vide de l'échec vérifiés dans
 preuves JSON ; `git diff --check` réussi. Aucun test applicatif requis.
 Changements documentaires uniquement dans le dépôt, sans modification applicative
 ni migration ; tête initiale `8d9ae49`, livraison par commit et push sur `origin/main`.
+
+**8 novembre — adaptation Starter et fondations Figma** : choix utilisateur
+enregistré pour les collections Light/Dark séparées. Créations réussies : quatre
+collections, 112 variables (23 alias), six styles d'effet et 12 styles de texte.
+Plan, identifiants et contrôle corrigé versionnés. La comparaison des polices
+a été corrigée pour les métadonnées Figma et la précision float32 ; son exécution
+reste refusée par le quota de lecture MCP. P1 incomplet, P2–P4 non commencés.
+Les quotas et exemptions ont été vérifiés dans la documentation officielle ;
+aucune création existante supprimée et aucun changement d'abonnement effectué.
+Validation locale réussie : plan des 112 variables conforme au CSS, 23 alias
+résolus dans le plan, 18 styles enregistrés et identifiants uniques ; syntaxe du
+vérificateur contrôlée par `node --check`, sans exécution distante. Graphify
+actualisé et vérifié : 133 MD5 sources, HTML/JSON cohérents, aucun doublon ni lien
+orphelin. `git diff --check` réussi. Aucun test applicatif requis ; les sources
+applicatives et la base sont inchangées. Tête initiale `6fdba67`, livraison par
+commit et push sur `origin/main`.
