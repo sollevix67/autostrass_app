@@ -2,7 +2,7 @@
 
 Date : 2026-11-08. Exécution : `ds-autostrass-2026-11-08`.
 
-Statut : **P0.a–P0.c, P0.e et P0.f réalisés ; P0.d attend l'approbation**. Le périmètre ci-dessous reste une proposition. Le fichier Design [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe) est créé et inspecté ; aucun composant, variable ou style créé.
+Statut : **P0.a–P0.f réalisés, périmètre approuvé ; P1.a bloqué par la limite de modes**. L'utilisateur a validé la proposition de 63 variables du modèle CSS (« Oui », 8 novembre). Le fichier Design [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe) est créé et inspecté ; aucune collection, variable, aucun composant ou style créé.
 
 ## P0.a — Sources et tokens
 
@@ -132,7 +132,7 @@ Certaines dimensions de composants sont littérales : bouton 9 × 16 px de paddi
 |---|---|
 | P0.b | Réalisé : fichier `UP7nQVTU4dlyfEiQdG2IYe`, une page `Page 1` (`0:1`) vide, aucun objet local. Fira Sans et Fira Code disponibles. |
 | P0.c | Réalisé : neuf bibliothèques ajoutées, aucune autre à ajouter, pagination terminée ; 22 recherches traitées dans trois bibliothèques pertinentes. Rechercher de nouveau chaque composant avant création. |
-| P0.d | Proposition ci-dessous à approuver : ensemble exact des 66 tokens de la table, 12 styles de texte et les 16 familles recensées. Architecture des primitives et dimensions littérales explicitées. |
+| P0.d | Approuvé le 8 novembre (« Oui ») : ensemble exact des 66 tokens de la table, modèle CSS avec 63 variables, six styles d'ombre, 12 styles de texte et les 16 familles recensées. |
 | P0.e | Réalisé pour le fichier cible : aucun conflit local, car aucune variable, aucun style et aucun composant existant. Compatibilité des candidats distants non établie. |
 | P0.f | Code uniquement : les 66 tokens et 16 familles. Figma uniquement dans le fichier cible : la page vide. Aucun conflit local à résoudre ; les candidats de bibliothèques restent distincts des objets locaux. |
 
@@ -147,7 +147,7 @@ La bibliothèque d'équipe, Material 3 Design Kit et Simple Design System ont é
 | Espacements | Aucun résultat pour cette recherche. |
 | Corps, titre, ombres | 16, un et 20 candidats. Le style Body de la bibliothèque d'équipe est identifié ; polices, dimensions et valeurs des styles distants non inspectées. Certaines réponses « shadow » sont des styles FILL, et non des ombres EFFECT. |
 
-**Proposition v1 à approuver — valeurs du code conservées.** Les noms Figma des variables reprennent le nom CSS sans `--`, avec `/` à la place des tirets : par exemple `--color-primary` → `color/primary`, `--space-xs` → `space/xs`. La syntaxe WEB reste exactement `var(--nom-css)`.
+**Périmètre v1 approuvé — valeurs du code conservées.** Les noms Figma des variables reprennent le nom CSS sans `--`, avec `/` à la place des tirets : par exemple `--color-primary` → `color/primary`, `--space-xs` → `space/xs`. La syntaxe WEB reste exactement `var(--nom-css)`.
 
 | Collection proposée | Variables et modes |
 |---|---|
@@ -155,7 +155,7 @@ La bibliothèque d'équipe, Material 3 Design Kit et Simple Design System ont é
 | Dimensions | Les sept tokens `--space-*` et quatre `--radius-*`, un mode Value ; scopes GAP et CORNER_RADIUS respectivement. |
 | Typography | Les trois `--font-*`, un mode Value ; Fira Sans/Fira Code, alias font/display → font/mono, scope FONT_FAMILY. |
 
-Cette proposition représente **63 variables**, sans ajouter de primitives absentes du CSS. Une architecture Figma séparant primitives et sémantique ajouterait **59 couleurs brutes distinctes**, soit **122 variables** au total. Ces primitives n'ont pas de nom CSS propre : leur syntaxe de code nécessite une convention explicite, sans inventer de `--color-*` dans l'application. Le choix entre ces architectures fait partie de P0.d ; aucune des deux n'a été créée.
+Le périmètre approuvé représente **63 variables**, sans ajouter de primitives absentes du CSS. L'alternative avec **59 couleurs brutes distinctes** supplémentaires (122 variables au total) n'est pas retenue. Le modèle CSS et ses 12 alias sont conservés ; aucune variable CSS nouvelle n'est introduite dans l'application.
 
 Les trois tokens d'ombre deviennent six styles d'effet : `Shadow/Light/{sm,md,lg}` et `Shadow/Dark/{sm,md,lg}`. Les styles de texte proposés sont `Body`, `Heading/Page/Min`, `Heading/Page/Max`, `Heading/Card`, `Heading/Dialog`, `Field/Label`, `Field/Input/Desktop`, `Field/Input/Mobile`, `Button/Standard`, `Button/Compact`, `Badge` et `Table/Header`. Ils représentent les neuf usages recensés, avec les deux bornes du titre responsive et les tailles mobile/compacte séparées ; le `clamp()` intermédiaire reste documenté, sans taille arbitraire.
 
@@ -165,7 +165,7 @@ Les couleurs et valeurs de modes viennent du code ; les conventions d'organisati
 
 ## Reprise et vérifications
 
-État local persistant : `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json`. Il contient les 66 tokens avec leurs lignes, alias et valeurs sombres, les empreintes SHA-256 des sources consultées, le fichier cible, la page `0:1` et les décisions P0.d en attente. Le registre des composants, variables et styles est vide. Relire cet état à la reprise et refaire une inspection Figma avant toute création.
+État local persistant : `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json`. Il contient les 66 tokens avec leurs lignes, alias et valeurs sombres, les empreintes SHA-256 des sources consultées, le fichier cible, la page `0:1`, l'accord P0.d et le blocage P1.a. Le registre des collections, composants, variables et styles est vide. Relire cet état à la reprise et refaire une inspection Figma avant toute création.
 
 **Reprise du 8 novembre après compaction.** Les 15 empreintes SHA-256 correspondent aux sources actuelles ; recomptage de `src/tokens.css` : 66 tokens de base, 35 surcharges sombres et 12 alias. Fichier cible et page enregistrés ; aucun composant créé.
 
@@ -175,4 +175,15 @@ Le fichier Design `Untitled` est créé dans le plan unique retourné par `whoam
 
 Graphify : voir les métriques de la dernière vérification dans [passation.md](../../passation.md#graphify-et-dernière-intervention). Les sources applicatives sont inchangées. Limites existantes : CSS non indexé et analyse sémantique documentaire non relancée.
 
-La phase 0 reste ouverte. Les phases 1 à 4 ne démarrent qu'après validation de la découverte et accord explicite sur le périmètre, conformément au skill invoqué.
+## P1.a — Refus du second mode et possibilités de reprise
+
+Le 8 novembre, une session de construction a été ouverte : `013a854e-8718-4bfc-b306-a9a7f1a90565`. Après relecture du fichier vide, le helper de création des collections a tenté Color avec Light/Dark, puis Dimensions et Typography. `addMode('Dark')` a été refusé : **`Error: in addMode: Limited to 1 modes only`**, UUID de diagnostic `5fc6fe82-1a2a-408e-b985-3faf33d2f896`.
+
+`whoami` confirme l'équipe unique sur le plan Starter, siège View. Le script ayant échoué atomiquement, aucune collection n'a été créée. Une relecture indépendante confirme zéro collection, variable, style de texte et style d'effet. P1.a reste incomplet ; aucun nouvel essai de création ni passage à la phase 2 effectué.
+
+| Possibilité | Conséquence concrète |
+|---|---|
+| Utiliser un fichier sur un plan permettant deux modes | Conserver les trois collections et les 63 variables approuvées, avec bascule Light/Dark de Color. Après changement de plan ou déplacement effectué dans Figma, relire le fichier, puis retenter P1.a. |
+| Adapter l'architecture au plan actuel, avec accord utilisateur | Créer Color Light et Color Dark séparées (49 variables chacune), Dimensions (11) et Typography (3), toutes à un mode : 112 variables / quatre collections. Les composants doivent sélectionner les variables de la collection du thème ; aucune bascule commune par mode Color. |
+
+Le périmètre initial demeure approuvé. La seconde possibilité nécessite un nouvel accord, car elle change le nombre de variables et l'architecture du thème ; elle n'a pas été construite. Les preuves de la tentative et de la relecture sont conservées dans [figma-discovery.json](figma-discovery.json).

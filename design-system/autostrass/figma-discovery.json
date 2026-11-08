@@ -1375,7 +1375,7 @@
     "remoteCandidatesImported": false,
     "remoteCandidateCompatibility": "not-verified",
     "sourceOfValues": "src/tokens.css",
-    "scopeApproval": "pending"
+    "scopeApproval": "approved-2026-11-08"
   },
   "proposedScope": {
     "cssTokens": 66,
@@ -1437,7 +1437,53 @@
       "PageLayout"
     ],
     "iconPaths": 27,
-    "scopeApproval": "pending",
-    "tokenArchitecture": "pending-user-choice"
+    "scopeApproval": "approved-2026-11-08",
+    "tokenArchitecture": "css-model"
+  },
+  "approvedScope": {
+    "architecture": "css-model",
+    "variables": 63,
+    "effectStyles": 6,
+    "textStyles": 12,
+    "componentFamilies": 16,
+    "userReply": "Oui",
+    "date": "2026-11-08"
+  },
+  "phase1Attempt": {
+    "date": "2026-11-08",
+    "step": "P1.a",
+    "sessionId": "013a854e-8718-4bfc-b306-a9a7f1a90565",
+    "status": "mode-limit",
+    "error": "Error: in addMode: Limited to 1 modes only",
+    "debugUuid": "5fc6fe82-1a2a-408e-b985-3faf33d2f896",
+    "plan": {
+      "tier": "starter",
+      "seat": "View",
+      "availablePlans": 1
+    },
+    "afterError": {
+      "collections": [],
+      "variableCount": 0,
+      "textStyleCount": 0,
+      "effectStyleCount": 0
+    },
+    "partialCreation": false,
+    "fallbackCreated": false,
+    "options": [
+      {
+        "architecture": "css-model",
+        "variables": 63,
+        "collections": 3,
+        "requiredColorModes": 2,
+        "requires": "file-plan-supporting-two-modes"
+      },
+      {
+        "architecture": "separate-light-dark-collections",
+        "variables": 112,
+        "collections": 4,
+        "modesPerCollection": 1,
+        "requires": "user-approval"
+      }
+    ]
   }
 }

@@ -9,10 +9,11 @@ nécessairement toutes ses exigences métier.
 
 ## Reprise prioritaire
 
-1. **Figma** : valider le périmètre de la bibliothèque avant la phase 1.
+1. **Figma** : lever la limite d'un mode du fichier avant de reprendre P1.a.
    Accès MCP opérationnel, fichier `design` / `Untitled` créé et inspecté ;
-   P0.a–P0.c, P0.e et P0.f réalisés. P0.d attend l'accord sur la proposition
-   documentée ci-dessous. Aucun cadre d'écran applicatif créé ou fourni.
+   P0.a–P0.f réalisés. P0.d validé par l'utilisateur (« Oui ») pour la proposition
+   documentée ci-dessous. Le plan Starter refuse Light/Dark ; aucune collection,
+   variable ou style créé. Deux possibilités de reprise sont documentées.
 2. **Métier** : devis, puis commandes fournisseurs, avec numérotation, conversion
    et attribution des réceptions. Compléter ensuite les documents PDF manquants.
 3. **Déploiement** : vérifier le journal des migrations de chaque installation,
@@ -230,7 +231,7 @@ et SemiBold. Aucun conflit local code/Figma.
 - **Inspection** : P0.b terminé pour le nouveau fichier vide. À la reprise,
   `create_session`, puis `figma-use` en lecture seule pour revérifier l'état avant
   toute création ; conserver les identifiants réels du registre.
-- **Bibliothèque** : P0.a–P0.c, P0.e et P0.f réalisés ; **P0.d attend l'approbation**.
+- **Bibliothèque** : **P0.a–P0.f réalisés, périmètre approuvé le 8 novembre**.
   `get_libraries` : neuf bibliothèques ajoutées, aucune autre à ajouter et aucune
   pagination restante. Recherche dans la bibliothèque d'équipe, Material 3 et
   Simple Design System : **22 requêtes**, par lots de 20 puis 2. Candidats pour
@@ -242,9 +243,19 @@ et SemiBold. Aucun conflit local code/Figma.
   Proposition : **63 variables correspondant aux 66 tokens CSS** (49 couleurs,
   11 dimensions, 3 familles de polices ; les trois ombres deviennent six styles
   d'effet clair/sombre), **12 styles de texte** et **16 familles**, dont 27 icônes.
-  Le modèle CSS existant et ses 12 alias seraient conservés ; l'alternative avec
-  59 primitives de couleur supplémentaires doit être décidée à ce checkpoint.
-  Accord explicite avant la phase 1 requis par `figma-generate-library`.
+  Le modèle CSS existant et ses 12 alias sont approuvés ; aucune couche de
+  primitives supplémentaire. Accord explicite reçu (« Oui ») avant la phase 1.
+  **P1.a tenté, bloqué par le plan** : `addMode('Dark')` renvoie exactement
+  `Error: in addMode: Limited to 1 modes only`. `whoami` confirme une seule
+  équipe, plan **Starter**, siège **View**. Relecture après l'échec atomique :
+  zéro collection, variable, style de texte ou style d'effet ; aucune création
+  partielle. Session de cette tentative : `013a854e-8718-4bfc-b306-a9a7f1a90565`.
+  Reprise du périmètre approuvé : fichier sur un plan permettant deux modes,
+  puis relire le fichier et retenter P1.a. Alternative à faire approuver :
+  `Color Light` et `Color Dark` séparées, 49 variables chacune, avec Dimensions
+  et Typography partagées, soit **112 variables / quatre collections à un mode**.
+  Cette alternative change l'architecture et la sélection du thème ; elle
+  n'a pas été créée. Les phases suivantes attendent des fondations vérifiées.
   Reprise locale :
   `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` (15 empreintes sources,
   fichier cible et page enregistrés, aucun composant créé).
@@ -276,11 +287,11 @@ effectué pendant cette intervention.
 
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. `graphify update .` **0.9.104** a actualisé JSON, HTML,
-rapport, manifeste, cache et sauvegarde du jour pendant la reprise Figma :
+rapport, manifeste, cache et sauvegarde du jour après la tentative P1.a :
 **132 sources TS/TSX/MJS**
-conformes, **2 827 nœuds**, **5 759 liens**, **168 communautés**, aucun identifiant
+conformes, **2 828 nœuds**, **5 760 liens**, **171 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
-de liens, sans lien HTML orphelin. Métadonnée de départ **`e0268fd`**.
+de liens, sans lien HTML orphelin. Métadonnée de départ **`8d9ae49`**.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
@@ -294,10 +305,22 @@ Livraison prévue par commit et push sur `origin/main` ; tête initiale `37ac916
 **8 novembre — reprise Figma** : accès effectif confirmé par `whoami`, fichier
 `Untitled` créé, session ouverte, inventaire distant et recherches de bibliothèques
 réalisés. Résultats et périmètre proposés consignés, registre local actualisé.
-P0.d attend la validation du périmètre avant la création de la bibliothèque.
+P0.d a ensuite été validé par l'utilisateur ; voir la tentative P1.a ci-dessous.
 Validation : 15 empreintes sources Figma et 132 empreintes MD5 de sources du
 graphe conformes ; preuves JSON de découverte cohérentes avec les 22 recherches
 et les neuf bibliothèques ; `git diff --check` réussi. Aucun test applicatif requis
 pour ces changements documentaires.
 Modification documentaire uniquement dans le dépôt, sans changement applicatif
 ni migration ; tête initiale `e0268fd`, livraison par commit et push sur `origin/main`.
+
+**8 novembre — périmètre Figma approuvé, P1.a tenté** : accord utilisateur « Oui »
+enregistré pour 63 variables CSS, six styles d'ombre, 12 styles de texte et
+16 familles. Le serveur Figma refuse le second mode du fichier Starter.
+État relu : aucune collection ni variable ni style créé ; registre et preuves
+actualisés avec l'erreur et les deux possibilités de reprise. Aucun achat,
+déplacement de fichier ni changement d'architecture effectué.
+Validation : Graphify actualisé et ses 132 sources vérifiées, HTML/JSON cohérents,
+sans doublon ni lien orphelin ; accord et état vide de l'échec vérifiés dans les
+preuves JSON ; `git diff --check` réussi. Aucun test applicatif requis.
+Changements documentaires uniquement dans le dépôt, sans modification applicative
+ni migration ; tête initiale `8d9ae49`, livraison par commit et push sur `origin/main`.
