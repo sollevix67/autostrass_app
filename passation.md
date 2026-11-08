@@ -1,5 +1,36 @@
 # Passation — Autostrass App
 
+## Préparation de l'intégration Figma — 2026-11-08
+
+**Demande** : inspecter un design Figma et l'implémenter dans l'application.
+La compétence `figma:figma-design-to-code` a été lue, ainsi que les consignes
+du dépôt, le design system et les composants partagés `PageLayout` et
+`DataTable`. L'intégration devra réutiliser les styles et composants React
+existants, avec les thèmes clair et sombre.
+
+**Prérequis manquants** : aucun lien vers un fichier ou cadre Figma n'a été
+fourni et aucune référence Figma n'a été trouvée dans le dépôt. Le lien vers
+le cadre, avec son `node-id`, et la page cible ont été demandés à l'utilisateur.
+Les outils MCP Figma, dont `get_design_context`, ne sont pas exposés dans cette
+session ; les listes de ressources et de modèles MCP sont également vides.
+La compétence exige l'inspection par `get_design_context` avant toute écriture
+de code. Aucun changement applicatif effectué ; reprise dès que le cadre
+cible et l'accès aux outils Figma sont disponibles.
+
+**Graphify vérifié** : les empreintes des **132 fichiers TS/TSX/MJS** indexés
+correspondent aux sources actuelles ; tous les fichiers sources versionnés
+de ces types hors `.github/` sont dans le manifeste. **2 820 nœuds,
+5 752 liens, 180 communautés**, aucun identifiant en double ni lien orphelin,
+visualisation HTML présente. Pas de réindexation nécessaire du code, inchangé.
+Métadonnée de départ `9ac548e` ; limites existantes conservées : CSS non indexé,
+parseur SQL absent et analyse sémantique documentaire non relancée.
+
+**Livraison** : préparation et vérification consignées dans cette entrée,
+destinée à un commit documentaire et à sa publication sur `origin/main`.
+Build et tests applicatifs non relancés pour cette modification documentaire.
+
+---
+
 ## Caisse : attribution au compte connecté — 2026-11-08
 
 **Demande et diagnostic** : retirer le champ « Caissier » du formulaire de
