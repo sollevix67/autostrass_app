@@ -42,10 +42,13 @@ modifiés sont présents, dont la vue comptoir dans le HTML. Métadonnée de
 départ `9ac548e`. Limites habituelles : CSS non indexé, parseur SQL absent,
 analyse sémantique documentaire et renommage LLM non relancés.
 
-**Livraison** : commit `fix(ventes): attribuer les ventes au compte connecte`
-et push sur `origin/main` en préparation ; branche distante vérifiée.
-Redémarrer l'API et recharger l'interface après mise à jour pour charger la
-correction.
+**Livraison** : commit `0cd2f8c` —
+`fix(ventes): attribuer les ventes au compte connecte` — publié sur
+`origin/main` par `git push origin main`. Branche distante vérifiée avant
+publication et `git diff --cached --check` réussi. Cette mise à jour
+documentaire consigne le commit et le push effectués. Redémarrer l'API
+(`npm run dev` ou `npm run dev:api`) et recharger l'interface après mise à jour
+pour charger la correction.
 
 ---
 
