@@ -1,5 +1,49 @@
 # Passation — Autostrass App
 
+## Messages de validation en français — 2026-11-08
+
+**Signalement et diagnostic** : la bulle « Please select an item in the list. »
+du formulaire Nouvel emplacement provient de la validation HTML du navigateur.
+La page déclarait également `lang="en"` et certaines contraintes Zod utilisaient
+leurs messages anglais par défaut.
+
+**Correction** : document déclaré en français, messages natifs traduits au
+démarrage pour tous les formulaires, et locale française Zod côté interface.
+Les champs obligatoires, listes, nombres, bornes, pas, formats et longueurs
+gardent leur validation native et leur focus. Les messages personnalisés
+existants sont préservés. Les traductions sont réinitialisées à la saisie,
+au changement, à la réinitialisation et à la sortie du champ pour éviter de
+bloquer une saisie corrigée ou une nouvelle ouverture du dialogue.
+Aucun changement de contrat API ni de base de données.
+
+**Validation** : **54 contrôles Chromium en anglais (`en-US`)** réussis sur
+le build de production : code et parent obligatoires, soumission au clic et
+à la touche Entrée, bornes et pas numériques, formats, longueurs, fichier,
+case à cocher, groupe radio, réinitialisation et priorité des erreurs métier.
+Enregistrement après correction et annulation suivie d'une modification
+réussis ; formulaires `noValidate` conservés. Message Zod de dépassement
+de longueur contrôlé en français. Aucune erreur JavaScript ni écriture MariaDB
+(API simulée). Captures ordinateur et mobile sombre relues dans
+`specs/screenshots/validation-fr/`, avec relevé des contrôles ; les bulles
+natives ne sont pas capturées par Chromium headless, leur texte est vérifié
+via `validationMessage`. Serveur de recette arrêté.
+Build, lint et `test:errors` réussis ; avertissement Vite préexistant sur le
+paquet JavaScript supérieur à 500 kB conservé.
+
+**Graphify** : `graphify update .` (0.9.103) a régénéré JSON, HTML, rapport,
+manifeste, cache AST et sauvegarde du jour : **2 820 nœuds, 5 752 liens,
+180 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+des **132 fichiers TS/TSX/MJS** conformes. Utilitaire de traduction et recette
+navigateur présents dans le graphe, `installFrenchValidation()` dans le HTML.
+Métadonnée de départ `0121a51`. Limites habituelles : CSS non indexé,
+parseur SQL absent, analyse sémantique documentaire et renommage LLM non relancés.
+
+**Livraison** : changements vérifiés et regroupés sur `main` pour
+`fix(forms): afficher les validations en francais`. Branche distante à jour,
+`git diff --check` réussi. Recharger la page après mise à jour du frontend.
+
+---
+
 ## Politiques d'accès aux ressources PDF — 2026-11-07
 
 **Signalement** : avertissements `No URL access policy defined` et
