@@ -1,5 +1,54 @@
 # Passation — Autostrass App
 
+## Caisse : attribution au compte connecté — 2026-11-08
+
+**Demande et diagnostic** : retirer le champ « Caissier » du formulaire de
+vente. L'ouverture de caisse utilisait déjà le compte connecté, mais la vente
+acceptait encore un nom libre transmis par le navigateur.
+
+**Correction** : champ, valeurs initiales et validation de saisie supprimés.
+L'interface renseigne automatiquement le prénom et le nom du compte courant
+à la soumission. Le serveur détermine lui-même cette identité depuis
+l'utilisateur authentifié, pour l'enregistrement et l'empreinte NF525 ; un nom
+fourni par le client est ignoré et son absence est acceptée. Le journal et les
+factures conservent le nom de l'auteur. Aucun changement de base ni migration.
+Les droits, la session de caisse obligatoire et le repli local existant restent
+inchangés.
+
+**Reprise et validation** : les six fichiers de cette correction étaient déjà
+modifiés à l'arrivée ; leur contenu a été relu et conservé. Build, lint et
+`test:errors` réussis. L'avertissement Vite préexistant sur le paquet supérieur
+à 500 kB demeure. **126 contrôles API** et **59 contrôles sécurité** réussis
+sur MariaDB 11.4.5 jetable : vente sans champ caissier, identité falsifiée
+ignorée, relecture et contrôle d'inaltérabilité inclus.
+
+**Recette navigateur** : **21 contrôles Chromium** sur le build de production
+avec API réelle et base jetable. Ventes sous Sophie Bernard et Marie Laurent
+attribuées au bon compte et à sa caisse, avec relecture SQL/API, génération
+PDF et validation des empreintes NF525. Champ absent avant et après
+enregistrement/rechargement. Aucun débordement mobile ni erreur JavaScript.
+Captures ordinateur clair et mobile sombre relues, relevé dans
+`specs/screenshots/ventes-utilisateur/`. API de recette et instance MariaDB
+arrêtées, base jetable supprimée et fichier d'identifiants retiré. Le contrôle
+automatique a refusé la suppression récursive des fichiers système MariaDB
+temporaires (`blocked by policy`), y compris avec un chemin absolu vérifié ;
+le dossier `.ventes-review.local/database-data/` reste local et ignoré par Git.
+
+**Graphify** : `graphify update .` (0.9.103) a actualisé JSON, HTML, rapport,
+manifeste, cache AST et sauvegarde du jour : **2 820 nœuds, 5 752 liens,
+180 communautés**. Identifiants uniques, aucun lien orphelin et empreintes
+des **132 fichiers TS/TSX/MJS** conformes après extraction. Les cinq fichiers de code
+modifiés sont présents, dont la vue comptoir dans le HTML. Métadonnée de
+départ `9ac548e`. Limites habituelles : CSS non indexé, parseur SQL absent,
+analyse sémantique documentaire et renommage LLM non relancés.
+
+**Livraison** : commit `fix(ventes): attribuer les ventes au compte connecte`
+et push sur `origin/main` en préparation ; branche distante vérifiée.
+Redémarrer l'API et recharger l'interface après mise à jour pour charger la
+correction.
+
+---
+
 ## Messages de validation en français — 2026-11-08
 
 **Signalement et diagnostic** : la bulle « Please select an item in the list. »

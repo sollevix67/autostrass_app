@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-08",
+  "source": "Build de production, API réelle et MariaDB jetable",
+  "checks": [
+    "Sophie Bernard : aucun champ Caissier",
+    "Aucun débordement horizontal sur mobile",
+    "Sophie Bernard : vente enregistrée sans saisie du caissier",
+    "Sophie Bernard : identité connectée dans la vente",
+    "Sophie Bernard : vente dans la caisse du compte connecté",
+    "Sophie Bernard : attribution relue en MariaDB",
+    "Sophie Bernard : champ toujours absent après réinitialisation",
+    "Sophie Bernard : identité conservée à la relecture API",
+    "Sophie Bernard : facture PDF générée",
+    "Sophie Bernard : attribution et formulaire conservés après rechargement",
+    "Marie Laurent : aucun champ Caissier",
+    "Marie Laurent : vente enregistrée sans saisie du caissier",
+    "Marie Laurent : identité connectée dans la vente",
+    "Marie Laurent : vente dans la caisse du compte connecté",
+    "Marie Laurent : attribution relue en MariaDB",
+    "Marie Laurent : champ toujours absent après réinitialisation",
+    "Marie Laurent : identité conservée à la relecture API",
+    "Marie Laurent : facture PDF générée",
+    "Marie Laurent : attribution et formulaire conservés après rechargement",
+    "Empreintes NF525 valides après les deux ventes navigateur",
+    "Aucune erreur JavaScript"
+  ],
+  "errors": []
+}

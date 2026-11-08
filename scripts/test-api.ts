@@ -578,13 +578,13 @@ const vente = await call('/api/ventes', {
   token: caissierToken!,
   body: {
     dateVente: '2026-09-26T10:00:00.000Z',
-    caissier: 'Sophie Bernard',
     modePaiement: 'carte',
     montantPaye: 31,
     articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 2, prixUnitaire: 15.5 }],
   },
 })
 check('POST /api/ventes (caissier) repond 201', vente.status === 201, vente.body)
+check('une vente sans champ caissier utilise le compte connecte', vente.body?.caissier === 'Sophie Bernard', vente.body?.caissier)
 check('le total de la vente est correct', vente.body?.totalHT === 31, vente.body?.totalHT)
 check('la vente est rattachee a la session', vente.body?.sessionId === sessionId, vente.body?.sessionId)
 
@@ -594,7 +594,7 @@ const venteEspeces = await call('/api/ventes', {
   token: caissierToken!,
   body: {
     dateVente: '2026-09-26T10:05:00.000Z',
-    caissier: 'Sophie Bernard',
+    caissier: 'Identite falsifiee',
     modePaiement: 'espèces',
     montantPaye: 40,
     monnaie: 9,
@@ -602,6 +602,9 @@ const venteEspeces = await call('/api/ventes', {
   },
 })
 check('une vente en especes est acceptee', venteEspeces.status === 201, venteEspeces.body)
+check('un caissier fourni par le client est ignore', venteEspeces.body?.caissier === 'Sophie Bernard', venteEspeces.body?.caissier)
+const venteRelue = await call(`/api/ventes/${venteEspeces.body?.id}`, { token: caissierToken! })
+check('le compte connecte est conserve a la relecture', venteRelue.status === 200 && venteRelue.body?.caissier === 'Sophie Bernard', venteRelue.body)
 
 const courante = await call('/api/caisse/actuelle', { token: caissierToken! })
 check('la session ouverte est retrouvee', courante.body?.id === sessionId, courante.body?.id)

@@ -366,7 +366,6 @@ export const venteBodySchema = z
   .object({
     clientId: z.number({ message: 'Le client est requis.' }).int().positive().nullable().optional(),
     dateVente: dateTimeISO('La date de la vente'),
-    caissier: required('Le caissier', 128),
     modePaiement: z.enum(PAYMENT_MODES, { message: 'Mode de paiement invalide.' }),
     montantPaye: nonNegative('Le montant paye'),
     monnaie: nonNegative('La monnaie').optional(),

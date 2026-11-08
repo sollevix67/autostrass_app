@@ -14,7 +14,7 @@
 
 import { Router, type Request } from 'express'
 import { desc, eq, lt } from 'drizzle-orm'
-import { requireAuth, requireRole, hashPassword, validatePasswordStrength, AuthError } from './auth.js'
+import { requireAuth, requireRole, hashPassword, validatePasswordStrength, AuthError, type AuthenticatedRequest } from './auth.js'
 import { crudRoutes, handler, parseBody, requireDb, requireId, type CrudRepository } from './crud.js'
 import { requireCsrf } from './csrf.js'
 import { documentRoutes, type LinePayload } from './documentRoutes.js'
@@ -336,7 +336,6 @@ export function createApiRouter(): Router {
       return {
         client_id: (value.clientId as number | null | undefined) ?? null,
         date_vente: new Date(String(value.dateVente)),
-        caissier: value.caissier,
         total_ht: total.toFixed(2),
         montant_paye: Number(value.montantPaye).toFixed(2),
         monnaie: Number(value.monnaie ?? 0).toFixed(2),
@@ -361,16 +360,20 @@ export function createApiRouter(): Router {
      * `FOR UPDATE` dans `findOpenForUpdate`.
      */
     createHooks: (value, request) => {
+      const user = (request as AuthenticatedRequest).user
+      if (!user) {
+        throw new RepositoryError(401, 'UNAUTHENTICATED', 'Session expiree.')
+      }
+      // L'identite authentifiee est commune a l'enregistrement et a son
+      // empreinte fiscale. Un nom transmis par le client est ignore.
+      const caissier = `${user.prenom} ${user.nom}`.trim()
+
       // Resolue dans la transaction de creation : c'est elle qui doit ecrire
       // le mouvement d'encaissement, pas une transaction separee.
       let sessionId = 0
 
       return {
         before: async (tx) => {
-          const user = (request as Request & { user?: { id: number } }).user
-          if (!user) {
-            throw new RepositoryError(401, 'UNAUTHENTICATED', 'Session expiree.')
-          }
           const session = await new CashRegisterRepository(tx as never).findOpenForUpdate(tx, user.id)
           if (!session) {
             throw new RepositoryError(
@@ -380,7 +383,7 @@ export function createApiRouter(): Router {
             )
           }
           sessionId = session.id
-          return { session_id: sessionId }
+          return { session_id: sessionId, caissier }
         },
         after: async (tx, venteId) => {
           // Seules les ventes en especes touchent le tiroir. Une vente par
@@ -433,7 +436,7 @@ export function createApiRouter(): Router {
               // convertit en instant absolu, ce qui rend l'empreinte
               // reproductible independamment du fuseau de lecture.
               dateVente: String(value.dateVente),
-              caissier: String(value.caissier),
+              caissier,
               modePaiement: String(value.modePaiement),
               totalHT: (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
                 (sum, line) => sum + line.quantite * line.prixUnitaire,

@@ -1,7 +1,7 @@
 # Graph Report - autostrass_app  (2026-11-08)
 
 ## Corpus Check
-- 317 files · ~394,107 words
+- 318 files · ~394,728 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 64 file(s) not represented in the graph (top: .csv 53, .css 7, (none) 2)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0121a51d`
+- Built from commit: `9ac548e2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -195,8 +195,8 @@
 4. `PageLayout()` - 43 edges
 5. `Icon()` - 40 edges
 6. `FormInput()` - 39 edges
-7. `AppContent()` - 37 edges
-8. `useToast()` - 37 edges
+7. `useToast()` - 37 edges
+8. `AppContent()` - 37 edges
 9. `useAuth()` - 36 edges
 10. `TestTailwindConfigGenerator` - 35 edges
 
@@ -776,7 +776,7 @@ Cohesion: 0.40
 Nodes (4): Captures, Contrat, Création et modification des fournisseurs — 6 novembre 2026, Vérification reproductible
 
 ## Knowledge Gaps
-- **101 isolated node(s):** `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3`, `RFC-5321`, `Banner Design Skill` (+96 more)
+- **101 isolated node(s):** `RFC-5321`, `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3`, `Banner Design Skill` (+96 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1234 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -793,17 +793,17 @@ Nodes (4): Captures, Contrat, Création et modification des fournisseurs — 6 n
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TailwindConfigGenerator` connect `TailwindConfigGenerator` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `Tailwind Generator Defaults`, `.generate_config_string`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Theme Validation`, `Tailwind Configuration Tests`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `zod` connect `test-inventaires.ts` to `react`, `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `main.tsx`, `package.json`, `auth.ts`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3` to the rest of the system?**
+- **What connects `RFC-5321`, `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice` to the rest of the system?**
   _101 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `mysql2` connect `test-environment.ts` to `test-inventaires.ts`, `test-client-numbers.ts`, `dependencies`, `client.ts`, `test-parametres.ts`, `settingsStore.ts`, `test-stock-transfers.ts`, `package.json`, `auth.ts`, `test-fournisseurs.ts`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `toErrorMessage`, `CaisseView.tsx`, `dependencies`, `UtilisateursView.tsx`, `types/index.ts`, `main.tsx`, `package.json`, `VehiculesView.tsx`, `StockView.tsx`, `App.tsx`, `contracts.ts`?**
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
 - **Should `scripts/core.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05563093622795115 - nodes in this community are weakly interconnected._
-- **Why does `zod` connect `test-inventaires.ts` to `react`, `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `main.tsx`, `package.json`, `auth.ts`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `drizzle-orm` connect `client.ts` to `dependencies`, `Cash Database Schema`, `referentielRepositories.ts`, `resourceRoutes.ts`, `SimpleRepository`, `test-environment.ts`, `Document Data Repositories`, `simpleRepositories.ts`, `package.json`, `Cash Register Repository`, `auth.ts`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._

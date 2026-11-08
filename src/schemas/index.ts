@@ -166,7 +166,6 @@ export const cartLineSchema = documentLineSchema
 const venteBase = z.object({
   clientId: optionalRef('Le client'),
   dateVente: dateTimeISO('La date de vente'),
-  caissier: required('Le caissier').max(128, 'Nom de caissier trop long.'),
   modePaiement: z.enum(['espèces', 'carte', 'chèque'], { message: 'Mode de paiement invalide.' }),
   montantPaye: nonNegative('Le montant paye'),
 })

@@ -744,10 +744,10 @@
     "semantic_hash": ""
   },
   "src/main.tsx": {
-    "mtime": 1790362653.8077307,
-    "seen": 1791062054.8104172,
-    "ast_hash": "a3150907ddf2842367caa98e12a33298",
-    "semantic_hash": "a3150907ddf2842367caa98e12a33298"
+    "mtime": 1794126930.5763607,
+    "seen": 1794127073.5143852,
+    "ast_hash": "73dc59079cc6b161b8de5d7ae4f6f18b",
+    "semantic_hash": ""
   },
   "src/options.ts": {
     "mtime": 1793907456.3441772,
@@ -1374,15 +1374,15 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1789896445.0,
-    "seen": 1791573312.3212202,
-    "ast_hash": "a3299808b6a64f1afbf2077d985cb4ea",
-    "semantic_hash": "a3299808b6a64f1afbf2077d985cb4ea"
+    "mtime": 1794126930.5753555,
+    "seen": 1794127073.5396137,
+    "ast_hash": "7035d625225c9d4076de55ea88f22774",
+    "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794090513.4234154,
-    "seen": 1794090518.2572777,
-    "ast_hash": "79d287f44d8765a7af9561933d8e02f1",
+    "mtime": 1794127064.1622543,
+    "seen": 1794127073.5396173,
+    "ast_hash": "1d228900c5a66e83abcf3c3b3dc2922d",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2295,6 +2295,36 @@
     "mtime": 1794090481.6414149,
     "seen": 1794090518.229352,
     "ast_hash": "b16d2263b75dd0718eee0a9c17bba1fa",
+    "semantic_hash": ""
+  },
+  "scripts/test-french-validation-ui.mjs": {
+    "mtime": 1794127023.7939873,
+    "seen": 1794127073.4968529,
+    "ast_hash": "2cbd1e2bec82ad9d505f68990859721b",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/validation-fr/verification.json": {
+    "mtime": 1794127027.095949,
+    "seen": 1794127073.5088203,
+    "ast_hash": "59dac8d08a78aacf2a4cfaca8597e6c7",
+    "semantic_hash": ""
+  },
+  "src/utils/frenchValidation.ts": {
+    "mtime": 1794127064.160753,
+    "seen": 1794127073.5162563,
+    "ast_hash": "d1d7e3099d3ceb245dcf8dad536f862b",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/validation-fr/emplacement-desktop.png": {
+    "mtime": 1794127026.0929427,
+    "seen": 1794127073.5561087,
+    "ast_hash": "bf10ab5599fbf9e98f4605a326b9f8d2",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/validation-fr/emplacement-mobile-dark.png": {
+    "mtime": 1794127026.1956394,
+    "seen": 1794127073.556113,
+    "ast_hash": "21e202f395bcdefe19fcd367dd57c8cb",
     "semantic_hash": ""
   },
   "package-lock.json": {

@@ -79,7 +79,6 @@ export default function VentesComptoirView() {
     defaultValues: {
       clientId: null as number | null,
       dateVente: todayIso(),
-      caissier: `${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim() || 'Caisse',
       modePaiement: 'espèces' as 'espèces' | 'carte' | 'chèque',
       montantPaye: 0,
     },
@@ -93,7 +92,6 @@ export default function VentesComptoirView() {
   const FIELD_LABELS = {
     clientId: 'Client',
     dateVente: 'Date de vente',
-    caissier: 'Caisse',
     modePaiement: 'Mode de paiement',
     montantPaye: 'Montant paye',
   } satisfies Record<string, string>
@@ -138,10 +136,12 @@ export default function VentesComptoirView() {
   }
 
   const submit = form.handleSubmit(async (values) => {
+    if (!user) return
+
     const created = await create({
       clientId: values.clientId,
       dateVente: values.dateVente,
-      caissier: values.caissier,
+      caissier: `${user.prenom} ${user.nom}`.trim(),
       modePaiement: values.modePaiement,
       montantPaye: values.montantPaye,
       // La monnaie n'est pas un champ saisi : elle vaut l'encaissement moins
@@ -160,7 +160,6 @@ export default function VentesComptoirView() {
     form.reset({
       clientId: null,
       dateVente: todayIso(),
-      caissier: `${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim() || 'Caisse',
       modePaiement: 'espèces',
       montantPaye: 0,
     })
@@ -265,13 +264,6 @@ export default function VentesComptoirView() {
                 type="date"
                 register={register}
                 error={form.formState.errors.dateVente?.message}
-                required
-              />
-              <FormInput
-                label="Caissier"
-                name="caissier"
-                register={register}
-                error={form.formState.errors.caissier?.message}
                 required
               />
               <FormSelect
