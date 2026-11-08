@@ -1,5 +1,35 @@
 # Passation — Autostrass App
 
+## Inspection complète Figma — prérequis — 2026-11-08
+
+**Demande** : utiliser `figma:figma-use`, puis « inspecter tout ». Le périmètre
+retenu est l'ensemble des pages, composants, variantes, instances, variables,
+modes et styles du fichier Figma cible, avec contrôle visuel des écrans.
+La compétence, l'index de l'API Plugin et les pièges courants ont été lus ;
+les consignes du dépôt, le design system et l'inventaire local existant ont
+été consultés.
+
+**Prérequis manquants** : le lien du fichier a été demandé ; aucun lien Figma
+cible n'a été trouvé dans les sources et documents consultés. Aucun outil
+MCP Figma ni outil de découverte `ToolSearch` n'est exposé dans cette session.
+L'inspection distante reste à effectuer dès que le fichier cible et l'accès
+aux outils sont disponibles. Aucune modification Figma effectuée.
+
+**Graphify vérifié** : les empreintes MD5 des **132 sources TS/TSX/MJS**
+hors `.github/` correspondent au manifeste ; aucune source versionnée de
+ces types ne manque. **2 820 nœuds, 5 752 liens, 180 communautés** :
+identifiants uniques et aucun lien orphelin. Les données JSON embarquées
+dans `graph.html` contiennent les mêmes identifiants et le même nombre de
+liens, sans lien orphelin. Code inchangé, aucune réindexation AST nécessaire.
+Métadonnée de départ `9ac548e` ; analyse sémantique documentaire non relancée
+et limites existantes conservées.
+
+**Livraison** : mise à jour documentaire destinée à un commit et à un push
+sur `origin/main`, dont la tête initiale `98c085a` a été vérifiée. Build et
+tests applicatifs non relancés pour cette modification documentaire.
+
+---
+
 ## Préparation de la bibliothèque Figma — 2026-11-08
 
 **Demande** : appliquer `figma:figma-generate-library` au projet Autostrass.
