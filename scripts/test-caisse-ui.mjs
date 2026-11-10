@@ -10,10 +10,23 @@ import { preview } from 'vite'
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
 const output = resolve('specs/screenshots/caisse-cloture')
 const openingOutput = resolve('specs/screenshots/caisse-ouverture')
+const settingsOutput = resolve('specs/screenshots/parametres-caisse')
 const denominations = [500, 200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
 const checks = [], errors = [], writes = []
 const openingWrites = []
+const settingsWrites = []
+let maxFondsCaisse = 10000, settingsReads = 0, configurationReads = 0
+let configurationGate, configurationFailed = false, settingsGate, failSettingsNext = false
+let updatedAt = '2026-11-10T08:00:00.000Z'
 let server, browser, session, role = 'caissier', failNext = false, responseGate, nextVariance
+
+const settings = () => ({
+  caisse: { maxFondsCaisse }, api: { maxRequests: 100, windowSeconds: 900 },
+  login: { maxAttempts: 10, windowSeconds: 900, blockSeconds: 900 },
+  database: { host: 'localhost', port: 3306, database: 'fixture', user: 'fixture', passwordConfigured: false, restartRequired: false },
+  turnstile: { enabled: false, siteKey: '', hostnames: [], secretConfigured: false },
+  https: { enabled: false, port: 3443, httpMode: 'serve', publicOrigin: '', restartRequired: false }, updatedAt,
+})
 
 function check(condition, label) { assert.ok(condition, label); checks.push(label) }
 const euros = (value) => `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} €`
@@ -28,19 +41,45 @@ try {
     const request = route.request()
     const path = new URL(request.url()).pathname
     if (request.method() === 'GET') {
+      if (path === '/api/caisse/configuration') {
+        configurationReads++
+        if (configurationGate) await configurationGate
+        return configurationFailed
+          ? route.fulfill({ status: 503, json: { error: 'CONFIGURATION_UNAVAILABLE', message: 'Configuration de caisse indisponible.' } })
+          : route.fulfill({ status: 200, json: { maxFondsCaisse } })
+      }
+      if (path === '/api/parametres') {
+        settingsReads++
+        return route.fulfill({ status: role === 'admin' ? 200 : 403, json: role === 'admin' ? settings() : { error: 'FORBIDDEN' } })
+      }
       const json = path === '/api/auth/me' ? { user: { id: 7, prenom: 'Camille', nom: 'Test', role, email: 'caisse@example.test' }, csrfToken: 'caisse-fixture' }
         : path === '/api/caisse/actuelle' ? session
         : path === '/api/dashboard' ? { stockValue: 0, references: 0, lowStock: 0, pendingOrders: 0, lowStockItems: [], activity: [] }
         : []
       return route.fulfill({ status: 200, json })
     }
-    assert.equal(request.method(), 'POST')
     assert.equal(request.headers()['x-csrf-token'], 'caisse-fixture')
     const body = request.postDataJSON()
+    if (path === '/api/parametres/caisse') {
+      assert.equal(request.method(), 'PUT')
+      assert.equal(role, 'admin')
+      assert.deepEqual(Object.keys(body), ['maxFondsCaisse'])
+      settingsWrites.push(body)
+      if (settingsGate) await settingsGate
+      if (failSettingsNext) {
+        failSettingsNext = false
+        return route.fulfill({ status: 503, json: { error: 'SETTINGS_WRITE_FAILED', message: 'Sauvegarde des paramètres indisponible.' } })
+      }
+      maxFondsCaisse = body.maxFondsCaisse
+      updatedAt = new Date().toISOString()
+      return route.fulfill({ status: 200, json: settings() })
+    }
+    assert.equal(request.method(), 'POST')
     if (path === '/api/caisse/ouvrir') {
       assert.ok(Object.keys(body).every((key) => key === 'fondsCaisse' || key === 'notes'))
-      assert.ok(Number.isFinite(body.fondsCaisse) && body.fondsCaisse >= 0 && body.fondsCaisse <= 10000)
+      assert.ok(Number.isFinite(body.fondsCaisse) && body.fondsCaisse >= 0)
       openingWrites.push(body)
+      if (body.fondsCaisse > maxFondsCaisse) return route.fulfill({ status: 422, json: { error: 'VALIDATION_ERROR', message: 'Données invalides.', details: { fondsCaisse: `Le fond de caisse ne peut pas dépasser ${euros(maxFondsCaisse)}.` } } })
       if (responseGate) await responseGate
       if (failNext) {
         failNext = false
@@ -236,6 +275,7 @@ try {
   const openingForm = page.locator('form.caisse-opening-form')
   const openingQuantity = (denomination) => openingForm.locator(`input[name="comptage.${denominations.indexOf(denomination)}.quantite"]`)
   const openingSubmit = () => openingForm.getByRole('button', { name: 'Ouvrir la caisse', exact: true })
+  const refreshCash = () => page.locator('.page-actions').getByRole('button', { name: 'Actualiser', exact: true })
   async function openingScenario() {
     session = null
     role = 'caissier'
@@ -267,7 +307,7 @@ try {
   await openingQuantity(500).fill('20')
   await openingQuantity(0.01).fill('1')
   await openingSubmit().click()
-  await openingForm.getByRole('alert').filter({ hasText: '10 000 €' }).first().waitFor({ state: 'visible' })
+  await openingForm.getByRole('alert').filter({ hasText: euros(10000) }).first().waitFor({ state: 'visible' })
   check(openingWrites.length === 0, 'Ouverture : plafond de 10 000 € contrôlé avant écriture')
 
   await openingScenario()
@@ -333,7 +373,141 @@ try {
   check(await openingForm.count() === 0, 'Ouverture : formulaire absent en lecture seule')
   check(errors.length === 0, `Ouverture : aucune erreur JavaScript : ${errors.join(', ')}`)
   await writeFile(resolve(openingOutput, 'verification.json'), JSON.stringify({ checks: checks.slice(closingChecks), errors, writes: openingWrites.length, api: 'simulée, aucune écriture MariaDB' }, null, 2) + '\n')
-  console.log(`${checks.length} contrôles Caisse réussis (${closingChecks} clôture, ${checks.length - closingChecks} ouverture) ; ${writes.length + openingWrites.length} requêtes simulées.`)
+  const originalChecks = checks.length
+  const originalOpeningWrites = openingWrites.length
+  await mkdir(settingsOutput, { recursive: true })
+  role = 'admin'
+  await page.goto(`${base}/parametres`)
+  await page.locator('.parametre-card[href="/parametres/caisse"]').click()
+  const settingsForm = page.locator('form.parametre-detail')
+  const ceiling = settingsForm.getByLabel('Plafond du fond de caisse à l’ouverture (€)')
+  const saveSettings = () => settingsForm.getByRole('button', { name: 'Enregistrer', exact: true })
+  await ceiling.waitFor({ state: 'visible' })
+  check(await ceiling.inputValue() === '10000', 'Paramètres Caisse : valeur par défaut chargée depuis le serveur')
+  check(await page.getByRole('navigation', { name: 'Rubriques des paramètres' }).getByRole('link', { name: 'Caisse', exact: true }).count() === 1, 'Paramètres Caisse : rubrique présente dans la navigation admin')
+  for (const value of ['', '-1', '0.001', '10000000000']) {
+    await ceiling.fill(value)
+    await settingsForm.dispatchEvent('submit')
+    await settingsForm.getByRole('alert').waitFor({ state: 'visible' })
+    check(settingsWrites.length === 0 && maxFondsCaisse === 10000, `Paramètres Caisse : plafond ${value || 'vide'} refusé sans sauvegarde`)
+  }
+  await ceiling.fill('12000.50')
+  let releaseSettings
+  settingsGate = new Promise((resolve) => { releaseSettings = resolve })
+  failSettingsNext = true
+  await saveSettings().click()
+  await settingsForm.getByRole('button', { name: 'Traitement…' }).waitFor({ state: 'visible' })
+  check(await ceiling.isDisabled(), 'Paramètres Caisse : saisie bloquée pendant la sauvegarde')
+  await settingsForm.dispatchEvent('submit')
+  check(settingsWrites.length === 1, 'Paramètres Caisse : double sauvegarde bloquée')
+  releaseSettings()
+  settingsGate = undefined
+  await settingsForm.getByRole('alert').filter({ hasText: 'Sauvegarde des paramètres indisponible.' }).waitFor({ state: 'visible' })
+  check(await ceiling.inputValue() === '12000.50' && maxFondsCaisse === 10000, 'Paramètres Caisse : erreur visible, saisie conservée et plafond précédent maintenu')
+  await saveSettings().click()
+  await page.getByText('Paramètres enregistrés et appliqués.', { exact: true }).waitFor({ state: 'visible' })
+  check(settingsWrites.at(-1).maxFondsCaisse === 12000.5 && maxFondsCaisse === 12000.5, 'Paramètres Caisse : sauvegarde en euros et centimes, plafond supérieur à 10 000 €')
+  await page.reload()
+  await ceiling.waitFor({ state: 'visible' })
+  check(await ceiling.inputValue() === '12000.5', 'Paramètres Caisse : valeur sauvegardée relue après rechargement')
+  for (const width of [375, 768, 1024, 1440]) {
+    for (const theme of ['light', 'dark']) {
+      await page.setViewportSize({ width, height: 1000 })
+      await page.evaluate((theme) => { document.documentElement.dataset.theme = theme }, theme)
+      check(await settingsForm.evaluate((node) => node.scrollWidth <= node.clientWidth && document.documentElement.scrollWidth <= innerWidth), `Paramètres Caisse sans débordement à ${width}px, thème ${theme}`)
+      if (width === 375 || width === 1440) {
+        await page.evaluate(() => document.fonts.ready)
+        await page.screenshot({ path: resolve(settingsOutput, `caisse-${width === 375 ? 'mobile' : 'desktop'}-${theme}.png`), fullPage: true })
+      }
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  for (const deniedRole of ['caissier', 'magasinier']) {
+    const previousReads = settingsReads
+    role = deniedRole
+    await page.goto(`${base}/parametres/caisse`)
+    await page.getByRole('heading', { name: 'Accès réservé', exact: true }).waitFor({ state: 'visible' })
+    check(await settingsForm.count() === 0 && settingsReads === previousReads, `Paramètres Caisse : accès ${deniedRole} refusé avant lecture des paramètres`)
+  }
+
+  await openingScenario()
+  await expectOpeningTotal(euros(12000.5))
+  check(true, 'Ouverture : plafond administré chargé sans redémarrage')
+  await openingQuantity(500).fill('24')
+  await openingQuantity(0.5).fill('1')
+  await openingQuantity(0.01).fill('1')
+  const beforeAboveLimit = openingWrites.length
+  await openingSubmit().click()
+  await openingForm.getByRole('alert').filter({ hasText: euros(12000.5) }).first().waitFor({ state: 'visible' })
+  check(openingWrites.length === beforeAboveLimit, 'Ouverture : plafond administré dépassé d’un centime refusé avant écriture')
+  await openingQuantity(0.01).fill('0')
+  await openingSubmit().click()
+  await openingForm.waitFor({ state: 'hidden' })
+  check(openingWrites.at(-1).fondsCaisse === 12000.5, 'Ouverture : nouveau plafond exact accepté au-dessus de 10 000 €')
+  maxFondsCaisse = 100.25
+  await refreshCash().click()
+  await page.waitForFunction(() => !document.querySelector('.page-actions button')?.disabled)
+  check((await text(page.locator('.caisse-summary'))).includes(euros(12000.5)), 'Plafond abaissé : fond de la session ouverte conservé')
+  await trigger.click()
+  await quantity(500).fill('24')
+  await quantity(0.5).fill('1')
+  await expectSummary('Comptage conforme')
+  check(true, 'Plafond abaissé : clôture indépendante du plafond d’ouverture')
+  await page.keyboard.press('Escape')
+
+  await openingScenario()
+  await expectOpeningTotal('100,25 €')
+  await openingQuantity(100).fill('1')
+  await openingQuantity(0.2).fill('1')
+  await openingQuantity(0.05).fill('1')
+  await openingForm.locator('textarea').fill('Comptage conservé après actualisation.')
+  maxFondsCaisse = 80
+  const beforeRefresh = configurationReads
+  await refreshCash().click()
+  await expectOpeningTotal(`Plafond autorisé : ${euros(80)}`)
+  await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
+  check(configurationReads > beforeRefresh && await openingQuantity(100).inputValue() === '1' && await openingForm.locator('textarea').inputValue() === 'Comptage conservé après actualisation.', 'Actualiser recharge le plafond et conserve quantités et notes')
+  const beforeLowerLimit = openingWrites.length
+  await openingSubmit().click()
+  await openingForm.getByRole('alert').filter({ hasText: euros(80) }).first().waitFor({ state: 'visible' })
+  check(openingWrites.length === beforeLowerLimit, 'Actualiser applique le plafond abaissé à la validation du comptage en cours')
+  // Le serveur relit aussi son plafond si un autre poste le modifie entre lecture et envoi.
+  maxFondsCaisse = 200
+  await refreshCash().click()
+  await expectOpeningTotal(`Plafond autorisé : ${euros(200)}`)
+  await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
+  maxFondsCaisse = 80
+  await openingSubmit().click()
+  await page.getByRole('alert').filter({ hasText: '80,00 €' }).first().waitFor({ state: 'visible' })
+  check(await openingQuantity(100).inputValue() === '1' && await openingForm.isVisible(), 'Changement concurrent de plafond : refus API visible et comptage conservé')
+
+  configurationFailed = true
+  await refreshCash().click()
+  await page.getByRole('alert').filter({ hasText: 'Configuration de caisse indisponible.' }).waitFor({ state: 'visible' })
+  check(await openingSubmit().isDisabled() && await openingQuantity(100).inputValue() === '1', 'Configuration indisponible : ouverture bloquée et comptage conservé')
+  const beforeUnavailable = openingWrites.length
+  await openingForm.dispatchEvent('submit')
+  check(openingWrites.length === beforeUnavailable, 'Configuration indisponible : aucun envoi même par soumission du formulaire')
+  configurationFailed = false
+  maxFondsCaisse = 200
+  await refreshCash().click()
+  await expectOpeningTotal(`Plafond autorisé : ${euros(200)}`)
+  await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
+  check(await openingQuantity(100).inputValue() === '1', 'Configuration rétablie : saisie précédente utilisable sans rechargement de page')
+
+  let releaseConfiguration
+  configurationGate = new Promise((resolve) => { releaseConfiguration = resolve })
+  await page.goto(`${base}/caisse`)
+  await openingForm.waitFor({ state: 'visible' })
+  check(await openingSubmit().isDisabled(), 'Configuration en cours de chargement : ouverture bloquée')
+  await openingForm.dispatchEvent('submit')
+  check(openingWrites.length === beforeUnavailable, 'Configuration en cours de chargement : aucun envoi')
+  releaseConfiguration()
+  configurationGate = undefined
+  await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
+  check(errors.length === 0, `Paramètres Caisse : aucune erreur JavaScript : ${errors.join(', ')}`)
+  await writeFile(resolve(settingsOutput, 'verification.json'), JSON.stringify({ checks: checks.slice(originalChecks), errors, settingsWrites: settingsWrites.length, openingWrites: openingWrites.length - originalOpeningWrites, api: 'simulée, aucune écriture MariaDB' }, null, 2) + '\n')
+  console.log(`${checks.length} contrôles réussis (${closingChecks} clôture, ${originalChecks - closingChecks} ouverture, ${checks.length - originalChecks} paramètres et plafond dynamique) ; API simulée.`)
 } finally {
   await browser?.close()
   await new Promise((resolve, reject) => server ? server.httpServer.close((error) => error ? reject(error) : resolve()) : resolve())

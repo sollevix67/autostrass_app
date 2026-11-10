@@ -1,5 +1,5 @@
 import { deepEqual, equal, ok, rejects, throws } from 'node:assert/strict'
-import { mkdtemp, readFile, rename, mkdir, rmdir, unlink } from 'node:fs/promises'
+import { mkdtemp, readFile, writeFile, rename, mkdir, rmdir, unlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import express from 'express'
@@ -7,6 +7,8 @@ import selfsigned from 'selfsigned'
 
 const directory = await mkdtemp(join(tmpdir(), 'autostrass-settings-unit-'))
 process.env.AUTOSTRASS_SETTINGS_FILE = join(directory, 'settings.json')
+// Configuration historique, sans rubrique Caisse.
+await writeFile(process.env.AUTOSTRASS_SETTINGS_FILE, '{}')
 const { getSettings, updateSettings, publicSettings, settingsFile } = await import('../server/services/settingsStore.js')
 const { validateCertificate } = await import('../server/services/httpsSettings.js')
 const { verifyTurnstile } = await import('../server/services/turnstile.js')
@@ -16,19 +18,31 @@ let checks = 0
 function pass(label: string) { checks++; console.log(`OK ${label}`) }
 
 try {
+  equal(getSettings().caisse.maxFondsCaisse, 10000)
+  pass('Ancienne configuration compatible avec le plafond de caisse par défaut')
   await Promise.all([
     updateSettings((previous) => ({ ...previous, api: { maxRequests: 10, windowSeconds: 10 } }), 1),
     updateSettings((previous) => ({ ...previous, login: { maxAttempts: 3, windowSeconds: 10, blockSeconds: 10 } }), 2),
     updateSettings((previous) => ({ ...previous, turnstile: { enabled: false, siteKey: 'public-test', secretKey: 'private-test', hostnames: ['localhost'] } }), 3),
+    updateSettings((previous) => ({ ...previous, caisse: { maxFondsCaisse: 12000.5 } }), 4),
   ])
   equal(getSettings().api.maxRequests, 10)
   equal(getSettings().login.maxAttempts, 3)
   equal(getSettings().turnstile.secretKey, 'private-test')
+  equal(getSettings().caisse.maxFondsCaisse, 12000.5)
   deepEqual(JSON.parse(await readFile(settingsFile, 'utf8')), getSettings())
   ok(!JSON.stringify(publicSettings()).includes('private-test'))
   const copy = getSettings(); copy.api.maxRequests = 999
   equal(getSettings().api.maxRequests, 10)
   pass('Écritures concurrentes préservées, fichier persistant, secrets masqués et état isolé')
+
+  for (const maxFondsCaisse of [-1, 0.001, Infinity, 10_000_000_000]) {
+    const before = getSettings()
+    await rejects(updateSettings((value) => ({ ...value, caisse: { maxFondsCaisse } }), 1))
+    deepEqual(getSettings(), before)
+    deepEqual(JSON.parse(await readFile(settingsFile, 'utf8')), before)
+  }
+  pass('Plafonds invalides refusés sans modification en mémoire ni sur disque')
 
   const previous = getSettings()
   await rename(settingsFile, `${settingsFile}.backup`)

@@ -33,11 +33,20 @@ try {
   equal(taxes.status, 200)
   ok(taxes.data.some((tax) => tax.id === 1 && tax.taux === 20))
   equal((await call('/parametres')).status, 401)
+  equal((await call('/caisse/configuration')).status, 401)
   for (const session of [magasinier, caissier]) {
     equal((await call('/parametres', session)).status, 403)
     equal((await call('/categories', session, 'POST', { code: 'X', libelle: 'X', actif: true })).status, 403)
     equal((await call('/secteurs', session, 'POST', { code: 'X', libelle: 'X', actif: true })).status, 403)
     equal((await call('/parametres/api', session, 'PUT', { maxRequests: 500, windowSeconds: 900 })).status, 403)
+    equal((await call('/parametres/caisse', session, 'PUT', { maxFondsCaisse: 12000.5 })).status, 403)
+    const cash = await call('/caisse/configuration', session)
+    equal(cash.status, 200)
+    deepEqual(cash.data, { maxFondsCaisse: 10000 })
+  }
+  equal((await call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse: 12000.5 }, false)).status, 403)
+  for (const maxFondsCaisse of [-1, 100.001, 10_000_000_000, null, '12000']) {
+    equal((await call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse })).status, 422)
   }
   equal((await call('/parametres/api', admin, 'PUT', { maxRequests: 500, windowSeconds: 900 }, false)).status, 403)
   equal((await call('/parametres/api', admin, 'PUT', { maxRequests: -1, windowSeconds: 900 })).status, 422)
@@ -48,10 +57,12 @@ try {
   const results = await Promise.all([
     call('/parametres/api', admin, 'PUT', { maxRequests: 400, windowSeconds: 600 }),
     call('/parametres/connexion', admin, 'PUT', { maxAttempts: 20, windowSeconds: 300, blockSeconds: 60 }),
+    call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse: 12000.5 }),
   ])
   results.forEach((result) => equal(result.status, 200))
   const stored = (await call<ApiParametres>('/parametres', admin)).data
   equal(stored.api.maxRequests, 400); equal(stored.login.maxAttempts, 20)
+  equal(stored.caisse.maxFondsCaisse, 12000.5)
   equal('password' in stored.database, false)
   equal('secretKey' in stored.turnstile, false)
   equal('privateKeyPem' in stored.https, false)
@@ -60,6 +71,26 @@ try {
   equal((await call('/parametres/base-de-donnees', admin, 'PUT', { ...before.database, port: 1 })).status, 422)
   deepEqual((await call<ApiParametres>('/parametres', admin)).data.database, before.database)
   pass('Sauvegardes concurrentes, secrets masqués, test MariaDB et conservation après refus')
+
+  equal((await call('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 12000.51 })).status, 422)
+  equal((await call('/caisse/actuelle', caissier)).data, null)
+  const opening = await call<{ id: number; fondsCaisse: number }>('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 12000.5 })
+  equal(opening.status, 201)
+  equal(opening.data.fondsCaisse, 12000.5)
+  equal((await call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse: 100.25 })).status, 200)
+  equal((await call<{ fondsCaisse: number }>('/caisse/actuelle', caissier)).data.fondsCaisse, 12000.5)
+  equal((await call(`/caisse/${opening.data.id}/cloturer`, caissier, 'POST', { comptage: [{ denomination: 500, quantite: 24 }, { denomination: 0.5, quantite: 1 }] })).status, 200)
+  equal((await call('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 100.26 })).status, 422)
+  const reduced = await call<{ id: number }>('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 100.25 })
+  equal(reduced.status, 201)
+  equal((await call(`/caisse/${reduced.data.id}/cloturer`, caissier, 'POST', { comptage: [{ denomination: 100, quantite: 1 }, { denomination: 0.2, quantite: 1 }, { denomination: 0.05, quantite: 1 }] })).status, 200)
+  equal((await call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse: 0 })).status, 200)
+  equal((await call('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 0.01 })).status, 422)
+  const zero = await call<{ id: number }>('/caisse/ouvrir', caissier, 'POST', { fondsCaisse: 0 })
+  equal(zero.status, 201)
+  equal((await call(`/caisse/${zero.data.id}/cloturer`, caissier, 'POST', { comptage: [] })).status, 200)
+  equal((await call('/parametres/caisse', admin, 'PUT', { maxFondsCaisse: 12345.67 })).status, 200)
+  pass('Plafond de caisse appliqué à chaud, centime au-dessus refusé, fond enregistré conservé et plafond nul')
 
   const category = (await call<Referentiel>('/categories', admin, 'POST', { code: 'test-parameter', libelle: 'Catégorie test', actif: true }))
   equal(category.status, 201)
@@ -119,6 +150,7 @@ try {
   await environment.restartApi()
   const restarted = await login('marie.laurent@autostrass.fr')
   const settings = (await call<ApiParametres>('/parametres', restarted)).data
+  equal(settings.caisse.maxFondsCaisse, 12345.67)
   equal(settings.api.maxRequests, 400); equal(settings.login.maxAttempts, 20)
   equal(settings.https.active, true); equal(settings.https.restartRequired, false)
   const httpsStatus = await new Promise<number>((resolve, reject) => {

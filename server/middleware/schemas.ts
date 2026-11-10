@@ -15,6 +15,7 @@
  */
 
 import { z } from 'zod'
+import { fondsCaisseSchema } from '../../src/schemas/parametres.js'
 import { USER_ROLES, CLIENT_TYPES, VEHICLE_TYPES, VEHICLE_STATUSES, ORDER_STATUSES, DELIVERY_STATUSES, PAYMENT_MODES, DELIVERY_MODES } from '../db/schema.js'
 import { sanitizeCode, sanitizeText, normalizeText } from './sanitize.js'
 
@@ -454,16 +455,11 @@ export const statutPatchSchema = z.object({
 /**
  * Ouverture de session.
  *
- * Le fond de caisse est borne : au-dela de 10 000 €, il ne s'agit plus d'un
- * fond de caisse mais d'une remise de tresorerie, qui releve d'une autre
- * procedure. Sans cette borne, une faute de frappe creerait un ecart de
- * plusieurs milliers d'euros a la cloture.
+ * Le plafond est défini dans Administration → Paramètres → Caisse
+ * et relu à chaque ouverture pour appliquer les changements immédiatement.
  */
-export const caisseOuvertureSchema = z.object({
-  fondsCaisse: nonNegative('Le fond de caisse').refine(
-    (value) => value <= 10_000,
-    'Le fond de caisse ne peut pas depasser 10 000 EUR.',
-  ),
+export const caisseOuvertureSchema = (maxFondsCaisse: number) => z.object({
+  fondsCaisse: fondsCaisseSchema(maxFondsCaisse),
   notes: optionalText('Les notes'),
 })
 
@@ -515,7 +511,7 @@ export type UtilisateurInput = z.output<typeof utilisateurBodySchema>
 export type UtilisateurPatch = z.output<typeof utilisateurPatchSchema>
 export type LivraisonInput = z.output<typeof livraisonBodySchema>
 export type LivraisonPatch = z.output<typeof livraisonPatchSchema>
-export type CaisseOuverture = z.output<typeof caisseOuvertureSchema>
+export type CaisseOuverture = z.output<ReturnType<typeof caisseOuvertureSchema>>
 export type CaisseCloture = z.output<typeof caisseClotureSchema>
 
 /** Valeurs d'un document apres validation complete (entete + lignes). */

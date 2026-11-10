@@ -20,6 +20,7 @@ import { requireCsrf } from './csrf.js'
 import { documentRoutes, type LinePayload } from './documentRoutes.js'
 import { fingerprintVente, GENESIS_HASH } from './compliance.js'
 import * as schema from '../db/schema.js'
+import { getSettings } from '../services/settingsStore.js'
 import {
   caisseClotureSchema,
   caisseOuvertureSchema,
@@ -540,6 +541,8 @@ export function createApiRouter(): Router {
   // « actuelle » et repondrait 400 au lieu de renvoyer la session ouverte.
   const caisseRouter = Router()
   router.use('/caisse', caisseRouter)
+  // Lecture métier authentifiée, sans exposer les paramètres administratifs.
+  caisseRouter.get('/configuration', (_request, response) => response.json(getSettings().caisse))
 
   /** Session ouverte du caissier connecte, ou `null` s'il n'en a pas. */
   caisseRouter.get(
@@ -605,7 +608,7 @@ export function createApiRouter(): Router {
       if (!client) return
       const user = (request as Request & { user?: { id: number; nom: string; prenom: string } }).user
       if (!user) return
-      const value = parseBody(caisseOuvertureSchema, request.body)
+      const value = parseBody(caisseOuvertureSchema(getSettings().caisse.maxFondsCaisse), request.body)
 
       const opened = await new CashRegisterRepository(client).open({
         utilisateurId: user.id,

@@ -43,6 +43,7 @@ import ParametresView from './views/parametres/ParametresView'
 import BaseDonneesView from './views/parametres/BaseDonneesView'
 import LimitesApiView from './views/parametres/LimitesApiView'
 import ConnexionView from './views/parametres/ConnexionView'
+import CaisseSettingsView from './views/parametres/CaisseSettingsView'
 import EmplacementsView from './views/parametres/EmplacementsView'
 import SecteursView from './views/parametres/SecteursView'
 import CategoriesView from './views/parametres/CategoriesView'
@@ -236,6 +237,7 @@ function AppContent() {
                 <Route path="base-de-donnees" element={<BaseDonneesView />} />
                 <Route path="limites-api" element={<LimitesApiView />} />
                 <Route path="connexion" element={<ConnexionView />} />
+                <Route path="caisse" element={<CaisseSettingsView />} />
                 <Route path="secteurs" element={<SecteursView />} />
                 <Route path="categories" element={<CategoriesView />} />
                 <Route path="https" element={<HttpsView />} />

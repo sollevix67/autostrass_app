@@ -5,16 +5,18 @@ import { useRemoteValue } from '../../hooks/useRemoteValue'
 import { useToast } from '../../components/useToast'
 import { api, toErrorMessage } from '../../services/api'
 import type { ApiParametres } from '../../services/contracts'
-import { apiLimitsSchema, loginLimitsSchema, databaseSettingsSchema } from '../../schemas/parametres'
+import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, databaseSettingsSchema } from '../../schemas/parametres'
 
-type Section = 'api' | 'connexion' | 'base-de-donnees'
-const fields = {
+type Section = 'api' | 'connexion' | 'caisse' | 'base-de-donnees'
+type ConfigurationField = { key: string; label: string; type: string; step?: string; min?: number; max?: number; required?: boolean }
+const fields: Record<Section, readonly ConfigurationField[]> = {
   api: [{ key: 'maxRequests', label: 'Requêtes autorisées', type: 'number' }, { key: 'windowSeconds', label: 'Période (secondes)', type: 'number' }],
   connexion: [{ key: 'maxAttempts', label: 'Échecs autorisés par compte', type: 'number' }, { key: 'windowSeconds', label: 'Période de comptage (secondes)', type: 'number' }, { key: 'blockSeconds', label: 'Durée du blocage (secondes)', type: 'number' }],
+  caisse: [{ key: 'maxFondsCaisse', label: 'Plafond du fond de caisse à l’ouverture (€)', type: 'number', step: '0.01', min: 0, max: 9_999_999_999.99, required: true }],
   'base-de-donnees': [{ key: 'host', label: 'Serveur', type: 'text' }, { key: 'port', label: 'Port', type: 'number' }, { key: 'database', label: 'Nom de la base', type: 'text' }, { key: 'user', label: 'Utilisateur MariaDB', type: 'text' }, { key: 'password', label: 'Mot de passe', type: 'password' }],
 } as const
-const keys = { api: 'api', connexion: 'login', 'base-de-donnees': 'database' } as const
-const schemas = { api: apiLimitsSchema, connexion: loginLimitsSchema, 'base-de-donnees': databaseSettingsSchema }
+const keys = { api: 'api', connexion: 'login', caisse: 'caisse', 'base-de-donnees': 'database' } as const
+const schemas = { api: apiLimitsSchema, connexion: loginLimitsSchema, caisse: caisseSettingsSchema, 'base-de-donnees': databaseSettingsSchema }
 
 function ConfigurationForm({ section, data, onSaved }: { section: Section; data: ApiParametres; onSaved: (value: ApiParametres) => void }) {
   const toast = useToast()
@@ -26,7 +28,7 @@ function ConfigurationForm({ section, data, onSaved }: { section: Section; data:
 
   async function submit(testOnly = false) {
     if (pending.current) return
-    const body = Object.fromEntries(fields[section].filter((field) => field.type !== 'password' || values[field.key] !== '').map((field) => [field.key, field.type === 'number' ? Number(values[field.key]) : values[field.key]]))
+    const body = Object.fromEntries(fields[section].filter((field) => field.type !== 'password' || values[field.key] !== '').map((field) => [field.key, field.type === 'number' ? values[field.key].trim() === '' ? NaN : Number(values[field.key]) : values[field.key]]))
     const parsed = schemas[section].safeParse(body)
     if (!parsed.success) { setError(parsed.error.issues.map((issue) => `${fields[section].find((field) => field.key === issue.path[0])?.label ?? 'Champ'} : ${issue.message}`).join(' ')); return }
     pending.current = true
@@ -49,9 +51,9 @@ function ConfigurationForm({ section, data, onSaved }: { section: Section; data:
     <form className="panel parametre-detail" onSubmit={(event) => { event.preventDefault(); void submit() }}>
       {error && <p className="error-banner" role="alert">{error}</p>}
       <fieldset disabled={busy} className="parametre-fieldset">
-        {fields[section].map((field) => <FormInput key={field.key} name={field.key} label={field.label} type={field.type} value={values[field.key]} onChange={(key, value) => setValues((previous) => ({ ...previous, [key]: value }))}
+        {fields[section].map((field) => <FormInput key={field.key} name={field.key} label={field.label} type={field.type} step={field.step} min={field.min} max={field.max} required={field.required} value={values[field.key]} onChange={(key, value) => setValues((previous) => ({ ...previous, [key]: value }))}
           hint={field.type === 'password' ? data.database.passwordConfigured ? 'Laissez vide pour conserver le mot de passe enregistré.' : 'Aucun mot de passe enregistré.' : undefined} />)}
-        {section === 'base-de-donnees' ? <p>La connexion est testée avant sauvegarde. Elle sera utilisée au prochain redémarrage du serveur.</p> : <p>Les changements s’appliquent aux nouvelles requêtes. Les blocages de connexion déjà en cours restent valides jusqu’à leur échéance.</p>}
+        {section === 'base-de-donnees' ? <p>La connexion est testée avant sauvegarde. Elle sera utilisée au prochain redémarrage du serveur.</p> : section === 'caisse' ? <p>Le plafond s’applique immédiatement aux prochaines ouvertures de caisse. Un plafond de 0 € autorise uniquement un fond nul.</p> : <p>Les changements s’appliquent aux nouvelles requêtes. Les blocages de connexion déjà en cours restent valides jusqu’à leur échéance.</p>}
         <div className="form-actions">
           {section === 'base-de-donnees' && <button type="button" className="secondary-button" onClick={() => void submit(true)}>Tester la connexion</button>}
           <button className="primary-button" type="submit">{busy ? 'Traitement…' : 'Enregistrer'}</button>

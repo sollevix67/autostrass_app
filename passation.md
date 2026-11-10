@@ -67,7 +67,7 @@ les modules anciens n'ont pas fait l'objet d'un nouvel audit exhaustif.
 | Fournisseurs | CRUD, coordonnées facultatives, SIRET, création/modification en dialogue | Suivi des commandes lié au futur module fournisseurs |
 | Véhicules | CRUD, statut modifiable | Kilométrage, entretiens/réparations, carburant et coût/km |
 | Personnels/utilisateurs | Comptes, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
-| Paramètres | Huit rubriques, routes, API, référentiels, sauvegardes, HTTPS et Turnstile | Recette certificat/Cloudflare/terminaux réels ; guides de déploiement ci-dessous |
+| Paramètres | Neuf rubriques, plafond de Caisse, routes, API, référentiels, sauvegardes, HTTPS et Turnstile | Recette certificat/Cloudflare/terminaux réels ; guides de déploiement ci-dessous |
 
 ## Contrats à préserver
 
@@ -304,12 +304,12 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-le comptage d'ouverture de Caisse : **136 empreintes sources conformes** (135 TS/TSX/MJS
-et le vérificateur JS), **2 878 nœuds**, **5 854 liens**, **190 communautés**, aucun identifiant
+le plafond de Caisse paramétrable : **137 empreintes sources conformes** (136 TS/TSX/MJS
+et le vérificateur JS), **2 889 nœuds**, **5 876 liens**, **170 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
 de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`9999503`**. Le vérificateur Figma, `scripts/test-caisse-ui.mjs`,
-`CashCountFields.tsx` et `cashCounting.ts` sont indexés.
+**`74501ff`**. Le vérificateur Figma, `scripts/test-caisse-ui.mjs`,
+`CashCountFields.tsx`, `cashCounting.ts` et `CaisseSettingsView.tsx` sont indexés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
@@ -423,3 +423,34 @@ Graphify actualisé et vérifié : 136 empreintes sources conformes, 2 878 nœud
 Les champs et le calcul partagés sont indexés ; cache et sauvegarde du jour
 actualisés, sans relancer la sémantique documentaire ni le renommage LLM.
 `git diff --check` réussi. Livraison par commit et push sur `origin/main`.
+
+**10 novembre — plafond de Caisse paramétrable** : demande utilisateur
+pour Administration → Paramètres. Nouvelle rubrique Caisse admin, plafond en
+euros/centimes, défaut 10 000 €. Configuration persistée atomiquement dans le
+stockage existant ; anciens fichiers compatibles grâce à la valeur par défaut.
+`PUT /api/parametres/caisse` protégé par admin et CSRF ; lecture métier authentifiée
+`GET /api/caisse/configuration`, limitée au plafond. Validation commune frontend/API
+avec plafond courant relu à chaque ouverture ; pas d'ouverture si sa lecture échoue.
+Plafond nul autorisant seulement un fond nul ; borne maximale liée au DECIMAL(12,2).
+Application immédiate aux prochaines ouvertures ; aucune modification des sessions
+déjà ouvertes ni de la clôture. Actualiser recharge le plafond sans effacer les
+quantités ni les notes. Aucune migration ; redémarrer l'API au déploiement du code.
+
+Validation : build/lint conformes ; 7 groupes unitaires, 9 groupes
+API Paramètres, 127 contrôles API et 59 contrôles sécurité réussis sur une instance
+MariaDB portable 11.4.5 temporaire (boucle locale, base jetable, arrêt confirmé).
+Le compte de test habituel ne pouvant créer de base, aucun droit ni donnée de
+la base applicative n'a été modifié. `npm run test:errors` conforme.
+Recette Chromium : **122 contrôles** (53 clôture, 34 ouverture, 35 paramètres et
+plafond dynamique), API simulée. Plafond 12 000,50 €, centime au-dessus refusé,
+baisse pendant une saisie, changement concurrent refusé côté API, lecture
+indisponible bloquant l'ouverture, erreur de sauvegarde sans perte de saisie,
+double envoi bloqué et accès admin vérifié. Captures à quatre largeurs et deux
+thèmes ; preuves dans `specs/screenshots/parametres-caisse/verification.json`.
+Documentation Paramètres/ouverture mise à jour : défaut compatible, centimes,
+plafond nul, droits, nouvelles API, application à chaud après déploiement,
+configuration indisponible et conservation des sessions déjà ouvertes.
+Graphify actualisé : 137 empreintes TS/TSX/MJS/JS conformes, 2 889 nœuds uniques,
+5 876 liens sans orphelin, 170 communautés, HTML/JSON cohérents. Limites CSS/SQL
+et sémantique documentaire inchangées. `git diff --check` conforme, tête distante
+vérifiée après fetch ; livraison sur `origin/main`, tête initiale `74501ff`.

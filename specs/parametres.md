@@ -1,7 +1,7 @@
 # Administration des paramètres
 
 Le menu **Administration → Paramètres** ouvre `/parametres`. L'administrateur
-dispose de huit rubriques. Le magasinier accède uniquement aux emplacements,
+dispose de neuf rubriques. Le magasinier accède uniquement aux emplacements,
 également disponibles dans Stock. Le caissier n'accède pas au module.
 Ces droits sont vérifiés dans les routes frontend et dans les API.
 
@@ -17,6 +17,10 @@ Ces droits sont vérifiés dans les routes frontend et dans les API.
    En production, définir `NODE_ENV=production` et un `JWT_SECRET` valide.
 4. Se connecter comme administrateur et ouvrir les rubriques à configurer.
 
+Le plafond de Caisse n'exige aucune migration supplémentaire. Le déploiement
+du nouveau code serveur exige un redémarrage initial ; les modifications du
+plafond depuis les paramètres s'appliquent ensuite sans redémarrage.
+
 La migration est livrée et testée sur bases jetables ; elle n'a pas été
 appliquée à la base applicative pendant ce chantier. Les scripts qui utilisent
 le client Drizzle commun, dont `db:migrate`, prennent la connexion enregistrée
@@ -25,7 +29,7 @@ dans les paramètres, ou `DB_*` en l'absence de connexion enregistrée.
 ## Stockage et sauvegarde
 
 Les référentiels et affectations résident dans MariaDB. Les paramètres
-techniques résident dans `config/runtime/settings.json`, créé à la première
+techniques et le plafond de Caisse résident dans `config/runtime/settings.json`, créé à la première
 sauvegarde. `AUTOSTRASS_SETTINGS_FILE` permet de choisir un autre emplacement
 absolu, notamment pour une instance isolée ou un volume persistant.
 
@@ -50,6 +54,7 @@ vide dans l'interface conserve sa valeur enregistrée.
 | `base-de-donnees` | Tester et enregistrer hôte, port, base, utilisateur et mot de passe. La connexion et les tables nécessaires sont contrôlées avant sauvegarde. | Au redémarrage. Aucun transfert ni création de base n'est effectué. |
 | `limites-api` | Régler le quota global par IP et sa fenêtre en secondes. | Dès les requêtes suivantes. Changer la durée de fenêtre remet le quota de cette IP à zéro. |
 | `connexion` | Régler les échecs autorisés par compte, la fenêtre et la durée de blocage. | Dès les requêtes suivantes ; les blocages déjà actifs restent jusqu'à échéance. |
+| `caisse` | Régler le plafond du fond de caisse à l'ouverture, en euros avec au maximum deux décimales. | Dès l'ouverture suivante ; les sessions ouvertes et leur clôture conservent leurs montants. |
 | `emplacements` | Créer, modifier ou supprimer allées, étagères et places ; choisir le parent et la capacité. | Immédiate ; même gestion que dans Stock. Suppression refusée en présence d'enfants ou de stock. |
 | `secteurs` | Administrer les secteurs et affecter les clients. | Immédiate ; suppression refusée si des clients l'utilisent. |
 | `categories` | Administrer catégories et sous-catégories proposées au catalogue. | Immédiate ; rattachement contrôlé et suppression des éléments utilisés refusée. |
@@ -61,6 +66,18 @@ La désactivation empêche une nouvelle affectation sans supprimer les
 rattachements historiques. Les catégories historiques hors de l'ancienne
 liste sont conservées ; un code vide historique peut être renommé par son
 libellé ou désactivé, mais aucun nouveau code vide n'est accepté.
+
+Le plafond du fond de caisse vaut **10 000 € par défaut**, y compris avec un
+ancien fichier de paramètres sans rubrique `caisse`. Le montant est obligatoire
+et non négatif ; **0 € autorise uniquement un fond nul**. La borne technique est
+9 999 999 999,99 €, capacité du stockage `DECIMAL(12,2)` ; la limite de quantité
+par coupure du comptage reste de 10 000 unités. La configuration n'affecte pas
+le total théorique ni le comptage de clôture.
+
+La vue Caisse charge le plafond depuis le serveur. **Actualiser** le recharge
+sans effacer les quantités ni les notes. L'ouverture est bloquée tant que la
+configuration n'est pas disponible. Le serveur relit le plafond à chaque
+ouverture, y compris si un administrateur le modifie pendant une saisie.
 
 Le secteur client est facultatif (`secteurId: null` pour retirer l'affectation).
 Les tournées et leur planification ne sont pas créées par cette affectation.
@@ -135,6 +152,8 @@ réservés au rôle `admin`, sauf les emplacements (admin ou magasinier).
 | `GET /api/parametres` | Réglages techniques, secrets masqués et indicateurs de redémarrage. |
 | `PUT /api/parametres/api` | `maxRequests`, `windowSeconds`. |
 | `PUT /api/parametres/connexion` | `maxAttempts`, `windowSeconds`, `blockSeconds`. |
+| `PUT /api/parametres/caisse` | `maxFondsCaisse` ; réservé à l'administrateur, avec CSRF. |
+| `GET /api/caisse/configuration` | Lecture authentifiée de `{ maxFondsCaisse }` uniquement, disponible aux formulaires métier. |
 | `POST /api/parametres/base-de-donnees/test` | Test de `host`, `port`, `database`, `user`, `password` facultatif. |
 | `PUT /api/parametres/base-de-donnees` | Test puis enregistrement de la connexion. |
 | `PUT /api/parametres/https` | `enabled`, `port`, `httpMode`, `publicOrigin`, `certificatePem` et `privateKeyPem` facultatifs. |
@@ -179,3 +198,9 @@ Les [captures](screenshots/parametres/) et le
 [bilan navigateur](screenshots/parametres/verification.json) décrivent les
 contrôles Chromium, les quatre largeurs et les deux thèmes. Les simulations
 Turnstile sont distinguées des essais réels sur MariaDB et HTTPS.
+
+`npm run test:caisse:ui` vérifie également les paramètres de Caisse et leur
+application dans le comptage d'ouverture avec une API simulée. Les
+[captures Caisse](screenshots/parametres-caisse/) et le
+[rapport](screenshots/parametres-caisse/verification.json) couvrent les droits,
+les centimes, la sauvegarde, l'erreur/reprise et l'actualisation du plafond.

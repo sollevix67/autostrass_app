@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { totalCashCount } from '../utils/cashCounting'
+import { fondsCaisseSchema } from './parametres'
 
 /**
  * Schémas de validation partagés entre le frontend (React Hook Form) et,
@@ -327,11 +328,8 @@ export const retourSchema = z.object({
 })
 
 /** Ouverture de caisse : le fond remise au caissier. */
-export const caisseOuvertureSchema = z.object({
-  fondsCaisse: nonNegative('Le fond de caisse').refine(
-    (value) => value <= 10_000,
-    'Le fond de caisse ne peut pas depasser 10 000 EUR.',
-  ),
+export const caisseOuvertureSchema = (maxFondsCaisse: number) => z.object({
+  fondsCaisse: fondsCaisseSchema(maxFondsCaisse),
   notes: optionalText('Les notes'),
 })
 
@@ -368,13 +366,16 @@ export const caisseClotureSchema = z.object({
 })
 
 /** Ouverture par comptage : le total respecte la même limite que l'API. */
-export const caisseOuvertureComptageSchema = z.object({
-  comptage: caisseClotureSchema.shape.comptage,
-  notes: caisseOuvertureSchema.shape.notes,
-}).refine((values) => totalCashCount(values.comptage) <= 10_000, {
-  path: ['comptage'],
-  message: 'Le fond de caisse ne peut pas dépasser 10 000 €.',
-})
+export function caisseOuvertureComptageSchema(maxFondsCaisse: number) {
+  const amount = fondsCaisseSchema(maxFondsCaisse)
+  return z.object({
+    comptage: caisseClotureSchema.shape.comptage,
+    notes: optionalText('Les notes'),
+  }).superRefine((values, context) => {
+    const parsed = amount.safeParse(totalCashCount(values.comptage))
+    if (!parsed.success) context.addIssue({ code: 'custom', path: ['comptage'], message: parsed.error.issues[0].message })
+  })
+}
 
 /** Types deduits des schemas : source de verite pour les formulaires. */
 export type ArticleFormValues = z.input<typeof articleSchema>
@@ -400,8 +401,8 @@ export type CommandeFormValues = z.input<typeof commandeSchema>
 export type CommandeFormOutput = z.output<typeof commandeSchema>
 export type RetourFormValues = z.input<typeof retourSchema>
 export type RetourFormOutput = z.output<typeof retourSchema>
-export type CaisseOuvertureFormValues = z.input<typeof caisseOuvertureSchema>
-export type CaisseOuvertureFormOutput = z.output<typeof caisseOuvertureSchema>
+export type CaisseOuvertureFormValues = z.input<ReturnType<typeof caisseOuvertureSchema>>
+export type CaisseOuvertureFormOutput = z.output<ReturnType<typeof caisseOuvertureSchema>>
 export type ComptageLineFormValues = z.input<typeof comptageLineSchema>
 export type ComptageLineFormOutput = z.output<typeof comptageLineSchema>
 export type CaisseClotureFormValues = z.input<typeof caisseClotureSchema>

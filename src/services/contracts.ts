@@ -6,11 +6,12 @@
  */
 
 import type { UserRole } from '../types/index.js'
-import type { ApiLimits, LoginLimits, DatabaseSettings, HttpsSettings } from '../schemas/parametres.js'
+import type { ApiLimits, LoginLimits, CaisseSettings, DatabaseSettings, HttpsSettings } from '../schemas/parametres.js'
 
 export type ApiParametres = {
   api: ApiLimits
   login: LoginLimits
+  caisse: CaisseSettings
   database: Omit<DatabaseSettings, 'password'> & { passwordConfigured: boolean; restartRequired: boolean }
   turnstile: { enabled: boolean; siteKey: string; hostnames: string[]; secretConfigured: boolean }
   https: Omit<HttpsSettings, 'certificatePem' | 'privateKeyPem'> & {

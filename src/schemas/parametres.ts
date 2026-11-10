@@ -1,10 +1,23 @@
 import { z } from 'zod'
+import { formatEuros } from '../options.js'
 
 const integer = (min: number, max: number) => z.number({ message: 'Un nombre est requis.' }).int('Un entier est requis.').min(min).max(max)
 const text = (max: number) => z.string().trim().min(1, 'Ce champ est requis.').max(max)
 
 export const apiLimitsSchema = z.object({ maxRequests: integer(10, 100_000), windowSeconds: integer(10, 86_400) })
 export const loginLimitsSchema = z.object({ maxAttempts: integer(3, 100), windowSeconds: integer(10, 86_400), blockSeconds: integer(10, 86_400) })
+export const DEFAULT_CAISSE_SETTINGS = { maxFondsCaisse: 10_000 }
+export const caisseSettingsSchema = z.object({
+  maxFondsCaisse: z.number({ message: 'Un montant est requis.' })
+    .finite('Le plafond doit être un montant valide.')
+    .min(0, 'Le plafond ne peut pas être négatif.')
+    .max(9_999_999_999.99, 'Le plafond dépasse la capacité de stockage des montants.')
+    .multipleOf(0.01, 'Le plafond doit comporter au maximum deux décimales.'),
+})
+export const fondsCaisseSchema = (maxFondsCaisse: number) => z.number({ message: 'Le fond de caisse est requis.' })
+  .finite('Le fond de caisse doit être un nombre valide.')
+  .min(0, 'Le fond de caisse ne peut pas être négatif.')
+  .max(maxFondsCaisse, `Le fond de caisse ne peut pas dépasser ${formatEuros(maxFondsCaisse)}.`)
 export const databaseSettingsSchema = z.object({
   host: text(255), port: integer(1, 65535), database: text(64), user: text(128),
   password: z.string().max(1024).optional(),
@@ -43,6 +56,7 @@ export const emplacementSchema = z.object({
 
 export type ApiLimits = z.infer<typeof apiLimitsSchema>
 export type LoginLimits = z.infer<typeof loginLimitsSchema>
+export type CaisseSettings = z.infer<typeof caisseSettingsSchema>
 export type DatabaseSettings = z.infer<typeof databaseSettingsSchema>
 export type TurnstileSettings = z.infer<typeof turnstileSettingsSchema>
 export type HttpsSettings = z.infer<typeof httpsSettingsSchema>

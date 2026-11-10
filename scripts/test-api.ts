@@ -566,10 +566,12 @@ check(
   { status: doubleOuverture.status, body: doubleOuverture.body },
 )
 
+const caisseConfiguration = await call('/api/caisse/configuration', { token: adminToken! })
+check('le plafond de caisse courant est accessible après authentification', caisseConfiguration.status === 200 && typeof caisseConfiguration.body?.maxFondsCaisse === 'number')
 const fondTropEleve = await call('/api/caisse/ouvrir', {
   method: 'POST',
   token: adminToken!,
-  body: { fondsCaisse: 99999 },
+  body: { fondsCaisse: Number((caisseConfiguration.body!.maxFondsCaisse + 0.01).toFixed(2)) },
 })
 check('un fond de caisse hors bornes est refuse (422)', fondTropEleve.status === 422, fondTropEleve.status)
 

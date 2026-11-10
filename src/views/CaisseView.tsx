@@ -27,6 +27,7 @@ import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { CashCountFields } from '../components/forms/CashCountFields'
 import { FormTextarea, type FieldRegister } from '../components/forms/FormFields'
 import { useCashSession, useCashMovements } from '../hooks/useCashSession'
+import { useRemoteValue } from '../hooks/useRemoteValue'
 import { useAuth, canWrite } from '../components/useAuth'
 import {
   caisseClotureSchema,
@@ -36,6 +37,7 @@ import {
 import { CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, formatEuros } from '../options'
 import { totalCashCount } from '../utils/cashCounting'
 import type { ApiCashMovement } from '../services/contracts'
+import type { CaisseSettings } from '../schemas/parametres'
 
 const OPENING_LABELS = { comptage: 'Comptage du fond de caisse', notes: 'Notes' } satisfies Record<string, string>
 const CLOSING_LABELS = { comptage: 'Comptage', notes: 'Notes' } satisfies Record<string, string>
@@ -56,21 +58,24 @@ export default function CaisseView() {
   const { user } = useAuth()
   const toast = useToast()
   const { session, loading, saving, error, reload, open, close } = useCashSession()
+  const { data: caisseConfiguration, loading: configurationLoading, error: configurationError, reload: reloadConfiguration } = useRemoteValue<CaisseSettings>('/caisse/configuration')
 
   const { movements } = useCashMovements(session?.id ?? null)
 
   const canEdit = canWrite(user?.role, 'caisse')
 
   // --- Formulaire d'ouverture ----------------------------------------------
+  // Aucune ouverture tant que le plafond serveur n'a pas été chargé.
+  const openingSchema = caisseOuvertureComptageSchema(caisseConfiguration?.maxFondsCaisse ?? 0)
   const opening = useForm({
-    resolver: zodResolver(caisseOuvertureComptageSchema),
+    resolver: zodResolver(openingSchema),
     defaultValues: EMPTY_COUNT,
     mode: 'onSubmit',
   })
   const openingRegister = opening.register as unknown as FieldRegister
   const { fields: openingFields } = useFieldArray({ control: opening.control, name: 'comptage' })
   const openingCount = useWatch({ control: opening.control, name: 'comptage' })
-  const parsedOpeningCount = caisseOuvertureComptageSchema.shape.comptage.safeParse(openingCount)
+  const parsedOpeningCount = openingSchema.shape.comptage.safeParse(openingCount)
   const fondsCompte = parsedOpeningCount.success ? totalCashCount(parsedOpeningCount.data) : null
 
   // --- Formulaire de clôture ------------------------------------------------
@@ -164,7 +169,7 @@ export default function CaisseView() {
 
   const submitOpening = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!canEdit || session !== null || busy || loading || pending.current) return
+    if (!canEdit || session !== null || !caisseConfiguration || configurationLoading || busy || loading || pending.current) return
     void opening.handleSubmit(async (values) => {
       if (pending.current) return
       pending.current = true
@@ -251,7 +256,7 @@ export default function CaisseView() {
       description="Ouverture, suivi et clôture de votre session de caisse."
       actions={
         <>
-          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+          <button type="button" className="secondary-button" onClick={() => { reload(); reloadConfiguration() }} disabled={loading || configurationLoading || busy}>
             <Icon name="rotate-ccw" size="sm" /> Actualiser
           </button>
           {canEdit && session !== null && (
@@ -262,7 +267,7 @@ export default function CaisseView() {
         </>
       }
     >
-      <ResourceBanners error={closingDialogOpen ? null : error} offline={false} readOnly={null} />
+      <ResourceBanners error={closingDialogOpen ? null : error ?? configurationError} offline={false} readOnly={null} />
 
       {!canEdit && (
         <p className="info-banner" role="note">
@@ -284,7 +289,7 @@ export default function CaisseView() {
             {opening.formState.errors.comptage?.root?.message && (
               <p className="error-banner" role="alert">{opening.formState.errors.comptage.root.message}</p>
             )}
-            <fieldset className="caisse-form-fields" disabled={busy || loading}>
+            <fieldset className="caisse-form-fields" disabled={busy || loading || configurationLoading || !caisseConfiguration}>
               <legend className="sr-only">Comptage du fond de caisse</legend>
               <p className="form-hint">
                 Comptez les billets et pièces remis dans le tiroir à l'ouverture.
@@ -293,7 +298,7 @@ export default function CaisseView() {
               <CashCountFields fields={openingFields} count={openingCount} register={openingRegister} errors={opening.formState.errors.comptage} />
               <div className="reception-total" role="status" aria-live="polite">
                 <strong>{fondsCompte === null ? 'Comptage à compléter' : `Fond de caisse compté : ${formatEuros(fondsCompte)}`}</strong>
-                <span className="muted">Le total compté sera le fond de caisse à l'ouverture.</span>
+                <span className="muted">{caisseConfiguration ? `Plafond autorisé : ${formatEuros(caisseConfiguration.maxFondsCaisse)}.` : 'Chargement du plafond autorisé…'}</span>
               </div>
               <FormTextarea
                 label="Notes"

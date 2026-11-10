@@ -4,11 +4,12 @@ import { mkdir, rename, writeFile, unlink } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
-import { apiLimitsSchema, loginLimitsSchema, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema } from '../../src/schemas/parametres.js'
+import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, DEFAULT_CAISSE_SETTINGS, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema } from '../../src/schemas/parametres.js'
 
 const storageSchema = z.object({
   api: apiLimitsSchema.default({ maxRequests: 100, windowSeconds: 900 }),
   login: loginLimitsSchema.default({ maxAttempts: 10, windowSeconds: 900, blockSeconds: 900 }),
+  caisse: caisseSettingsSchema.default(DEFAULT_CAISSE_SETTINGS),
   database: databaseSettingsSchema.optional(),
   turnstile: turnstileSettingsSchema.default({ enabled: false, siteKey: '', hostnames: [] }),
   https: httpsSettingsSchema.default({ enabled: false, port: 3443, httpMode: 'serve', publicOrigin: '' }),
@@ -76,7 +77,7 @@ export function publicSettings() {
   const activeDatabase = effectiveDatabaseSettings()
   const { password: _password, ...databasePublic } = database
   return {
-    api: settings.api, login: settings.login,
+    api: settings.api, login: settings.login, caisse: settings.caisse,
     database: { ...databasePublic, passwordConfigured: Boolean(database.password), restartRequired: JSON.stringify(database) !== JSON.stringify(activeDatabase) },
     turnstile: { enabled: settings.turnstile.enabled, siteKey: settings.turnstile.siteKey, hostnames: settings.turnstile.hostnames, secretConfigured: Boolean(settings.turnstile.secretKey) },
     updatedAt: settings.updatedAt,

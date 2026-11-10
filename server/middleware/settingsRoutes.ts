@@ -3,7 +3,7 @@ import mysql from 'mysql2/promise'
 import { requireAuth, requireRole, type AuthenticatedRequest } from './auth.js'
 import { requireCsrf } from './csrf.js'
 import { handler, parseBody } from './crud.js'
-import { apiLimitsSchema, loginLimitsSchema, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema, type DatabaseSettings } from '../../src/schemas/parametres.js'
+import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema, type DatabaseSettings } from '../../src/schemas/parametres.js'
 import { effectiveDatabaseSettings, getSettings, publicSettings, settingsError, updateSettings } from '../services/settingsStore.js'
 import { publicHttpsSettings, validateCertificate } from '../services/httpsSettings.js'
 import { verifyTurnstile } from '../services/turnstile.js'
@@ -37,6 +37,11 @@ export function createSettingsRouter() {
   router.put('/connexion', handler(async (request, response) => {
     const values = parseBody(loginLimitsSchema, request.body)
     await updateSettings((previous) => ({ ...previous, login: values }), (request as AuthenticatedRequest).user!.id)
+    response.json(output())
+  }))
+  router.put('/caisse', handler(async (request, response) => {
+    const values = parseBody(caisseSettingsSchema, request.body)
+    await updateSettings((previous) => ({ ...previous, caisse: values }), (request as AuthenticatedRequest).user!.id)
     response.json(output())
   }))
   router.post('/base-de-donnees/test', handler(async (request, response) => {
