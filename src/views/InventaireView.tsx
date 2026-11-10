@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageLayout } from '../components/PageLayout'
 import { ConfirmDialog } from '../components/ConfirmDialog'
+import { FormDialog } from '../components/FormDialog'
 import { useConfirm } from '../components/useConfirm'
 import { FormInput } from '../components/forms/FormFields'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
@@ -61,8 +62,9 @@ type ComptageProps = { reference: string; onClose: () => void; onSaved: (record:
 
 function Comptage({ reference, onClose, onSaved }: ComptageProps) {
   const stock = useRemoteValue<ApiInventairePreparation>(`/inventaires/${encodeURIComponent(reference)}`)
-  if (stock.loading) return <p role="status">Chargement du stock à compter…</p>
-  if (stock.error || !stock.data) return <p className="error-banner" role="alert">{stock.error ?? 'Stock indisponible.'} <button className="link-button" onClick={stock.reload}>Réessayer</button> <button className="link-button" onClick={onClose}>Choisir un autre article</button></p>
+  if (stock.loading || stock.error || !stock.data) return <FormDialog open title={`Comptage — ${reference}`} onClose={onClose}>
+    {stock.loading ? <p role="status">Chargement du stock à compter…</p> : <p className="error-banner" role="alert">{stock.error ?? 'Stock indisponible.'} <button className="link-button" onClick={stock.reload}>Réessayer</button></p>}
+  </FormDialog>
   return <ComptageForm key={stock.data.version} stock={stock.data} onClose={onClose} onSaved={onSaved} onRestart={stock.reload} />
 }
 
@@ -152,8 +154,7 @@ function ComptageForm({ stock, onClose, onSaved, onRestart }: {
     else onClose()
   }
 
-  return <section className="form-card inventaire-count">
-    <h2>{stock.reference} — {stock.designation}</h2>
+  return <FormDialog open title={`${stock.reference} — ${stock.designation}`} className="inventaire-count" size="wide" busy={saving} onClose={cancel} showCancel={false}>
     <p>Comptez tous les emplacements et les unités non affectées. Saisissez explicitement 0 si aucun article n’est présent.</p>
     {stock.incoherent && <p className="info-banner" role="status">La répartition actuelle est incohérente. Ce comptage complet la remplacera par les quantités réellement constatées.</p>}
     {error && <p className="error-banner" role="alert">{error} {!conflict && 'En cas de réponse perdue, vérifiez l’historique avant de réessayer.'}</p>}
@@ -193,7 +194,7 @@ function ComptageForm({ stock, onClose, onSaved, onRestart }: {
       </div>
     </form>
     <ConfirmDialog {...dialogProps} />
-  </section>
+  </FormDialog>
 }
 
 function InventaireContent() {
@@ -210,9 +211,10 @@ function InventaireContent() {
     {saved && <p className="info-banner" role="status">Comptage #{saved.id} enregistré pour {saved.reference} : {saved.quantiteComptee} unités, écart {formatDelta(saved.quantiteComptee - saved.quantiteAvant)}.</p>}
     {active ? <Comptage key={active} reference={active} onClose={() => setActive(null)} onSaved={(record) => {
       setSaved(record); setActive(null); setRevision((value) => value + 1); toast.success('Comptage enregistré et stock actualisé')
-    }} /> : <section className="form-card">
+    }} /> : null}
+    <section className="form-card">
       <h2>Commencer un comptage</h2>
-      <p>Choisissez une référence, puis comptez toutes ses unités avant de valider. Les saisies en cours restent dans cette page jusqu’à leur validation.</p>
+      <p>Choisissez une référence, puis comptez toutes ses unités dans la fenêtre de comptage avant de valider.</p>
       {catalogue.loading && <p role="status">Chargement des articles…</p>}
       {catalogue.error && <p className="error-banner" role="alert">{catalogue.error} <button className="link-button" onClick={catalogue.reload}>Réessayer</button></p>}
       <form onSubmit={(event) => { event.preventDefault(); if (catalogue.data?.some((article) => article.reference === reference)) { setSaved(null); setActive(reference) } }}>
@@ -224,9 +226,9 @@ function InventaireContent() {
           </select>
         </div>
         {!catalogue.loading && !catalogue.error && !filtered.length && <p>Aucun article ne correspond à cette recherche.</p>}
-        <div className="form-actions"><button className="primary-button" disabled={catalogue.loading || !!catalogue.error || !catalogue.data?.some((article) => article.reference === reference)}>Commencer le comptage</button></div>
+        <div className="form-actions"><button className="primary-button" aria-haspopup="dialog" disabled={catalogue.loading || !!catalogue.error || !catalogue.data?.some((article) => article.reference === reference)}>Commencer le comptage</button></div>
       </form>
-    </section>}
+    </section>
     <Historique revision={revision} />
   </>
 }

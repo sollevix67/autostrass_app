@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { DataTable, type ColumnDef } from '../../components/DataTable'
 import { FormInput } from '../../components/forms/FormFields'
 import { ConfirmDialog } from '../../components/ConfirmDialog'
+import { FormDialog } from '../../components/FormDialog'
 import { useConfirm } from '../../components/useConfirm'
 import { useToast } from '../../components/useToast'
 import { useRemoteValue } from '../../hooks/useRemoteValue'
@@ -15,6 +16,7 @@ export default function ReferentielEditor({ path, title, parents, onChange }: { 
   const { data, loading, error: loadError, reload } = useRemoteValue<Item[]>(`/${path}`)
   const [values, setValues] = useState(empty)
   const [editing, setEditing] = useState<number | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const pending = useRef(false)
@@ -29,7 +31,7 @@ export default function ReferentielEditor({ path, title, parents, onChange }: { 
     try {
       if (editing) await api.put(`/${path}/${editing}`, parsed.data)
       else await api.post(`/${path}`, parsed.data)
-      setEditing(null); setValues(empty); reload(); onChange?.(); toast.success('Enregistrement effectué.')
+      setDialogOpen(false); setEditing(null); setValues(empty); reload(); onChange?.(); toast.success('Enregistrement effectué.')
     } catch (cause) { setError(toErrorMessage(cause)) }
     finally { pending.current = false; setBusy(false) }
   }
@@ -49,28 +51,30 @@ export default function ReferentielEditor({ path, title, parents, onChange }: { 
     ...(parents ? [{ key: 'parent', header: 'CATÉGORIE', render: (row: Item) => parents.find((parent) => parent.id === row.categorieId)?.libelle ?? '—' }] : []),
     { key: 'actif', header: 'ÉTAT', render: (row) => <span className={`status-badge ${row.actif ? 'status-disponible' : ''}`}>{row.actif ? 'Actif' : 'Inactif'}</span> },
     { key: 'actions', header: 'ACTIONS', render: (row) => <div className="actions-cell">
-      <button type="button" className="link-button" disabled={busy} aria-label={`Modifier ${row.libelle}`} onClick={() => { setEditing(row.id); setValues({ ...row, categorieId: (row as SousCategorie).categorieId ?? 0 }); setError(null); document.getElementById(`${path}-libelle`)?.focus() }}>Modifier</button>
+      <button type="button" className="link-button" disabled={busy} aria-label={`Modifier ${row.libelle}`} aria-haspopup="dialog" onClick={() => { setEditing(row.id); setValues({ ...row, categorieId: (row as SousCategorie).categorieId ?? 0 }); setError(null); setDialogOpen(true) }}>Modifier</button>
       <button type="button" className="link-button" disabled={busy} aria-label={`Supprimer ${row.libelle}`} onClick={() => confirm(`Supprimer ${row.libelle} ?`, 'La suppression sera refusée si cet élément est encore utilisé. Vous pouvez le désactiver pour le conserver.', () => void remove(row))}>Supprimer</button>
     </div> },
   ]
   return (
     <section className="panel parametre-editor">
-      <div className="panel-heading"><h2>{title}</h2><button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>Actualiser</button></div>
+      <div className="panel-heading"><h2>{title}</h2><div className="actions-cell"><button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>Actualiser</button><button type="button" className="primary-button" aria-haspopup="dialog" disabled={loading || busy || Boolean(loadError)} onClick={() => { setEditing(null); setValues(empty); setError(null); setDialogOpen(true) }}>Ajouter : {title}</button></div></div>
       {loadError && <p className="error-banner" role="alert">{loadError}</p>}
+      {error && !dialogOpen && <p className="error-banner" role="alert">{error}</p>}
       <DataTable rows={data ?? []} columns={columns} rowKey={(row) => String(row.id)} loading={loading} caption={title} emptyMessage="Aucun élément enregistré." />
-      <form className="parametre-detail" onSubmit={(event) => { event.preventDefault(); void save() }}>
-        <h3>{editing ? 'Modifier l’élément' : 'Ajouter un élément'}</h3>
-        {error && <p className="error-banner" role="alert">{error}</p>}
-        <fieldset className="parametre-fieldset" disabled={busy || loading || Boolean(loadError)}>
-          <fieldset className="parametre-fieldset" disabled={editing !== null}>
-            <FormInput name={`${path}-code`} label="Code" value={values.code} onChange={(_, code) => setValues({ ...values, code })} required hint="Le code reste stable après création." />
-            {parents && <div className="form-group"><label htmlFor={`${path}-parent`}>Catégorie</label><select id={`${path}-parent`} value={values.categorieId || ''} onChange={(event) => setValues({ ...values, categorieId: Number(event.target.value) })} required><option value="">Choisir une catégorie</option>{parents.filter((parent) => parent.actif || parent.id === values.categorieId).map((parent) => <option key={parent.id} value={parent.id}>{parent.libelle}{!parent.actif ? ' (inactive)' : ''}</option>)}</select></div>}
+      <FormDialog open={dialogOpen} title={`${editing ? 'Modifier' : 'Ajouter'} — ${title}`} busy={busy} onClose={() => setDialogOpen(false)} initialFocus={editing ? `#${path}-libelle` : `#${path}-code`}>
+        <form className="parametre-detail" onSubmit={(event) => { event.preventDefault(); void save() }}>
+          {error && <p className="error-banner" role="alert">{error}</p>}
+          <fieldset className="parametre-fieldset" disabled={busy || loading || Boolean(loadError)}>
+            <fieldset className="parametre-fieldset" disabled={editing !== null}>
+              <FormInput name={`${path}-code`} label="Code" value={values.code} onChange={(_, code) => setValues({ ...values, code })} required hint="Le code reste stable après création." />
+              {parents && <div className="form-group"><label htmlFor={`${path}-parent`}>Catégorie</label><select id={`${path}-parent`} value={values.categorieId || ''} onChange={(event) => setValues({ ...values, categorieId: Number(event.target.value) })} required><option value="">Choisir une catégorie</option>{parents.filter((parent) => parent.actif || parent.id === values.categorieId).map((parent) => <option key={parent.id} value={parent.id}>{parent.libelle}{!parent.actif ? ' (inactive)' : ''}</option>)}</select></div>}
+            </fieldset>
+            <FormInput name={`${path}-libelle`} label="Libellé" value={values.libelle} onChange={(_, libelle) => setValues({ ...values, libelle })} required />
+            <label className="parametre-checkbox"><input type="checkbox" checked={values.actif} onChange={(event) => setValues({ ...values, actif: event.target.checked })} />Actif</label>
+            <div className="form-actions"><button type="submit" className="primary-button">{busy ? 'Enregistrement…' : editing ? 'Enregistrer' : 'Ajouter'}</button></div>
           </fieldset>
-          <FormInput name={`${path}-libelle`} label="Libellé" value={values.libelle} onChange={(_, libelle) => setValues({ ...values, libelle })} required />
-          <label className="parametre-checkbox"><input type="checkbox" checked={values.actif} onChange={(event) => setValues({ ...values, actif: event.target.checked })} />Actif</label>
-          <div className="form-actions"><button type="submit" className="primary-button">{busy ? 'Enregistrement…' : editing ? 'Enregistrer' : 'Ajouter'}</button>{editing && <button type="button" className="secondary-button" onClick={() => { setEditing(null); setValues(empty); setError(null) }}>Annuler</button>}</div>
-        </fieldset>
-      </form>
+        </form>
+      </FormDialog>
       <ConfirmDialog {...dialogProps} />
     </section>
   )

@@ -8,6 +8,11 @@ caissier n’accède ni à l’écran ni aux routes d’inventaire.
 
 ## Utilisation
 
+Depuis le 10 novembre, **Commencer le comptage** ouvre une fenêtre contextuelle.
+Les confirmations de validation, d'abandon et de reprise s'ouvrent au-dessus de
+cette fenêtre ; Échap sur la confirmation conserve le comptage. Le sélecteur
+d'article et l'historique restent accessibles dans la page après fermeture.
+
 1. Rechercher une référence, une désignation ou un EAN13, choisir l’article
    et commencer le comptage.
 2. Compter chaque emplacement présenté et le stock non affecté. Les champs

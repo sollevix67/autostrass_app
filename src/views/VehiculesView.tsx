@@ -10,9 +10,10 @@
  */
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
@@ -67,6 +68,7 @@ export default function VehiculesView() {
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiVehicule>({
+    allowOfflineWrites: false,
     path: '/vehicules',
     sort: byImmatriculation,
   })
@@ -82,17 +84,26 @@ export default function VehiculesView() {
   // statut ne sait pas quelle ligne est en attente de reponse.
   const [patching, setPatching] = useState<number | null>(null)
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
+  const busy = saving || form.formState.isSubmitting
+
   const canEdit = canWrite(user?.role, 'depot')
 
   async function handleSubmit(values: VehiculeFormValues) {
-    if (duplicateImmatriculation(values.immatriculation)) {
-      toast.error('Cette immatriculation est deja presente dans le parc.')
-      return
-    }
-    const created = await create(values)
-    if (created === null) return
-    form.reset(EMPTY_VEHICULE)
-    toast.success(`Vehicule ${created.immatriculation} enregistre.`)
+    if (!canEdit || pending.current) return
+    pending.current = true
+    try {
+      if (duplicateImmatriculation(values.immatriculation)) {
+        toast.error('Cette immatriculation est deja presente dans le parc.')
+        return
+      }
+      const created = await create(values)
+      if (created === null) return
+      form.reset(EMPTY_VEHICULE)
+      setDialogOpen(false)
+      toast.success(`Vehicule ${created.immatriculation} enregistre.`)
+    } finally { pending.current = false }
   }
 
   /**
@@ -226,103 +237,106 @@ export default function VehiculesView() {
       title="Gestion des vehicules"
       description="Suivez le parc automobile du depot."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { form.reset(EMPTY_VEHICULE); setDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Nouveau vehicule
+          </button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={canEdit ? null : 'La saisie de vehicules est reservee au depot. Consultez le parc ci-dessous.'}
         resource="vehicules"
       />
 
-      {canEdit && (
-        <section className="form-card">
-          <h2>Nouveau vehicule</h2>
-          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
-            <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
+      <FormDialog open={dialogOpen && canEdit} title="Nouveau vehicule" busy={busy} onClose={() => setDialogOpen(false)}>
+        <ResourceBanners error={error} offline={offline} readOnly={null} resource="vehicules" />
+        <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate>
+          <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
 
-            <div className="form-grid-2">
-              <FormInput
-                label="Immatriculation"
-                name="immatriculation"
-                register={register}
-                error={form.formState.errors.immatriculation?.message}
-                required
-                placeholder="AB-123-CD"
-              />
-              <FormInput
-                label="Marque"
-                name="marque"
-                register={register}
-                error={form.formState.errors.marque?.message}
-                required
-              />
-              <FormInput
-                label="Modele"
-                name="modele"
-                register={register}
-                error={form.formState.errors.modele?.message}
-                required
-              />
-              <FormInput
-                label="Annee"
-                name="annee"
-                type="number"
-                register={register}
-                error={form.formState.errors.annee?.message}
-                required
-              />
-              <FormSelect
-                label="Type"
-                name="type"
-                register={register}
-                options={VEHICLE_TYPE_OPTIONS}
-                error={form.formState.errors.type?.message}
-                required
-              />
-              <FormInput
-                label="Kilometrage"
-                name="kilometrage"
-                type="number"
-                register={register}
-                error={form.formState.errors.kilometrage?.message}
-                required
-              />
-              <FormInput
-                label="Proprietaire"
-                name="proprietaire"
-                register={register}
-                error={form.formState.errors.proprietaire?.message}
-                required
-              />
-              <FormSelect
-                label="Statut"
-                name="statut"
-                register={register}
-                options={VEHICLE_STATUS_OPTIONS}
-                error={form.formState.errors.statut?.message}
-                required
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormInput
+              label="Immatriculation"
+              name="immatriculation"
+              register={register}
+              error={form.formState.errors.immatriculation?.message}
+              required
+              placeholder="AB-123-CD"
+            />
+            <FormInput
+              label="Marque"
+              name="marque"
+              register={register}
+              error={form.formState.errors.marque?.message}
+              required
+            />
+            <FormInput
+              label="Modele"
+              name="modele"
+              register={register}
+              error={form.formState.errors.modele?.message}
+              required
+            />
+            <FormInput
+              label="Annee"
+              name="annee"
+              type="number"
+              register={register}
+              error={form.formState.errors.annee?.message}
+              required
+            />
+            <FormSelect
+              label="Type"
+              name="type"
+              register={register}
+              options={VEHICLE_TYPE_OPTIONS}
+              error={form.formState.errors.type?.message}
+              required
+            />
+            <FormInput
+              label="Kilometrage"
+              name="kilometrage"
+              type="number"
+              register={register}
+              error={form.formState.errors.kilometrage?.message}
+              required
+            />
+            <FormInput
+              label="Proprietaire"
+              name="proprietaire"
+              register={register}
+              error={form.formState.errors.proprietaire?.message}
+              required
+            />
+            <FormSelect
+              label="Statut"
+              name="statut"
+              register={register}
+              options={VEHICLE_STATUS_OPTIONS}
+              error={form.formState.errors.statut?.message}
+              required
+            />
+          </div>
 
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={saving || form.formState.isSubmitting}
-              >
-                <Icon name="plus" size="sm" /> Ajouter le vehicule
-              </button>
-              <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_VEHICULE)}>
-                Effacer
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+          <div className="form-actions">
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={saving || form.formState.isSubmitting}
+            >
+              <Icon name="plus" size="sm" /> Ajouter le vehicule
+            </button>
+            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_VEHICULE)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

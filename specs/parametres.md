@@ -5,6 +5,12 @@ dispose de neuf rubriques. Le magasinier accède uniquement aux emplacements,
 également disponibles dans Stock. Le caissier n'accède pas au module.
 Ces droits sont vérifiés dans les routes frontend et dans les API.
 
+Les pages de configuration affichent les réglages enregistrés. **Modifier les
+paramètres**, **Modifier HTTPS** et **Modifier Turnstile** ouvrent leur fenêtre
+de saisie. Les référentiels utilisent des fenêtres pour l'ajout et la modification.
+Les erreurs conservent les champs et la fenêtre reste ouverte jusqu'au succès.
+Voir le [comportement commun](formulaires-modaux.md).
+
 ## Installation et mise à jour
 
 1. Sauvegarder la base MariaDB et la configuration locale existante.
@@ -74,7 +80,7 @@ et non négatif ; **0 € autorise uniquement un fond nul**. La borne technique 
 par coupure du comptage reste de 10 000 unités. La configuration n'affecte pas
 le total théorique ni le comptage de clôture.
 
-La vue Caisse charge le plafond depuis le serveur. **Actualiser** le recharge
+La vue Caisse charge le plafond depuis le serveur. **Actualiser le plafond** dans la fenêtre d'ouverture le recharge
 sans effacer les quantités ni les notes. L'ouverture est bloquée tant que la
 configuration n'est pas disponible. Le serveur relit le plafond à chaque
 ouverture, y compris si un administrateur le modifie pendant une saisie.

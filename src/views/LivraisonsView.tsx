@@ -11,10 +11,11 @@
  * libre laissait croire a un rattachement valide.
  */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
@@ -59,6 +60,7 @@ export default function LivraisonsView() {
   const { dialogProps, confirm } = useConfirm()
   const commandes = useCommandeOptions()
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiLivraison>({
+    allowOfflineWrites: false,
     path: '/livraisons',
     sort: byDateDesc,
   })
@@ -72,6 +74,10 @@ export default function LivraisonsView() {
 
   const [patching, setPatching] = useState<number | null>(null)
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
+  const busy = saving || form.formState.isSubmitting
+
   const canEdit = canWrite(user?.role, 'caisse')
 
   /** Libelle de commande : `Client — date`, lisible sans quitter la liste. */
@@ -80,15 +86,16 @@ export default function LivraisonsView() {
     return commande ? `Commande du ${commande.dateCommande}` : `Commande #${commandeId}`
   }
 
-  function handleSubmit(values: LivraisonFormValues) {
-    void (async () => {
+  async function handleSubmit(values: LivraisonFormValues) {
+    if (!canEdit || pending.current) return
+    pending.current = true
+    try {
       const created = await create(values)
       if (created === null) return
       form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() })
+      setDialogOpen(false)
       toast.success(`Livraison enregistree pour la commande du ${values.dateExpedition}.`)
-    })()
-      form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() })
-    toast.success(`Livraison enregistree pour la commande du ${values.dateExpedition}.`)
+    } finally { pending.current = false }
   }
 
   async function changeStatut(livraison: ApiLivraison, statut: ApiLivraison['statut']) {
@@ -193,108 +200,112 @@ export default function LivraisonsView() {
       title="Suivi des livraisons"
       description="Suivez l'état de vos expéditions en temps réel."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { form.reset({ ...EMPTY_LIVRAISON, dateExpedition: today() }); setDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Nouvelle livraison
+          </button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={canEdit ? null : 'Le suivi des livraisons est reserve a la caisse. Consultez la liste ci-dessous.'}
         resource="livraisons"
       />
 
-      {canEdit && (
-        <section className="form-card">
-          <h2>Nouvelle livraison</h2>
-          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
-            <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
+      <FormDialog open={dialogOpen && canEdit} title="Nouvelle livraison" busy={busy} onClose={() => setDialogOpen(false)}>
+        <ResourceBanners error={error} offline={offline} readOnly={null} resource="livraisons" />
+        <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate>
+          <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
 
-            {commandes.length === 0 && (
-              <p className="info-banner" role="note">
-                <Icon name="alert" size="sm" /> Aucune commande disponible : une livraison se
-                rattache a une commande client existante.
-              </p>
-            )}
+          {commandes.length === 0 && (
+            <p className="info-banner" role="note">
+              <Icon name="alert" size="sm" /> Aucune commande disponible : une livraison se
+              rattache a une commande client existante.
+            </p>
+          )}
 
-            <div className="form-grid-2">
-              <FormSelect
-                label="Commande"
-                name="commandeId"
-                options={commandes.map((commande) => ({
-                  value: String(commande.id),
-                  label: `${commandeLabel(commande.id)} (#${commande.id})`,
-                }))}
-                register={register}
-                error={form.formState.errors.commandeId?.message}
-                required
-              />
-              <FormSelect
-                label="Transporteur"
-                name="transporteur"
-                options={CARRIER_OPTIONS}
-                register={register}
-                error={form.formState.errors.transporteur?.message}
-                required
-              />
-              <FormInput
-                label="Date d'expedition"
-                name="dateExpedition"
-                type="date"
-                register={register}
-                error={form.formState.errors.dateExpedition?.message}
-                required
-              />
-              <FormInput
-                label="Date de livraison prevue"
-                name="dateLivraisonPrevue"
-                type="date"
-                register={register}
-                error={form.formState.errors.dateLivraisonPrevue?.message}
-                required
-              />
-              <FormInput
-                label="Adresse de livraison"
-                name="adresseLivraison"
-                register={register}
-                error={form.formState.errors.adresseLivraison?.message}
-                required
-              />
-              <FormSelect
-                label="Statut"
-                name="statut"
-                options={DELIVERY_STATUS_OPTIONS}
-                register={register}
-                error={form.formState.errors.statut?.message}
-                placeholder={null}
-                required
-              />
-              <FormInput
-                label="Numero de suivi"
-                name="tracking"
-                register={register}
-                error={form.formState.errors.tracking?.message}
-                placeholder="Optionnel"
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormSelect
+              label="Commande"
+              name="commandeId"
+              valueAsNumber
+              options={commandes.map((commande) => ({
+                value: String(commande.id),
+                label: `${commandeLabel(commande.id)} (#${commande.id})`,
+              }))}
+              register={register}
+              error={form.formState.errors.commandeId?.message}
+              required
+            />
+            <FormSelect
+              label="Transporteur"
+              name="transporteur"
+              options={CARRIER_OPTIONS}
+              register={register}
+              error={form.formState.errors.transporteur?.message}
+              required
+            />
+            <FormInput
+              label="Date d'expedition"
+              name="dateExpedition"
+              type="date"
+              register={register}
+              error={form.formState.errors.dateExpedition?.message}
+              required
+            />
+            <FormInput
+              label="Date de livraison prevue"
+              name="dateLivraisonPrevue"
+              type="date"
+              register={register}
+              error={form.formState.errors.dateLivraisonPrevue?.message}
+              required
+            />
+            <FormInput
+              label="Adresse de livraison"
+              name="adresseLivraison"
+              register={register}
+              error={form.formState.errors.adresseLivraison?.message}
+              required
+            />
+            <FormSelect
+              label="Statut"
+              name="statut"
+              options={DELIVERY_STATUS_OPTIONS}
+              register={register}
+              error={form.formState.errors.statut?.message}
+              placeholder={null}
+              required
+            />
+            <FormInput
+              label="Numero de suivi"
+              name="tracking"
+              register={register}
+              error={form.formState.errors.tracking?.message}
+              placeholder="Optionnel"
+            />
+          </div>
 
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={saving || form.formState.isSubmitting || commandes.length === 0}
-                title={commandes.length === 0 ? 'Aucune commande a livrer' : undefined}
-              >
-                <Icon name="check" size="sm" /> Enregistrer
-              </button>
-              <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_LIVRAISON)}>
-                Effacer
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+          <div className="form-actions">
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={saving || form.formState.isSubmitting || commandes.length === 0}
+              title={commandes.length === 0 ? 'Aucune commande a livrer' : undefined}
+            >
+              <Icon name="check" size="sm" /> Enregistrer
+            </button>
+            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_LIVRAISON)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

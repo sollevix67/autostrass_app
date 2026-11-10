@@ -162,12 +162,7 @@ export function useStock(): UseStockResult {
       return true
     } catch (cause) {
       if (isAbortError(cause)) return false
-      if (isApiUnavailable(cause)) {
-        setArticles((prev) => prev.map((item) => (item.reference === editing.reference ? editing : item)))
-        setEditing(null)
-        setOffline(true)
-        return true
-      }
+      if (isApiUnavailable(cause)) setOffline(true)
       setError(toErrorMessage(cause))
       return false
     } finally {

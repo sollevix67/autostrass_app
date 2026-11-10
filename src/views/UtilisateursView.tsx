@@ -11,9 +11,10 @@
  */
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
@@ -54,6 +55,7 @@ export default function UtilisateursView() {
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiUtilisateur>({
+    allowOfflineWrites: false,
     path: '/utilisateurs',
     sort: byName,
   })
@@ -67,22 +69,31 @@ export default function UtilisateursView() {
 
   const [patching, setPatching] = useState<number | null>(null)
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
+  const busy = saving || form.formState.isSubmitting
+
   const isAdmin = canWrite(user?.role, 'admin')
 
   async function handleSubmit(values: UtilisateurFormValues) {
-    const created = await create({
-      nom: values.nom,
-      prenom: values.prenom,
-      email: values.email,
-      telephone: values.telephone,
-      role: values.role,
-      motDePasse: values.motDePasse,
-    })
-    if (created === null) return
-    // Le mot de passe n'est jamais renvoyé par l'API : le vider évite qu'il
-    // reste dans le DOM et soit renvoye tel quel lors d'une modification.
-    form.reset(EMPTY_USER)
-    toast.success(`Compte cree pour ${created.email}.`)
+    if (!isAdmin || pending.current) return
+    pending.current = true
+    try {
+      const created = await create({
+        nom: values.nom,
+        prenom: values.prenom,
+        email: values.email,
+        telephone: values.telephone,
+        role: values.role,
+        motDePasse: values.motDePasse,
+      })
+      if (created === null) return
+      // Le mot de passe n'est jamais renvoyé par l'API : le vider évite qu'il
+      // reste dans le DOM et soit renvoye tel quel lors d'une modification.
+      form.reset(EMPTY_USER)
+      setDialogOpen(false)
+      toast.success(`Compte cree pour ${created.email}.`)
+    } finally { pending.current = false }
   }
 
   /**
@@ -193,13 +204,18 @@ export default function UtilisateursView() {
       title="Utilisateurs et droits"
       description="Gerez les acces et les droits de chaque utilisateur."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {isAdmin && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { form.reset(EMPTY_USER); setDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Nouvel utilisateur
+          </button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={
           isAdmin
@@ -209,64 +225,62 @@ export default function UtilisateursView() {
         resource="utilisateurs"
       />
 
-      {isAdmin && (
-        <section className="form-card">
-          <h2>Nouvel utilisateur</h2>
-          <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
-            <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
+      <FormDialog open={dialogOpen && isAdmin} title="Nouvel utilisateur" busy={busy} onClose={() => setDialogOpen(false)}>
+        <ResourceBanners error={error} offline={offline} readOnly={null} resource="utilisateurs" />
+        <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate>
+          <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
 
-            <div className="form-grid-2">
-              <FormInput label="Nom" name="nom" register={register} error={form.formState.errors.nom?.message} required />
-              <FormInput label="Prenom" name="prenom" register={register} error={form.formState.errors.prenom?.message} required />
-              <FormInput
-                label="Email"
-                name="email"
-                type="email"
-                register={register}
-                error={form.formState.errors.email?.message}
-                required
-              />
-              <FormInput
-                label="Telephone"
-                name="telephone"
-                type="tel"
-                register={register}
-                error={form.formState.errors.telephone?.message}
-              />
-              <FormSelect
-                label="Role"
-                name="role"
-                register={register}
-                options={ROLE_OPTIONS}
-                error={form.formState.errors.role?.message}
-                required
-              />
-              <FormInput
-                label="Mot de passe"
-                name="motDePasse"
-                type="password"
-                register={register}
-                error={form.formState.errors.motDePasse?.message}
-                hint="8 caracteres minimum. Communiquez-le a l'utilisateur par un canal sur."
-                required
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormInput label="Nom" name="nom" register={register} error={form.formState.errors.nom?.message} required />
+            <FormInput label="Prenom" name="prenom" register={register} error={form.formState.errors.prenom?.message} required />
+            <FormInput
+              label="Email"
+              name="email"
+              type="email"
+              register={register}
+              error={form.formState.errors.email?.message}
+              required
+            />
+            <FormInput
+              label="Telephone"
+              name="telephone"
+              type="tel"
+              register={register}
+              error={form.formState.errors.telephone?.message}
+            />
+            <FormSelect
+              label="Role"
+              name="role"
+              register={register}
+              options={ROLE_OPTIONS}
+              error={form.formState.errors.role?.message}
+              required
+            />
+            <FormInput
+              label="Mot de passe"
+              name="motDePasse"
+              type="password"
+              register={register}
+              error={form.formState.errors.motDePasse?.message}
+              hint="8 caracteres minimum. Communiquez-le a l'utilisateur par un canal sur."
+              required
+            />
+          </div>
 
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={saving || form.formState.isSubmitting}
-              >
-                <Icon name="plus" size="sm" /> Creer le compte
-              </button>
-              <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_USER)}>
-                Effacer
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+          <div className="form-actions">
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={saving || form.formState.isSubmitting}
+            >
+              <Icon name="plus" size="sm" /> Creer le compte
+            </button>
+            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_USER)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

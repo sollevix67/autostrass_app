@@ -1,5 +1,39 @@
 # Passation — Autostrass App
 
+**10 novembre — formulaires restants en fenêtres contextuelles** : 19 parcours
+migrés pour les véhicules, comptes, commandes clients, livraisons, retours,
+ventes, ouverture de Caisse, édition/transfert Stock, inventaire et Administration.
+Les paramètres affichent leurs valeurs enregistrées avec un bouton Modifier ;
+catégories, sous-catégories et secteurs utilisent des dialogues d'ajout/édition.
+Clients, Fournisseurs, Catalogue, Réceptions et emplacements étaient déjà migrés.
+Les filtres, le sélecteur de référence d'inventaire et la connexion restent dans
+leur page. Guide : [formulaires-modaux.md](specs/formulaires-modaux.md).
+
+`FormDialog` natif commun : focus contenu, retour au déclencheur disponible,
+défilement bloqué et champs/fermetures bloqués pendant les écritures. Les erreurs
+conservent la saisie ; fermeture seulement après succès API. Les créations métier
+et l'édition Stock requièrent une réponse API, sans faux succès hors ligne.
+Le panier de vente se conserve à la fermeture et peut être repris. L'inventaire
+conserve les confirmations explicites empilées, les protections de navigation,
+les erreurs et la reprise après conflit avec nouveau comptage obligatoire.
+
+Corrections nécessaires révélées par la recette : Livraisons attend désormais
+la réponse API avant succès/remise à zéro ; les identifiants des clients,
+commandes et ventes sont convertis en nombres, avec références facultatives
+nulles conservées. Droits, CSRF, transactions et contrats serveur inchangés ;
+aucune migration ni changement serveur dans cette livraison.
+
+Validation : build/lint et `test:errors` conformes ; **524 contrôles** pour les
+19 parcours, **122 Caisse**, **157 Clients**, **142 Fournisseurs**, API simulée.
+Recette réelle d'inventaire : **85 contrôles** sur MariaDB portable 11.4.5 isolée,
+base jetable et instance arrêtée ; aucune donnée ni permission applicative
+modifiée. Quatre largeurs, deux thèmes, champs obligatoires, focus/Échap,
+confirmations empilées, double envoi, erreurs/reprise et accès par rôle couverts.
+Documentation, design et captures actualisés. Graphify actualisé et vérifié :
+139 empreintes de code conformes, 2 904 nœuds uniques, 5 971 liens sans orphelin,
+193 communautés, HTML/JSON cohérents. `git diff --check` conforme ; branche
+distante synchronisée après fetch. Livraison sur `origin/main`, tête initiale `e31eb72`.
+
 **Synthèse au 8 novembre 2026.** Cette version remplace le journal chronologique
 par l'état livré, les contrats à préserver et les points de reprise.
 L'[historique intégral avant compaction](https://github.com/sollevix67/autostrass_app/blob/37ac9167d92d33d9997f2ad3f560ec34e94379f4/passation.md)
@@ -60,13 +94,13 @@ les modules anciens n'ont pas fait l'objet d'un nouvel audit exhaustif.
 | Caisse et comptoir | Sessions, comptage, clôture, ventes figées, empreintes chaînées, facture PDF ; auteur issu du compte connecté | Complétude clavier/autocomplétion et exigences NF203/NF525 de déploiement à confirmer |
 | Devis | Non commencé | Numérotation, CRUD, PDF, email/WhatsApp et conversion en commande |
 | Commandes/réceptions fournisseurs | Réceptions persistées, lignes et historique, formulaire en dialogue | Commandes fournisseurs, horaires, liste à commander, suivi par fournisseur, attribution automatique et intégration au carnet |
-| Commandes clients | API, lignes et statuts | Numérotation métier et bons de commande PDF |
-| Livraisons | CRUD lié aux commandes, transporteur, dates, adresse et statut ; secteurs clients administrables | Bons automatiques, numérotation, tournées et intégration des secteurs |
-| Retours clients | API et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock et bons de retour refusé avec motifs |
+| Commandes clients | Création en dialogue, API, lignes et statuts | Numérotation métier et bons de commande PDF |
+| Livraisons | Création en dialogue, CRUD lié aux commandes, transporteur, dates, adresse et statut ; secteurs clients administrables | Bons automatiques, numérotation, tournées et intégration des secteurs |
+| Retours clients | Création en dialogue, API et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock et bons de retour refusé avec motifs |
 | Clients | CRUD en dialogue, numéro personnalisable limité à six chiffres, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, suivi des documents et paiements, suspension/limitation, tournées |
 | Fournisseurs | CRUD, coordonnées facultatives, SIRET, création/modification en dialogue | Suivi des commandes lié au futur module fournisseurs |
-| Véhicules | CRUD, statut modifiable | Kilométrage, entretiens/réparations, carburant et coût/km |
-| Personnels/utilisateurs | Comptes, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
+| Véhicules | CRUD, création en dialogue, statut modifiable | Kilométrage, entretiens/réparations, carburant et coût/km |
+| Personnels/utilisateurs | Création en dialogue, comptes, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
 | Paramètres | Neuf rubriques, plafond de Caisse, routes, API, référentiels, sauvegardes, HTTPS et Turnstile | Recette certificat/Cloudflare/terminaux réels ; guides de déploiement ci-dessous |
 
 ## Contrats à préserver
@@ -304,12 +338,13 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-le plafond de Caisse paramétrable : **137 empreintes sources conformes** (136 TS/TSX/MJS
-et le vérificateur JS), **2 889 nœuds**, **5 876 liens**, **170 communautés**, aucun identifiant
+la migration des formulaires restants : **139 empreintes sources conformes** (138 TS/TSX/MJS
+et le vérificateur JS), **2 904 nœuds**, **5 971 liens**, **193 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
 de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`74501ff`**. Le vérificateur Figma, `scripts/test-caisse-ui.mjs`,
-`CashCountFields.tsx`, `cashCounting.ts` et `CaisseSettingsView.tsx` sont indexés.
+**`e31eb72`**. Le vérificateur Figma, les scripts de recette Caisse/formulaires,
+`CashCountFields.tsx`, `cashCounting.ts`, `CaisseSettingsView.tsx` et
+`FormDialog.tsx` sont indexés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.

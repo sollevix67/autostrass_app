@@ -16,11 +16,12 @@
  * avoir rempli un panier.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/useToast'
@@ -57,12 +58,15 @@ export default function VentesComptoirView() {
   const clients = useClientOptions()
   const { session: cashSession } = useCashSession()
   const { rows, loading, saving, error, offline, reload, create } = useResource<ApiVente>({
+    allowOfflineWrites: false,
     path: '/ventes',
     sort: byDateDesc,
   })
 
   const [cart, setCart] = useState<CartLine[]>([])
   const [selection, setSelection] = useState('')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
 
   const totalHT = useMemo(() => totalOf(cart), [cart])
 
@@ -84,6 +88,7 @@ export default function VentesComptoirView() {
     },
   })
   const register = form.register as unknown as FieldRegister
+  const busy = saving || form.formState.isSubmitting
 
   const modePaiement = form.watch('modePaiement')
   const montantPaye = form.watch('montantPaye') || 0
@@ -136,34 +141,36 @@ export default function VentesComptoirView() {
   }
 
   const submit = form.handleSubmit(async (values) => {
-    if (!user) return
-
-    const created = await create({
-      clientId: values.clientId,
-      dateVente: values.dateVente,
-      caissier: `${user.prenom} ${user.nom}`.trim(),
-      modePaiement: values.modePaiement,
-      montantPaye: values.montantPaye,
-      // La monnaie n'est pas un champ saisi : elle vaut l'encaissement moins
-      // le total, et le serveur la recalcule de toute facon.
-      monnaie: Math.max(0, Math.round((values.montantPaye - totalHT) * 100) / 100),
-      articles: cart.map((line) => ({
-        reference: line.reference,
-        designation: line.designation,
-        quantite: line.quantite,
-        prixUnitaire: line.prixUnitaire,
-      })),
-    })
-    if (created === null) return
-
-    setCart([])
-    form.reset({
-      clientId: null,
-      dateVente: todayIso(),
-      modePaiement: 'espèces',
-      montantPaye: 0,
-    })
-    toast.success(`Vente enregistree : ${formatEuros(created.totalHT)} HT.`)
+    if (!user || !canEdit || !cashSession || pending.current) return
+    pending.current = true
+    try {
+      const created = await create({
+        clientId: values.clientId,
+        dateVente: values.dateVente,
+        caissier: `${user.prenom} ${user.nom}`.trim(),
+        modePaiement: values.modePaiement,
+        montantPaye: values.montantPaye,
+        // La monnaie n'est pas un champ saisi : elle vaut l'encaissement moins
+        // le total, et le serveur la recalcule de toute facon.
+        monnaie: Math.max(0, Math.round((values.montantPaye - totalHT) * 100) / 100),
+        articles: cart.map((line) => ({
+          reference: line.reference,
+          designation: line.designation,
+          quantite: line.quantite,
+          prixUnitaire: line.prixUnitaire,
+        })),
+      })
+      if (created === null) return
+      setDialogOpen(false)
+      setCart([])
+      form.reset({
+        clientId: null,
+        dateVente: todayIso(),
+        modePaiement: 'espèces',
+        montantPaye: 0,
+      })
+      toast.success(`Vente enregistree : ${formatEuros(created.totalHT)} HT.`)
+    } finally { pending.current = false }
   })
 
   const columns: ColumnDef<ApiVente>[] = [
@@ -218,16 +225,19 @@ export default function VentesComptoirView() {
   return (
     <PageLayout
       eyebrow="VENTES COMPTOIR"
-      title="Ouvrir une caisse"
+      title="Ventes au comptoir"
       description="Enregistrez les ventes au comptoir."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+        <>
+        <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
           <Icon name="rotate-ccw" size="sm" /> Actualiser
         </button>
+        {canEdit && <button type="button" className="primary-button" disabled={!cashSession || busy} aria-haspopup="dialog" onClick={() => setDialogOpen(true)}><Icon name="plus" size="sm" /> {cart.length ? 'Reprendre la vente' : 'Nouvelle vente'}</button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={canEdit ? null : 'La saisie des ventes est reservee a la caisse. Consultez le journal ci-dessous.'}
         resource="ventes"
@@ -240,158 +250,158 @@ export default function VentesComptoirView() {
         </p>
       )}
 
-      {canEdit && cashSession !== null && (
-        <section className="form-card">
-          <h2>Vente en cours</h2>
-          <form onSubmit={submit} noValidate>
-            <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
+      {cart.length > 0 && <p className="info-banner">Vente en préparation : {cart.length} ligne(s), {formatEuros(totalHT)} HT.</p>}
+      <FormDialog open={dialogOpen && canEdit && cashSession !== null} title="Vente en cours" size="wide" busy={busy} onClose={() => setDialogOpen(false)} cancelLabel="Fermer et garder le panier">
+          <ResourceBanners error={error} offline={offline} readOnly={null} resource="ventes" />
+        <form onSubmit={submit} noValidate>
+          <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
 
-            <div className="form-grid-2">
-              <FormSelect
-                label="Client"
-                name="clientId"
-                options={clients.map((client) => ({
-                  value: String(client.id),
-                  label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
-                }))}
-                register={register}
-                error={form.formState.errors.clientId?.message}
-                placeholder="Client de passage (facultatif)"
-              />
-              <FormInput
-                label="Date"
-                name="dateVente"
-                type="date"
-                register={register}
-                error={form.formState.errors.dateVente?.message}
-                required
-              />
-              <FormSelect
-                label="Mode de paiement"
-                name="modePaiement"
-                options={PAYMENT_MODE_OPTIONS}
-                register={register}
-                error={form.formState.errors.modePaiement?.message}
-                placeholder={null}
-                required
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormSelect
+              label="Client"
+              name="clientId"
+              valueAsNumber
+              options={clients.map((client) => ({
+                value: String(client.id),
+                label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
+              }))}
+              register={register}
+              error={form.formState.errors.clientId?.message}
+              placeholder="Client de passage (facultatif)"
+            />
+            <FormInput
+              label="Date"
+              name="dateVente"
+              type="date"
+              register={register}
+              error={form.formState.errors.dateVente?.message}
+              required
+            />
+            <FormSelect
+              label="Mode de paiement"
+              name="modePaiement"
+              options={PAYMENT_MODE_OPTIONS}
+              register={register}
+              error={form.formState.errors.modePaiement?.message}
+              placeholder={null}
+              required
+            />
+          </div>
 
-            <h3 className="sub-heading">Ajouter un article du catalogue</h3>
-            <div className="filter-bar">
-              <FormSelect
-                label="Article"
-                name="catalogueSelection"
-                value={selection}
-                options={catalogue.map((article) => ({
-                  value: article.reference,
-                  label: `${article.reference} - ${article.designation}`,
-                }))}
-                onChange={(_name, value) => {
-                  setSelection(value)
-                  addToCart(value)
-                }}
-                placeholder="Rechercher une reference..."
-              />
-            </div>
+          <h3 className="sub-heading">Ajouter un article du catalogue</h3>
+          <div className="filter-bar">
+            <FormSelect
+              label="Article"
+              name="catalogueSelection"
+              value={selection}
+              options={catalogue.map((article) => ({
+                value: article.reference,
+                label: `${article.reference} - ${article.designation}`,
+              }))}
+              onChange={(_name, value) => {
+                setSelection(value)
+                addToCart(value)
+              }}
+              placeholder="Rechercher une reference..."
+            />
+          </div>
 
-            <h3 className="sub-heading">Articles vendus</h3>
-            {cart.length === 0 && (
-              <p className="empty-state">Aucun article. Recherchez et ajoutez une reference du catalogue.</p>
-            )}
+          <h3 className="sub-heading">Articles vendus</h3>
+          {cart.length === 0 && (
+            <p className="empty-state">Aucun article. Recherchez et ajoutez une reference du catalogue.</p>
+          )}
 
-            {cart.map((line) => (
-              <div key={line.lineId} className="reception-article">
-                <div className="form-grid-3">
-                  <div className="form-group">
-                    <label>Reference</label>
-                    <span className="static-value">{line.reference}</span>
-                  </div>
-                  <div className="form-group">
-                    <label>Designation</label>
-                    <span className="static-value">{line.designation}</span>
-                  </div>
-                  <div className="form-group">
-                    <label>Prix unitaire</label>
-                    <span className="static-value">{formatEuros(line.prixUnitaire)}</span>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor={`quantite-${line.lineId}`}>Quantite</label>
-                    <input
-                      id={`quantite-${line.lineId}`}
-                      type="number"
-                      min="1"
-                      max="9999"
-                      value={line.quantite}
-                      onChange={(event) => {
-                        const value = Number.parseInt(event.target.value, 10)
-                        updateQuantity(line.lineId, Number.isNaN(value) ? 1 : value)
-                      }}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Montant</label>
-                    <span className="static-value">{formatEuros(line.quantite * line.prixUnitaire)}</span>
-                  </div>
+          {cart.map((line) => (
+            <div key={line.lineId} className="reception-article">
+              <div className="form-grid-3">
+                <div className="form-group">
+                  <label>Reference</label>
+                  <span className="static-value">{line.reference}</span>
                 </div>
-                <button
-                  type="button"
-                  className="action-btn delete"
-                  onClick={() => removeLine(line.lineId)}
-                  aria-label={`Retirer ${line.reference} du panier`}
-                >
-                  <Icon name="close" size="sm" />
-                </button>
+                <div className="form-group">
+                  <label>Designation</label>
+                  <span className="static-value">{line.designation}</span>
+                </div>
+                <div className="form-group">
+                  <label>Prix unitaire</label>
+                  <span className="static-value">{formatEuros(line.prixUnitaire)}</span>
+                </div>
+                <div className="form-group">
+                  <label htmlFor={`quantite-${line.lineId}`}>Quantite</label>
+                  <input
+                    id={`quantite-${line.lineId}`}
+                    type="number"
+                    min="1"
+                    max="9999"
+                    value={line.quantite}
+                    onChange={(event) => {
+                      const value = Number.parseInt(event.target.value, 10)
+                      updateQuantity(line.lineId, Number.isNaN(value) ? 1 : value)
+                    }}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Montant</label>
+                  <span className="static-value">{formatEuros(line.quantite * line.prixUnitaire)}</span>
+                </div>
               </div>
-            ))}
-
-            <div className="vente-total">
-              <div>
-                <strong>Total HT : {formatEuros(totalHT)}</strong>
-              </div>
-              <div className="form-group">
-                <label htmlFor="montantPaye">Montant encaisse</label>
-                <input
-                  id="montantPaye"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={Number.isFinite(montantPaye) ? montantPaye : 0}
-                  onChange={(event) => {
-                    const value = event.target.value
-                    form.setValue('montantPaye', value === '' ? 0 : Number.parseFloat(value))
-                  }}
-                  placeholder={totalHT.toFixed(2)}
-                  aria-invalid={form.formState.errors.montantPaye ? true : undefined}
-                  aria-describedby={form.formState.errors.montantPaye ? 'montantPaye-error' : undefined}
-                />
-                {form.formState.errors.montantPaye && (
-                  <small id="montantPaye-error" className="form-error-text" role="alert">
-                    {form.formState.errors.montantPaye.message}
-                  </small>
-                )}
-              </div>
-              {monnaie > 0 && <div><strong>Monnaie : {formatEuros(monnaie)}</strong></div>}
-            </div>
-
-            <div className="form-actions">
               <button
-                type="submit"
-                className="primary-button"
-                disabled={saving || cart.length === 0 || modePaiement === undefined}
-                title={cart.length === 0 ? 'Ajoutez au moins un article' : undefined}
+                type="button"
+                className="action-btn delete"
+                onClick={() => removeLine(line.lineId)}
+                aria-label={`Retirer ${line.reference} du panier`}
               >
-                <Icon name="check" size="sm" /> Valider la vente
+                <Icon name="close" size="sm" />
               </button>
-              {cart.length > 0 && (
-                <button type="button" className="secondary-button" onClick={() => setCart([])}>
-                  Vider le panier
-                </button>
+            </div>
+          ))}
+
+          <div className="vente-total">
+            <div>
+              <strong>Total HT : {formatEuros(totalHT)}</strong>
+            </div>
+            <div className="form-group">
+              <label htmlFor="montantPaye">Montant encaisse</label>
+              <input
+                id="montantPaye"
+                type="number"
+                step="0.01"
+                min="0"
+                value={Number.isFinite(montantPaye) ? montantPaye : 0}
+                onChange={(event) => {
+                  const value = event.target.value
+                  form.setValue('montantPaye', value === '' ? 0 : Number.parseFloat(value))
+                }}
+                placeholder={totalHT.toFixed(2)}
+                aria-invalid={form.formState.errors.montantPaye ? true : undefined}
+                aria-describedby={form.formState.errors.montantPaye ? 'montantPaye-error' : undefined}
+              />
+              {form.formState.errors.montantPaye && (
+                <small id="montantPaye-error" className="form-error-text" role="alert">
+                  {form.formState.errors.montantPaye.message}
+                </small>
               )}
             </div>
-          </form>
-        </section>
-      )}
+            {monnaie > 0 && <div><strong>Monnaie : {formatEuros(monnaie)}</strong></div>}
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="submit"
+              className="primary-button"
+              disabled={saving || cart.length === 0 || modePaiement === undefined}
+              title={cart.length === 0 ? 'Ajoutez au moins un article' : undefined}
+            >
+              <Icon name="check" size="sm" /> Valider la vente
+            </button>
+            {cart.length > 0 && (
+              <button type="button" className="secondary-button" onClick={() => setCart([])}>
+                Vider le panier
+              </button>
+            )}
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

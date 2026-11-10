@@ -13,10 +13,11 @@
  * depot, et il ne meritait pas de passer par le formulaire de creation.
  */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
@@ -50,6 +51,7 @@ export default function CommandesClientsView() {
   const { dialogProps, confirm } = useConfirm()
   const clients = useClientOptions()
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiCommande>({
+    allowOfflineWrites: false,
     path: '/commandes',
     sort: byDateDesc,
   })
@@ -60,7 +62,7 @@ export default function CommandesClientsView() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CommandeFormValues>({
     resolver: zodResolver(commandeSchema),
     mode: 'onSubmit',
@@ -72,6 +74,10 @@ export default function CommandesClientsView() {
 
   const [patching, setPatching] = useState<number | null>(null)
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
+  const busy = saving || isSubmitting
+
   const canEdit = canWrite(user?.role, 'caisse')
 
   const watchedArticles = watch('articles')
@@ -81,10 +87,15 @@ export default function CommandesClientsView() {
   )
 
   const onSubmit = handleSubmit(async (values) => {
-    const created = await create(values)
-    if (created === null) return
-    reset(EMPTY_COMMANDE)
-    toast.success(`Commande enregistree (${created.articles.length} ligne(s), ${formatEuros(totalHT)} HT).`)
+    if (!canEdit || pending.current) return
+    pending.current = true
+    try {
+      const created = await create(values)
+      if (created === null) return
+      reset(EMPTY_COMMANDE)
+      setDialogOpen(false)
+      toast.success(`Commande enregistree (${created.articles.length} ligne(s), ${formatEuros(totalHT)} HT).`)
+    } finally { pending.current = false }
   })
 
   /**
@@ -208,149 +219,153 @@ export default function CommandesClientsView() {
       title="Commandes clients"
       description="Suivez et gérez les commandes de vos clients."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { reset({ ...EMPTY_COMMANDE, dateCommande: today() }); setDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Nouvelle commande
+          </button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={canEdit ? null : 'La saisie des commandes est reservee a la caisse. Consultez la liste ci-dessous.'}
         resource="commandes"
       />
 
-      {canEdit && (
-        <section className="form-card">
-          <h2>Nouvelle commande</h2>
-          <form onSubmit={onSubmit} noValidate>
-            {errors.articles && (
-              <p className="error-banner" role="alert">
-                {typeof errors.articles.message === 'string'
-                  ? errors.articles.message
-                  : "Completez chaque ligne avant d'enregistrer la commande."}
-              </p>
-            )}
+      <FormDialog open={dialogOpen && canEdit} title="Nouvelle commande" busy={busy} onClose={() => setDialogOpen(false)}>
+        <ResourceBanners error={error} offline={offline} readOnly={null} resource="commandes" />
+        <form onSubmit={onSubmit} noValidate>
+          {errors.articles && (
+            <p className="error-banner" role="alert">
+              {typeof errors.articles.message === 'string'
+                ? errors.articles.message
+                : "Completez chaque ligne avant d'enregistrer la commande."}
+            </p>
+          )}
 
-            <div className="form-grid-2">
-              <FormSelect
-                label="Client"
-                name="clientId"
-                options={clients.map((client) => ({
-                  value: String(client.id),
-                  label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
-                }))}
-                register={reg}
-                error={errors.clientId?.message}
-                required
-              />
-              <FormInput
-                label="Date de commande"
-                name="dateCommande"
-                type="date"
-                register={reg}
-                error={errors.dateCommande?.message}
-                required
-              />
-              <FormSelect
-                label="Statut"
-                name="statut"
-                options={ORDER_STATUS_OPTIONS}
-                register={reg}
-                error={errors.statut?.message}
-                placeholder={null}
-                required
-              />
-              <FormInput
-                label="Date de livraison prevue"
-                name="dateLivraisonPrevue"
-                type="date"
-                register={reg}
-                error={errors.dateLivraisonPrevue?.message}
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormSelect
+              label="Client"
+              name="clientId"
+              valueAsNumber
+              options={clients.map((client) => ({
+                value: String(client.id),
+                label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
+              }))}
+              register={reg}
+              error={errors.clientId?.message}
+              required
+            />
+            <FormInput
+              label="Date de commande"
+              name="dateCommande"
+              type="date"
+              register={reg}
+              error={errors.dateCommande?.message}
+              required
+            />
+            <FormSelect
+              label="Statut"
+              name="statut"
+              options={ORDER_STATUS_OPTIONS}
+              register={reg}
+              error={errors.statut?.message}
+              placeholder={null}
+              required
+            />
+            <FormInput
+              label="Date de livraison prevue"
+              name="dateLivraisonPrevue"
+              type="date"
+              register={reg}
+              error={errors.dateLivraisonPrevue?.message}
+            />
+          </div>
 
-            <h3 className="sub-heading">Articles commandes</h3>
+          <h3 className="sub-heading">Articles commandes</h3>
 
-            {fields.map((field, index) => {
-              const lineErrors = errors.articles?.[index]
-              return (
-                <div key={field.id} className="reception-article">
-                  <div className="form-grid-2">
-                    <FormInput
-                      label="Reference"
-                      name={`articles.${index}.reference`}
-                      register={reg}
-                      error={lineErrors?.reference?.message}
-                      required
-                      placeholder="ex: PLA-2841"
-                    />
-                    <FormInput
-                      label="Designation"
-                      name={`articles.${index}.designation`}
-                      register={reg}
-                      error={lineErrors?.designation?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Quantite"
-                      name={`articles.${index}.quantite`}
-                      type="number"
-                      min="1"
-                      register={reg}
-                      error={lineErrors?.quantite?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Prix unitaire"
-                      name={`articles.${index}.prixUnitaire`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      register={reg}
-                      error={lineErrors?.prixUnitaire?.message}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="action-btn delete"
-                    onClick={() => removeLine(index)}
-                    aria-label={`Retirer la ligne ${index + 1}`}
-                    disabled={fields.length === 1}
-                    title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
-                  >
-                    <Icon name="close" size="sm" />
-                  </button>
+          {fields.map((field, index) => {
+            const lineErrors = errors.articles?.[index]
+            return (
+              <div key={field.id} className="reception-article">
+                <div className="form-grid-2">
+                  <FormInput
+                    label="Reference"
+                    name={`articles.${index}.reference`}
+                    register={reg}
+                    error={lineErrors?.reference?.message}
+                    required
+                    placeholder="ex: PLA-2841"
+                  />
+                  <FormInput
+                    label="Designation"
+                    name={`articles.${index}.designation`}
+                    register={reg}
+                    error={lineErrors?.designation?.message}
+                    required
+                  />
+                  <FormInput
+                    label="Quantite"
+                    name={`articles.${index}.quantite`}
+                    type="number"
+                    min="1"
+                    register={reg}
+                    error={lineErrors?.quantite?.message}
+                    required
+                  />
+                  <FormInput
+                    label="Prix unitaire"
+                    name={`articles.${index}.prixUnitaire`}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    register={reg}
+                    error={lineErrors?.prixUnitaire?.message}
+                    required
+                  />
                 </div>
-              )
-            })}
+                <button
+                  type="button"
+                  className="action-btn delete"
+                  onClick={() => removeLine(index)}
+                  aria-label={`Retirer la ligne ${index + 1}`}
+                  disabled={fields.length === 1}
+                  title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
+                >
+                  <Icon name="close" size="sm" />
+                </button>
+              </div>
+            )
+          })}
 
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => append(EMPTY_LINE)}
-              disabled={fields.length >= 200}
-              title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
-            >
-              <Icon name="plus" size="sm" /> Ajouter un article
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => append(EMPTY_LINE)}
+            disabled={fields.length >= 200}
+            title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
+          >
+            <Icon name="plus" size="sm" /> Ajouter un article
+          </button>
+
+          <div className="reception-total">
+            <strong>Total HT : {formatEuros(totalHT)}</strong>
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="primary-button" disabled={saving}>
+              <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Creer la commande'}
             </button>
-
-            <div className="reception-total">
-              <strong>Total HT : {formatEuros(totalHT)}</strong>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={saving}>
-                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Creer la commande'}
-              </button>
-              <button type="button" className="secondary-button" onClick={() => reset(EMPTY_COMMANDE)}>
-                Effacer
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+            <button type="button" className="secondary-button" onClick={() => reset(EMPTY_COMMANDE)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

@@ -1,9 +1,10 @@
 {
-  "date": "2026-11-06",
-  "checks": 84,
+  "date": "2026-11-10",
+  "checks": 85,
   "results": [
     "Accès depuis la ligne Stock avec référence présélectionnée",
     "Recherche EAN13",
+    "Comptage dans une fenêtre native modale",
     "Tous les emplacements et le stock non affecté sont présentés",
     "Aucune quantité théorique préremplie comme comptée",
     "Aucun débordement horizontal light 375",

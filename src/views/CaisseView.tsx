@@ -28,6 +28,7 @@ import { CashCountFields } from '../components/forms/CashCountFields'
 import { FormTextarea, type FieldRegister } from '../components/forms/FormFields'
 import { useCashSession, useCashMovements } from '../hooks/useCashSession'
 import { useRemoteValue } from '../hooks/useRemoteValue'
+import { FormDialog } from '../components/FormDialog'
 import { useAuth, canWrite } from '../components/useAuth'
 import {
   caisseClotureSchema,
@@ -63,6 +64,7 @@ export default function CaisseView() {
   const { movements } = useCashMovements(session?.id ?? null)
 
   const canEdit = canWrite(user?.role, 'caisse')
+  const [openingDialogOpen, setOpeningDialogOpen] = useState(false)
 
   // --- Formulaire d'ouverture ----------------------------------------------
   // Aucune ouverture tant que le plafond serveur n'a pas été chargé.
@@ -177,6 +179,7 @@ export default function CaisseView() {
         const created = await open(totalCashCount(values.comptage), values.notes)
         if (created === null) return
         opening.reset(EMPTY_COUNT)
+        setOpeningDialogOpen(false)
         toast.success(`Caisse ouverte avec ${formatEuros(created.fondsCaisse)} de fond.`)
       } finally {
         pending.current = false
@@ -264,10 +267,13 @@ export default function CaisseView() {
               <Icon name="check" size="sm" /> Clôturer la caisse
             </button>
           )}
+          {canEdit && session === null && <button type="button" className="primary-button" disabled={loading || busy} aria-haspopup="dialog" onClick={() => { opening.reset(EMPTY_COUNT); setOpeningDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Ouvrir la caisse
+          </button>}
         </>
       }
     >
-      <ResourceBanners error={closingDialogOpen ? null : error ?? configurationError} offline={false} readOnly={null} />
+      <ResourceBanners error={closingDialogOpen || openingDialogOpen ? null : error ?? configurationError} offline={false} readOnly={null} />
 
       {!canEdit && (
         <p className="info-banner" role="note">
@@ -281,42 +287,42 @@ export default function CaisseView() {
         <p className="empty-state">Aucune caisse ouverte.</p>
       )}
 
-      {canEdit && session === null && (
-        <section className="form-card">
-          <h2>Ouvrir la caisse</h2>
-          <form className="caisse-opening-form" onSubmit={submitOpening} noValidate aria-busy={busy}>
-            <ErrorSummary errors={opening.formState.errors} labels={OPENING_LABELS} />
-            {opening.formState.errors.comptage?.root?.message && (
-              <p className="error-banner" role="alert">{opening.formState.errors.comptage.root.message}</p>
-            )}
-            <fieldset className="caisse-form-fields" disabled={busy || loading || configurationLoading || !caisseConfiguration}>
-              <legend className="sr-only">Comptage du fond de caisse</legend>
-              <p className="form-hint">
-                Comptez les billets et pièces remis dans le tiroir à l'ouverture.
-                Saisissez les quantités et laissez zéro pour les coupures absentes.
-              </p>
-              <CashCountFields fields={openingFields} count={openingCount} register={openingRegister} errors={opening.formState.errors.comptage} />
-              <div className="reception-total" role="status" aria-live="polite">
-                <strong>{fondsCompte === null ? 'Comptage à compléter' : `Fond de caisse compté : ${formatEuros(fondsCompte)}`}</strong>
-                <span className="muted">{caisseConfiguration ? `Plafond autorisé : ${formatEuros(caisseConfiguration.maxFondsCaisse)}.` : 'Chargement du plafond autorisé…'}</span>
-              </div>
-              <FormTextarea
-                label="Notes"
-                name="notes"
-                rows={3}
-                register={openingRegister}
-                error={opening.formState.errors.notes?.message}
-                placeholder="Optionnel : consigne de dépôt, particularité..."
-              />
-              <div className="form-actions">
-                <button type="submit" className="primary-button">
-                  <Icon name="check" size="sm" /> {busy ? 'Ouverture en cours…' : 'Ouvrir la caisse'}
-                </button>
-              </div>
-            </fieldset>
-          </form>
-        </section>
-      )}
+      {canEdit && session === null && <p className="empty-state">Aucune caisse ouverte. Ouvrez une session après avoir compté le fond de caisse.</p>}
+      <FormDialog open={openingDialogOpen && canEdit && session === null} title="Ouvrir la caisse" className="caisse-opening-modal" busy={busy} onClose={() => setOpeningDialogOpen(false)}>
+          <ResourceBanners error={error ?? configurationError} offline={false} readOnly={null} />
+          <button type="button" className="secondary-button" disabled={loading || configurationLoading || busy} onClick={() => { reload(); reloadConfiguration() }}>Actualiser le plafond</button>
+        <form className="caisse-opening-form" onSubmit={submitOpening} noValidate aria-busy={busy}>
+          <ErrorSummary errors={opening.formState.errors} labels={OPENING_LABELS} />
+          {opening.formState.errors.comptage?.root?.message && (
+            <p className="error-banner" role="alert">{opening.formState.errors.comptage.root.message}</p>
+          )}
+          <fieldset className="caisse-form-fields" disabled={busy || loading || configurationLoading || !caisseConfiguration}>
+            <legend className="sr-only">Comptage du fond de caisse</legend>
+            <p className="form-hint">
+              Comptez les billets et pièces remis dans le tiroir à l'ouverture.
+              Saisissez les quantités et laissez zéro pour les coupures absentes.
+            </p>
+            <CashCountFields fields={openingFields} count={openingCount} register={openingRegister} errors={opening.formState.errors.comptage} />
+            <div className="reception-total" role="status" aria-live="polite">
+              <strong>{fondsCompte === null ? 'Comptage à compléter' : `Fond de caisse compté : ${formatEuros(fondsCompte)}`}</strong>
+              <span className="muted">{caisseConfiguration ? `Plafond autorisé : ${formatEuros(caisseConfiguration.maxFondsCaisse)}.` : 'Chargement du plafond autorisé…'}</span>
+            </div>
+            <FormTextarea
+              label="Notes"
+              name="notes"
+              rows={3}
+              register={openingRegister}
+              error={opening.formState.errors.notes?.message}
+              placeholder="Optionnel : consigne de dépôt, particularité..."
+            />
+            <div className="form-actions">
+              <button type="submit" className="primary-button">
+                <Icon name="check" size="sm" /> {busy ? 'Ouverture en cours…' : 'Ouvrir la caisse'}
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </FormDialog>
 
       {/* --- Session ouverte : suivi et comptage --------------------------- */}
       {session !== null && (

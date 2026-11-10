@@ -25,6 +25,7 @@
     "test:integration": "tsx scripts/test-stock-transfers.ts --all && tsx scripts/test-inventaires.ts",
     "test:caisse": "tsx scripts/verify-caisse.ts",
     "test:caisse:ui": "node scripts/test-caisse-ui.mjs",
+    "test:forms:ui": "node scripts/test-form-dialogs-ui.mjs",
     "caisse:diagnostic": "tsx scripts/close-open-sessions.ts",
     "nf525:controle": "tsx scripts/archive-fiscal.ts --verifier archives/2026/ventes-2026.jsonl",
     "nf525:archive": "tsx scripts/archive-fiscal.ts",

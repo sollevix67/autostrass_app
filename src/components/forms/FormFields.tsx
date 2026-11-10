@@ -138,6 +138,8 @@ export function FormInput({
  * refuse alors qu'il est la maniere documentee de supprimer l'option vide.
  */
 type SelectProps = Omit<CommonProps, 'placeholder'> & {
+  /** Convertit les identifiants numériques des référentiels avant validation. */
+  valueAsNumber?: boolean
   options: Array<{ value: string; label: string }>
   register?: FieldRegister
   value?: string
@@ -147,6 +149,7 @@ type SelectProps = Omit<CommonProps, 'placeholder'> & {
 }
 
 export function FormSelect({
+  valueAsNumber = false,
   label,
   name,
   options,
@@ -190,7 +193,7 @@ export function FormSelect({
       )}
 
       {register ? (
-        <select {...register(name)} {...shared} aria-label={label || name}>{optionList}</select>
+        <select {...register(name, valueAsNumber ? { setValueAs: (value: unknown) => value === '' || value == null ? null : Number(value) } : undefined)} {...shared} aria-label={label || name}>{optionList}</select>
       ) : (
         <select
           {...shared}

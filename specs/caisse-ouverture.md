@@ -3,6 +3,8 @@
 Le formulaire **Ouvrir la caisse** permet de compter les billets et pièces remis
 dans le tiroir. Les quinze coupures, de 500 € à 0,01 €, commencent à zéro.
 Saisir la quantité de chaque coupure ; laisser zéro pour les coupures absentes.
+Le bouton de la page ouvre une fenêtre contextuelle. La saisie reste dans cette
+fenêtre jusqu'au succès de l'API ou à son annulation.
 
 Les sous-totaux et le fond compté évoluent avec les quantités. Le calcul utilise
 des centimes entiers. Le total calculé devient automatiquement le fond de caisse
@@ -13,7 +15,7 @@ refusées. Le fond total respecte le plafond défini dans **Administration →
 Paramètres → Caisse** (10 000 € par défaut). Un fond nul reste possible ; un
 plafond de 0 € autorise uniquement ce cas. Les notes sont facultatives.
 
-Le plafond courant apparaît sous le total. **Actualiser** recharge le réglage
+Le plafond courant apparaît sous le total. **Actualiser le plafond**, dans la fenêtre, recharge le réglage
 sans effacer le comptage ni les notes. La lecture du plafond est nécessaire
 avant toute ouverture ; une erreur de configuration bloque l'enregistrement.
 Les changements s'appliquent aux prochaines ouvertures sans modifier les

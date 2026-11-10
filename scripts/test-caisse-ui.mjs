@@ -217,7 +217,7 @@ try {
   check(writes.length === 2, 'Nouvelle tentative uniquement après nouvelle confirmation')
   check(writes[1].comptage.length === 9 && writes[1].comptage.every((line) => line.quantite > 0), 'Seules les coupures réellement comptées sont envoyées')
   check(writes[1].notes === 'Comptage vérifié avec le fond.', 'Commentaire transmis à l’API')
-  await page.getByRole('heading', { name: 'Ouvrir la caisse' }).waitFor({ state: 'visible' })
+  await page.locator('.page-actions').getByRole('button', { name: 'Ouvrir la caisse', exact: true }).waitFor({ state: 'visible' })
   check(true, 'Clôture réussie retire la session ouverte')
 
   await scenario(0.1, 0.2)
@@ -275,11 +275,12 @@ try {
   const openingForm = page.locator('form.caisse-opening-form')
   const openingQuantity = (denomination) => openingForm.locator(`input[name="comptage.${denominations.indexOf(denomination)}.quantite"]`)
   const openingSubmit = () => openingForm.getByRole('button', { name: 'Ouvrir la caisse', exact: true })
-  const refreshCash = () => page.locator('.page-actions').getByRole('button', { name: 'Actualiser', exact: true })
+  const refreshCash = () => page.locator('dialog.caisse-opening-modal[open]').count().then((count) => count ? page.getByRole('button', { name: 'Actualiser le plafond', exact: true }) : page.locator('.page-actions').getByRole('button', { name: 'Actualiser', exact: true }))
   async function openingScenario() {
     session = null
     role = 'caissier'
     await page.goto(`${base}/caisse`)
+    await page.locator('.page-actions').getByRole('button', { name: 'Ouvrir la caisse', exact: true }).click()
     await openingForm.waitFor({ state: 'visible' })
     await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
   }
@@ -379,6 +380,7 @@ try {
   role = 'admin'
   await page.goto(`${base}/parametres`)
   await page.locator('.parametre-card[href="/parametres/caisse"]').click()
+  await page.getByRole('button', { name: 'Modifier les paramètres', exact: true }).click()
   const settingsForm = page.locator('form.parametre-detail')
   const ceiling = settingsForm.getByLabel('Plafond du fond de caisse à l’ouverture (€)')
   const saveSettings = () => settingsForm.getByRole('button', { name: 'Enregistrer', exact: true })
@@ -408,6 +410,7 @@ try {
   await page.getByText('Paramètres enregistrés et appliqués.', { exact: true }).waitFor({ state: 'visible' })
   check(settingsWrites.at(-1).maxFondsCaisse === 12000.5 && maxFondsCaisse === 12000.5, 'Paramètres Caisse : sauvegarde en euros et centimes, plafond supérieur à 10 000 €')
   await page.reload()
+  await page.getByRole('button', { name: 'Modifier les paramètres', exact: true }).click()
   await ceiling.waitFor({ state: 'visible' })
   check(await ceiling.inputValue() === '12000.5', 'Paramètres Caisse : valeur sauvegardée relue après rechargement')
   for (const width of [375, 768, 1024, 1440]) {
@@ -445,7 +448,7 @@ try {
   await openingForm.waitFor({ state: 'hidden' })
   check(openingWrites.at(-1).fondsCaisse === 12000.5, 'Ouverture : nouveau plafond exact accepté au-dessus de 10 000 €')
   maxFondsCaisse = 100.25
-  await refreshCash().click()
+  await (await refreshCash()).click()
   await page.waitForFunction(() => !document.querySelector('.page-actions button')?.disabled)
   check((await text(page.locator('.caisse-summary'))).includes(euros(12000.5)), 'Plafond abaissé : fond de la session ouverte conservé')
   await trigger.click()
@@ -463,7 +466,7 @@ try {
   await openingForm.locator('textarea').fill('Comptage conservé après actualisation.')
   maxFondsCaisse = 80
   const beforeRefresh = configurationReads
-  await refreshCash().click()
+  await (await refreshCash()).click()
   await expectOpeningTotal(`Plafond autorisé : ${euros(80)}`)
   await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
   check(configurationReads > beforeRefresh && await openingQuantity(100).inputValue() === '1' && await openingForm.locator('textarea').inputValue() === 'Comptage conservé après actualisation.', 'Actualiser recharge le plafond et conserve quantités et notes')
@@ -473,7 +476,7 @@ try {
   check(openingWrites.length === beforeLowerLimit, 'Actualiser applique le plafond abaissé à la validation du comptage en cours')
   // Le serveur relit aussi son plafond si un autre poste le modifie entre lecture et envoi.
   maxFondsCaisse = 200
-  await refreshCash().click()
+  await (await refreshCash()).click()
   await expectOpeningTotal(`Plafond autorisé : ${euros(200)}`)
   await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
   maxFondsCaisse = 80
@@ -482,7 +485,7 @@ try {
   check(await openingQuantity(100).inputValue() === '1' && await openingForm.isVisible(), 'Changement concurrent de plafond : refus API visible et comptage conservé')
 
   configurationFailed = true
-  await refreshCash().click()
+  await (await refreshCash()).click()
   await page.getByRole('alert').filter({ hasText: 'Configuration de caisse indisponible.' }).waitFor({ state: 'visible' })
   check(await openingSubmit().isDisabled() && await openingQuantity(100).inputValue() === '1', 'Configuration indisponible : ouverture bloquée et comptage conservé')
   const beforeUnavailable = openingWrites.length
@@ -490,7 +493,7 @@ try {
   check(openingWrites.length === beforeUnavailable, 'Configuration indisponible : aucun envoi même par soumission du formulaire')
   configurationFailed = false
   maxFondsCaisse = 200
-  await refreshCash().click()
+  await (await refreshCash()).click()
   await expectOpeningTotal(`Plafond autorisé : ${euros(200)}`)
   await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
   check(await openingQuantity(100).inputValue() === '1', 'Configuration rétablie : saisie précédente utilisable sans rechargement de page')
@@ -498,6 +501,7 @@ try {
   let releaseConfiguration
   configurationGate = new Promise((resolve) => { releaseConfiguration = resolve })
   await page.goto(`${base}/caisse`)
+  await page.locator('.page-actions').getByRole('button', { name: 'Ouvrir la caisse', exact: true }).click()
   await openingForm.waitFor({ state: 'visible' })
   check(await openingSubmit().isDisabled(), 'Configuration en cours de chargement : ouverture bloquée')
   await openingForm.dispatchEvent('submit')

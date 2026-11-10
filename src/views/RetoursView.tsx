@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 /**
  * Vue retours : articles repris et remboursement.
  *
@@ -14,6 +15,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
+import { FormDialog } from '../components/FormDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useConfirm } from '../components/useConfirm'
@@ -48,6 +50,7 @@ export default function RetoursView() {
   const clients = useClientOptions()
   const ventes = useVenteOptions()
   const { rows, loading, saving, error, offline, reload, create, remove } = useResource<ApiRetour>({
+    allowOfflineWrites: false,
     path: '/retours',
     sort: byDateDesc,
   })
@@ -58,7 +61,7 @@ export default function RetoursView() {
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<RetourFormValues>({
     resolver: zodResolver(retourSchema),
     mode: 'onSubmit',
@@ -67,6 +70,10 @@ export default function RetoursView() {
 
   const { fields, append, remove: removeLine } = useFieldArray({ control, name: 'articles' })
   const reg = register as unknown as FieldRegister
+
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const pending = useRef(false)
+  const busy = saving || isSubmitting
 
   const canEdit = canWrite(user?.role, 'caisse')
 
@@ -77,10 +84,15 @@ export default function RetoursView() {
   )
 
   const onSubmit = handleSubmit(async (values) => {
-    const created = await create(values)
-    if (created === null) return
-    reset(EMPTY_RETOUR)
-    toast.success(`Retour enregistre (${formatEuros(created.montantRembourse)}).`)
+    if (!canEdit || pending.current) return
+    pending.current = true
+    try {
+      const created = await create(values)
+      if (created === null) return
+      reset(EMPTY_RETOUR)
+      setDialogOpen(false)
+      toast.success(`Retour enregistre (${formatEuros(created.montantRembourse)}).`)
+    } finally { pending.current = false }
   })
 
   const handleDelete = (retour: ApiRetour) => {
@@ -167,153 +179,158 @@ export default function RetoursView() {
       title="Gestion des retours"
       description="Enregistrez et suivez les retours clients."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { reset({ ...EMPTY_RETOUR, dateRetour: today() }); setDialogOpen(true) }}>
+            <Icon name="plus" size="sm" /> Nouveau retour
+          </button>}
+        </>
       }
     >
       <ResourceBanners
-        error={error}
+        error={dialogOpen ? null : error}
         offline={offline}
         readOnly={canEdit ? null : 'La saisie des retours est reservee a la caisse. Consultez l\'historique ci-dessous.'}
         resource="retours"
       />
 
-      {canEdit && (
-        <section className="form-card">
-          <h2>Nouveau retour</h2>
-          <form onSubmit={onSubmit} noValidate>
-            {errors.articles && (
-              <p className="error-banner" role="alert">
-                {typeof errors.articles.message === 'string'
-                  ? errors.articles.message
-                  : "Completez chaque ligne avant d'enregistrer le retour."}
-              </p>
-            )}
+      <FormDialog open={dialogOpen && canEdit} title="Nouveau retour" busy={busy} onClose={() => setDialogOpen(false)}>
+        <ResourceBanners error={error} offline={offline} readOnly={null} resource="retours" />
+        <form onSubmit={onSubmit} noValidate>
+          {errors.articles && (
+            <p className="error-banner" role="alert">
+              {typeof errors.articles.message === 'string'
+                ? errors.articles.message
+                : "Completez chaque ligne avant d'enregistrer le retour."}
+            </p>
+          )}
 
-            <div className="form-grid-2">
-              <FormSelect
-                label="Client"
-                name="clientId"
-                options={clients.map((client) => ({
-                  value: String(client.id),
-                  label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
-                }))}
-                register={reg}
-                error={errors.clientId?.message}
-                required
-              />
-              <FormSelect
-                label="Vente d'origine"
-                name="venteId"
-                options={ventes.map((vente) => ({
-                  value: String(vente.id),
-                  label: `Vente #${vente.id} du ${new Date(vente.dateVente).toLocaleDateString('fr-FR')}`,
-                }))}
-                register={reg}
-                error={errors.venteId?.message}
-                placeholder="Aucune vente precisee"
-              />
-              <FormInput
-                label="Date du retour"
-                name="dateRetour"
-                type="date"
-                register={reg}
-                error={errors.dateRetour?.message}
-                required
-              />
-              <FormSelect
-                label="Motif"
-                name="motif"
-                options={RETURN_REASON_OPTIONS}
-                register={reg}
-                error={errors.motif?.message}
-                placeholder="Selectionner un motif..."
-                required
-              />
-            </div>
+          <div className="form-grid-2">
+            <FormSelect
+              label="Client"
+              name="clientId"
+              valueAsNumber
+              options={clients.map((client) => ({
+                value: String(client.id),
+                label: `${client.numeroClient} - ${client.nom} ${client.prenom}`,
+              }))}
+              register={reg}
+              error={errors.clientId?.message}
+              required
+            />
+            <FormSelect
+              label="Vente d'origine"
+              name="venteId"
+              valueAsNumber
+              options={ventes.map((vente) => ({
+                value: String(vente.id),
+                label: `Vente #${vente.id} du ${new Date(vente.dateVente).toLocaleDateString('fr-FR')}`,
+              }))}
+              register={reg}
+              error={errors.venteId?.message}
+              placeholder="Aucune vente precisee"
+            />
+            <FormInput
+              label="Date du retour"
+              name="dateRetour"
+              type="date"
+              register={reg}
+              error={errors.dateRetour?.message}
+              required
+            />
+            <FormSelect
+              label="Motif"
+              name="motif"
+              options={RETURN_REASON_OPTIONS}
+              register={reg}
+              error={errors.motif?.message}
+              placeholder="Selectionner un motif..."
+              required
+            />
+          </div>
 
-            <h3 className="sub-heading">Articles repris</h3>
+          <h3 className="sub-heading">Articles repris</h3>
 
-            {fields.map((field, index) => {
-              const lineErrors = errors.articles?.[index]
-              return (
-                <div key={field.id} className="reception-article">
-                  <div className="form-grid-2">
-                    <FormInput
-                      label="Reference"
-                      name={`articles.${index}.reference`}
-                      register={reg}
-                      error={lineErrors?.reference?.message}
-                      required
-                      placeholder="ex: BAT-7710"
-                    />
-                    <FormInput
-                      label="Designation"
-                      name={`articles.${index}.designation`}
-                      register={reg}
-                      error={lineErrors?.designation?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Quantite reprise"
-                      name={`articles.${index}.quantite`}
-                      type="number"
-                      min="1"
-                      register={reg}
-                      error={lineErrors?.quantite?.message}
-                      required
-                    />
-                    <FormInput
-                      label="Prix unitaire"
-                      name={`articles.${index}.prixUnitaire`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      register={reg}
-                      error={lineErrors?.prixUnitaire?.message}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className="action-btn delete"
-                    onClick={() => removeLine(index)}
-                    aria-label={`Retirer la ligne ${index + 1}`}
-                    disabled={fields.length === 1}
-                    title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
-                  >
-                    <Icon name="close" size="sm" />
-                  </button>
+          {fields.map((field, index) => {
+            const lineErrors = errors.articles?.[index]
+            return (
+              <div key={field.id} className="reception-article">
+                <div className="form-grid-2">
+                  <FormInput
+                    label="Reference"
+                    name={`articles.${index}.reference`}
+                    register={reg}
+                    error={lineErrors?.reference?.message}
+                    required
+                    placeholder="ex: BAT-7710"
+                  />
+                  <FormInput
+                    label="Designation"
+                    name={`articles.${index}.designation`}
+                    register={reg}
+                    error={lineErrors?.designation?.message}
+                    required
+                  />
+                  <FormInput
+                    label="Quantite reprise"
+                    name={`articles.${index}.quantite`}
+                    type="number"
+                    min="1"
+                    register={reg}
+                    error={lineErrors?.quantite?.message}
+                    required
+                  />
+                  <FormInput
+                    label="Prix unitaire"
+                    name={`articles.${index}.prixUnitaire`}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    register={reg}
+                    error={lineErrors?.prixUnitaire?.message}
+                    required
+                  />
                 </div>
-              )
-            })}
+                <button
+                  type="button"
+                  className="action-btn delete"
+                  onClick={() => removeLine(index)}
+                  aria-label={`Retirer la ligne ${index + 1}`}
+                  disabled={fields.length === 1}
+                  title={fields.length === 1 ? 'Une ligne minimum est requise' : 'Retirer cette ligne'}
+                >
+                  <Icon name="close" size="sm" />
+                </button>
+              </div>
+            )
+          })}
 
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={() => append(EMPTY_LINE)}
-              disabled={fields.length >= 200}
-              title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
-            >
-              <Icon name="plus" size="sm" /> Ajouter un article
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => append(EMPTY_LINE)}
+            disabled={fields.length >= 200}
+            title={fields.length >= 200 ? 'Maximum 200 lignes par document' : undefined}
+          >
+            <Icon name="plus" size="sm" /> Ajouter un article
+          </button>
+
+          <div className="reception-total">
+            <strong>Montant rembourse : {formatEuros(totalRembourse)}</strong>
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="primary-button" disabled={saving}>
+              <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer le retour'}
             </button>
-
-            <div className="reception-total">
-              <strong>Montant rembourse : {formatEuros(totalRembourse)}</strong>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={saving}>
-                <Icon name="check" size="sm" /> {saving ? 'Enregistrement...' : 'Enregistrer le retour'}
-              </button>
-              <button type="button" className="secondary-button" onClick={() => reset(EMPTY_RETOUR)}>
-                Effacer
-              </button>
-            </div>
-          </form>
-        </section>
-      )}
+            <button type="button" className="secondary-button" onClick={() => reset(EMPTY_RETOUR)}>
+              Effacer
+            </button>
+          </div>
+        </form>
+      </FormDialog>
 
       <DataTable
         columns={columns}

@@ -71,6 +71,17 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .emplacement-dialog { width: min(540px, calc(100vw - 32px)); margin: auto; }
 .emplacement-dialog::backdrop { background: var(--color-overlay); }
 
+.form-dialog { width: min(720px, calc(100vw - 32px)); margin: auto; }
+.form-dialog-small { width: min(540px, calc(100vw - 32px)); }
+.form-dialog-wide { width: min(960px, calc(100vw - 32px)); }
+.form-dialog::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
+.form-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 20px; }
+.form-dialog-header h2 { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.form-dialog-header .action-btn { flex-shrink: 0; }
+.form-dialog-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.form-dialog .parametre-detail, .form-dialog .form-card { margin: 0; padding: 0; border: 0; box-shadow: none; background: transparent; }
+.confirm-modal .modal-desc strong { color: var(--text-strong); }
+
 /* Dialogues métier natifs, deux colonnes sur ordinateur. */
 .caisse-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
 .caisse-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }

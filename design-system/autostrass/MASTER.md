@@ -183,7 +183,8 @@ Le mode automatique suit la préférence du système.
 
 - Barre latérale bleu nuit, fil d'Ariane et un seul titre principal par vue.
 - Dashboard : indicateurs, stock à réapprovisionner, activité et accès rapides.
-- Vues métier : titre, formulaire puis tableau ; grilles à une colonne sur mobile.
+- Vues métier : titre, actions de création/modification et tableau ; les formulaires
+  s'ouvrent en dialogue natif, avec des grilles à une colonne sur mobile.
 - Le défilement horizontal reste dans les tableaux. Les dialogues restent
   dans la hauteur disponible et défilent si nécessaire.
 - Cartes statiques ; transitions de couleur uniquement pour les interactions.

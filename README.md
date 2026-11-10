@@ -50,6 +50,11 @@ dans **Stock → Inventaire physique**. Appliquer la migration `0008` avant
 utilisation. Le magasinier ou l’administrateur compte les emplacements,
 valide l’écart et retrouve le détail dans l’historique.
 
+Les [formulaires métier et Administration](specs/formulaires-modaux.md) s'ouvrent
+maintenant en fenêtres contextuelles. Pour la recette Chromium avec API simulée,
+exécuter `npm run build`, puis `npm run test:forms:ui` et `npm run test:caisse:ui`.
+Ces deux recettes ne nécessitent aucune connexion MariaDB.
+
 ## Tests sur une base jetable
 
 ```bash

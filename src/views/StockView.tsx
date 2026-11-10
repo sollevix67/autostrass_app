@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
+import { FormDialog } from '../components/FormDialog'
 import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
 import { canWrite, useAuth } from '../components/useAuth'
@@ -36,6 +37,7 @@ export default function StockView() {
     loading,
     saving,
     offline,
+    error,
     filter,
     setFilter,
     query,
@@ -56,6 +58,8 @@ export default function StockView() {
   const canTransfer = canWrite(user?.role, 'depot')
   const { dialogProps, confirm } = useConfirm()
   const [savingEdit, setSavingEdit] = useState(false)
+  const editingPending = useRef(false)
+  const transferPending = useRef(false)
 
   /* ---------- Emplacements ---------- */
   const { emplacements, loading: emplacementsLoading, error: emplacementsError, reload: loadEmplacements } = useEmplacements()
@@ -121,18 +125,6 @@ export default function StockView() {
     }
   }, [openTransfertModal, transfertReference])
 
-  /* ---------- Raccourcis clavier ---------- */
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (openTransfertModal) setOpenTransfertModal(false)
-        if (editing) cancelEditing()
-      }
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [openTransfertModal, editing, cancelEditing])
-
   /* ---------- Helpers ---------- */
   const handleDelete = (article: Article) => {
     confirm(
@@ -151,10 +143,13 @@ export default function StockView() {
   }
 
   const handleSaveEdit = async () => {
-    if (!editing) return
+    if (!editing || !canTransfer || editingPending.current) return
+    if (![editing.quantite, editing.minimum].every((value) => Number.isInteger(value) && value >= 0 && value <= 2_147_483_647)) { toast.error("La quantité et le seuil doivent être des entiers positifs ou nuls."); return }
+    editingPending.current = true
     setSavingEdit(true)
     const ok = await saveEditing()
     setSavingEdit(false)
+    editingPending.current = false
     if (ok) {
       toast.success(`Article ${editing.reference} mis a jour`)
     } else {
@@ -179,7 +174,7 @@ export default function StockView() {
   }
 
   const handleTransfertSave = async () => {
-    if (savingTransfert || !canTransfer || offline) return
+    if (transferPending.current || savingTransfert || !canTransfer || offline) return
     setTransfertFormError(null)
     const { reference, quantite, sourceId, destinationId } = transfertForm
 
@@ -211,6 +206,7 @@ export default function StockView() {
       emplacement_id: emplacementId,
       quantite: q,
     }
+    transferPending.current = true
     setSavingTransfert(true)
     try {
       await api.post(`/articles/${encodeURIComponent(reference.trim())}/transfert`, payload)
@@ -221,6 +217,7 @@ export default function StockView() {
     } catch (err) {
       setTransfertFormError(toErrorMessage(err) || 'Echec du transfert')
     } finally {
+      transferPending.current = false
       setSavingTransfert(false)
     }
   }
@@ -298,7 +295,7 @@ export default function StockView() {
             <Icon name="chevron-right" size="sm" />{" "}
             <span className="visually-hidden">Retirer 1</span>
           </button>
-          <button className="action-btn edit" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
+          <button className="action-btn edit" disabled={!canTransfer || savingEdit} aria-haspopup="dialog" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
             <Icon name="edit" size="sm" />
           </button>
           {canTransfer && !offline && <Link className="action-btn" to={`/stock/inventaire?reference=${encodeURIComponent(row.reference)}`} title="Compter" aria-label={`Compter ${row.reference}`}><Icon name="clipboard" size="sm" /></Link>}
@@ -415,16 +412,16 @@ export default function StockView() {
             />
           )}
 
-          {editing && (
-            <div className="stock-edit-panel">
-              <h4>Modifier {editing.reference}</h4>
+          <FormDialog open={!!editing && canTransfer} title={`Modifier ${editing?.reference ?? ''}`} busy={savingEdit} onClose={cancelEditing} size="small">
+            {error && <p className="error-banner" role="alert">{error}</p>}
+            {editing && <form onSubmit={(event) => { event.preventDefault(); void handleSaveEdit() }}>
               <FormInput
                 label="Quantite"
                 name="quantite"
                 type="number"
                 min="0"
-                value={String(editing.quantite)}
-                onChange={(name, value) => updateEditing({ [name]: Number(value) })}
+                value={Number.isFinite(editing.quantite) ? String(editing.quantite) : ''}
+                onChange={(name, value) => updateEditing({ [name]: value === '' ? NaN : Number(value) })}
                 error={editing.quantite < 0 ? 'La quantite ne peut pas etre negative' : undefined}
               />
               <FormInput
@@ -432,49 +429,27 @@ export default function StockView() {
                 name="minimum"
                 type="number"
                 min="0"
-                value={String(editing.minimum)}
-                onChange={(name, value) => updateEditing({ [name]: Number(value) })}
+                value={Number.isFinite(editing.minimum) ? String(editing.minimum) : ''}
+                onChange={(name, value) => updateEditing({ [name]: value === '' ? NaN : Number(value) })}
                 error={editing.minimum < 0 ? 'Le seuil ne peut pas etre negatif' : undefined}
               />
               <div className="form-actions">
                 <button
-                  type="button"
+                  type="submit"
                   className="primary-button"
-                  onClick={handleSaveEdit}
                   disabled={savingEdit}
                 >
                   Enregistrer
                 </button>
-                <button type="button" className="secondary-button" onClick={cancelEditing}>
-                  Annuler
-                </button>
               </div>
-            </div>
-          )}
+            </form>}
+          </FormDialog>
         </section>
 
         <EmplacementsManager emplacements={emplacements} loading={emplacementsLoading} error={emplacementsError} reload={loadEmplacements} />
       </div>
 
-      {/* Modal : Transfert d'article */}
-      <div
-        className="modal-overlay"
-        onMouseDown={() => setOpenTransfertModal(false)}
-        style={{ display: openTransfertModal ? 'flex' : 'none' }}
-      >
-        <div
-          className="modal transfert-modal"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="transfert-modal-title"
-          aria-describedby="transfert-modal-desc"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <h2 id="transfert-modal-title">Transfert d'article</h2>
-          <p id="transfert-modal-desc" className="modal-desc">
-            Déplacez une quantité d'un article vers un nouvel emplacement.
-          </p>
-
+      <FormDialog open={openTransfertModal && canTransfer} title="Transfert d'article" description="Déplacez une quantité d'un article vers un nouvel emplacement." className="transfert-modal" size="small" busy={savingTransfert} onClose={() => setOpenTransfertModal(false)} showCancel={false}>
           {transfertFormError && (
             <div className="stock-alert error" role="alert">
               <Icon name="alert" size="sm" />
@@ -574,8 +549,7 @@ export default function StockView() {
               </button>
             </div>
           </form>
-        </div>
-      </div>
+      </FormDialog>
 
       <ConfirmDialog {...dialogProps} />
     </PageLayout>
