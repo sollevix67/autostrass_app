@@ -1,5 +1,29 @@
 # Passation — Autostrass App
 
+**10 novembre — modification des utilisateurs** : l'API PUT existante
+est reliée à une action Modifier par compte et au dialogue de création partagé.
+Nom, prénom, email, téléphone et rôle sont préremplis ; le nouveau mot de passe
+reste vide et n'est envoyé que s'il est saisi. Le rôle du compte administrateur
+connecté est protégé ; sa session est actualisée après modification. Fermeture
+après succès API, saisie conservée en cas de refus, effacement du mot de passe
+à la fermeture. Le schéma PUT accepte un téléphone null pour effacer le numéro ;
+une clé absente conserve la valeur existante. Pas de migration SQL.
+La recette a aussi révélé une identité périmée dans `/auth/me` : cette route
+utilise désormais `requireAuth` pour relire le compte ; `refreshUser` actualise
+le jeton CSRF renouvelé, pour préserver les écritures après modification de soi.
+Validation : build/lint et `test:errors` conformes ; **63 contrôles** Chromium/API
+réelle, **127 API** et **59 sécurité**, sur MariaDB portable 11.4.5 jetable,
+instance arrêtée. Quatre largeurs, deux thèmes, mots de passe, rôles, CSRF,
+erreurs/reprise et retour à la création vérifiés. Guide :
+[utilisateurs.md](specs/utilisateurs.md), cinq captures et rapport dans
+`specs/screenshots/utilisateurs/`. Redémarrer l'API après mise à jour.
+Graphify actualisé et vérifié : **140 empreintes sources conformes**, **2 918
+nœuds uniques**, **5 990 liens sans orphelin**, **172 communautés**, HTML/JSON
+cohérents. Livraison sur `origin/main` ; tête initiale `f1d4b3a`.
+Les cinq captures modifiées et leurs cinq copies `-PCDT67` présentes au démarrage
+sont conservées et incluses suivant la consigne de commiter tous les changements ;
+les copies sont identiques aux captures de la tête initiale.
+
 **10 novembre — formulaires restants en fenêtres contextuelles** : 19 parcours
 migrés pour les véhicules, comptes, commandes clients, livraisons, retours,
 ventes, ouverture de Caisse, édition/transfert Stock, inventaire et Administration.
@@ -100,7 +124,7 @@ les modules anciens n'ont pas fait l'objet d'un nouvel audit exhaustif.
 | Clients | CRUD en dialogue, numéro personnalisable limité à six chiffres, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, suivi des documents et paiements, suspension/limitation, tournées |
 | Fournisseurs | CRUD, coordonnées facultatives, SIRET, création/modification en dialogue | Suivi des commandes lié au futur module fournisseurs |
 | Véhicules | CRUD, création en dialogue, statut modifiable | Kilométrage, entretiens/réparations, carburant et coût/km |
-| Personnels/utilisateurs | Création en dialogue, comptes, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
+| Personnels/utilisateurs | Création/modification en dialogue, mot de passe facultatif en édition, rôles, activation, identité de session actualisée et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
 | Paramètres | Neuf rubriques, plafond de Caisse, routes, API, référentiels, sauvegardes, HTTPS et Turnstile | Recette certificat/Cloudflare/terminaux réels ; guides de déploiement ci-dessous |
 
 ## Contrats à préserver
@@ -338,11 +362,12 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-la migration des formulaires restants : **139 empreintes sources conformes** (138 TS/TSX/MJS
-et le vérificateur JS), **2 904 nœuds**, **5 971 liens**, **193 communautés**, aucun identifiant
+la migration des formulaires et la modification des utilisateurs : **140 empreintes
+sources conformes**, **2 918 nœuds**,
+**5 990 liens**, **172 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
 de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`e31eb72`**. Le vérificateur Figma, les scripts de recette Caisse/formulaires,
+**`f1d4b3a`**. Le vérificateur Figma, les scripts de recette Caisse/formulaires/utilisateurs,
 `CashCountFields.tsx`, `cashCounting.ts`, `CaisseSettingsView.tsx` et
 `FormDialog.tsx` sont indexés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire

@@ -25,7 +25,7 @@ import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
 import { useResource } from '../hooks/useResource'
 import { useAuth, canWrite } from '../components/useAuth'
-import { utilisateurSchema, type UtilisateurFormValues } from '../schemas'
+import { utilisateurSchema, utilisateurUpdateSchema, type UtilisateurFormValues } from '../schemas'
 import { ROLE_OPTIONS } from '../options'
 import type { ApiUtilisateur } from '../services/contracts'
 
@@ -51,7 +51,7 @@ const byName = (rows: ApiUtilisateur[]) =>
   [...rows].sort((a, b) => `${a.nom} ${a.prenom}`.localeCompare(`${b.nom} ${b.prenom}`, 'fr'))
 
 export default function UtilisateursView() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const { rows, loading, saving, error, offline, reload, create, update, remove } = useResource<ApiUtilisateur>({
@@ -60,8 +60,9 @@ export default function UtilisateursView() {
     sort: byName,
   })
 
+  const [editing, setEditing] = useState<ApiUtilisateur | null>(null)
   const form = useForm<UtilisateurFormValues>({
-    resolver: zodResolver(utilisateurSchema),
+    resolver: zodResolver(editing ? utilisateurUpdateSchema : utilisateurSchema),
     defaultValues: EMPTY_USER,
     mode: 'onSubmit',
   })
@@ -74,25 +75,49 @@ export default function UtilisateursView() {
   const busy = saving || form.formState.isSubmitting
 
   const isAdmin = canWrite(user?.role, 'admin')
+  const isEditingSelf = editing?.id === user?.id
+
+  function closeDialog() {
+    setDialogOpen(false)
+    setEditing(null)
+    form.reset(EMPTY_USER)
+  }
+
+  function editUser(utilisateur: ApiUtilisateur) {
+    if (!isAdmin || busy) return
+    setEditing(utilisateur)
+    form.reset({
+      nom: utilisateur.nom,
+      prenom: utilisateur.prenom,
+      email: utilisateur.email,
+      telephone: utilisateur.telephone ?? '',
+      role: utilisateur.role,
+      motDePasse: '',
+    })
+    setDialogOpen(true)
+  }
 
   async function handleSubmit(values: UtilisateurFormValues) {
     if (!isAdmin || pending.current) return
     pending.current = true
     try {
-      const created = await create({
+      if (isEditingSelf && values.role !== 'admin') {
+        form.setError('role', { message: 'Vous ne pouvez pas retirer vos propres droits.' })
+        return
+      }
+      const payload = {
         nom: values.nom,
         prenom: values.prenom,
         email: values.email,
-        telephone: values.telephone,
+        telephone: editing ? values.telephone || null : values.telephone,
         role: values.role,
-        motDePasse: values.motDePasse,
-      })
-      if (created === null) return
-      // Le mot de passe n'est jamais renvoyé par l'API : le vider évite qu'il
-      // reste dans le DOM et soit renvoye tel quel lors d'une modification.
-      form.reset(EMPTY_USER)
-      setDialogOpen(false)
-      toast.success(`Compte cree pour ${created.email}.`)
+        ...((!editing || values.motDePasse !== '') && { motDePasse: values.motDePasse }),
+      }
+      const saved = editing ? await update(editing.id, payload) : await create(payload)
+      if (saved === null) return
+      toast.success(editing ? `Compte ${saved.email} modifié.` : `Compte cree pour ${saved.email}.`)
+      closeDialog()
+      if (saved.id === user?.id) await refreshUser()
     } finally { pending.current = false }
   }
 
@@ -181,19 +206,32 @@ export default function UtilisateursView() {
     {
       key: 'actions',
       header: 'ACTIONS',
-      width: '60px',
+      width: '100px',
       render: (row) =>
-        isAdmin && row.id !== user?.id ? (
-          <button
-            type="button"
-            className="action-btn delete"
-            onClick={() => handleDelete(row)}
-            disabled={saving}
-            title="Supprimer"
-            aria-label={`Supprimer le compte ${row.email}`}
-          >
-            <Icon name="trash" size="sm" />
-          </button>
+        isAdmin ? (
+          <div className="actions-cell">
+            <button
+              type="button"
+              className="action-btn edit"
+              onClick={() => editUser(row)}
+              disabled={busy}
+              title="Modifier"
+              aria-label={`Modifier le compte ${row.email}`}
+              aria-haspopup="dialog"
+            >
+              <Icon name="edit" size="sm" />
+            </button>
+            {row.id !== user?.id && <button
+              type="button"
+              className="action-btn delete"
+              onClick={() => handleDelete(row)}
+              disabled={busy}
+              title="Supprimer"
+              aria-label={`Supprimer le compte ${row.email}`}
+            >
+              <Icon name="trash" size="sm" />
+            </button>}
+          </div>
         ) : null,
     },
   ]
@@ -208,7 +246,7 @@ export default function UtilisateursView() {
           <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
             <Icon name="rotate-ccw" size="sm" /> Actualiser
           </button>
-          {isAdmin && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { form.reset(EMPTY_USER); setDialogOpen(true) }}>
+          {isAdmin && <button type="button" className="primary-button" disabled={busy} aria-haspopup="dialog" onClick={() => { setEditing(null); form.reset(EMPTY_USER); setDialogOpen(true) }}>
             <Icon name="plus" size="sm" /> Nouvel utilisateur
           </button>}
         </>
@@ -225,7 +263,7 @@ export default function UtilisateursView() {
         resource="utilisateurs"
       />
 
-      <FormDialog open={dialogOpen && isAdmin} title="Nouvel utilisateur" busy={busy} onClose={() => setDialogOpen(false)}>
+      <FormDialog open={dialogOpen && isAdmin} title={editing ? 'Modifier l’utilisateur' : 'Nouvel utilisateur'} busy={busy} onClose={closeDialog}>
         <ResourceBanners error={error} offline={offline} readOnly={null} resource="utilisateurs" />
         <form onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)} noValidate>
           <ErrorSummary errors={form.formState.errors} labels={FIELD_LABELS} />
@@ -252,18 +290,20 @@ export default function UtilisateursView() {
               label="Role"
               name="role"
               register={register}
-              options={ROLE_OPTIONS}
+              options={isEditingSelf ? ROLE_OPTIONS.filter((option) => option.value === 'admin') : ROLE_OPTIONS}
+              placeholder={isEditingSelf ? null : undefined}
+              hint={isEditingSelf ? 'Votre rôle administrateur est conservé pour préserver votre accès.' : undefined}
               error={form.formState.errors.role?.message}
               required
             />
             <FormInput
-              label="Mot de passe"
+              label={editing ? 'Nouveau mot de passe' : 'Mot de passe'}
               name="motDePasse"
               type="password"
               register={register}
               error={form.formState.errors.motDePasse?.message}
-              hint="8 caracteres minimum. Communiquez-le a l'utilisateur par un canal sur."
-              required
+              hint={editing ? 'Laissez vide pour conserver le mot de passe actuel. 8 caractères minimum pour le remplacer.' : "8 caracteres minimum. Communiquez-le a l'utilisateur par un canal sur."}
+              required={!editing}
             />
           </div>
 
@@ -273,11 +313,11 @@ export default function UtilisateursView() {
               className="primary-button"
               disabled={saving || form.formState.isSubmitting}
             >
-              <Icon name="plus" size="sm" /> Creer le compte
+              <Icon name={editing ? 'check' : 'plus'} size="sm" /> {editing ? 'Enregistrer les modifications' : 'Creer le compte'}
             </button>
-            <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_USER)}>
+            {!editing && <button type="button" className="secondary-button" onClick={() => form.reset(EMPTY_USER)}>
               Effacer
-            </button>
+            </button>}
           </div>
         </form>
       </FormDialog>

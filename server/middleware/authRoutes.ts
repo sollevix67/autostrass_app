@@ -11,7 +11,7 @@
  */
 
 import { Router } from 'express'
-import { AUTH_COOKIE, authenticate, issueToken, verifyToken, AuthError, type AuthenticatedUser } from './auth.js'
+import { AUTH_COOKIE, authenticate, issueToken, requireAuth, type AuthenticatedRequest } from './auth.js'
 import { handler, parseBody } from './crud.js'
 import { loginBodySchema } from './schemas.js'
 import { issueCsrfCookie, rateLimit, CSRF_COOKIE_NAME } from './csrf.js'
@@ -104,17 +104,10 @@ export function createAuthRouter(): Router {
   /** Verifie la validite du jeton courant sans renvoyer d'information sensible. */
   router.get(
     '/me',
+    requireAuth,
     handler(async (request, response) => {
-      const token = readToken(request)
-      if (!token) throw new AuthError(401, 'UNAUTHENTICATED', 'Authentification requise.')
-      const payload = await verifyToken(token)
-      const user: AuthenticatedUser = {
-        id: payload.sub,
-        email: payload.email,
-        role: payload.role,
-        nom: payload.nom,
-        prenom: payload.prenom,
-      }
+      // requireAuth relit le compte : identité actuelle et droits vérifiés.
+      const user = (request as AuthenticatedRequest).user!
       // Renouvelle le jeton CSRF à chaque vérification : après un expiration
       // de session, l'ancien couple cookie/jeton ne doit pas rester valable.
       const csrf = issueCsrfCookie(response, useSecureCookies)
@@ -123,19 +116,4 @@ export function createAuthRouter(): Router {
   )
 
   return router
-}
-
-/** Extrait le jeton de l'en-tete ou du cookie, pour `/me`. */
-function readToken(request: import('express').Request): string | null {
-  const header = request.headers.authorization
-  if (typeof header === 'string' && header.startsWith('Bearer ')) {
-    return header.slice(7).trim() || null
-  }
-  const cookies = request.headers.cookie
-  if (typeof cookies !== 'string') return null
-  for (const part of cookies.split(';')) {
-    const [name, ...rest] = part.trim().split('=')
-    if (name === AUTH_COOKIE) return decodeURIComponent(rest.join('=')) || null
-  }
-  return null
 }

@@ -83,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await api.get<MeResponse>('/auth/me')
       setUser(response.user)
+      setCsrfToken(response.csrfToken)
     } catch {
       // Un echec ici n'invalide pas la session en cours : on ne fait rien.
     }

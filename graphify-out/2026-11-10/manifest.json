@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1794337671.715342,
-    "seen": 1794337854.6822896,
-    "ast_hash": "393d0acb9b67db29139bdfa4763219a6",
+    "mtime": 1794341131.1038642,
+    "seen": 1794341802.9134657,
+    "ast_hash": "593caee4296c1585e7a28a130d3bc103",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -630,10 +630,10 @@
     "semantic_hash": ""
   },
   "src/components/ConfirmDialog.tsx": {
-    "mtime": 1790367382.334175,
-    "seen": 1791062054.8103952,
-    "ast_hash": "309c27347a3c093dd0aba0da579a0c92",
-    "semantic_hash": "309c27347a3c093dd0aba0da579a0c92"
+    "mtime": 1794341645.6021883,
+    "seen": 1794341802.9237957,
+    "ast_hash": "dbe2fee4e6d6ca04d5852edbecca111e",
+    "semantic_hash": ""
   },
   "src/components/DataTable.tsx": {
     "mtime": 1792328845.562169,
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "src/components/forms/FormFields.tsx": {
-    "mtime": 1793999262.521484,
-    "seen": 1793999589.2375975,
-    "ast_hash": "50a438943467f6050418d6dbac43104b",
+    "mtime": 1794341415.385195,
+    "seen": 1794341802.9250126,
+    "ast_hash": "b62a79faf506831ef743dd5069806923",
     "semantic_hash": ""
   },
   "src/components/toastContext.ts": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "src/hooks/useStock.ts": {
-    "mtime": 1792927625.4485612,
-    "seen": 1792931406.9709096,
-    "ast_hash": "46656e74a5227fca0dcf8e432e3940ec",
+    "mtime": 1794340904.1077297,
+    "seen": 1794341802.9263546,
+    "ast_hash": "07717bd103acfdf3a47d8a66abaf054a",
     "semantic_hash": ""
   },
   "src/main.tsx": {
@@ -798,9 +798,9 @@
     "semantic_hash": ""
   },
   "src/views/CaisseView.tsx": {
-    "mtime": 1794339453.7616181,
-    "seen": 1794340150.667146,
-    "ast_hash": "4ba4762a3505a9157e3e22c4b8275eaa",
+    "mtime": 1794341202.7023232,
+    "seen": 1794341802.9281518,
+    "ast_hash": "e1345a0f0f88b176f69c01759f0b25b6",
     "semantic_hash": ""
   },
   "src/views/CatalogueView.tsx": {
@@ -816,10 +816,10 @@
     "semantic_hash": ""
   },
   "src/views/CommandesClientsView.tsx": {
-    "mtime": 1792328845.5686696,
-    "seen": 1792931406.9711354,
-    "ast_hash": "e9d08567d4aa73bd8d3f8a952f088758",
-    "semantic_hash": "e9d08567d4aa73bd8d3f8a952f088758"
+    "mtime": 1794341345.0765157,
+    "seen": 1794341802.928433,
+    "ast_hash": "ad607dc768978990f30a9d2a4f9781ae",
+    "semantic_hash": ""
   },
   "src/views/DashboardView.tsx": {
     "mtime": 1792322366.334438,
@@ -828,9 +828,9 @@
     "semantic_hash": "1038d1b05c1cf42c338a7a90d482a2e9"
   },
   "src/views/LivraisonsView.tsx": {
-    "mtime": 1792322688.3710322,
-    "seen": 1792931406.971141,
-    "ast_hash": "e217e0f6d2f8ea29e6be60bb684b7b3f",
+    "mtime": 1794341345.0770166,
+    "seen": 1794341802.9287198,
+    "ast_hash": "d7d291bf2cdc89aff7dabb124cc029da",
     "semantic_hash": ""
   },
   "src/views/LoginView.tsx": {
@@ -846,33 +846,33 @@
     "semantic_hash": ""
   },
   "src/views/RetoursView.tsx": {
-    "mtime": 1792328845.5681698,
-    "seen": 1792931406.971148,
-    "ast_hash": "75d0e5f82489c996e437d46b89cb06f5",
-    "semantic_hash": "75d0e5f82489c996e437d46b89cb06f5"
+    "mtime": 1794341345.0775163,
+    "seen": 1794341802.9290059,
+    "ast_hash": "f1825da94f61516789f6c20d7fa78641",
+    "semantic_hash": ""
   },
   "src/views/StockView.tsx": {
-    "mtime": 1793996010.897827,
-    "seen": 1793996106.4813592,
-    "ast_hash": "ef049792dee0f6df4922025c4c2f608e",
+    "mtime": 1794340904.1067295,
+    "seen": 1794341802.9290075,
+    "ast_hash": "a66aa8f328e38d0568576da65e7feffc",
     "semantic_hash": ""
   },
   "src/views/UtilisateursView.tsx": {
-    "mtime": 1792328845.5466597,
-    "seen": 1792931406.9711523,
-    "ast_hash": "4b7ca26acfb89fa59170c39298dca659",
+    "mtime": 1794341202.6737912,
+    "seen": 1794341802.9290097,
+    "ast_hash": "8cf8eefe98c053cd05f1fb59eede8a60",
     "semantic_hash": ""
   },
   "src/views/VehiculesView.tsx": {
-    "mtime": 1792328845.5686696,
-    "seen": 1792931406.9711542,
-    "ast_hash": "506726a0b490d7d053a3508e587dabd3",
+    "mtime": 1794341202.6632602,
+    "seen": 1794341802.9290113,
+    "ast_hash": "b76b9263e2fe3070d9aa08dbca8ff924",
     "semantic_hash": ""
   },
   "src/views/VentesComptoirView.tsx": {
-    "mtime": 1794128468.8918245,
-    "seen": 1794128933.0193102,
-    "ast_hash": "52e086664375111558de343f61d88c21",
+    "mtime": 1794341345.0785165,
+    "seen": 1794341802.929013,
+    "ast_hash": "87f96ce7a51943b0789d85164122045d",
     "semantic_hash": ""
   },
   "tsconfig.app.json": {
@@ -1344,9 +1344,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1793994334.632361,
-    "seen": 1793994345.1716447,
-    "ast_hash": "a22ad3c8a666e6981e9aa4c879e851c7",
+    "mtime": 1794341794.383977,
+    "seen": 1794341802.940298,
+    "ast_hash": "eab22d1647e723bb4746d19e9feb3a92",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1368,9 +1368,9 @@
     "semantic_hash": "ef5ec08f45030464a6944a924efe9a11"
   },
   "design-system/autostrass/MASTER.md": {
-    "mtime": 1793824591.3391826,
-    "seen": 1793824616.86063,
-    "ast_hash": "14a75867829786fef562cff0b5213d1f",
+    "mtime": 1794341645.6076941,
+    "seen": 1794341802.940672,
+    "ast_hash": "55cdfcfa74b91775365c63970749ed17",
     "semantic_hash": ""
   },
   "index.html": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794340219.9204917,
-    "seen": 1794340224.1026995,
-    "ast_hash": "ba16cbabc4b2e3e1c6c7fd5db04e19f7",
+    "mtime": 1794341850.3017013,
+    "seen": 1794341854.4790733,
+    "ast_hash": "5b2727ad72821e49064b7e1be983e81b",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "src/views/parametres/ConfigurationView.tsx": {
-    "mtime": 1794339990.489324,
-    "seen": 1794340150.6691196,
-    "ast_hash": "42be60aad503b839127904f9085c3716",
+    "mtime": 1794341202.7023232,
+    "seen": 1794341802.9294817,
+    "ast_hash": "e55fa34727651e16b43ea88b10aea665",
     "semantic_hash": ""
   },
   "src/views/parametres/ConnexionView.tsx": {
@@ -1836,15 +1836,15 @@
     "semantic_hash": ""
   },
   "src/views/parametres/HttpsForm.tsx": {
-    "mtime": 1793907947.2389548,
-    "seen": 1793908006.275281,
-    "ast_hash": "a129fa16c9733422f566612f465444fe",
+    "mtime": 1794341202.7033284,
+    "seen": 1794341802.9297602,
+    "ast_hash": "e5466a11d4ff39805b0ffde28dcd0a07",
     "semantic_hash": ""
   },
   "src/views/parametres/HttpsView.tsx": {
-    "mtime": 1793906407.555001,
-    "seen": 1793908006.2752829,
-    "ast_hash": "91006c9f4abffa8ca96a0684f163c96f",
+    "mtime": 1794340822.412729,
+    "seen": 1794341802.9297624,
+    "ast_hash": "a028e3ad36bf131ee06172ff8912e5f2",
     "semantic_hash": ""
   },
   "src/views/parametres/LimitesApiView.tsx": {
@@ -1866,9 +1866,9 @@
     "semantic_hash": ""
   },
   "src/views/parametres/ReferentielEditor.tsx": {
-    "mtime": 1793907477.873595,
-    "seen": 1793908006.2752907,
-    "ast_hash": "27e97ce33af8a078327c6cc4281f84ae",
+    "mtime": 1794341202.7048335,
+    "seen": 1794341802.9301393,
+    "ast_hash": "6ca96aefa62a528d0da4ad3cdace4076",
     "semantic_hash": ""
   },
   "src/views/parametres/SecteurClients.tsx": {
@@ -1884,21 +1884,21 @@
     "semantic_hash": ""
   },
   "src/views/parametres/TurnstileForm.tsx": {
-    "mtime": 1793906406.9572577,
-    "seen": 1793908006.275298,
-    "ast_hash": "90fa1d7f38935504381dbbfbff612a72",
+    "mtime": 1794341202.7043333,
+    "seen": 1794341802.9303858,
+    "ast_hash": "a0cb2c382de8e238a143e91f61506ee2",
     "semantic_hash": ""
   },
   "src/views/parametres/TurnstileView.tsx": {
-    "mtime": 1793906407.555502,
-    "seen": 1793908006.2752998,
-    "ast_hash": "c0f39492af6a1d3d7cd30d5df4c264d5",
+    "mtime": 1794340822.413729,
+    "seen": 1794341802.9303877,
+    "ast_hash": "f1ea66e7c6cdee6efa96c786c112e88a",
     "semantic_hash": ""
   },
   "specs/parametres.md": {
-    "mtime": 1794340060.9155796,
-    "seen": 1794340150.6829107,
-    "ast_hash": "317185d394d3e06241fa13ecba3023f5",
+    "mtime": 1794341645.6061928,
+    "seen": 1794341802.94243,
+    "ast_hash": "1a245a00e3cd2833828bbc837ee917ff",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres/accueil-dark-1440.png": {
@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "scripts/test-inventaire-ui.mjs": {
-    "mtime": 1793994154.3709986,
-    "seen": 1793994345.1380339,
-    "ast_hash": "4f8513d4223e1af59fdd7e5abb92d2e7",
+    "mtime": 1794341475.840546,
+    "seen": 1794341802.91606,
+    "ast_hash": "6847ccd91ee6abee1488af00c469ee0c",
     "semantic_hash": ""
   },
   "scripts/test-inventaires.ts": {
@@ -1968,9 +1968,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/verification.json": {
-    "mtime": 1793994274.601567,
-    "seen": 1793994345.1454966,
-    "ast_hash": "01e211618b9b5dfc14c42e16a3fc3a26",
+    "mtime": 1794341696.6912525,
+    "seen": 1794341802.9227843,
+    "ast_hash": "df8b017ea5584c88c2f849a2427e9ce1",
     "semantic_hash": ""
   },
   "src/schemas/inventaire.ts": {
@@ -1980,51 +1980,51 @@
     "semantic_hash": ""
   },
   "src/views/InventaireView.tsx": {
-    "mtime": 1793994154.3689952,
-    "seen": 1793994345.1533887,
-    "ast_hash": "d6ca282d9e669f41e9f6f295ab52968a",
+    "mtime": 1794340856.2985737,
+    "seen": 1794341802.928718,
+    "ast_hash": "1ada113c6b711a1d49e4ca7823057589",
     "semantic_hash": ""
   },
   "specs/inventaire-physique.md": {
-    "mtime": 1793994334.6343617,
-    "seen": 1793994345.1743145,
-    "ast_hash": "48379d47221012d0b2c1d7e319b2de8b",
+    "mtime": 1794341645.6071932,
+    "seen": 1794341802.9423103,
+    "ast_hash": "28694a7464c39e9604faadeafbc15568",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/comptage-dark-1440.png": {
-    "mtime": 1793994270.206602,
-    "seen": 1793994345.178334,
-    "ast_hash": "8f9735c4f5577709779851f19c836d3a",
+    "mtime": 1794341691.6711407,
+    "seen": 1794341802.946551,
+    "ast_hash": "24bf4b1544e417df39e8799d65cc4982",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/comptage-dark-375.png": {
-    "mtime": 1793994270.0403576,
-    "seen": 1793994345.1783366,
-    "ast_hash": "2f85dec9be48a8954db5f009798ea575",
+    "mtime": 1794341691.4939117,
+    "seen": 1794341802.9465523,
+    "ast_hash": "c39c5e15c1a4d88cfce1095e5da5f0f0",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/comptage-light-1440.png": {
-    "mtime": 1793994269.95674,
-    "seen": 1793994345.1783385,
-    "ast_hash": "7cf404d94b3de3e4f381dcdbb9fb5af8",
+    "mtime": 1794341691.4211981,
+    "seen": 1794341802.946554,
+    "ast_hash": "f330c89fdb90e450c42a83bdb62cf861",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/comptage-light-375.png": {
-    "mtime": 1793994269.7900102,
-    "seen": 1793994345.1783404,
-    "ast_hash": "3b094445e4866bf5b9418efb95454896",
+    "mtime": 1794341691.2299414,
+    "seen": 1794341802.9465551,
+    "ast_hash": "74be799fc27f004c62b0ae6f788c34b6",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/confirmation.png": {
-    "mtime": 1793994270.704881,
-    "seen": 1793994345.1783419,
-    "ast_hash": "845aeae0b7731a6131b4f73513781022",
+    "mtime": 1794341692.544421,
+    "seen": 1794341802.9465563,
+    "ast_hash": "817c3afa600d4143257693c73b3d1f3d",
     "semantic_hash": ""
   },
   "specs/screenshots/inventaire/historique.png": {
-    "mtime": 1793994271.5124657,
-    "seen": 1793994345.178343,
-    "ast_hash": "a4444a2f9f6debd87141893e81cf2c3f",
+    "mtime": 1794341693.500271,
+    "seen": 1794341802.9465578,
+    "ast_hash": "b466492fabc5a5d6d04445f4206cbf15",
     "semantic_hash": ""
   },
   "specs/screenshots/stock-emplacements/verification.json": {
@@ -2064,38 +2064,38 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/verification.json": {
-    "mtime": 1794004219.2677562,
-    "seen": 1794004295.303538,
+    "mtime": 1794341167.898658,
+    "seen": 1794341802.9223702,
     "ast_hash": "f9e3bf619fd391b1245ac39c3fc4fa3d",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/liste-desktop.png": {
-    "mtime": 1794004207.9333608,
-    "seen": 1794004295.3287518,
-    "ast_hash": "3b7edc4651537c67ee721b78d72eef6d",
+    "mtime": 1794341156.2861178,
+    "seen": 1794341802.943733,
+    "ast_hash": "0f8c63c846421707ac87a417204374a8",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-dark-1440.png": {
-    "mtime": 1794004210.762542,
-    "seen": 1794004295.3287535,
-    "ast_hash": "7adad42bd7a8871a68e65cce325dfb14",
+    "mtime": 1794341159.0933976,
+    "seen": 1794341802.9437346,
+    "ast_hash": "f6b3b65c79ed69f0f4f07c1abf826fe9",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-dark-375.png": {
-    "mtime": 1794004209.7398305,
-    "seen": 1794004295.3287551,
+    "mtime": 1794341158.108925,
+    "seen": 1794341802.943736,
     "ast_hash": "890ee231973ffc3fda13e6f6a5756e9c",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-light-1440.png": {
-    "mtime": 1794004209.399184,
-    "seen": 1794004295.328757,
-    "ast_hash": "1e2d1233ac4257c4a330439dd11c479c",
+    "mtime": 1794341157.7464595,
+    "seen": 1794341802.9437373,
+    "ast_hash": "a987b5337fbfa6fb3a05afd9b95d98c4",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/modification-light-375.png": {
-    "mtime": 1794004208.4038959,
-    "seen": 1794004295.3287582,
+    "mtime": 1794341156.7261343,
+    "seen": 1794341802.943739,
     "ast_hash": "ac1680b653798ce84a3aaa2975d694a9",
     "semantic_hash": ""
   },
@@ -2106,9 +2106,9 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/creation-numero-personnalise.png": {
-    "mtime": 1794004214.0411377,
-    "seen": 1794004295.3287497,
-    "ast_hash": "a6faba6654e552bfe5debdb794cb44f5",
+    "mtime": 1794341162.5118718,
+    "seen": 1794341802.9437304,
+    "ast_hash": "1914d4095237705be9c04fb04e3f1507",
     "semantic_hash": ""
   },
   "scripts/test-fournisseurs-ui.mjs": {
@@ -2124,8 +2124,8 @@
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/verification.json": {
-    "mtime": 1794004214.8960958,
-    "seen": 1794004295.303965,
+    "mtime": 1794341163.469941,
+    "seen": 1794341802.922782,
     "ast_hash": "074669a6045e5ccf89f9e91d232e13e5",
     "semantic_hash": ""
   },
@@ -2136,33 +2136,33 @@
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-1440.png": {
-    "mtime": 1794004213.1484687,
-    "seen": 1794004295.331237,
-    "ast_hash": "822f846271bb275436b31e0b3f8ead67",
+    "mtime": 1794341161.754857,
+    "seen": 1794341802.946541,
+    "ast_hash": "e91473df8a71ec0cab2034844bdf2f6b",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-dark-375.png": {
-    "mtime": 1794004212.8939085,
-    "seen": 1794004295.3312392,
+    "mtime": 1794341161.4634109,
+    "seen": 1794341802.9465425,
     "ast_hash": "83635efebec5204f276ce22e3f183e1b",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-1440.png": {
-    "mtime": 1794004212.6300757,
-    "seen": 1794004295.331241,
-    "ast_hash": "f286324bb868862516c9f233ea37cced",
+    "mtime": 1794341161.194032,
+    "seen": 1794341802.9465442,
+    "ast_hash": "3b51e8ff558ef06726ab8ab81dc7c5c9",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/creation-light-375.png": {
-    "mtime": 1794004212.3773854,
-    "seen": 1794004295.3312426,
+    "mtime": 1794341160.9286292,
+    "seen": 1794341802.9465454,
     "ast_hash": "208b22ee2cbcdbc3ea83e070bc9cdbb4",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/erreur-detaillee.png": {
-    "mtime": 1794004211.1608887,
-    "seen": 1794004295.3312438,
-    "ast_hash": "9b023ebc2df9c8e0216c4e5b98d39351",
+    "mtime": 1794341159.8675957,
+    "seen": 1794341802.9465468,
+    "ast_hash": "4b1abdf5a380e64b10919578e23104dd",
     "semantic_hash": ""
   },
   "database/drizzle/meta/0009_snapshot.json": {
@@ -2184,39 +2184,39 @@
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-dark-1440.png": {
-    "mtime": 1794004216.9764123,
-    "seen": 1794004295.3287604,
-    "ast_hash": "34bf6a82038f1d5d0490c867b823546f",
+    "mtime": 1794341165.579646,
+    "seen": 1794341802.9437408,
+    "ast_hash": "c5febecd6e709897c809b562cf40e680",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-dark-375.png": {
-    "mtime": 1794004216.8208637,
-    "seen": 1794004295.328762,
+    "mtime": 1794341165.434831,
+    "seen": 1794341802.9437423,
     "ast_hash": "65b259ac59b4a30d49c645fedb3e655e",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-light-1440.png": {
-    "mtime": 1794004216.5345192,
-    "seen": 1794004295.3287635,
-    "ast_hash": "a3b760535c977fd03decc025a4aaae68",
+    "mtime": 1794341165.1688943,
+    "seen": 1794341802.9437432,
+    "ast_hash": "df10d8b7f2b13a07db6b21c65f1e8488",
     "semantic_hash": ""
   },
   "specs/screenshots/client-edit/siret-light-375.png": {
-    "mtime": 1794004216.3286529,
-    "seen": 1794004295.328765,
+    "mtime": 1794341164.9652257,
+    "seen": 1794341802.9437444,
     "ast_hash": "db256607a113a16462c6d0fe4e10c71a",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/liste-desktop.png": {
-    "mtime": 1794004207.9473681,
-    "seen": 1794004295.3312466,
-    "ast_hash": "4d6705a7d1d4d747913aa17e543359a3",
+    "mtime": 1794341156.3011317,
+    "seen": 1794341802.9465482,
+    "ast_hash": "c469b76f5f6a82c2d08c2b496d090941",
     "semantic_hash": ""
   },
   "specs/screenshots/fournisseurs/modification-light-1440.png": {
-    "mtime": 1794004208.6414165,
-    "seen": 1794004295.3312483,
-    "ast_hash": "9c2e9596b17e7506488d766a4c2ce917",
+    "mtime": 1794341157.027478,
+    "seen": 1794341802.9465494,
+    "ast_hash": "17656e357815642cb0339c65e163fe8a",
     "semantic_hash": ""
   },
   "specs/screenshots/catalogue-modal/verification.json": {
@@ -2376,14 +2376,14 @@
     "semantic_hash": ""
   },
   "scripts/test-caisse-ui.mjs": {
-    "mtime": 1794340113.2349155,
-    "seen": 1794340150.6545315,
-    "ast_hash": "8c2e2984236fab8b799aa6d81bf48a99",
+    "mtime": 1794340949.6398733,
+    "seen": 1794341802.9147604,
+    "ast_hash": "0a49e8a4abd6386ea7e413024cea978c",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/verification.json": {
-    "mtime": 1794340117.8088553,
-    "seen": 1794340150.6607919,
+    "mtime": 1794341689.0567923,
+    "seen": 1794341802.9222257,
     "ast_hash": "be4e28587d3e9cf25e99f2602776abd8",
     "semantic_hash": ""
   },
@@ -2394,32 +2394,32 @@
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/cloture-desktop-dark.png": {
-    "mtime": 1794340115.5230408,
-    "seen": 1794340150.683277,
-    "ast_hash": "cd240b9933d0606144fba385cefd33fe",
+    "mtime": 1794341686.3868074,
+    "seen": 1794341802.9429064,
+    "ast_hash": "21ab7e39962ff804e77f2eaefe294e98",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/cloture-desktop-light.png": {
-    "mtime": 1794340115.4098728,
-    "seen": 1794340150.683279,
-    "ast_hash": "6b1d4d556417b970d3d0713ab68c9330",
+    "mtime": 1794341686.2626789,
+    "seen": 1794341802.9429092,
+    "ast_hash": "ddbda72c6deed3421a155b4d7d089b6b",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/cloture-mobile-dark.png": {
-    "mtime": 1794340115.2676938,
-    "seen": 1794340150.6832812,
-    "ast_hash": "5d2b90768708efd19131d6e5f446a8a3",
+    "mtime": 1794341686.0564477,
+    "seen": 1794341802.942912,
+    "ast_hash": "4ac47667e7f4082685d78642c743401b",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/cloture-mobile-light.png": {
-    "mtime": 1794340115.2261949,
-    "seen": 1794340150.6832829,
+    "mtime": 1794341686.015404,
+    "seen": 1794341802.9429138,
     "ast_hash": "9f11cf104c9856e1c3c831745306b4a2",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/verification.json": {
-    "mtime": 1794340120.0501184,
-    "seen": 1794340150.660794,
+    "mtime": 1794341692.2534862,
+    "seen": 1794341802.922229,
     "ast_hash": "8e00ee798fe7855b1e4ba30813b1421d",
     "semantic_hash": ""
   },
@@ -2436,38 +2436,38 @@
     "semantic_hash": ""
   },
   "specs/caisse-ouverture.md": {
-    "mtime": 1794340219.9214916,
-    "seen": 1794340224.1028652,
-    "ast_hash": "3109c2887a65679a9fb6f9cf9d504142",
+    "mtime": 1794341645.605193,
+    "seen": 1794341802.9419382,
+    "ast_hash": "6ee2713f0533df8673e5ea2d5f050ead",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/ouverture-desktop-dark.png": {
-    "mtime": 1794340118.923023,
-    "seen": 1794340150.683285,
-    "ast_hash": "ec5b9dbe2c027766d3ca79a247904acf",
+    "mtime": 1794341690.6632195,
+    "seen": 1794341802.9429157,
+    "ast_hash": "802a6d6a86f70163a193a170fe9707df",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/ouverture-desktop-light.png": {
-    "mtime": 1794340118.8564386,
-    "seen": 1794340150.6832862,
-    "ast_hash": "637f944927d1169eba3cf6323c0a4d6b",
+    "mtime": 1794341690.526555,
+    "seen": 1794341802.9429173,
+    "ast_hash": "8f35f22e99ed980f886f13b5aa01d24a",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/ouverture-mobile-dark.png": {
-    "mtime": 1794340118.7550347,
-    "seen": 1794340150.6832876,
-    "ast_hash": "013dacc5e3d289afc79b74ead81a25f3",
+    "mtime": 1794341690.3250084,
+    "seen": 1794341802.942919,
+    "ast_hash": "e82a65737b80e11fc52515461288affd",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/ouverture-mobile-light.png": {
-    "mtime": 1794340118.7044656,
-    "seen": 1794340150.683289,
-    "ast_hash": "002b7a4ea47167943669bf942a8e0726",
+    "mtime": 1794341690.2824447,
+    "seen": 1794341802.9429207,
+    "ast_hash": "337b89097e87ee3e52fc5f055aa04d70",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres-caisse/verification.json": {
-    "mtime": 1794340122.9343317,
-    "seen": 1794340150.661707,
+    "mtime": 1794341696.5845902,
+    "seen": 1794341802.922786,
     "ast_hash": "ab019104bb579f6072f80f04c47e5ccb",
     "semantic_hash": ""
   },
@@ -2478,27 +2478,279 @@
     "semantic_hash": ""
   },
   "specs/screenshots/parametres-caisse/caisse-desktop-dark.png": {
-    "mtime": 1794340120.9748545,
-    "seen": 1794340150.6908534,
-    "ast_hash": "761d48278a581dba7690f35b2b5aab44",
+    "mtime": 1794341693.738103,
+    "seen": 1794341802.9465597,
+    "ast_hash": "08fa557160d811766c4ec167ab25e8dc",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres-caisse/caisse-desktop-light.png": {
-    "mtime": 1794340120.9272633,
-    "seen": 1794340150.6908557,
-    "ast_hash": "2c6b392343096ac531635f36b4890168",
+    "mtime": 1794341693.5913959,
+    "seen": 1794341802.9465613,
+    "ast_hash": "0b8106db5b4e4a7619b8c0a1e2e59316",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres-caisse/caisse-mobile-dark.png": {
-    "mtime": 1794340120.84463,
-    "seen": 1794340150.6908572,
-    "ast_hash": "fa89f942168bad6d23f9889461cb937a",
+    "mtime": 1794341693.3966627,
+    "seen": 1794341802.9465628,
+    "ast_hash": "8be7ab88fb3787b9be6e8d7d72bd4fdf",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres-caisse/caisse-mobile-light.png": {
-    "mtime": 1794340120.8100765,
-    "seen": 1794340150.6908586,
-    "ast_hash": "cae67f91fb133be2a33f6f6d7eab4261",
+    "mtime": 1794341693.3541093,
+    "seen": 1794341802.9465642,
+    "ast_hash": "be152ff86433b00085ef8e1c33327fb9",
+    "semantic_hash": ""
+  },
+  "scripts/test-form-dialogs-ui.mjs": {
+    "mtime": 1794341475.4238746,
+    "seen": 1794341802.915499,
+    "ast_hash": "8e1b0a23d990a6f394113ce69e6fd463",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/verification.json": {
+    "mtime": 1794341715.609453,
+    "seen": 1794341802.9227788,
+    "ast_hash": "9eed64518d5c1c2e74261e8cb88bbe47",
+    "semantic_hash": ""
+  },
+  "src/components/FormDialog.tsx": {
+    "mtime": 1794341645.6011832,
+    "seen": 1794341802.924051,
+    "ast_hash": "6d187e9c2c0ca2c9177517eaabf4ca5e",
+    "semantic_hash": ""
+  },
+  "specs/formulaires-modaux.md": {
+    "mtime": 1794341645.6041932,
+    "seen": 1794341802.9421887,
+    "ast_hash": "fd8d8a6558d0bf342fa84391980fa811",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/base-de-donnees-1440-light.png": {
+    "mtime": 1794341698.019619,
+    "seen": 1794341802.9464931,
+    "ast_hash": "60506f413054316448471cd29753028d",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/base-de-donnees-375-dark.png": {
+    "mtime": 1794341697.8283658,
+    "seen": 1794341802.9464955,
+    "ast_hash": "6ed4695c71125e9c20d16c2cc3921d4d",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/categories-1440-light.png": {
+    "mtime": 1794341704.852896,
+    "seen": 1794341802.9464967,
+    "ast_hash": "64c573d7d11161ff22ba9f1e8b817649",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/categories-375-dark.png": {
+    "mtime": 1794341704.6601825,
+    "seen": 1794341802.9464986,
+    "ast_hash": "12c765a7363972d250aa79e1baa5ea11",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/commandes-1440-light.png": {
+    "mtime": 1794341688.5321465,
+    "seen": 1794341802.9464998,
+    "ast_hash": "951329506875e750abd149c0c92db4a9",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/commandes-375-dark.png": {
+    "mtime": 1794341688.3411858,
+    "seen": 1794341802.9465008,
+    "ast_hash": "5f2402b0da6cc6980c0f19da555ad561",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/connexion-1440-light.png": {
+    "mtime": 1794341700.3703144,
+    "seen": 1794341802.9465022,
+    "ast_hash": "2c649e9a8488251dd2aa69a57f58e087",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/connexion-375-dark.png": {
+    "mtime": 1794341700.1088362,
+    "seen": 1794341802.9465032,
+    "ast_hash": "c8ce56bf12fabcf029638802c12bbb6c",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/https-1440-light.png": {
+    "mtime": 1794341702.6040473,
+    "seen": 1794341802.9465044,
+    "ast_hash": "b5c5cbb8297054dbf2913576ff961075",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/https-375-dark.png": {
+    "mtime": 1794341702.4097562,
+    "seen": 1794341802.9465058,
+    "ast_hash": "f673eeba11f1543e1e34fc20c3ef67ce",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/inventaire-1440-light.png": {
+    "mtime": 1794341708.7078953,
+    "seen": 1794341802.9465072,
+    "ast_hash": "336ed1740002f5b33510f7dd55412cda",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/inventaire-375-dark.png": {
+    "mtime": 1794341708.5507083,
+    "seen": 1794341802.9465082,
+    "ast_hash": "c97dffdc724c081923717581f62cf276",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/limites-api-1440-light.png": {
+    "mtime": 1794341699.1640544,
+    "seen": 1794341802.9465094,
+    "ast_hash": "aa4e10bcdc41deec14556895dd388e4d",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/limites-api-375-dark.png": {
+    "mtime": 1794341698.9262886,
+    "seen": 1794341802.9465106,
+    "ast_hash": "3d81084ebb7b871c84afbf675ab80cb2",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/livraisons-1440-light.png": {
+    "mtime": 1794341689.891462,
+    "seen": 1794341802.946512,
+    "ast_hash": "b940f6ee9f8bbc04272f0d20a97fe2cc",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/livraisons-375-dark.png": {
+    "mtime": 1794341689.6951551,
+    "seen": 1794341802.9465132,
+    "ast_hash": "b096d441cd2ee8484ed8eeca238379ff",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/ouverture-1440-light.png": {
+    "mtime": 1794341693.7351027,
+    "seen": 1794341802.9465146,
+    "ast_hash": "76b39c94acb7e06297c22bb787ef030d",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/ouverture-375-dark.png": {
+    "mtime": 1794341693.5258043,
+    "seen": 1794341802.9465163,
+    "ast_hash": "38f0d56be383e23647d9a189afb50d1c",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/plafond-caisse-1440-light.png": {
+    "mtime": 1794341701.5024006,
+    "seen": 1794341802.9465172,
+    "ast_hash": "6504b927c0fadfb42f6e0be49d70c38e",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/plafond-caisse-375-dark.png": {
+    "mtime": 1794341701.3106751,
+    "seen": 1794341802.9465182,
+    "ast_hash": "800060e0f7a325e0de294b97fbc4ebe2",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/retours-1440-light.png": {
+    "mtime": 1794341691.0862448,
+    "seen": 1794341802.9465196,
+    "ast_hash": "4c733f38126919e4f113d43bcecc726b",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/retours-375-dark.png": {
+    "mtime": 1794341690.9295464,
+    "seen": 1794341802.9465203,
+    "ast_hash": "0d71dda09467a759345ed313cfaf7110",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/secteurs-1440-light.png": {
+    "mtime": 1794341707.3693652,
+    "seen": 1794341802.9465215,
+    "ast_hash": "70f0bb10b3d7d1553c6228610b994901",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/secteurs-375-dark.png": {
+    "mtime": 1794341707.1925528,
+    "seen": 1794341802.9465227,
+    "ast_hash": "cbb008068572ed2b54d82295fb742ddb",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/sous-categories-1440-light.png": {
+    "mtime": 1794341706.1577697,
+    "seen": 1794341802.946524,
+    "ast_hash": "24ab8573db1bc6361397ff01bccf2193",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/sous-categories-375-dark.png": {
+    "mtime": 1794341705.95999,
+    "seen": 1794341802.9465246,
+    "ast_hash": "90a4de6d2d149e7f2705b2789886c2ad",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/stock-1440-light.png": {
+    "mtime": 1794341694.916529,
+    "seen": 1794341802.9465258,
+    "ast_hash": "176f45d6d14bf675ca3263acc34a478c",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/stock-375-dark.png": {
+    "mtime": 1794341694.7513285,
+    "seen": 1794341802.9465268,
+    "ast_hash": "c255be29fa783a83c7a110b0a5118c53",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/transfert-1440-light.png": {
+    "mtime": 1794341696.1160402,
+    "seen": 1794341802.946528,
+    "ast_hash": "966fb115af3da7682691733afa26aab1",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/transfert-375-dark.png": {
+    "mtime": 1794341695.926624,
+    "seen": 1794341802.946529,
+    "ast_hash": "6bb561fc500dc2aab702bd9a20bd36ac",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/turnstile-1440-light.png": {
+    "mtime": 1794341703.7154677,
+    "seen": 1794341802.9465303,
+    "ast_hash": "32d649b0b899cd893fd702546dc8421c",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/turnstile-375-dark.png": {
+    "mtime": 1794341703.5284135,
+    "seen": 1794341802.9465313,
+    "ast_hash": "f0545c80da2387425de9ad553d0832c9",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/utilisateurs-1440-light.png": {
+    "mtime": 1794341687.3028011,
+    "seen": 1794341802.9465327,
+    "ast_hash": "88e0aa169948211b3835ee9c9fe0936e",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/utilisateurs-375-dark.png": {
+    "mtime": 1794341687.1228967,
+    "seen": 1794341802.9465337,
+    "ast_hash": "d6c4134448411693cf15d0071a6ef3cf",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/vehicules-1440-light.png": {
+    "mtime": 1794341686.1295426,
+    "seen": 1794341802.946535,
+    "ast_hash": "fa24c859e185e730cac42e9f611d9224",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/vehicules-375-dark.png": {
+    "mtime": 1794341685.9573152,
+    "seen": 1794341802.9465368,
+    "ast_hash": "9f18737dca01acd3679565d08f03ce50",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/ventes-1440-light.png": {
+    "mtime": 1794341692.3556645,
+    "seen": 1794341802.946538,
+    "ast_hash": "9ef268ca22a2887018ef54ed9f66d794",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/formulaires-modaux/ventes-375-dark.png": {
+    "mtime": 1794341692.1503122,
+    "seen": 1794341802.9465392,
+    "ast_hash": "0a5f651da25ea7038ec164004c389331",
     "semantic_hash": ""
   },
   "package-lock.json": {

@@ -288,6 +288,11 @@ export const utilisateurSchema = z.object({
     .max(72, 'Mot de passe trop long (72 caracteres maximum).'),
 })
 
+/** En modification, un mot de passe vide conserve celui du compte. */
+export const utilisateurUpdateSchema = utilisateurSchema.extend({
+  motDePasse: utilisateurSchema.shape.motDePasse.or(z.literal('')),
+})
+
 export const livraisonSchema = z.object({
   commandeId: requiredRef('Le numero de commande'),
   transporteur: z.string().trim().min(1, 'Le transporteur est requis.').max(128, 'Transporteur trop long.'),

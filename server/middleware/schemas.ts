@@ -287,7 +287,8 @@ export const utilisateurPatchSchema = z.object({
   nom: required('Le nom', 64).optional(),
   prenom: required('Le prenom', 64).optional(),
   email: email().optional(),
-  telephone: optionalPhone('Le telephone'),
+  /** null efface le numéro ; une clé absente conserve le numéro existant. */
+  telephone: optionalPhone('Le telephone').nullable(),
   role: z.enum(USER_ROLES, { message: 'Role invalide.' }).optional(),
   motDePasse: z
     .string()

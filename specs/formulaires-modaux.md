@@ -7,7 +7,7 @@ dans les pages ; un bouton de création ou de modification ouvre la saisie.
 | Module | Accès au formulaire |
 | --- | --- |
 | Véhicules | Nouveau véhicule ; le changement rapide de statut reste dans le tableau. |
-| Utilisateurs | Nouvel utilisateur, réservé à l'administrateur. |
+| Utilisateurs | Nouvel utilisateur et Modifier l’utilisateur depuis le crayon de la liste, réservés à l'administrateur. |
 | Commandes clients | Nouvelle commande avec les lignes d'articles. |
 | Livraisons | Nouvelle livraison rattachée à une commande. |
 | Retours | Nouveau retour avec les lignes d'articles. |
@@ -21,6 +21,9 @@ dans les pages ; un bouton de création ou de modification ouvre la saisie.
 Clients, Fournisseurs, Catalogue et Réceptions utilisaient déjà des fenêtres
 contextuelles. Les filtres, la sélection de référence d'inventaire et les actions
 directes des tableaux restent dans les pages. La connexion reste sur son écran.
+
+La [modification des utilisateurs](utilisateurs.md) conserve le mot de passe
+si le champ est vide et protège le rôle de l’administrateur connecté.
 
 ## Comportement
 

@@ -55,6 +55,10 @@ maintenant en fenêtres contextuelles. Pour la recette Chromium avec API simulé
 exécuter `npm run build`, puis `npm run test:forms:ui` et `npm run test:caisse:ui`.
 Ces deux recettes ne nécessitent aucune connexion MariaDB.
 
+Dans **Administration → Utilisateurs et droits**, le crayon ouvre la
+[modification du compte](specs/utilisateurs.md). Un nouveau mot de passe est
+facultatif ; le laisser vide conserve le mot de passe actuel.
+
 ## Tests sur une base jetable
 
 ```bash
@@ -64,6 +68,7 @@ npm run test:parametres
 npm run test:stock
 npm run test:inventaire
 npm run test:integration
+npm run test:utilisateurs:ui
 ```
 
 `test:stock` vérifie la validation et les transferts réels (conservation,
@@ -73,6 +78,10 @@ Ces commandes créent leur propre base MariaDB,
 appliquent le schéma, les migrations et les seeds, démarrent une API isolée,
 puis arrêtent cette API et suppriment la base créée, même en cas d'échec.
 Elles n'utilisent jamais `DB_NAME` comme cible.
+
+`test:utilisateurs:ui` utilise Chromium pour vérifier les dialogues, les mots
+de passe, les droits et la persistance réelle. Ajouter `-- --all` pour exécuter
+aussi les suites API et sécurité dans la même base jetable.
 
 `test:inventaire` isole les 14 scénarios de comptage : écarts, emplacements,
 concurrence, droits, historique et rollback. La [recette navigateur](specs/inventaire-physique.md)
