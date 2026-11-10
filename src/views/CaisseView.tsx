@@ -24,27 +24,24 @@ import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
 import { ResourceBanners } from '../components/ResourceBanners'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
-import { FormInput, FormTextarea, type FieldRegister } from '../components/forms/FormFields'
+import { CashCountFields } from '../components/forms/CashCountFields'
+import { FormTextarea, type FieldRegister } from '../components/forms/FormFields'
 import { useCashSession, useCashMovements } from '../hooks/useCashSession'
 import { useAuth, canWrite } from '../components/useAuth'
 import {
   caisseClotureSchema,
-  caisseOuvertureSchema,
+  caisseOuvertureComptageSchema,
   type CaisseClotureFormOutput,
 } from '../schemas'
-import { CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, formatDenomination, formatEuros } from '../options'
+import { CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, formatEuros } from '../options'
+import { totalCashCount } from '../utils/cashCounting'
 import type { ApiCashMovement } from '../services/contracts'
 
-const OPENING_LABELS = { fondsCaisse: 'Fond de caisse', notes: 'Notes' } satisfies Record<string, string>
+const OPENING_LABELS = { comptage: 'Comptage du fond de caisse', notes: 'Notes' } satisfies Record<string, string>
 const CLOSING_LABELS = { comptage: 'Comptage', notes: 'Notes' } satisfies Record<string, string>
-const EMPTY_CLOSING = {
+const EMPTY_COUNT = {
   comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
   notes: '',
-}
-
-/** Additionner des centimes entiers évite les faux écarts sur les pièces. */
-function countTotal(lines: CaisseClotureFormOutput['comptage']): number {
-  return lines.reduce((sum, line) => sum + Math.round(line.denomination * 100) * line.quantite, 0) / 100
 }
 
 /** Signe d'un ecart, avec un libelle explicite. `0` n'est ni plus ni moins. */
@@ -66,18 +63,22 @@ export default function CaisseView() {
 
   // --- Formulaire d'ouverture ----------------------------------------------
   const opening = useForm({
-    resolver: zodResolver(caisseOuvertureSchema),
-    defaultValues: { fondsCaisse: 150, notes: '' },
+    resolver: zodResolver(caisseOuvertureComptageSchema),
+    defaultValues: EMPTY_COUNT,
     mode: 'onSubmit',
   })
-  const openingRegister = opening.register
+  const openingRegister = opening.register as unknown as FieldRegister
+  const { fields: openingFields } = useFieldArray({ control: opening.control, name: 'comptage' })
+  const openingCount = useWatch({ control: opening.control, name: 'comptage' })
+  const parsedOpeningCount = caisseOuvertureComptageSchema.shape.comptage.safeParse(openingCount)
+  const fondsCompte = parsedOpeningCount.success ? totalCashCount(parsedOpeningCount.data) : null
 
   // --- Formulaire de clôture ------------------------------------------------
   // Le comptage est pre-rempli avec les coupures courantes a quantite nulle :
   // le caissier remplit ce qu'il compte, il n'a pas a construire une liste.
   const closing = useForm({
     resolver: zodResolver(caisseClotureSchema),
-    defaultValues: EMPTY_CLOSING,
+    defaultValues: EMPTY_COUNT,
     mode: 'onSubmit',
   })
   const closingRegister = closing.register as unknown as FieldRegister
@@ -89,18 +90,18 @@ export default function CaisseView() {
   const closingDialogRef = useRef<HTMLDialogElement>(null)
   const backButtonRef = useRef<HTMLButtonElement>(null)
   const pending = useRef(false)
-  const busy = saving || closing.formState.isSubmitting
+  const busy = saving || opening.formState.isSubmitting || closing.formState.isSubmitting
 
   const watchedCount = useWatch({ control: closing.control, name: 'comptage' })
   const parsedCount = caisseClotureSchema.shape.comptage.safeParse(watchedCount)
-  const totalComptage = parsedCount.success ? countTotal(parsedCount.data) : null
+  const totalComptage = parsedCount.success ? totalCashCount(parsedCount.data) : null
 
   // Le solde theorique du tiroir, tant que la session est ouverte : fond
   // remis + especes encaissees. La monnaie rendue est deja deduite par le
   // serveur dans `totalEspeces`.
   const soldeTheorique = (Math.round((session?.fondsCaisse ?? 0) * 100) + Math.round((session?.totalEspeces ?? 0) * 100)) / 100
   const ecartComptage = totalComptage === null ? null : Math.round((totalComptage - soldeTheorique) * 100) / 100
-  const confirmedTotal = closingValues ? countTotal(closingValues.comptage) : 0
+  const confirmedTotal = closingValues ? totalCashCount(closingValues.comptage) : 0
   const confirmedVariance = Math.round((confirmedTotal - soldeTheorique) * 100) / 100
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function CaisseView() {
 
   function openClosingDialog() {
     if (!canEdit || !session || busy || loading || pending.current) return
-    resetClosing(EMPTY_CLOSING)
+    resetClosing(EMPTY_COUNT)
     setClosingValues(null)
     setSubmitFailed(false)
     setClosingDialogOpen(true)
@@ -140,7 +141,7 @@ export default function CaisseView() {
     setClosingDialogOpen(false)
     setClosingValues(null)
     setSubmitFailed(false)
-    resetClosing(EMPTY_CLOSING)
+    resetClosing(EMPTY_COUNT)
   }, [busy, resetClosing])
 
   const backToCounting = useCallback(() => {
@@ -161,12 +162,22 @@ export default function CaisseView() {
     return () => document.removeEventListener('keydown', onEscape, true)
   }, [closingDialogOpen, closingValues, backToCounting, closeClosingDialog])
 
-  const submitOpening = opening.handleSubmit(async (values) => {
-    const created = await open(values.fondsCaisse, values.notes)
-    if (created === null) return
-    opening.reset({ fondsCaisse: 150, notes: '' })
-    toast.success(`Caisse ouverte avec ${formatEuros(created.fondsCaisse)} de fond.`)
-  })
+  const submitOpening = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!canEdit || session !== null || busy || loading || pending.current) return
+    void opening.handleSubmit(async (values) => {
+      if (pending.current) return
+      pending.current = true
+      try {
+        const created = await open(totalCashCount(values.comptage), values.notes)
+        if (created === null) return
+        opening.reset(EMPTY_COUNT)
+        toast.success(`Caisse ouverte avec ${formatEuros(created.fondsCaisse)} de fond.`)
+      } finally {
+        pending.current = false
+      }
+    })(event)
+  }
 
   const submitClosing = async () => {
     if (!canEdit || !session || !closingValues || busy || loading || pending.current) return
@@ -185,7 +196,7 @@ export default function CaisseView() {
 
       setClosingDialogOpen(false)
       setClosingValues(null)
-      resetClosing(EMPTY_CLOSING)
+      resetClosing(EMPTY_COUNT)
       const ecart = closed.ecart ?? 0
       const verdict = varianceLabel(ecart)
       if (ecart === 0) toast.success(`Caisse clôturée : ${verdict.text.toLowerCase()}.`)
@@ -268,36 +279,36 @@ export default function CaisseView() {
       {canEdit && session === null && (
         <section className="form-card">
           <h2>Ouvrir la caisse</h2>
-          <form onSubmit={submitOpening} noValidate>
+          <form className="caisse-opening-form" onSubmit={submitOpening} noValidate aria-busy={busy}>
             <ErrorSummary errors={opening.formState.errors} labels={OPENING_LABELS} />
-
-            <div className="form-grid-2">
-              <FormInput
-                label="Fond de caisse"
-                name="fondsCaisse"
-                type="number"
-                step="0.01"
-                min="0"
-                register={openingRegister as FieldRegister}
-                error={opening.formState.errors.fondsCaisse?.message}
-                hint="Montant remis dans le tiroir a l'ouverture."
-                required
-              />
+            {opening.formState.errors.comptage?.root?.message && (
+              <p className="error-banner" role="alert">{opening.formState.errors.comptage.root.message}</p>
+            )}
+            <fieldset className="caisse-form-fields" disabled={busy || loading}>
+              <legend className="sr-only">Comptage du fond de caisse</legend>
+              <p className="form-hint">
+                Comptez les billets et pièces remis dans le tiroir à l'ouverture.
+                Saisissez les quantités et laissez zéro pour les coupures absentes.
+              </p>
+              <CashCountFields fields={openingFields} count={openingCount} register={openingRegister} errors={opening.formState.errors.comptage} />
+              <div className="reception-total" role="status" aria-live="polite">
+                <strong>{fondsCompte === null ? 'Comptage à compléter' : `Fond de caisse compté : ${formatEuros(fondsCompte)}`}</strong>
+                <span className="muted">Le total compté sera le fond de caisse à l'ouverture.</span>
+              </div>
               <FormTextarea
                 label="Notes"
                 name="notes"
                 rows={3}
-                register={openingRegister as FieldRegister}
+                register={openingRegister}
                 error={opening.formState.errors.notes?.message}
                 placeholder="Optionnel : consigne de dépôt, particularité..."
               />
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="primary-button" disabled={saving || loading}>
-                <Icon name="check" size="sm" /> Ouvrir la caisse
-              </button>
-            </div>
+              <div className="form-actions">
+                <button type="submit" className="primary-button">
+                  <Icon name="check" size="sm" /> {busy ? 'Ouverture en cours…' : 'Ouvrir la caisse'}
+                </button>
+              </div>
+            </fieldset>
           </form>
         </section>
       )}
@@ -386,29 +397,7 @@ export default function CaisseView() {
                     Laissez zéro pour les coupures absentes.
                   </p>
 
-                  <div className="comptage-grid">
-                    {countFields.map((field, index) => (
-                      <div key={field.id} className="comptage-row">
-                        <FormInput
-                          label={`${formatDenomination(field.denomination)} — quantité`}
-                          name={`comptage.${index}.quantite`}
-                          type="number"
-                          min="0"
-                          max="10000"
-                          step="1"
-                          inputMode="numeric"
-                          register={closingRegister}
-                          error={closing.formState.errors.comptage?.[index]?.quantite?.message}
-                          required
-                        />
-                        <output className="comptage-line-total" aria-label={`Montant en ${formatDenomination(field.denomination)}`}>
-                          {caisseClotureSchema.shape.comptage.element.safeParse(watchedCount?.[index]).success
-                            ? formatEuros(Math.round(field.denomination * 100) * watchedCount[index].quantite / 100)
-                            : '—'}
-                        </output>
-                      </div>
-                    ))}
-                  </div>
+                  <CashCountFields fields={countFields} count={watchedCount} register={closingRegister} errors={closing.formState.errors.comptage} />
 
                   <div className="reception-total" role="status" aria-live="polite">
                     <strong>{totalComptage === null ? 'Comptage à compléter' : `Total compté : ${formatEuros(totalComptage)}`}</strong>

@@ -304,11 +304,12 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-la clôture de Caisse : **134 empreintes sources conformes** (133 TS/TSX/MJS
-et le vérificateur JS), **2 865 nœuds**, **5 825 liens**, **187 communautés**, aucun identifiant
+le comptage d'ouverture de Caisse : **136 empreintes sources conformes** (135 TS/TSX/MJS
+et le vérificateur JS), **2 878 nœuds**, **5 854 liens**, **190 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
 de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`052eb33`**. Le vérificateur Figma et `scripts/test-caisse-ui.mjs` sont indexés.
+**`9999503`**. Le vérificateur Figma, `scripts/test-caisse-ui.mjs`,
+`CashCountFields.tsx` et `cashCounting.ts` sont indexés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
@@ -398,3 +399,27 @@ cache et sauvegarde du 10 novembre versionnés. La modification de package.json
 a entraîné la reconstruction complète du graphe de code, sans LLM ; limites
 CSS, SQL et sémantique documentaire inchangées. `git diff --check` réussi.
 Livraison par commit et push sur `origin/main`, tête initiale `052eb33`.
+
+**10 novembre — comptage à l'ouverture de Caisse** : ajout demandé par
+l'utilisateur. Le formulaire d'ouverture utilise les mêmes quinze coupures et
+sous-totaux que la clôture, désormais partagés dans `CashCountFields`. Le calcul
+en centimes est partagé dans `src/utils/cashCounting.ts`. Quantités initiales à
+zéro ; total calculé utilisé comme `fondsCaisse`, avec validation Zod du plafond
+API de 10 000 €. Champs et double envoi bloqués pendant l'ouverture ; erreur API
+conservant les quantités et les notes. Seul le total du fond est persisté via le
+contrat actuel, sans modification serveur ni migration. Tête initiale `9999503`.
+Compilation, lint et `test:errors` réussis. Première recette : clôture conforme,
+plafond d'ouverture refusé mais message de collection RHF absent du résumé ; ajout
+du message `comptage.root` directement dans le formulaire. Recette finale réussie :
+**87 contrôles Chromium** (34 ouverture et 53 clôture), huit requêtes simulées,
+aucune écriture MariaDB et aucune erreur JavaScript. Plafond exact accepté,
+10 000,01 € refusé, fond nul, calcul des centimes, notes, erreur/reprise, double
+envoi, lecture seule et indépendance ouverture/clôture vérifiés. Quatre nouvelles
+captures, huit variantes responsive/thème. Guide et preuves :
+[caisse-ouverture.md](specs/caisse-ouverture.md). Avertissements existants Vite
+et contrôle Figma inutilisé inchangés ; aucun nouvel avertissement de lint.
+Graphify actualisé et vérifié : 136 empreintes sources conformes, 2 878 nœuds,
+5 854 liens, 190 communautés, aucun doublon ni lien orphelin, HTML/JSON cohérents.
+Les champs et le calcul partagés sont indexés ; cache et sauvegarde du jour
+actualisés, sans relancer la sémantique documentaire ni le renommage LLM.
+`git diff --check` réussi. Livraison par commit et push sur `origin/main`.

@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1794090481.6409166,
-    "seen": 1794090518.2266383,
-    "ast_hash": "4d3b19d4211d94fd0bec73c6dd14cc92",
+    "mtime": 1794337671.715342,
+    "seen": 1794337854.6822896,
+    "ast_hash": "393d0acb9b67db29139bdfa4763219a6",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "src/options.ts": {
-    "mtime": 1793907456.3441772,
-    "seen": 1793908006.270125,
-    "ast_hash": "4805e3a8a1273f8fbffa7ee98c07e50f",
+    "mtime": 1794337346.2700646,
+    "seen": 1794337854.7000778,
+    "ast_hash": "917da643dc5b0f021f3f65f5a693ec99",
     "semantic_hash": ""
   },
   "src/schemas/index.ts": {
@@ -798,9 +798,9 @@
     "semantic_hash": ""
   },
   "src/views/CaisseView.tsx": {
-    "mtime": 1792334978.151889,
-    "seen": 1792931406.9711308,
-    "ast_hash": "5dcbda8eef3d96c2aac9bf0e7e364e7d",
+    "mtime": 1794337752.2066636,
+    "seen": 1794337854.702471,
+    "ast_hash": "3f6784e5a7de60517739963e7a7003ea",
     "semantic_hash": ""
   },
   "src/views/CatalogueView.tsx": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794136969.5124931,
-    "seen": 1794136973.3316092,
-    "ast_hash": "e076c9087c4e93ba0c1289b2a3c5d78a",
+    "mtime": 1794337844.6582801,
+    "seen": 1794337854.7236552,
+    "ast_hash": "ca9ae038da100d42a68919952afa04c6",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2375,10 +2375,52 @@
     "ast_hash": "569accb43f54ca59ab28cbd93244cf79",
     "semantic_hash": ""
   },
+  "scripts/test-caisse-ui.mjs": {
+    "mtime": 1794337790.707951,
+    "seen": 1794337854.6842198,
+    "ast_hash": "3daa2730238d6ba2834243caa8e194da",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/caisse-cloture/verification.json": {
+    "mtime": 1794337795.4335468,
+    "seen": 1794337854.6915913,
+    "ast_hash": "be4e28587d3e9cf25e99f2602776abd8",
+    "semantic_hash": ""
+  },
+  "specs/caisse-cloture.md": {
+    "mtime": 1794337844.657274,
+    "seen": 1794337854.7236571,
+    "ast_hash": "2682f51da8dbf185d34292045f23cbcc",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/caisse-cloture/cloture-desktop-dark.png": {
+    "mtime": 1794337793.0530994,
+    "seen": 1794337854.7250178,
+    "ast_hash": "5223552321953582960e628facc12916",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/caisse-cloture/cloture-desktop-light.png": {
+    "mtime": 1794337792.9133458,
+    "seen": 1794337854.72502,
+    "ast_hash": "fe2af8548b498aa99506043110b398bc",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/caisse-cloture/cloture-mobile-dark.png": {
+    "mtime": 1794337792.7134912,
+    "seen": 1794337854.7250214,
+    "ast_hash": "5d2b90768708efd19131d6e5f446a8a3",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/caisse-cloture/cloture-mobile-light.png": {
+    "mtime": 1794337792.6819482,
+    "seen": 1794337854.7250228,
+    "ast_hash": "9f11cf104c9856e1c3c831745306b4a2",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
-    "mtime": 1793821307.6063035,
-    "seen": 1793823124.2514358,
-    "ast_hash": "4c003f6fdd95d38cd975af833229332c",
+    "mtime": 1794337671.7528777,
+    "seen": 1794337854.7392957,
+    "ast_hash": "f15e91b6700c679e10ac9aa12fb7014e",
     "semantic_hash": ""
   }
 }

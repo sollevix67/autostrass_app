@@ -9,8 +9,10 @@ import { preview } from 'vite'
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
 const output = resolve('specs/screenshots/caisse-cloture')
+const openingOutput = resolve('specs/screenshots/caisse-ouverture')
 const denominations = [500, 200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01]
 const checks = [], errors = [], writes = []
+const openingWrites = []
 let server, browser, session, role = 'caissier', failNext = false, responseGate, nextVariance
 
 function check(condition, label) { assert.ok(condition, label); checks.push(label) }
@@ -33,9 +35,21 @@ try {
       return route.fulfill({ status: 200, json })
     }
     assert.equal(request.method(), 'POST')
-    assert.equal(path, '/api/caisse/17/cloturer')
     assert.equal(request.headers()['x-csrf-token'], 'caisse-fixture')
     const body = request.postDataJSON()
+    if (path === '/api/caisse/ouvrir') {
+      assert.ok(Object.keys(body).every((key) => key === 'fondsCaisse' || key === 'notes'))
+      assert.ok(Number.isFinite(body.fondsCaisse) && body.fondsCaisse >= 0 && body.fondsCaisse <= 10000)
+      openingWrites.push(body)
+      if (responseGate) await responseGate
+      if (failNext) {
+        failNext = false
+        return route.fulfill({ status: 503, json: { error: 'DATABASE_UNAVAILABLE', message: 'Base indisponible.' } })
+      }
+      session = { id: 17, caissier: 'Camille Test', utilisateurId: 7, statut: 'ouverte', fondsCaisse: body.fondsCaisse, totalEspeces: 0, nombreVentes: 0, openedAt: '2026-11-10T08:00:00.000Z', notes: body.notes ?? null, comptage: [] }
+      return route.fulfill({ status: 201, json: session })
+    }
+    assert.equal(path, '/api/caisse/17/cloturer')
     assert.ok(Array.isArray(body.comptage))
     assert.ok(Object.keys(body).every((key) => key === 'comptage' || key === 'notes'))
     assert.ok(body.comptage.every((line) => denominations.includes(line.denomination) && Number.isInteger(line.quantite) && line.quantite > 0 && line.quantite <= 10000))
@@ -216,7 +230,110 @@ try {
   check(await trigger.count() === 0 && await dialog.count() === 0, 'Lecture seule sans bouton ni formulaire de clôture')
   check(errors.length === 0, `Aucune erreur JavaScript : ${errors.join(', ')}`)
   await writeFile(resolve(output, 'verification.json'), JSON.stringify({ checks, errors, writes: writes.length, api: 'simulée, aucune écriture MariaDB' }, null, 2) + '\n')
-  console.log(`${checks.length} contrôles Caisse réussis ; ${writes.length} requêtes simulées.`)
+  const closingChecks = checks.length
+
+  await mkdir(openingOutput, { recursive: true })
+  const openingForm = page.locator('form.caisse-opening-form')
+  const openingQuantity = (denomination) => openingForm.locator(`input[name="comptage.${denominations.indexOf(denomination)}.quantite"]`)
+  const openingSubmit = () => openingForm.getByRole('button', { name: 'Ouvrir la caisse', exact: true })
+  async function openingScenario() {
+    session = null
+    role = 'caissier'
+    await page.goto(`${base}/caisse`)
+    await openingForm.waitFor({ state: 'visible' })
+    await page.waitForFunction(() => !document.querySelector('.caisse-opening-form fieldset')?.disabled)
+  }
+  async function expectOpeningTotal(expected) {
+    await page.waitForFunction((expected) => document.querySelector('.caisse-opening-form .reception-total')?.textContent.includes(expected), expected)
+  }
+
+  await openingScenario()
+  check(await openingForm.locator('input[type="number"]').count() === 15, 'Ouverture : quinze coupures disponibles')
+  check(await openingForm.locator('input').evaluateAll((nodes) => nodes.every((node) => node.value === '0')), 'Ouverture : comptage initial à zéro')
+  check(await openingForm.locator('input[name="fondsCaisse"]').count() === 0, 'Ouverture : fond calculé depuis les quantités')
+  for (const value of ['', '-1', '1.5', '10001']) {
+    await openingQuantity(20).fill(value)
+    await expectOpeningTotal('Comptage à compléter')
+    await openingQuantity(20).press('Enter')
+    await openingForm.locator('input[aria-invalid="true"]').waitFor({ state: 'visible' })
+    check(openingWrites.length === 0 && await openingForm.isVisible(), `Ouverture : quantité ${value || 'vide'} refusée sans écriture`)
+    check(!(await text(openingForm)).includes('NaN'), `Ouverture : aucun NaN avec ${value || 'une quantité vide'}`)
+    await openingQuantity(20).fill('0')
+  }
+  for (const denomination of denominations) await openingQuantity(denomination).fill('1')
+  await expectOpeningTotal(euros(888.88))
+  check(true, 'Ouverture : toutes les coupures totalisent 888,88 €')
+  for (const denomination of denominations) await openingQuantity(denomination).fill('0')
+  await openingQuantity(500).fill('20')
+  await openingQuantity(0.01).fill('1')
+  await openingSubmit().click()
+  await openingForm.getByRole('alert').filter({ hasText: '10 000 €' }).first().waitFor({ state: 'visible' })
+  check(openingWrites.length === 0, 'Ouverture : plafond de 10 000 € contrôlé avant écriture')
+
+  await openingScenario()
+  await openingQuantity(100).fill('1')
+  await openingQuantity(50).fill('1')
+  await openingQuantity(0.2).fill('1')
+  await openingQuantity(0.1).fill('1')
+  await expectOpeningTotal(euros(150.3))
+  check(true, 'Ouverture : calcul exact de 150,30 € avec les centimes')
+  await openingForm.locator('textarea[name="notes"]').fill('Fond vérifié à la prise de poste.')
+  for (const width of [375, 768, 1024, 1440]) {
+    for (const theme of ['light', 'dark']) {
+      await page.setViewportSize({ width, height: 1000 })
+      await page.evaluate((theme) => { document.documentElement.dataset.theme = theme }, theme)
+      check(await openingForm.evaluate((node) => node.scrollWidth <= node.clientWidth && document.documentElement.scrollWidth <= innerWidth), `Ouverture sans débordement à ${width}px, thème ${theme}`)
+      if (width === 375 || width === 1440) {
+        await page.evaluate(() => document.fonts.ready)
+        await page.screenshot({ path: resolve(openingOutput, `ouverture-${width === 375 ? 'mobile' : 'desktop'}-${theme}.png`), fullPage: true })
+      }
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  let releaseOpening
+  responseGate = new Promise((resolve) => { releaseOpening = resolve })
+  failNext = true
+  await openingQuantity(100).press('Enter')
+  await openingForm.getByRole('button', { name: 'Ouverture en cours…' }).waitFor({ state: 'visible' })
+  check(openingWrites.length === 1 && openingWrites[0].fondsCaisse === 150.3, 'Ouverture : Entrée transmet le fond calculé à l’API')
+  check(await openingQuantity(100).isDisabled() && await openingForm.locator('textarea').isDisabled(), 'Ouverture : saisie bloquée pendant l’enregistrement')
+  await openingForm.dispatchEvent('submit')
+  check(openingWrites.length === 1, 'Ouverture : double envoi bloqué')
+  releaseOpening()
+  responseGate = undefined
+  await page.getByRole('alert').filter({ hasText: 'MariaDB' }).waitFor({ state: 'visible' })
+  await openingSubmit().waitFor({ state: 'visible' })
+  check(await openingQuantity(100).inputValue() === '1' && await openingForm.locator('textarea').inputValue() === 'Fond vérifié à la prise de poste.', 'Ouverture : erreur API conserve comptage et notes')
+  await openingSubmit().click()
+  await openingForm.waitFor({ state: 'hidden' })
+  check(openingWrites.length === 2 && openingWrites[1].notes === 'Fond vérifié à la prise de poste.', 'Ouverture : nouvelle tentative transmet les notes')
+  check((await text(page.locator('.caisse-summary'))).includes(euros(150.3)), 'Ouverture : fond enregistré affiché dans la session')
+  await trigger.click()
+  check(await quantity(100).inputValue() === '0' && await quantity(50).inputValue() === '0', 'Ouverture et clôture : comptages indépendants')
+  await quantity(100).fill('1')
+  await quantity(50).fill('1')
+  await quantity(0.1).fill('3')
+  await expectSummary('Comptage conforme')
+  check(true, 'Ouverture : fond de 150,30 € repris dans le théorique de clôture')
+  await page.keyboard.press('Escape')
+
+  await openingScenario()
+  await openingSubmit().click()
+  await openingForm.waitFor({ state: 'hidden' })
+  check(openingWrites.at(-1).fondsCaisse === 0, 'Ouverture : fond nul accepté conformément au contrat existant')
+  await openingScenario()
+  await openingQuantity(500).fill('20')
+  await openingSubmit().click()
+  await openingForm.waitFor({ state: 'hidden' })
+  check(openingWrites.at(-1).fondsCaisse === 10000, 'Ouverture : plafond exact de 10 000 € accepté')
+  role = 'magasinier'
+  session = null
+  await page.reload()
+  await page.getByText('Aucune caisse ouverte.', { exact: true }).waitFor({ state: 'visible' })
+  check(await openingForm.count() === 0, 'Ouverture : formulaire absent en lecture seule')
+  check(errors.length === 0, `Ouverture : aucune erreur JavaScript : ${errors.join(', ')}`)
+  await writeFile(resolve(openingOutput, 'verification.json'), JSON.stringify({ checks: checks.slice(closingChecks), errors, writes: openingWrites.length, api: 'simulée, aucune écriture MariaDB' }, null, 2) + '\n')
+  console.log(`${checks.length} contrôles Caisse réussis (${closingChecks} clôture, ${checks.length - closingChecks} ouverture) ; ${writes.length + openingWrites.length} requêtes simulées.`)
 } finally {
   await browser?.close()
   await new Promise((resolve, reject) => server ? server.httpServer.close((error) => error ? reject(error) : resolve()) : resolve())

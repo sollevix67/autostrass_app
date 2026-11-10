@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { totalCashCount } from '../utils/cashCounting'
 
 /**
  * Schémas de validation partagés entre le frontend (React Hook Form) et,
@@ -364,6 +365,15 @@ export const comptageLineSchema = z.object({
 export const caisseClotureSchema = z.object({
   comptage: z.array(comptageLineSchema).max(20, 'Maximum 20 denominations comptees.'),
   notes: optionalText('Les notes'),
+})
+
+/** Ouverture par comptage : le total respecte la même limite que l'API. */
+export const caisseOuvertureComptageSchema = z.object({
+  comptage: caisseClotureSchema.shape.comptage,
+  notes: caisseOuvertureSchema.shape.notes,
+}).refine((values) => totalCashCount(values.comptage) <= 10_000, {
+  path: ['comptage'],
+  message: 'Le fond de caisse ne peut pas dépasser 10 000 €.',
 })
 
 /** Types deduits des schemas : source de verite pour les formulaires. */
