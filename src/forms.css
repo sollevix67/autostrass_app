@@ -72,6 +72,12 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .emplacement-dialog::backdrop { background: var(--color-overlay); }
 
 /* Dialogues métier natifs, deux colonnes sur ordinateur. */
+.caisse-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
+.caisse-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
+.caisse-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 10px; }
+.caisse-modal-header h2 { margin: 0; min-width: 0; }
+.caisse-modal-header .action-btn { flex-shrink: 0; }
+.caisse-form-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
 .client-modal, .supplier-modal, .article-modal, .reception-modal { width: min(720px, calc(100vw - 32px)); margin: auto; }
 .client-modal::backdrop, .supplier-modal::backdrop, .article-modal::backdrop, .reception-modal::backdrop { background: var(--color-overlay); backdrop-filter: blur(3px); }
 .client-modal-header, .supplier-modal-header, .article-modal-header, .reception-modal-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-block-end: 10px; }

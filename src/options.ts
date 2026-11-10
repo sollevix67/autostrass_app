@@ -96,9 +96,9 @@ export const SUPPLIER_OPTIONS: SelectOption[] = [
  *
  * Ce sont des **montants en euros**, pas des indices : `100` represente un
  * billet de 100 EUR. Le comptage part de cette liste, ce qui garantit qu'un
- * depot en France ne compte pas de billet de 200 EUR ni de piece de 3 EUR.
+ * depot puisse compter toutes les coupures en euros, jusqu'aux centimes.
  */
-export const CASH_DENOMINATIONS = [100, 50, 20, 10, 5, 2, 1, 0.5] as const
+export const CASH_DENOMINATIONS = [500, 200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01] as const
 
 /** Libelles des mouvements de caisse, pour le journal et les badges. */
 export const CASH_MOVEMENT_LABELS: Record<string, string> = {

@@ -302,13 +302,13 @@ effectué pendant cette intervention.
 ## Graphify et dernière intervention
 
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
-et `manifest.json`. `graphify update .` **0.9.104** a actualisé JSON, HTML,
-rapport, manifeste, cache et sauvegarde du jour après les fondations Starter :
-**133 empreintes sources conformes** (132 TS/TSX/MJS et le vérificateur JS),
-**2 832 nœuds**, **5 764 liens**, **164 communautés**, aucun identifiant
+et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
+actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
+la clôture de Caisse : **134 empreintes sources conformes** (133 TS/TSX/MJS
+et le vérificateur JS), **2 865 nœuds**, **5 825 liens**, **187 communautés**, aucun identifiant
 en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
 de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`6fdba67`**. Le vérificateur Figma est indexé dans le graphe.
+**`052eb33`**. Le vérificateur Figma et `scripts/test-caisse-ui.mjs` sont indexés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
@@ -357,3 +357,44 @@ actualisé et vérifié : 133 MD5 sources, HTML/JSON cohérents, aucun doublon n
 orphelin. `git diff --check` réussi. Aucun test applicatif requis ; les sources
 applicatives et la base sont inchangées. Tête initiale `6fdba67`, livraison par
 commit et push sur `origin/main`.
+
+**10 novembre — clôture de Caisse** : demande précisée par
+l'utilisateur : déplacer le formulaire dans une fenêtre contextuelle comme les
+autres formulaires, puis vérifier le comptage. Relecture de la vue, de RHF/Zod,
+des dialogues natifs et du repository de caisse. Points à corriger : huit coupures
+seulement (pièces sous 0,50 € absentes), total pouvant afficher `NaN` lorsque la
+quantité est effacée, comparaison en flottants et soumission clavier contournant
+la confirmation. Conserver le comptage physique explicite et le calcul serveur.
+Graphify initial vérifié : 133 empreintes sources conformes, aucun fichier source
+manquant ; 2 832 nœuds et 5 764 liens. Tête initiale `052eb33`.
+
+Implémentation : bouton de clôture dans les actions de page, dialogue natif
+avec Annuler/croix/Échap/fond et restitution du focus. Validation puis confirmation
+dans le même dialogue pour rester dans la couche modale native ; valeurs confirmées
+figées avant l'appel API. Protection synchrone contre les doubles envois, fermeture
+et champs bloqués pendant l'écriture ; saisie conservée si l'API échoue. Quinze
+coupures de 500 € à 0,01 €, sous-totaux par coupure et calcul en centimes ; total
+incomplet signalé au lieu de `NaN`. Le repository arrondit déjà les montants à deux
+décimales et accepte ces coupures : aucune modification serveur ni migration.
+Premier passage navigateur : défaut supplémentaire reproduit, le total mémorisé
+restait à zéro après une modification de quantité. Remplacement de `watch` et du
+cache `useMemo` par `useWatch` avec recalcul à chaque rendu. Ajout du script
+`test:caisse:ui` et de Playwright en dépendance de développement pour une recette
+reproductible sans base réelle. Focus de confirmation corrigé pour attendre la
+fin de validation RHF, afin que le bouton de retour soit activé avant le focus.
+
+Validation : `build`, `lint` et `test:errors` réussis ; **53 contrôles Chromium**
+réussis avec quatre requêtes simulées, aucune écriture MariaDB et aucune erreur
+JavaScript. Totaux de 162,88 € et 888,88 €, écart d'un centime, scénario
+0,10 + 0,20 €, saisies invalides, confirmation, échec/reprise, comptage vide,
+droits, clavier et huit variantes responsive/thème vérifiés. Quatre captures
+versionnées ; guide et preuves : [caisse-cloture.md](specs/caisse-cloture.md).
+Avertissements existants : bundle Vite supérieur à 500 kB et fonction de contrôle
+Figma non utilisée par Oxlint. Aucun nouvel avertissement de lint.
+Graphify actualisé puis contrôlé : 134 empreintes conformes, 2 865 nœuds,
+5 825 liens et 187 communautés ; aucun doublon ni lien orphelin, HTML/JSON
+identiques pour les identifiants et les extrémités des liens. Nouveau test indexé,
+cache et sauvegarde du 10 novembre versionnés. La modification de package.json
+a entraîné la reconstruction complète du graphe de code, sans LLM ; limites
+CSS, SQL et sémantique documentaire inchangées. `git diff --check` réussi.
+Livraison par commit et push sur `origin/main`, tête initiale `052eb33`.

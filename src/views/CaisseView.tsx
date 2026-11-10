@@ -16,12 +16,10 @@
  */
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMemo } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
-import { ConfirmDialog } from '../components/ConfirmDialog'
-import { useConfirm } from '../components/useConfirm'
 import { useToast } from '../components/useToast'
 import { Icon } from '../components/Icon'
 import { ResourceBanners } from '../components/ResourceBanners'
@@ -32,12 +30,22 @@ import { useAuth, canWrite } from '../components/useAuth'
 import {
   caisseClotureSchema,
   caisseOuvertureSchema,
+  type CaisseClotureFormOutput,
 } from '../schemas'
 import { CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS, formatDenomination, formatEuros } from '../options'
 import type { ApiCashMovement } from '../services/contracts'
 
 const OPENING_LABELS = { fondsCaisse: 'Fond de caisse', notes: 'Notes' } satisfies Record<string, string>
 const CLOSING_LABELS = { comptage: 'Comptage', notes: 'Notes' } satisfies Record<string, string>
+const EMPTY_CLOSING = {
+  comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
+  notes: '',
+}
+
+/** Additionner des centimes entiers évite les faux écarts sur les pièces. */
+function countTotal(lines: CaisseClotureFormOutput['comptage']): number {
+  return lines.reduce((sum, line) => sum + Math.round(line.denomination * 100) * line.quantite, 0) / 100
+}
 
 /** Signe d'un ecart, avec un libelle explicite. `0` n'est ni plus ni moins. */
 function varianceLabel(ecart: number): { text: string; tone: 'ok' | 'warn' | 'bad' } {
@@ -50,7 +58,6 @@ function varianceLabel(ecart: number): { text: string; tone: 'ok' | 'warn' | 'ba
 export default function CaisseView() {
   const { user } = useAuth()
   const toast = useToast()
-  const { dialogProps, confirm } = useConfirm()
   const { session, loading, saving, error, reload, open, close } = useCashSession()
 
   const { movements } = useCashMovements(session?.id ?? null)
@@ -70,25 +77,89 @@ export default function CaisseView() {
   // le caissier remplit ce qu'il compte, il n'a pas a construire une liste.
   const closing = useForm({
     resolver: zodResolver(caisseClotureSchema),
-    defaultValues: {
-      comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
-      notes: '',
-    },
+    defaultValues: EMPTY_CLOSING,
     mode: 'onSubmit',
   })
   const closingRegister = closing.register as unknown as FieldRegister
   const { fields: countFields } = useFieldArray({ control: closing.control, name: 'comptage' })
+  const { reset: resetClosing, setFocus: setClosingFocus } = closing
+  const [closingDialogOpen, setClosingDialogOpen] = useState(false)
+  const [closingValues, setClosingValues] = useState<CaisseClotureFormOutput | null>(null)
+  const [submitFailed, setSubmitFailed] = useState(false)
+  const closingDialogRef = useRef<HTMLDialogElement>(null)
+  const backButtonRef = useRef<HTMLButtonElement>(null)
+  const pending = useRef(false)
+  const busy = saving || closing.formState.isSubmitting
 
-  const watchedCount = closing.watch('comptage')
-  const totalComptage = useMemo(() => {
-    const safe = watchedCount ?? []
-    return safe.reduce((acc, line) => acc + (line.denomination ?? 0) * (line.quantite ?? 0), 0)
-  }, [watchedCount])
+  const watchedCount = useWatch({ control: closing.control, name: 'comptage' })
+  const parsedCount = caisseClotureSchema.shape.comptage.safeParse(watchedCount)
+  const totalComptage = parsedCount.success ? countTotal(parsedCount.data) : null
 
   // Le solde theorique du tiroir, tant que la session est ouverte : fond
   // remis + especes encaissees. La monnaie rendue est deja deduite par le
   // serveur dans `totalEspeces`.
-  const soldeTheorique = (session?.fondsCaisse ?? 0) + (session?.totalEspeces ?? 0)
+  const soldeTheorique = (Math.round((session?.fondsCaisse ?? 0) * 100) + Math.round((session?.totalEspeces ?? 0) * 100)) / 100
+  const ecartComptage = totalComptage === null ? null : Math.round((totalComptage - soldeTheorique) * 100) / 100
+  const confirmedTotal = closingValues ? countTotal(closingValues.comptage) : 0
+  const confirmedVariance = Math.round((confirmedTotal - soldeTheorique) * 100) / 100
+
+  useEffect(() => {
+    const dialog = closingDialogRef.current
+    if (!closingDialogOpen || !canEdit || !session || !dialog) return
+
+    const trigger = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    dialog.showModal()
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      dialog.close()
+      document.body.style.overflow = previousOverflow
+      if (trigger?.isConnected) trigger.focus()
+    }
+  }, [closingDialogOpen, canEdit, session])
+
+  useEffect(() => {
+    if (closingDialogOpen && !closingValues) setClosingFocus('comptage.0.quantite')
+  }, [closingValues, closingDialogOpen, setClosingFocus])
+
+  useEffect(() => {
+    if (closingValues && !busy) backButtonRef.current?.focus()
+  }, [closingValues, busy])
+
+  function openClosingDialog() {
+    if (!canEdit || !session || busy || loading || pending.current) return
+    resetClosing(EMPTY_CLOSING)
+    setClosingValues(null)
+    setSubmitFailed(false)
+    setClosingDialogOpen(true)
+  }
+
+  const closeClosingDialog = useCallback(() => {
+    if (busy || pending.current) return
+    setClosingDialogOpen(false)
+    setClosingValues(null)
+    setSubmitFailed(false)
+    resetClosing(EMPTY_CLOSING)
+  }, [busy, resetClosing])
+
+  const backToCounting = useCallback(() => {
+    if (busy || pending.current) return
+    setClosingValues(null)
+  }, [busy])
+
+  useEffect(() => {
+    if (!closingDialogOpen) return
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
+      if (closingValues) backToCounting()
+      else closeClosingDialog()
+    }
+    document.addEventListener('keydown', onEscape, true)
+    return () => document.removeEventListener('keydown', onEscape, true)
+  }, [closingDialogOpen, closingValues, backToCounting, closeClosingDialog])
 
   const submitOpening = opening.handleSubmit(async (values) => {
     const created = await open(values.fondsCaisse, values.notes)
@@ -97,44 +168,41 @@ export default function CaisseView() {
     toast.success(`Caisse ouverte avec ${formatEuros(created.fondsCaisse)} de fond.`)
   })
 
-  const submitClosing = closing.handleSubmit(async (values) => {
+  const submitClosing = async () => {
+    if (!canEdit || !session || !closingValues || busy || loading || pending.current) return
+    pending.current = true
+    setSubmitFailed(false)
     // Le comptage ne garde que les coupures reellement comptees : envoyer les
     // lignes a zero gonflerait le journal pour rien.
-    const comptage = values.comptage.filter((line) => line.quantite > 0)
-    const closed = await close(comptage, values.notes)
-    if (closed === null) return
+    try {
+      const comptage = closingValues.comptage.filter((line) => line.quantite > 0)
+      const closed = await close(comptage, closingValues.notes)
+      if (closed === null) {
+        setSubmitFailed(true)
+        setClosingValues(null)
+        return
+      }
 
-    const ecart = closed.ecart ?? 0
-    const verdict = varianceLabel(ecart)
-    closing.reset({
-      comptage: CASH_DENOMINATIONS.map((denomination) => ({ denomination, quantite: 0 })),
-      notes: '',
-    })
-    if (ecart === 0) toast.success(`Caisse clôturée : ${verdict.text.toLowerCase()}.`)
-    else toast.error(`Caisse clôturée avec un écart : ${verdict.text.toLowerCase()}.`)
-  })
+      setClosingDialogOpen(false)
+      setClosingValues(null)
+      resetClosing(EMPTY_CLOSING)
+      const ecart = closed.ecart ?? 0
+      const verdict = varianceLabel(ecart)
+      if (ecart === 0) toast.success(`Caisse clôturée : ${verdict.text.toLowerCase()}.`)
+      else toast.error(`Caisse clôturée avec un écart : ${verdict.text.toLowerCase()}.`)
+    } finally {
+      pending.current = false
+    }
+  }
 
-  const askClosing = () => {
-    const ecart = totalComptage - soldeTheorique
-    confirm(
-      'Clôturer la caisse ?',
-      <>
-        Vous comptez <strong>{formatEuros(totalComptage)}</strong> pour un theorique de{' '}
-        <strong>{formatEuros(soldeTheorique)}</strong>
-        {ecart !== 0 && (
-          <>
-            {' '}— soit un {varianceLabel(ecart).text.toLowerCase().replace('€', 'EUR')}. La session
-            sera fermee et ne pourra plus recevoir de vente.
-          </>
-        )}
-        . Vous pourrez saisir un commentaire pour expliquer l'ecart.
-      </>,
-      () => {
-        // La validation reelle est faite par le formulaire : le dialogue
-        // confirme l'intention, les valeurs viennent des champs.
-        void submitClosing()
-      },
-    )
+  // Clic et touche Entrée valident le même comptage avant sa confirmation.
+  const askClosing = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!canEdit || !session || busy || loading || pending.current) return
+    void closing.handleSubmit((values) => {
+      setSubmitFailed(false)
+      setClosingValues(values)
+    })(event)
   }
 
   const movementColumns: ColumnDef<ApiCashMovement>[] = [
@@ -171,12 +239,19 @@ export default function CaisseView() {
       title="Gestion de caisse"
       description="Ouverture, suivi et clôture de votre session de caisse."
       actions={
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
-          <Icon name="rotate-ccw" size="sm" /> Actualiser
-        </button>
+        <>
+          <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          {canEdit && session !== null && (
+            <button type="button" className="danger-button" onClick={openClosingDialog} disabled={loading || busy} aria-haspopup="dialog">
+              <Icon name="check" size="sm" /> Clôturer la caisse
+            </button>
+          )}
+        </>
       }
     >
-      <ResourceBanners error={error} offline={false} readOnly={null} />
+      <ResourceBanners error={closingDialogOpen ? null : error} offline={false} readOnly={null} />
 
       {!canEdit && (
         <p className="info-banner" role="note">
@@ -256,66 +331,135 @@ export default function CaisseView() {
           </section>
 
           {canEdit && (
-            <section className="form-card">
-              <h2>Clôturer la caisse</h2>
-              <form onSubmit={submitClosing} noValidate>
+            <dialog
+              ref={closingDialogRef}
+              className="modal caisse-modal"
+              aria-labelledby="caisse-dialog-title"
+              aria-describedby="caisse-dialog-description"
+              onKeyDown={(event) => {
+                if (event.key !== 'Tab') return
+                const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+                  'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href]',
+                )).filter((control) => control.getClientRects().length > 0)
+                const first = controls[0]
+                const last = controls[controls.length - 1]
+                if (!first) {
+                  event.preventDefault()
+                } else if (event.shiftKey && document.activeElement === first) {
+                  event.preventDefault()
+                  last.focus()
+                } else if (!event.shiftKey && document.activeElement === last) {
+                  event.preventDefault()
+                  first.focus()
+                }
+              }}
+              onCancel={(event) => {
+                event.preventDefault()
+                if (closingValues) backToCounting()
+                else closeClosingDialog()
+              }}
+              onMouseDown={(event) => {
+                if (event.target !== event.currentTarget) return
+                const bounds = event.currentTarget.getBoundingClientRect()
+                if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
+                  event.preventDefault()
+                  closeClosingDialog()
+                }
+              }}
+            >
+              <div className="caisse-modal-header">
+                <h2 id="caisse-dialog-title">{closingValues ? 'Confirmer la clôture' : 'Clôturer la caisse'}</h2>
+                <button type="button" className="action-btn" aria-label="Fermer la fenêtre" onClick={closeClosingDialog} disabled={busy}>
+                  <Icon name="close" size="lg" />
+                </button>
+              </div>
+              <p id="caisse-dialog-description" className="modal-desc">
+                Session #{session.id} — comptez le contenu réel du tiroir avant de clôturer.
+              </p>
+              <ResourceBanners error={submitFailed ? error : null} offline={false} readOnly={null} />
+              <form onSubmit={askClosing} noValidate aria-busy={busy} hidden={closingValues !== null}>
                 <ErrorSummary errors={closing.formState.errors} labels={CLOSING_LABELS} />
+                <fieldset className="caisse-form-fields" disabled={busy || closingValues !== null}>
+                  <legend className="sr-only">Comptage des billets et pièces</legend>
+                  <p className="form-hint">
+                    Saisissez la quantité de chaque coupure, fond de caisse compris.
+                    Laissez zéro pour les coupures absentes.
+                  </p>
 
-                <h3 className="sub-heading">Comptage des billets et pieces</h3>
-                <p className="form-hint">
-                  Comptez le contenu reel du tiroir et saisissez les quantites. Le total calcule
-                  ci-dessous n'est qu'une aide : c'est votre saisie qui fait foi.
-                </p>
+                  <div className="comptage-grid">
+                    {countFields.map((field, index) => (
+                      <div key={field.id} className="comptage-row">
+                        <FormInput
+                          label={`${formatDenomination(field.denomination)} — quantité`}
+                          name={`comptage.${index}.quantite`}
+                          type="number"
+                          min="0"
+                          max="10000"
+                          step="1"
+                          inputMode="numeric"
+                          register={closingRegister}
+                          error={closing.formState.errors.comptage?.[index]?.quantite?.message}
+                          required
+                        />
+                        <output className="comptage-line-total" aria-label={`Montant en ${formatDenomination(field.denomination)}`}>
+                          {caisseClotureSchema.shape.comptage.element.safeParse(watchedCount?.[index]).success
+                            ? formatEuros(Math.round(field.denomination * 100) * watchedCount[index].quantite / 100)
+                            : '—'}
+                        </output>
+                      </div>
+                    ))}
+                  </div>
 
-                <div className="comptage-grid">
-                  {countFields.map((field, index) => (
-                    <div key={field.id} className="comptage-row">
-                      <label htmlFor={`comptage-${index}-denomination`} className="sr-only">
-                        Denomination
-                      </label>
-                      <span className="comptage-coupure">{formatDenomination(field.denomination)}</span>
-                      <FormInput
-                        label="Quantité"
-                        name={`comptage.${index}.quantite`}
-                        type="number"
-                        min="0"
-                        register={closingRegister}
-                        error={closing.formState.errors.comptage?.[index]?.quantite?.message}
-                      />
-                    </div>
-                  ))}
-                </div>
+                  <div className="reception-total" role="status" aria-live="polite">
+                    <strong>{totalComptage === null ? 'Comptage à compléter' : `Total compté : ${formatEuros(totalComptage)}`}</strong>
+                    <span className="muted">
+                      {' '}
+                      Théorique : {formatEuros(soldeTheorique)}
+                      {ecartComptage !== null && ` — ${varianceLabel(ecartComptage).text}`}
+                    </span>
+                  </div>
 
-                <div className="reception-total">
-                  <strong>Total compte : {formatEuros(totalComptage)}</strong>
-                  <span className="muted">
-                    {' '}
-                    — theorique {formatEuros(soldeTheorique)}
-                    {totalComptage !== soldeTheorique && ` (ecart ${varianceLabel(totalComptage - soldeTheorique).text})`}
-                  </span>
-                </div>
+                  <FormTextarea
+                    label="Commentaire de clôture"
+                    name="notes"
+                    rows={3}
+                    register={closingRegister}
+                    error={closing.formState.errors.notes?.message}
+                    placeholder="Optionnel : motif de l'écart, incident de comptage..."
+                  />
 
-                <FormTextarea
-                  label="Commentaire de clôture"
-                  name="notes"
-                  rows={3}
-                  register={closingRegister}
-                  error={closing.formState.errors.notes?.message}
-                  placeholder="Optionnel : motif de l'ecart, incident de comptage..."
-                />
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="danger-button"
-                    onClick={askClosing}
-                    disabled={saving}
-                  >
-                    <Icon name="check" size="sm" /> Clôturer la caisse
-                  </button>
-                </div>
+                  <div className="form-actions">
+                    <button type="button" className="secondary-button" onClick={closeClosingDialog}>Annuler</button>
+                    <button
+                      type="submit"
+                      className="danger-button"
+                      disabled={loading}
+                    >
+                      <Icon name="check" size="sm" /> Vérifier la clôture
+                    </button>
+                  </div>
+                </fieldset>
               </form>
-            </section>
+              {closingValues && (
+                <section aria-busy={busy}>
+                  <p className="confirm-message">
+                    Vous avez compté <strong>{formatEuros(confirmedTotal)}</strong> pour un
+                    solde théorique de <strong>{formatEuros(soldeTheorique)}</strong>.
+                    {' '}{varianceLabel(confirmedVariance).text}.
+                    La session sera fermée et ne pourra plus recevoir de vente.
+                  </p>
+                  {closingValues.notes && <p className="confirm-message">Commentaire : {closingValues.notes}</p>}
+                  <div className="form-actions">
+                    <button ref={backButtonRef} type="button" className="secondary-button" onClick={backToCounting} disabled={busy}>
+                      Revenir au comptage
+                    </button>
+                    <button type="button" className="danger-button" onClick={() => void submitClosing()} disabled={busy || loading}>
+                      <Icon name="check" size="sm" /> {busy ? 'Clôture en cours…' : 'Confirmer la clôture'}
+                    </button>
+                  </div>
+                </section>
+              )}
+            </dialog>
           )}
 
           <DataTable
@@ -328,8 +472,6 @@ export default function CaisseView() {
           />
         </>
       )}
-
-      <ConfirmDialog {...dialogProps} confirmLabel="Clôturer" destructive />
     </PageLayout>
   )
 }

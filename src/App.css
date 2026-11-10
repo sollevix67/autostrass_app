@@ -212,10 +212,10 @@
 .caisse-card-value { color: var(--text-strong); font-family: var(--font-mono); font-size: 22px; overflow-wrap: anywhere; }
 .caisse-card.accent .caisse-card-value { color: var(--status-warning); }
 .caisse-card-note { color: var(--text-muted); font-size: 11px; }
-.comptage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+.comptage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; margin-block-start: 16px; }
 .form-card > .form-hint { margin-block-end: 16px; }
 .comptage-row { display: flex; align-items: end; gap: 12px; min-width: 0; }
-.comptage-coupure { flex: 0 0 76px; padding-block-end: 10px; font-family: var(--font-mono); font-size: 13px; }
+.comptage-line-total { flex: 0 0 96px; padding-block-end: 10px; text-align: right; color: var(--text-strong); font-family: var(--font-mono); font-size: 13px; overflow-wrap: anywhere; }
 .comptage-row .form-group { flex: 1; }
 /* Les tableaux de stock gardent toute la largeur, y compris sur bureau. */
 .stock-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
