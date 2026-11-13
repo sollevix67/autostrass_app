@@ -1,7 +1,7 @@
 # Graph Report - autostrass_app  (2026-11-13)
 
 ## Corpus Check
-- 338 files · ~410,533 words
+- 338 files · ~410,693 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 64 file(s) not represented in the graph (top: .csv 53, .css 7, (none) 2)
 
@@ -830,17 +830,17 @@ Nodes (3): optionalRef(), requiredRef(), toNullableNumber()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `LivraisonsView.tsx` to `ErrorSummary.tsx`, `VentesComptoirView.tsx`, `toErrorMessage`, `StockView.tsx`, `dependencies`, `PageLayout`, `contracts.ts`, `CaisseView.tsx`, `main.tsx`, `package.json`, `useAuth.ts`, `App.tsx`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `zod` connect `test-inventaires.ts` to `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `main.tsx`, `package.json`, `auth.ts`, `App.tsx`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `RFC-5321`, `Banner Design Skill`, `Documentation Workflow and Formats` to the rest of the system?**
   _91 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `zod` connect `test-inventaires.ts` to `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `main.tsx`, `package.json`, `auth.ts`, `App.tsx`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `react` connect `LivraisonsView.tsx` to `ErrorSummary.tsx`, `VentesComptoirView.tsx`, `toErrorMessage`, `StockView.tsx`, `dependencies`, `PageLayout`, `contracts.ts`, `CaisseView.tsx`, `main.tsx`, `package.json`, `useAuth.ts`, `App.tsx`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Should `scripts/core.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05563093622795115 - nodes in this community are weakly interconnected._
-- **Why does `LivraisonRepository` connect `SimpleRepository` to `simpleRepositories.ts`, `VehiculeRepository`, `resourceRoutes.ts`, `FournisseurRepository`, `Document Data Repositories`?**
+- **Why does `TailwindConfigGenerator` connect `TailwindConfigGenerator` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `Tailwind Generator Defaults`, `.generate_config_string`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Theme Validation`, `Tailwind Configuration Tests`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._

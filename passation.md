@@ -1,5 +1,42 @@
 # Passation — Autostrass App
 
+**13 novembre — installation de WCAG Accessibility** : demande
+utilisateur d'exécuter `npx skills add github.com/addyosmani/web-quality-skills
+--skill wcag-accessibility`, de vérifier la disponibilité puis d'attendre.
+Lecture préalable de la passation, de Graphify et de `skill-installer` ; tête
+initiale `468f184`, arbre propre, 180 empreintes de code conformes. Installation
+limitée à la compétence demandée ; aucun audit d'accessibilité ni changement
+applicatif lancé. Vérification de l'emplacement, du nom et du fichier `SKILL.md`
+après installation, puis documentation et synchronisation du dépôt.
+Commande exacte exécutée avec `skills` 1.8.1 : dépôt cloné, six compétences
+découvertes, échec `SKILLS_NO_MATCHING_SKILLS` pour `wcag-accessibility`.
+Le nom disponible est `accessibility`. Vérification du contenu officiel et de
+la correspondance WCAG avant correction du nom ; aucun autre skill installé.
+Correspondance confirmée : la page AI UX Playground expose `name: accessibility`
+et WCAG 2.2 (copie 1.1) ; le dépôt officiel fournit le même skill en version 2.0,
+avec `references/WCAG.md`. Correction du sélecteur vers `--skill accessibility`,
+installation pour Codex uniquement, à la portée du projet.
+Installation réussie par `npx skills add github.com/addyosmani/web-quality-skills
+--skill accessibility --agent codex --yes --json` : compétence `accessibility`
+copiée dans `.agents/skills/accessibility`, scope `project`, Codex uniquement.
+Disponibilité confirmée par `npx skills list --agent codex --json` : statut
+`tracked`, nom `accessibility`, source correcte ; `skills-lock.json` conserve
+l'empreinte `c668809f5df57feb87cc06f1bc37fb340d1d92e26bacb6edbeab9258d22e76a5`.
+Contrôle indépendant réussi : version 2.0, fichiers `SKILL.md`, `WCAG.md` et
+`A11Y-PATTERNS.md` présents, références internes résolues. Aucun autre skill
+installé ni audit lancé. Actualisation Graphify et livraison documentaire,
+puis attente de la prochaine instruction utilisateur.
+Graphify actualisé et contrôlé : 2 972 nœuds uniques, 6 050 liens,
+185 communautés, aucun lien orphelin, HTML/JSON cohérents et 180 empreintes
+de code conformes. Limites CSS/SQL et sémantique documentaire inchangées.
+`git diff --check` conforme ; tête distante identique à `468f184` après fetch.
+Compétence, registre d'installation, passation et Graphify livrés par commit
+et push sur `origin/main`. Aucun changement applicatif ou de dépendance npm,
+aucun test applicatif requis. Compétence disponible dès la prochaine instruction.
+Contrôle des fichiers indexés : un espace final dans l'exemple HTML du `SKILL.md`
+tiers (ligne 61) est conservé pour préserver le contenu installé et son empreinte.
+Le contrôle `git diff --cached --check` hors ce fichier tiers est conforme.
+
 **13 novembre — archivage et suppression des neuf fichiers inutilisés** :
 demande utilisateur de sauvegarder les fichiers identifiés dans un ZIP puis de
 les supprimer. Périmètre : les neuf fichiers sans usage interne du rapport,
