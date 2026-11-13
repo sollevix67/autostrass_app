@@ -1,17 +1,17 @@
-# Graph Report - autostrass_app  (2026-11-10)
+# Graph Report - autostrass_app  (2026-11-13)
 
 ## Corpus Check
-- 339 files · ~410,974 words
+- 340 files · ~412,264 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 64 file(s) not represented in the graph (top: .csv 53, .css 7, (none) 2)
 
 ## Summary
-- 2918 nodes · 5990 edges · 172 communities (127 shown, 45 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 211 edges (avg confidence: 0.86)
+- 2925 nodes · 5999 edges · 172 communities (128 shown, 44 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 214 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f1d4b3a2`
+- Built from commit: `aec0e602`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,9 +19,9 @@
 - Shadcn Component Installer
 - scripts/core.py
 - validate_data.py
-- InventaireView.tsx
-- toRepositoryError
-- test-inventaire-ui.mjs
+- toErrorMessage
+- CatalogueView.tsx
+- test-stock-transfers.ts
 - Primitive Color Palette
 - referentielRepositories.ts
 - Cash Database Schema
@@ -36,17 +36,18 @@
 - SimpleRepository
 - test_text_layout_resilience.py
 - Brand Asset Generators
-- seed.ts
+- mysql2
+- csrf.ts
 - Python Tooling Test Imports
 - HTML Token Validation
 - package.json
 - server/index.ts
 - Cash Register Repository
-- toErrorMessage
+- useAuth.ts
 - Tailwind Configuration Tests
 - test_relevance_evaluator.py
 - react
-- test-environment.ts
+- complianceRoutes.ts
 - HTML Slide Deck Generation
 - Slide Background Image Generation
 - NPM Build And Database Scripts
@@ -55,6 +56,7 @@
 - color
 - TestNativeDesktopStackFreshness
 - sanitize.ts
+- _select_palette_for_mode
 - Brand And Design Guidelines
 - test-french-validation-ui.mjs
 - Repository Guidelines
@@ -71,7 +73,6 @@
 - main.tsx
 - Asset Validation CLI
 - cip/core.py
-- Tailwind Theme Validation
 - Web Stack Freshness Tests
 - App.tsx
 - UI UX Search CLI
@@ -85,11 +86,11 @@
 - TestDomainDetection
 - Search Domain Tests
 - dependencies
-- drizzle-kit
+- overrides
 - Design Token Embedding Script
 - Design Token Validation CLI
 - button
-- createTestEnvironment
+- test-environment.ts
 - Brand Context Injection
 - Slide Copywriting Formulas
 - Motion Duration Tokens
@@ -99,6 +100,7 @@
 - CIP Style Taxonomy
 - Design Token Code Generation
 - test-caisse-ui.mjs
+- Tailwind Font And Spacing Config
 - Backend Zod Route Flow
 - PdfmakeInstance
 - render-html.py
@@ -114,22 +116,26 @@
 - Protected Route Schema Flow
 - Oxlint Rule Configuration
 - primary-hover
-- test-fournisseurs-ui.mjs
+- FournisseurRepository
 - Application Architecture README
-- InventaireView.tsx
+- useToast.ts
+- TailwindConfigGenerator
 - Q: Why does zod connect Authenticated Resource Routes to Node Package Overrides, Backend Request Schemas, Application Shell Components, Business Form Schemas?
 - test-client-siret.ts
+- Audit des fichiers inutiles — 13 novembre 2026
 - matches
 - settingsStore.ts
-- _resolve_dial
+- TestReasoningContract
 - _filter_anti_patterns_for_mode
 - slides-create.md
 - Drizzle Dependency Debugging
 - Social Image Design Guidance
+- client.ts
 - Extra Large Size Tokens
 - auth.ts
 - No Color Style Tokens
 - verify-repositories.ts
+- email
 - TypeScript Build Error Report
 - Bibliothèque Figma Autostrass — découverte
 - test-caisse-ui.mjs
@@ -160,12 +166,11 @@
 - Vite Logo SVG
 - ref_node_assert
 - test-utilisateurs-ui.mjs
-- test_design_system_mode.py
+- _palette_is_dark
 - test_data_contracts.py
 - read_rows
-- test-clients-ui.mjs
 - Inventaire physique par référence
-- logo/search.py
+- argparse
 - Revue CSS — 4 novembre 2026
 - FournisseursView.tsx
 - test_core.py
@@ -187,19 +192,19 @@
 7. `AppContent()` - 38 edges
 8. `useToast()` - 37 edges
 9. `useAuth()` - 36 edges
-10. `TestTailwindConfigGenerator` - 35 edges
+10. `DesignSystemGenerator` - 35 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Comportement` --references--> `FormDialog()`  [INFERRED]
   specs/formulaires-modaux.md → src/components/FormDialog.tsx
 - `Création et modification des clients — 6 novembre 2026` --references--> `useResource()`  [INFERRED]
   specs/client-modal.md → src/hooks/useResource.ts
-- `Cloudflare Turnstile` --references--> `settings()`  [INFERRED]
-  specs/parametres.md → scripts/test-caisse-ui.mjs
-- `Stockage et sauvegarde` --references--> `updatedAt()`  [INFERRED]
-  specs/parametres.md → server/db/schema.ts
-- `verify()` --calls--> `verifyFingerprints()`  [EXTRACTED]
-  scripts/archive-fiscal.ts → server/middleware/compliance.ts
+- `Fichiers sans usage interne retrouvé` --references--> `pickEnum()`  [INFERRED]
+  specs/fichiers-inutiles.md → src/utils/coerce.ts
+- `Fichiers sans usage interne retrouvé` --references--> `createLineId()`  [INFERRED]
+  specs/fichiers-inutiles.md → src/utils/ids.ts
+- `Fichiers sans usage interne retrouvé` --references--> `nextId()`  [INFERRED]
+  specs/fichiers-inutiles.md → src/utils/ids.ts
 
 ## Import Cycles
 - None detected.
@@ -210,7 +215,7 @@
 - **Social Image HTML Design and Screenshot QA Workflow** — github_prompts_design_references_social_photos_design_social_photos_design_guide, github_prompts_design_references_social_photos_design_html_screenshot_workflow, github_prompts_design_references_social_photos_design_safe_zones_visual_qa, github_prompts_design_references_social_photos_design_platform_image_sizes [EXTRACTED 1.00]
 - **UI Styling Component, Utility, and Canvas Layers** — github_prompts_ui_styling_skill_ui_styling_skill, github_prompts_ui_styling_skill_component_layer, github_prompts_ui_styling_skill_tailwind_styling_layer, github_prompts_ui_styling_skill_canvas_visual_layer [EXTRACTED 1.00]
 
-## Communities (172 total, 45 thin omitted)
+## Communities (172 total, 44 thin omitted)
 
 ### Community 0 - "Shadcn Component Installer"
 Cohesion: 0.05
@@ -221,36 +226,36 @@ Cohesion: 0.06
 Nodes (31): BM25, _contains_phrase(), detect_domain(), _domain_keywords(), _exact_match_diagnostic(), _exact_row_identity(), _exact_stack_identifier(), _file_signature() (+23 more)
 
 ### Community 2 - "validate_data.py"
+Cohesion: 0.10
+Nodes (32): _catalog_date(), _check_app_interface_contract(), _check_catalog_contract(), _check_catalog_summary(), _check_chart_contract(), _check_color_contract(), _check_core_data_contract(), _check_file() (+24 more)
+
+### Community 3 - "toErrorMessage"
+Cohesion: 0.10
+Nodes (44): ColumnDef, remove(), save(), FormDialog(), FormInput(), useToast(), useRemoteValue(), Referentiel (+36 more)
+
+### Community 4 - "CatalogueView.tsx"
+Cohesion: 0.12
+Nodes (22): CheckboxProps, CommonProps, FieldRegistration, FormSelect(), FormTextarea(), InputProps, RegisterOptions, SelectProps (+14 more)
+
+### Community 5 - "test-stock-transfers.ts"
 Cohesion: 0.11
-Nodes (30): _catalog_date(), _check_app_interface_contract(), _check_catalog_contract(), _check_catalog_summary(), _check_chart_contract(), _check_color_contract(), _check_core_data_contract(), _check_file() (+22 more)
-
-### Community 3 - "InventaireView.tsx"
-Cohesion: 0.18
-Nodes (21): compare(), DataTable(), FormTextarea(), PageLayout(), PageLayoutProps, useRemoteValue(), Referentiel, ApiParametres (+13 more)
-
-### Community 4 - "toRepositoryError"
-Cohesion: 0.17
-Nodes (8): toRepositoryError(), mapUtilisateur(), PUBLIC_COLUMNS, Tables, UtilisateurAuth, UtilisateurInput, UtilisateurRepository, UtilisateurRow
-
-### Community 5 - "test-inventaire-ui.mjs"
-Cohesion: 0.22
-Nodes (4): databaseUnavailable, checks, errors, output
+Nodes (13): alias, explicitDestination, explicitNull, invalidCurrentField, maximum, motif, noDestination, omittedSource (+5 more)
 
 ### Community 6 - "Primitive Color Palette"
 Cohesion: 0.05
 Nodes (53): $type, $value, $type, $value, $type, $value, $type, $value (+45 more)
 
 ### Community 7 - "referentielRepositories.ts"
-Cohesion: 0.18
-Nodes (10): ClientInput, ClientRepository, ClientRow, clientWriteError(), FournisseurInput, FournisseurRow, mapClient(), Tables (+2 more)
+Cohesion: 0.17
+Nodes (12): ClientInput, ClientRepository, ClientRow, clientWriteError(), FournisseurInput, FournisseurRow, mapClient(), Tables (+4 more)
 
 ### Community 8 - "Cash Database Schema"
 Cohesion: 0.04
 Nodes (65): ArticleRef, CASH_BREAK_DENOMINATIONS, CASH_MOVEMENT_TYPES, CASH_SESSION_STATUSES, CashBreakDenomination, cashMovements, cashMovementsRelations, CashMovementType (+57 more)
 
 ### Community 9 - "schemas/parametres.ts"
-Cohesion: 0.11
-Nodes (7): ApiParametres, Session, Input, ParametreRepository, ReferentielKind, tables, SousCategorie
+Cohesion: 0.16
+Nodes (9): Input, listTva(), ParametreRepository, ReferentielKind, tables, categorieUpdateSchema, referentielSchema, SousCategorie (+1 more)
 
 ### Community 10 - "resourceRoutes.ts"
 Cohesion: 0.05
@@ -273,16 +278,16 @@ Cohesion: 0.04
 Nodes (42): ArticleFormOutput, ArticleFormValues, articleSchema, CaisseClotureFormOutput, CaisseClotureFormValues, caisseClotureSchema, CaisseOuvertureFormOutput, CaisseOuvertureFormValues (+34 more)
 
 ### Community 15 - "design_system.py"
-Cohesion: 0.08
-Nodes (12): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_master_md(), format_page_override_md(), _generate_intelligent_overrides(), hex_to_ansi(), persist_design_system() (+4 more)
+Cohesion: 0.07
+Nodes (15): ansi_ljust(), _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system(), _generate_intelligent_overrides() (+7 more)
 
 ### Community 16 - "Primitive Spacing Tokens"
 Cohesion: 0.06
 Nodes (34): $type, $value, $type, $value, $type, $value, $type, $value (+26 more)
 
 ### Community 17 - "SimpleRepository"
-Cohesion: 0.09
-Nodes (8): LivraisonInput, LivraisonRepository, LivraisonRow, mapLivraison(), Tables, FournisseurRepository, mapFournisseur(), SimpleRepository
+Cohesion: 0.11
+Nodes (8): LivraisonInput, LivraisonRepository, LivraisonRow, mapLivraison(), Tables, mapVehicule(), VehiculeRepository, SimpleRepository
 
 ### Community 18 - "test_text_layout_resilience.py"
 Cohesion: 0.18
@@ -292,12 +297,16 @@ Nodes (3): read_rows(), TestTextLayoutDataContracts, TestTextLayoutRetrieval
 Cohesion: 0.10
 Nodes (13): apply_color(), apply_viewbox_size(), extract_svgs(), generate_batch(), generate_icon(), generate_sizes(), load_env(), main() (+5 more)
 
-### Community 20 - "seed.ts"
-Cohesion: 0.22
-Nodes (9): splitDrizzleKitStatements(), splitStatements(), applyFixture(), hasDatabaseConfig, list, SEED_FILES, SEEDED_TABLES, sql (+1 more)
+### Community 20 - "mysql2"
+Cohesion: 0.16
+Nodes (11): dotenv, mysql2, normalized, raw, statements, hasDatabaseConfig, list, SEED_FILES (+3 more)
+
+### Community 21 - "csrf.ts"
+Cohesion: 0.19
+Nodes (13): Bucket, bucketKey(), buckets, clientKey(), CSRF_HEADER, prune(), rateLimit(), registerFailure() (+5 more)
 
 ### Community 22 - "Python Tooling Test Imports"
-Cohesion: 0.13
+Cohesion: 0.09
 Nodes (5): test_sync_parses_bundled_starter_template(), main(), _run(), test_flags_hardcoded_hex_sharing_line_with_token(), test_token_only_line_reports_no_violation()
 
 ### Community 23 - "HTML Token Validation"
@@ -305,32 +314,32 @@ Cohesion: 0.13
 Nodes (12): get_context(), is_allowed_exception(), is_allowed_rgba(), is_inside_block(), load_css_variables(), main(), print_result(), print_summary() (+4 more)
 
 ### Community 24 - "package.json"
-Cohesion: 0.08
-Nodes (33): allowScripts, esbuild@0.28.2, devDependencies, concurrently@^10.0.5, oxlint@^1.81.0, playwright@^1.65.0, selfsigned@^5.5.0, tsx@^4.23.13 (+25 more)
+Cohesion: 0.07
+Nodes (35): allowScripts, esbuild@0.28.2, devDependencies, concurrently@^10.0.5, drizzle-kit@^0.31.11, oxlint@^1.81.0, playwright@^1.65.0, selfsigned@^5.5.0 (+27 more)
 
 ### Community 25 - "server/index.ts"
-Cohesion: 0.06
-Nodes (35): alias, explicitDestination, explicitNull, invalidCurrentField, maximum, motif, noDestination, omittedSource (+27 more)
+Cohesion: 0.09
+Nodes (25): app, emptyDashboard, frontendPath, LowStockItem, port, rateLimit(), securityHeaders(), ArticleBody (+17 more)
 
 ### Community 26 - "Cash Register Repository"
 Cohesion: 0.16
 Nodes (10): CashBreak, CashCountRow, CashMovementRow, CashRegisterRepository, CashSessionRow, round2(), Tables, toDecimal() (+2 more)
 
-### Community 27 - "toErrorMessage"
-Cohesion: 0.07
-Nodes (43): EmplacementsManager(), remove(), save(), useCashMovements(), EMPTY_ARTICLE, SEED_ARTICLES, upsertByReference(), useCatalogue() (+35 more)
+### Community 27 - "useAuth.ts"
+Cohesion: 0.11
+Nodes (24): AuthContext, AuthContextValue, AuthStatus, SessionUser, AuthProvider(), toAuthError(), INITIAL_DASHBOARD, mapDashboardPayload() (+16 more)
 
 ### Community 29 - "test_relevance_evaluator.py"
 Cohesion: 0.12
 Nodes (3): TestFixtureValidation, TestMetricMath, TestThresholdGate
 
 ### Community 30 - "react"
-Cohesion: 0.10
-Nodes (29): react, ConfirmDialogProps, ColumnDef, DataTableProps, SortAccessor, initial, levels, FormDialogProps (+21 more)
+Cohesion: 0.14
+Nodes (25): react, ConfirmDialog(), ConfirmDialogProps, EmplacementsManager(), initial, levels, FormDialogProps, PageLayout() (+17 more)
 
-### Community 31 - "test-environment.ts"
-Cohesion: 0.08
-Nodes (21): mysql2@^3.24.4, dotenv, drizzle-orm, mysql2, normalized, raw, statements, archive() (+13 more)
+### Community 31 - "complianceRoutes.ts"
+Cohesion: 0.23
+Nodes (8): archive(), hasConfig, verify(), fingerprintVente(), GENESIS_HASH, verifyFingerprints(), CAISSE_WRITE, SaleForFingerprint
 
 ### Community 32 - "HTML Slide Deck Generation"
 Cohesion: 0.13
@@ -360,13 +369,17 @@ Nodes (31): $type, $value, background, destructive, destructive-foreground, fore
 Cohesion: 0.10
 Nodes (19): bodySchema, findMarkupInjection(), INJECTION_COUNTS, INJECTION_PATTERNS, InjectionKind, normalizeText(), reportInjection(), sanitizeEnum() (+11 more)
 
+### Community 40 - "_select_palette_for_mode"
+Cohesion: 0.22
+Nodes (4): _contrast_ratio(), _derive_dark_palette(), _select_palette_for_mode(), TestPaletteSelection
+
 ### Community 41 - "Brand And Design Guidelines"
 Cohesion: 0.17
 Nodes (15): Asset Approval Checklist, Asset Organization Guide, Brand Guidelines Template, Color Palette Management, Brand Consistency Checklist, Logo Usage Rules, Messaging Framework, Typography Specifications (+7 more)
 
 ### Community 42 - "test-french-validation-ui.mjs"
-Cohesion: 0.25
-Nodes (7): check(), checks, errors, invalid(), output, rows, writes
+Cohesion: 0.12
+Nodes (12): checks, errors, fields, initial, output, check(), checks, errors (+4 more)
 
 ### Community 43 - "Repository Guidelines"
 Cohesion: 0.22
@@ -381,16 +394,16 @@ Cohesion: 0.12
 Nodes (14): apres, avant, carte, CashSession, cloture, comptageExact, courante, login (+6 more)
 
 ### Community 46 - "CaisseView.tsx"
-Cohesion: 0.11
-Nodes (25): react-hook-form, CashCountFields(), CashCountFieldsProps, FieldRegister, CashState, useCashSession(), CASH_DENOMINATIONS, CASH_MOVEMENT_LABELS (+17 more)
+Cohesion: 0.08
+Nodes (31): react-hook-form, CashCountFields(), CashCountFieldsProps, FieldRegister, CashState, useCashMovements(), useCashSession(), CASH_DENOMINATIONS (+23 more)
 
 ### Community 47 - "Node TypeScript Configuration"
 Cohesion: 0.12
 Nodes (16): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, noEmit, noFallthroughCasesInSwitch (+8 more)
 
 ### Community 48 - "cip/generate.py"
-Cohesion: 0.11
-Nodes (11): build_cip_prompt(), check_logo_required(), generate_cip_set(), generate_with_nano_banana(), load_env(), load_logo_image(), main(), format_brief() (+3 more)
+Cohesion: 0.19
+Nodes (7): build_cip_prompt(), check_logo_required(), generate_cip_set(), generate_with_nano_banana(), load_env(), load_logo_image(), main()
 
 ### Community 49 - "Typography Scale Tokens"
 Cohesion: 0.12
@@ -409,8 +422,8 @@ Cohesion: 0.22
 Nodes (8): Configuration Precedence, Existing Custom Skills, Installation, npm Scripts, oh-my-claudecode Usage, Project, Project Configuration — autostrass_app, Project Structure
 
 ### Community 55 - "main.tsx"
-Cohesion: 0.43
-Nodes (7): FormControl, installFrenchValidation(), clear(), clearForm(), translate(), isFormControl(), validationMessage()
+Cohesion: 0.23
+Nodes (10): react-dom@^19.2.8, react-dom, removeFrenchValidation, FormControl, installFrenchValidation(), clear(), clearForm(), translate() (+2 more)
 
 ### Community 56 - "Asset Validation CLI"
 Cohesion: 0.25
@@ -421,7 +434,7 @@ Cohesion: 0.12
 Nodes (7): BM25, detect_domain(), get_cip_brief(), _load_csv(), search(), search_all(), _search_csv()
 
 ### Community 60 - "App.tsx"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (39): react-router-dom, App(), AppContent(), getStoredTheme(), getSystemTheme(), initials(), navigation, roleLabel() (+31 more)
 
 ### Community 61 - "UI UX Search CLI"
@@ -429,12 +442,12 @@ Cohesion: 0.21
 Nodes (11): args, DATA, domainIndex, DOMAINS, limitIndex, parseCsv(), results, ROOT (+3 more)
 
 ### Community 62 - "_style_is_dark_primary"
-Cohesion: 0.21
+Cohesion: 0.23
 Nodes (4): _query_wants_dark(), _resolve_color_mode(), _style_is_dark_primary(), TestModeResolution
 
 ### Community 63 - "test_data_contracts.py"
-Cohesion: 0.21
-Nodes (5): apply_decision_rules(), _object_without_duplicates(), parse_decision_rules(), _validate_action(), _check_reasoning_contract()
+Cohesion: 0.31
+Nodes (4): apply_decision_rules(), _object_without_duplicates(), parse_decision_rules(), _validate_action()
 
 ### Community 64 - "Application Feature Roadmap"
 Cohesion: 0.20
@@ -449,16 +462,12 @@ Cohesion: 0.15
 Nodes (12): $type, $value, dark, semantic, primitive, $schema, $type, $value (+4 more)
 
 ### Community 67 - "test-inventaires.ts"
-Cohesion: 0.12
-Nodes (12): input(), Session, AuthenticatedUser, InventaireRepository, mapInventaire(), RepositoryError, InventaireInput, inventaireSchema (+4 more)
+Cohesion: 0.13
+Nodes (10): Session, AuthenticatedUser, InventaireRepository, mapInventaire(), InventaireInput, inventaireSchema, MAX_STOCK, quantite (+2 more)
 
 ### Community 71 - "dependencies"
 Cohesion: 0.12
-Nodes (17): dependencies, bcryptjs@^3.0.3, body-parser@^2.4.0, dotenv@^18.0.1, drizzle-orm@^0.45.3, express@^5.3.0, @hookform/resolvers@^5.9.1, jose@^6.2.12 (+9 more)
-
-### Community 72 - "drizzle-kit"
-Cohesion: 0.30
-Nodes (4): drizzle-kit@^0.31.11, overrides, esbuild, drizzle-kit
+Nodes (16): dependencies, bcryptjs@^3.0.3, body-parser@^2.4.0, dotenv@^18.0.1, drizzle-orm@^0.45.3, express@^5.3.0, @hookform/resolvers@^5.9.1, jose@^6.2.12 (+8 more)
 
 ### Community 73 - "Design Token Embedding Script"
 Cohesion: 0.17
@@ -472,9 +481,9 @@ Nodes (11): extensions, formatReport(), fs, getFiles(), main(), parseArgs(), pat
 Cohesion: 0.06
 Nodes (45): $type, $value, $type, $value, bg, fg, font-size, hover-bg (+37 more)
 
-### Community 76 - "createTestEnvironment"
-Cohesion: 0.67
-Nodes (6): createTestEnvironment(), close(), restartApi(), runScript(), startProcess(), stopProcess()
+### Community 76 - "test-environment.ts"
+Cohesion: 0.19
+Nodes (13): splitDrizzleKitStatements(), splitStatements(), createTestEnvironment(), applyFixture(), close(), restartApi(), runScript(), startProcess() (+5 more)
 
 ### Community 77 - "Brand Context Injection"
 Cohesion: 0.31
@@ -494,7 +503,7 @@ Nodes (13): pdfmake@^0.3.11, pdfmake, server, vente, warnings, allowedFontFiles,
 
 ### Community 81 - "LivraisonsView.tsx"
 Cohesion: 0.07
-Nodes (69): @hookform/resolvers, ConfirmDialog(), FormDialog(), FormSelect(), Icon(), EditableCard(), EditableCardProps, ResourceBanners() (+61 more)
+Nodes (47): compare(), DataTable(), DataTableProps, SortAccessor, EditableCard(), EditableCardProps, ResourceBanners(), ResourceBannersProps (+39 more)
 
 ### Community 83 - "Brand Token Synchronization"
 Cohesion: 0.29
@@ -533,8 +542,8 @@ Cohesion: 0.14
 Nodes (11): empty, full, optionalFields, Session, sanitizeCode(), clientBodySchema, fournisseurBodySchema, fournisseurPatchSchema (+3 more)
 
 ### Community 93 - "logo/core.py"
-Cohesion: 0.11
-Nodes (7): BM25, detect_domain(), _load_csv(), search(), search_all(), _search_csv(), _valid_confidence()
+Cohesion: 0.12
+Nodes (6): BM25, detect_domain(), _load_csv(), search(), search_all(), _search_csv()
 
 ### Community 94 - "Security Review Findings"
 Cohesion: 0.33
@@ -549,8 +558,8 @@ Cohesion: 0.32
 Nodes (8): Chart.js Integration, Design Tokens, HTML Slide Template, Mobile Breakpoints, Progress Bar, Responsive 16:9 Slide Deck, Slide Content Wrapper, Slide Navigation
 
 ### Community 97 - "contracts.ts"
-Cohesion: 0.08
-Nodes (29): AuthContext, AuthContextValue, AuthStatus, SessionUser, AuthProvider(), toAuthError(), cache, CacheEntry (+21 more)
+Cohesion: 0.11
+Nodes (24): cache, CacheEntry, fetchOnce(), useClientOptions(), useReferential(), useVenteOptions(), RETURN_REASON_OPTIONS, ApiArticle (+16 more)
 
 ### Community 98 - "Border Radius Tokens"
 Cohesion: 0.12
@@ -572,29 +581,29 @@ Nodes (7): ignorePatterns, plugins, rules, react/incompatible-library, react/onl
 Cohesion: 0.67
 Nodes (3): primary-hover, $type, $value
 
-### Community 106 - "test-fournisseurs-ui.mjs"
-Cohesion: 0.25
-Nodes (5): checks, errors, fields, full, output
-
 ### Community 107 - "Application Architecture README"
 Cohesion: 0.38
 Nodes (7): Autostrass, Drizzle Migrations, Drizzle ORM, MariaDB, React and Express Application, REST API, Vite Development Proxy
 
-### Community 108 - "InventaireView.tsx"
-Cohesion: 0.30
-Nodes (12): FormInput(), Comptage(), ComptageForm(), review(), save(), ComptageProps, dateLabel(), formatDelta() (+4 more)
+### Community 108 - "useToast.ts"
+Cohesion: 0.43
+Nodes (5): Toast, ToastApi, ToastContext, ToastTone, CONSOLE_FALLBACK
 
 ### Community 110 - "Q: Why does zod connect Authenticated Resource Routes to Node Package Overrides, Backend Request Schemas, Application Shell Components, Business Form Schemas?"
 Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: Why does zod connect Authenticated Resource Routes to Node Package Overrides, Backend Request Schemas, Application Shell Components, Business Form Schemas?, Source Nodes
 
 ### Community 111 - "test-client-siret.ts"
-Cohesion: 0.13
-Nodes (7): client, Session, client, Session, clientPatchSchema, clientSchema, clientUpdateSchema
+Cohesion: 0.12
+Nodes (8): client, Session, client, Session, input(), clientPatchSchema, clientSchema, clientUpdateSchema
+
+### Community 112 - "Audit des fichiers inutiles — 13 novembre 2026"
+Cohesion: 0.17
+Nodes (9): Audit des fichiers inutiles — 13 novembre 2026, Fichiers locaux hors Git, Fichiers sans usage interne retrouvé, Sauvegardes et artefacts à rationaliser, Vérifications, À conserver ou à confirmer, pickEnum(), createLineId() (+1 more)
 
 ### Community 114 - "settingsStore.ts"
-Cohesion: 0.10
-Nodes (34): rateLimit(), createSettingsRouter(), output(), testDatabase(), publicHttpsSettings(), validateCertificate(), current, effectiveDatabaseSettings() (+26 more)
+Cohesion: 0.09
+Nodes (32): ApiParametres, Session, createSettingsRouter(), output(), testDatabase(), publicHttpsSettings(), validateCertificate(), current (+24 more)
 
 ### Community 119 - "Drizzle Dependency Debugging"
 Cohesion: 0.50
@@ -604,21 +613,25 @@ Nodes (4): Drizzle Dependency Debug Log, drizzle-kit 0.18.1, Drizzle Kit Upgrade
 Cohesion: 0.50
 Nodes (4): HTML Screenshot Production Workflow, Social Image Platform Sizes, Safe Zones and Visual QA, Social Photos Design Guide
 
+### Community 121 - "client.ts"
+Cohesion: 0.43
+Nodes (5): drizzle-orm, databaseSettings, db, hasDatabaseConfig, pool
+
 ### Community 122 - "Extra Large Size Tokens"
 Cohesion: 0.67
 Nodes (4): xl, xl, $type, $value
 
 ### Community 123 - "auth.ts"
-Cohesion: 0.19
-Nodes (24): express, zod, UserRole, requireRole(), CAISSE_WRITE, createComplianceRouter(), SaleForFingerprint, crudRoutes() (+16 more)
+Cohesion: 0.23
+Nodes (18): express, zod, UserRole, requireRole(), createComplianceRouter(), crudRoutes(), Db, handler() (+10 more)
 
 ### Community 124 - "No Color Style Tokens"
 Cohesion: 0.67
 Nodes (4): $type, $value, none, none
 
 ### Community 125 - "verify-repositories.ts"
-Cohesion: 0.13
-Nodes (11): clients, commandes, leaked, livraisons, receptions, retours, users, vehicules (+3 more)
+Cohesion: 0.20
+Nodes (9): clients, commandes, leaked, livraisons, receptions, retours, users, vehicules (+1 more)
 
 ### Community 127 - "TypeScript Build Error Report"
 Cohesion: 0.67
@@ -641,16 +654,16 @@ Cohesion: 0.67
 Nodes (3): Focus States, Loading States, State Priority
 
 ### Community 134 - "auth.ts"
-Cohesion: 0.10
-Nodes (29): AUTH_COOKIE, authenticate(), AuthenticatedRequest, AuthError, hashPassword(), issueToken(), readToken(), requireAuth() (+21 more)
+Cohesion: 0.11
+Nodes (21): AUTH_COOKIE, authenticate(), AuthenticatedRequest, AuthError, hashPassword(), issueToken(), readToken(), requireAuth() (+13 more)
 
 ### Community 135 - "simpleRepositories.ts"
-Cohesion: 0.31
-Nodes (7): DATABASE_CONNECTION_ERROR_CODES, isDatabaseUnavailable(), toHttpError(), unwrap(), AnyIdColumn, AnyTable, Tables
+Cohesion: 0.16
+Nodes (13): errorHandler(), DATABASE_CONNECTION_ERROR_CODES, isDatabaseUnavailable(), toHttpError(), unwrap(), AnyIdColumn, AnyTable, Tables (+5 more)
 
 ### Community 136 - "test-stock-transfers.ts"
-Cohesion: 0.12
-Nodes (9): call(), Session, transfer(), ArticleInput, ArticleRepository, ArticleRow, ArticleRowPacket, mapRow() (+1 more)
+Cohesion: 0.21
+Nodes (6): ArticleInput, ArticleRepository, ArticleRow, ArticleRowPacket, mapRow(), toNumber()
 
 ### Community 137 - "read_rows"
 Cohesion: 0.13
@@ -661,44 +674,40 @@ Cohesion: 0.67
 Nodes (3): UI Styling Test Dependencies, UI Styling Script Requirements, UI Styling Test Requirements
 
 ### Community 157 - "ref_node_assert"
-Cohesion: 0.20
-Nodes (6): vite@^8.3.5, vite, checks, errors, output, scenarios
+Cohesion: 0.08
+Nodes (15): vite@^8.3.5, vite, databaseUnavailable, checks, errors, output, scenarios, checks (+7 more)
 
 ### Community 158 - "test-utilisateurs-ui.mjs"
-Cohesion: 0.20
-Nodes (5): checks, errors, output, email(), handleSubmit()
+Cohesion: 0.25
+Nodes (3): checks, errors, output
 
-### Community 159 - "test_design_system_mode.py"
-Cohesion: 0.11
-Nodes (8): _contrast_ratio(), _derive_dark_palette(), _palette_is_dark(), _relative_luminance(), _select_palette_for_mode(), TestEndToEndCoherence, TestLuminance, TestPaletteSelection
+### Community 159 - "_palette_is_dark"
+Cohesion: 0.18
+Nodes (4): _palette_is_dark(), _relative_luminance(), TestEndToEndCoherence, TestLuminance
 
 ### Community 161 - "test_data_contracts.py"
 Cohesion: 0.16
 Nodes (6): read_rows(), split_values(), style_identities(), TestGeneratedCatalogContract, TestLandingAndStackContract, TestStyleIdentityContract
 
-### Community 162 - "read_rows"
-Cohesion: 0.13
-Nodes (3): DesignSystemGenerator, TestReasoningMatch, TestReasoningContract
-
-### Community 165 - "test-clients-ui.mjs"
-Cohesion: 0.25
-Nodes (5): checks, errors, fields, initial, output
-
 ### Community 166 - "Inventaire physique par référence"
 Cohesion: 0.18
 Nodes (10): API, Concurrence et intégrité, Inventaire physique par référence, Migration et sauvegarde, Utilisation, Vérification reproductible, Stock by Location Design Specification, Authenticated Read-Only Locations API (+2 more)
+
+### Community 167 - "argparse"
+Cohesion: 0.15
+Nodes (5): format_brief(), format_results(), main(), format_output(), generate_design_brief()
 
 ### Community 168 - "Revue CSS — 4 novembre 2026"
 Cohesion: 0.15
 Nodes (11): Captures, Correction Échap dans l'aperçu intégré, Création et modification des clients — 6 novembre 2026, Numéro de client, SIRET des professionnels, Vérification, Captures, Graphify et points de suivi (+3 more)
 
 ### Community 169 - "FournisseursView.tsx"
-Cohesion: 0.10
-Nodes (22): buildItems(), ErrorItem, ErrorRecord, ErrorSummary(), ErrorSummaryProps, readMessage(), FormCheckbox(), loadTurnstile() (+14 more)
+Cohesion: 0.09
+Nodes (27): @hookform/resolvers, buildItems(), ErrorItem, ErrorRecord, ErrorSummary(), ErrorSummaryProps, readMessage(), FormCheckbox() (+19 more)
 
 ### Community 171 - "test_core.py"
-Cohesion: 0.08
-Nodes (6): format_markdown(), generate_design_system(), TestBm25CoreBehavior, TestDiagnosticsContracts, TestPersistence, TestTokenizer
+Cohesion: 0.11
+Nodes (3): TestBm25CoreBehavior, TestDiagnosticsContracts, TestTokenizer
 
 ### Community 175 - "ring"
 Cohesion: 0.67
@@ -721,9 +730,9 @@ Cohesion: 0.67
 Nodes (3): optionalRef(), requiredRef(), toNullableNumber()
 
 ## Knowledge Gaps
-- **101 isolated node(s):** `RFC-5321`, `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3`, `Banner Design Skill` (+96 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1292 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **45 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **101 isolated node(s):** `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3`, `RFC-5321`, `Banner Design Skill` (+96 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1294 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
@@ -738,17 +747,17 @@ Nodes (3): optionalRef(), requiredRef(), toNullableNumber()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ShadcnInstaller` connect `Shadcn Component Installer` to `Python Tooling Test Imports`?**
-  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `TailwindConfigGenerator` connect `TailwindConfigGenerator` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `Tailwind Generator Defaults`, `.generate_config_string`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Theme Validation`, `Tailwind Configuration Tests`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `RFC-5321`, `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice` to the rest of the system?**
+- **What connects `drizzle-kit 0.18.1`, `Drizzle Kit Upgrade Notice`, `drizzle-orm 0.45.3` to the rest of the system?**
   _101 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `scripts` connect `NPM Build And Database Scripts` to `package.json`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `zod` connect `auth.ts` to `test-inventaires.ts`, `auth.ts`, `dependencies`, `resourceRoutes.ts`, `Business Form Schemas`, `settingsStore.ts`, `main.tsx`, `package.json`, `App.tsx`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Should `scripts/core.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05563093622795115 - nodes in this community are weakly interconnected._
-- **Why does `TailwindConfigGenerator` connect `Tailwind Theme Validation` to `Tailwind Config Write Tests`, `Tailwind Color Configuration`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `.recommend_plugins`, `cip/generate.py`, `Tailwind Generator Defaults`, `.generate_config_string`, `Python Tooling Test Imports`, `Tailwind Font And Spacing Config`, `Tailwind Configuration Tests`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `contracts.ts`, `toErrorMessage`, `CatalogueView.tsx`, `dependencies`, `FournisseursView.tsx`, `useToast.ts`, `CaisseView.tsx`, `LivraisonsView.tsx`, `main.tsx`, `package.json`, `useAuth.ts`, `App.tsx`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._

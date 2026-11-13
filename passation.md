@@ -1,5 +1,40 @@
 # Passation — Autostrass App
 
+**13 novembre — audit des fichiers inutiles** : lecture de la passation,
+des consignes du dépôt, du rapport et du manifeste Graphify avant l'analyse.
+État initial propre sur `main`, tête `aec0e60`. Inventaire des fichiers suivis,
+recherche des références applicatives, doublons et artefacts en lecture seule ;
+aucune suppression demandée. Le graphe du 10 novembre a servi à l'orientation.
+Inventaire terminé : 805 fichiers suivis, 47 511 424 octets ; Graphify représente
+28 579 367 octets, dont sept sauvegardes datées (19 551 100 octets) et un cache.
+Les 182 empreintes de code (TS/TSX/JS/MJS/CJS/Python) du manifeste initial sont
+conformes, aucun fichier indexé manquant. Audits complémentaires répartis entre
+code, scripts/documents et assets/doublons, sans modification applicative.
+Résultats recoupés : neuf fichiers sans usage interne retrouvé (41 350 octets) :
+deux utilitaires TS, quatre assets, deux journaux et l'ancien journal Drizzle `.bak`.
+Les cinq captures `-PCDT67` (701 563 octets) reproduisent les originales du commit
+`f1d4b3a`, pas les captures actuelles ; ce sont des sauvegardes récupérables via Git.
+Les seeds, snapshots/migrations actifs et scripts de recette restent utiles.
+Résidu local `.ventes-review.local` : 149 486 120 octets, ignoré par Git ; aucun
+processus MariaDB et aucun processus Node pointant vers ce répertoire détecté.
+Aucun contenu sensible de ces données ni aucune base applicative consultés.
+Rapport rédigé : [fichiers-inutiles.md](specs/fichiers-inutiles.md), avec preuves,
+tailles, neuf candidats, sauvegardes/caches et fichiers à conserver. Six paires
+de références de prompts sont identiques mais leurs chemins sont utilisés ;
+mutualiser exige de corriger les liens. Aucun des fichiers candidats supprimé.
+`graphify update .` 0.9.108 a actualisé le graphe, le manifeste, le HTML, le
+rapport et la sauvegarde du 13 novembre : 2 925 nœuds uniques, 5 999 liens,
+172 communautés, aucun lien orphelin ; identifiants et extrémités HTML/JSON
+identiques. Les 182 empreintes de code (dont 140 TS/TSX/JS/MJS) sont conformes.
+Le CLI a automatiquement remplacé l'ancien cache AST 0.9.104 par celui de
+0.9.108 ; ces changements techniques accompagnent l'actualisation du graphe,
+pas une suppression des candidats. Compétence Claude locale actualisée par le
+CLI ; aucun renommage LLM ni extraction sémantique documentaire relancé.
+Limites CSS et 15 SQL sans parseur inchangées. Contrôles de références et
+SHA-256 réussis ; `git diff --check` conforme. Aucun test applicatif/SQL requis.
+Après fetch, `origin/main` était identique à la tête initiale. Livraison du
+rapport, de la passation et des artefacts Graphify par commit et push sur `main`.
+
 **10 novembre — modification des utilisateurs** : l'API PUT existante
 est reliée à une action Modifier par compte et au dialogue de création partagé.
 Nom, prénom, email, téléphone et rôle sont préremplis ; le nouveau mot de passe
