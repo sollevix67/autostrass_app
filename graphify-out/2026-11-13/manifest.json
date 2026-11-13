@@ -785,18 +785,6 @@
     "ast_hash": "f52833eb2dd834a0f50eabe162ae0425",
     "semantic_hash": ""
   },
-  "src/utils/coerce.ts": {
-    "mtime": 1792323841.0818121,
-    "seen": 1792931406.9711275,
-    "ast_hash": "30161756df17bad4d9b5bd0fd331bb3b",
-    "semantic_hash": ""
-  },
-  "src/utils/ids.ts": {
-    "mtime": 1792322753.8062744,
-    "seen": 1792931406.9711292,
-    "ast_hash": "ffd365ff4da2a11dcfd0025f107268df",
-    "semantic_hash": ""
-  },
   "src/views/CaisseView.tsx": {
     "mtime": 1794341202.7023232,
     "seen": 1794341802.9281518,
@@ -1361,12 +1349,6 @@
     "ast_hash": "d61d5142572eda45bcd4ac0bce99a6a8",
     "semantic_hash": ""
   },
-  "build_errors.txt": {
-    "mtime": 1791135453.0778637,
-    "seen": 1791573312.3212187,
-    "ast_hash": "ef5ec08f45030464a6944a924efe9a11",
-    "semantic_hash": "ef5ec08f45030464a6944a924efe9a11"
-  },
   "design-system/autostrass/MASTER.md": {
     "mtime": 1794341645.6076941,
     "seen": 1794341802.940672,
@@ -1380,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794343349.5725002,
-    "seen": 1794343380.597855,
-    "ast_hash": "eb26f99293b71931c09861dacf65dbf6",
+    "mtime": 1794602734.9046185,
+    "seen": 1794602742.2782965,
+    "ast_hash": "fde94904f55652a3e2e3576623f20601",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1396,30 +1378,6 @@
     "seen": 1791573312.3212225,
     "ast_hash": "7e840862161341271697daa99a40d76b",
     "semantic_hash": "7e840862161341271697daa99a40d76b"
-  },
-  "public/icons.svg": {
-    "mtime": 1789851433.0,
-    "seen": 1791573312.3212235,
-    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
-    "semantic_hash": "3b4fcfcf393eca4d264dca4a4663bc37"
-  },
-  "src/assets/hero.png": {
-    "mtime": 1789851433.0,
-    "seen": 1791573312.321224,
-    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
-    "semantic_hash": "aead493361b27e7510691c5d7072dfc1"
-  },
-  "src/assets/react.svg": {
-    "mtime": 1789851433.0,
-    "seen": 1791573312.3212247,
-    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
-    "semantic_hash": "f0402b67b6ce880f65666bb49e841696"
-  },
-  "src/assets/vite.svg": {
-    "mtime": 1789851433.0,
-    "seen": 1791573312.3212254,
-    "ast_hash": "9960a24288958394ac50e57ff638b036",
-    "semantic_hash": "9960a24288958394ac50e57ff638b036"
   },
   "scripts/migrate.ts": {
     "mtime": 1791576283.3018856,
@@ -1456,12 +1414,6 @@
     "seen": 1791623807.6533847,
     "ast_hash": "8240be541e1fa33ed5a1e6f3a6f56525",
     "semantic_hash": "8240be541e1fa33ed5a1e6f3a6f56525"
-  },
-  "generate-debug.txt": {
-    "mtime": 1791622335.0590222,
-    "seen": 1791623807.6534116,
-    "ast_hash": "f26537504e97ac7dc6c6e4f2222757ed",
-    "semantic_hash": "f26537504e97ac7dc6c6e4f2222757ed"
   },
   "graphify-out/memory/query_20261009_192139_177fea6f_why_does_zod_connect_api_authentication_middleware.md": {
     "mtime": 1791573699.4224782,
@@ -2829,6 +2781,12 @@
     "mtime": 1794343120.2498245,
     "seen": 1794343174.938676,
     "ast_hash": "801eec7448023854ecc67342eeeba8ab",
+    "semantic_hash": ""
+  },
+  "specs/fichiers-inutiles.md": {
+    "mtime": 1794602696.7702448,
+    "seen": 1794602742.2791872,
+    "ast_hash": "e45fa2f27f89335d23a8d6021f25573e",
     "semantic_hash": ""
   },
   "package-lock.json": {

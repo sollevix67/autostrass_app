@@ -54,15 +54,12 @@
   "104": "Tailwind Plugin Configuration",
   "107": "Application Architecture README",
   "118": "Security API Tests",
-  "119": "Drizzle Dependency Debugging",
   "120": "Social Image Design Guidance",
   "122": "Extra Large Size Tokens",
   "124": "No Color Style Tokens",
-  "127": "TypeScript Build Error Report",
   "130": "Slide Visualization Guidelines",
   "131": "UI Interaction State Tokens",
   "138": "UI Styling Dependencies",
-  "139": "Stable Line ID Generation",
   "140": "TypeScript Project References",
   "141": "Banner Design Guidelines",
   "142": "Documentation Authoring Guide",
@@ -74,10 +71,6 @@
   "148": "Type Safe API Design",
   "149": "UI Design System Guidance",
   "150": "Vite React HTML Entry",
-  "151": "Social Utility Icon Sprite",
   "152": "Apache License Terms",
-  "153": "Favicon SVG Asset",
-  "154": "Abstract Purple Hero Artwork",
-  "155": "React Logo SVG",
-  "156": "Vite Logo SVG"
+  "153": "Favicon SVG Asset"
 }

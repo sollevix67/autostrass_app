@@ -1,5 +1,43 @@
 # Passation — Autostrass App
 
+**13 novembre — archivage et suppression des neuf fichiers inutilisés** :
+demande utilisateur de sauvegarder les fichiers identifiés dans un ZIP puis de
+les supprimer. Périmètre : les neuf fichiers sans usage interne du rapport,
+41 350 octets ; les nettoyages conditionnels et les anciennes preuves restent
+distincts. Lecture préalable de la passation et de Graphify ; tête initiale
+`181c545`, arbre propre, 182 empreintes de code conformes. Préparation d'une
+archive versionnée avec chemins relatifs et manifeste SHA-256 ; vérification
+intégrale du ZIP avant suppression, puis build/lint et actualisation Graphify.
+Archive créée : [fichiers-inutilises-2026-11-13.zip](backups/nettoyage/fichiers-inutilises-2026-11-13.zip),
+23 660 octets, neuf fichiers sources et deux documents de manifeste/restauration.
+Vérification CRC, chemins relatifs, tailles, SHA-256 et égalité binaire avec les
+originaux réussie ; empreinte ZIP
+`989ebcb8182022a727f078d23c40a592fb7869adb1f8f63afaa191d3594a3065`.
+Contrôle indépendant : aucune référence applicative, import dynamique ou glob
+consommant les candidats ; suppression seulement après sauvegarde conforme.
+Contrôle indépendant du ZIP réussi : neuf sources, deux documents, CRC et
+empreintes conformes, chemins sûrs et contenus identiques aux fichiers présents.
+La commande groupée PowerShell avec cibles calculées a été refusée avant
+exécution par le contrôle automatique (`blocked by policy`) ; aucune suppression
+effectuée par cette tentative. Reprise par chemins littéraux explicites,
+sans suppression récursive, avec la même sauvegarde vérifiée.
+Les neuf suppressions ciblées ont réussi ; archive conservée. Compilation,
+lint et test de correspondance des erreurs SQL lancés après suppression ;
+rapport d'audit mis à jour pour relier la sauvegarde et distinguer l'état initial.
+Validation après suppression : `npm run build`, `npm run lint` et
+`npm run test:errors` réussis ; avertissements Vite (>500 kB) et fonction du
+vérificateur Figma inutilisée préexistants. Contrôle final de l'archive réussi,
+neuf chemins absents, aucun fichier applicatif restant modifié. Actualisation
+Graphify lancée pour retirer les sources supprimées du graphe courant.
+Graphify 0.9.108 actualisé et vérifié : 2 908 nœuds uniques, 5 987 liens,
+192 communautés, aucun lien orphelin, HTML/JSON cohérents ; 180 empreintes
+de code conformes (dont 138 TS/TSX/JS/MJS), aucune source manquante et aucun
+des neuf fichiers supprimés dans les sources du manifeste, des nœuds ou liens.
+Limites CSS, 15 SQL sans parseur et sémantique documentaire inchangées.
+`git diff --check` conforme ; après fetch, tête distante identique à `181c545`.
+Archive, suppressions, rapport, passation et Graphify livrés par commit et push
+sur `origin/main`. Aucun changement de schéma, droit ou donnée applicative.
+
 **13 novembre — audit des fichiers inutiles** : lecture de la passation,
 des consignes du dépôt, du rapport et du manifeste Graphify avant l'analyse.
 État initial propre sur `main`, tête `aec0e60`. Inventaire des fichiers suivis,

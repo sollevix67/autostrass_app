@@ -1,13 +1,36 @@
 # Audit des fichiers inutiles — 13 novembre 2026
 
-Analyse du dépôt à partir du commit `aec0e60` : **805 fichiers suivis par Git,
-47 511 424 octets**. Aucun fichier candidat supprimé ; aucun changement applicatif,
-aucune migration et aucune écriture en base.
+Analyse initiale du dépôt à partir du commit `aec0e60` : **805 fichiers suivis
+par Git, 47 511 424 octets**. Cette première intervention était documentaire.
+Le nettoyage ci-dessous a ensuite été demandé par l'utilisateur, sans migration
+ni écriture en base.
 
-## Fichiers sans usage interne retrouvé
+## Archivage et suppression
 
-Ces neuf fichiers sont les premiers candidats au nettoyage, avec une confiance
-élevée. Ils représentent **41 350 octets**. L'absence de référence interne ne
+Les neuf fichiers sans usage interne ont été sauvegardés puis supprimés le
+13 novembre 2026, à partir du commit `181c545`. Archive versionnée :
+[fichiers-inutilises-2026-11-13.zip](../backups/nettoyage/fichiers-inutilises-2026-11-13.zip),
+**23 660 octets**, contenant les neuf fichiers avec leurs chemins relatifs
+d'origine, `MANIFEST.json` et `RESTAURATION.md`.
+
+CRC, chemins sûrs, tailles et SHA-256 vérifiés deux fois indépendamment avant
+suppression ; chaque entrée reproduisait exactement le fichier original.
+SHA-256 du ZIP :
+`989ebcb8182022a727f078d23c40a592fb7869adb1f8f63afaa191d3594a3065`.
+Le guide inclus décrit la restauration. Les nettoyages conditionnels listés
+plus bas ne font pas partie de cette suppression.
+
+Validation du nettoyage : `npm run build`, `npm run lint` et `npm run test:errors`
+réussis ; seuls les avertissements préexistants de taille du bundle Vite et de
+fonction du vérificateur Figma inutilisée subsistent. Graphify actualisé :
+**2 908 nœuds, 5 987 liens, 192 communautés**, 180 empreintes de code conformes,
+aucune source manquante, aucun lien orphelin, HTML/JSON cohérents. Les sources
+supprimées ne figurent plus dans le manifeste ni dans les nœuds et liens.
+
+## Fichiers archivés puis supprimés
+
+Ces neuf fichiers étaient les premiers candidats au nettoyage, avec une confiance
+élevée. Ils représentaient **41 350 octets**. L'absence de référence interne ne
 permet pas de vérifier les éventuels consommateurs externes d'une URL publique.
 
 | Fichier | Octets | Preuve |
@@ -22,8 +45,8 @@ permet pas de vérifier les éventuels consommateurs externes d'une URL publique
 | `generate-debug.txt` | 149 | Ancien avertissement Drizzle Kit 0.18.1 ; la dépendance actuelle est 0.31.11. |
 | `database/drizzle/meta/_journal.json.bak` | 674 | Sauvegarde limitée à 0000–0003 ; le journal actif contient 0000–0010 et le migrateur lit uniquement `_journal.json`. |
 
-Les deux modules TS restent inclus dans la vérification TypeScript par `include:
-["src"]`, mais ne sont appelés par aucun module. Des fonctions exportées peuvent
+Avant suppression, les deux modules TS étaient inclus dans la vérification
+TypeScript par `include: ["src"]`, mais n'étaient appelés par aucun module. Des fonctions exportées peuvent
 passer `noUnusedLocals` même si leur fichier n'est jamais importé.
 
 ## Sauvegardes et artefacts à rationaliser
@@ -107,9 +130,10 @@ Graphify 0.9.108 a ensuite actualisé le diagramme : **2 925 nœuds, 5 999 liens
 172 communautés**, aucun identifiant en double ni lien orphelin, identifiants
 et extrémités des liens HTML/JSON identiques. Les 182 empreintes de code sont
 conformes. Son CLI a remplacé automatiquement le cache AST de l'ancienne version
-et créé une sauvegarde datée ; les fichiers candidats listés ci-dessus sont
-conservés. Les détails de l'actualisation et de la livraison figurent dans
+et créé une sauvegarde datée ; à la fin de l'audit initial, les candidats étaient
+encore présents. Ils sont maintenant conservés dans le ZIP. Les détails de l'actualisation et de la livraison figurent dans
 `passation.md`.
 
-Aucun test applicatif ou SQL requis pour cette intervention documentaire ; les
-vérifications portent sur les références, les artefacts et la cohérence Git.
+Aucun test applicatif ou SQL requis pour l'audit documentaire initial. Pour
+la suppression, compilation, lint et test de correspondance des erreurs SQL
+font partie des validations, avec contrôle de l'archive et de Graphify.
