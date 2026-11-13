@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794603241.761567,
-    "seen": 1794603245.892186,
-    "ast_hash": "5046afba2e07ed078eccb73ca1517f47",
+    "mtime": 1794604606.4311895,
+    "seen": 1794604610.5168169,
+    "ast_hash": "bda66ce59fb3a75e95adeb8cc5cb31d3",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2811,6 +2811,48 @@
     "mtime": 1794603062.4410837,
     "seen": 1794603137.1582427,
     "ast_hash": "ab29c11d26f29783010dcaeeb744793c",
+    "semantic_hash": ""
+  },
+  "scripts/review-accessibility-ui.mjs": {
+    "mtime": 1794604225.3851142,
+    "seen": 1794604476.8427699,
+    "ast_hash": "e1368f02fe6daa42552cb3290e962957",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/accessibility-review/verification.json": {
+    "mtime": 1794604419.256224,
+    "seen": 1794604476.8504198,
+    "ast_hash": "1f36574853c022ce13de25a4b066752b",
+    "semantic_hash": ""
+  },
+  "specs/accessibilite-wcag-review.md": {
+    "mtime": 1794604419.5537283,
+    "seen": 1794604476.873627,
+    "ast_hash": "16df4e411e3906e920bf467048111c57",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/accessibility-review/categories-erreur.png": {
+    "mtime": 1794603957.6008372,
+    "seen": 1794604476.8752587,
+    "ast_hash": "aa7012b9042b1019d76ac704ea3e1706",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/accessibility-review/inventaire-focus.png": {
+    "mtime": 1794603950.5595808,
+    "seen": 1794604476.8752604,
+    "ast_hash": "aac0ffd1280cb5bb38eab20123299fd6",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/accessibility-review/menu-mobile-focus.png": {
+    "mtime": 1794603960.5128245,
+    "seen": 1794604476.8752623,
+    "ast_hash": "8e003d94f75e08c1923fe104b9a391d8",
+    "semantic_hash": ""
+  },
+  "specs/screenshots/accessibility-review/stock-erreur-toast.png": {
+    "mtime": 1794603949.3151546,
+    "seen": 1794604476.8752632,
+    "ast_hash": "faf7fd826bb1d60630f4ac235e51799a",
     "semantic_hash": ""
   },
   "package-lock.json": {

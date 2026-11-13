@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794602798.1082919,
-    "seen": 1794602803.213126,
-    "ast_hash": "7cfa86a3e509a0505f95167ed144f107",
+    "mtime": 1794603241.761567,
+    "seen": 1794603245.892186,
+    "ast_hash": "5046afba2e07ed078eccb73ca1517f47",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2787,6 +2787,30 @@
     "mtime": 1794602798.1082919,
     "seen": 1794602803.2136245,
     "ast_hash": "ac354b4e0999a3d988ab3123bc5ad345",
+    "semantic_hash": ""
+  },
+  "skills-lock.json": {
+    "mtime": 1794603063.4969707,
+    "seen": 1794603137.1465898,
+    "ast_hash": "47b05dcb8ddead56acd25e03d8712d5c",
+    "semantic_hash": ""
+  },
+  ".agents/skills/accessibility/SKILL.md": {
+    "mtime": 1794603062.4410837,
+    "seen": 1794603137.1582391,
+    "ast_hash": "addbb771501bcb9cbf14af339ae529a3",
+    "semantic_hash": ""
+  },
+  ".agents/skills/accessibility/references/A11Y-PATTERNS.md": {
+    "mtime": 1794603062.4410837,
+    "seen": 1794603137.158241,
+    "ast_hash": "e7808c52467ae3a5a2a4a8eed2ba4dc9",
+    "semantic_hash": ""
+  },
+  ".agents/skills/accessibility/references/WCAG.md": {
+    "mtime": 1794603062.4410837,
+    "seen": 1794603137.1582427,
+    "ast_hash": "ab29c11d26f29783010dcaeeb744793c",
     "semantic_hash": ""
   },
   "package-lock.json": {

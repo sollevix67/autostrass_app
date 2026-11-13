@@ -1,5 +1,38 @@
 # Passation — Autostrass App
 
+**13 novembre — revue WCAG 2.2** : demande de revoir le code avec la
+nouvelle compétence `accessibility` 2.0. Lecture préalable de la passation,
+de Graphify et du skill/références ; tête initiale `852e5a2`, arbre propre,
+180 empreintes de code conformes. Revue des composants, navigation, formulaires
+et styles, avec contrôles de l'interface et vérification des constats avant
+rapport. Aucun changement métier ni écriture en base prévu pour cette revue.
+Revue répartie entre composants, navigation/styles et vues. Trois mécanismes
+confirmés indépendamment dans Chromium : tri `DataTable` inaccessible au clavier,
+résumé d'erreurs reprenant le focus à chaque rendu et notification extérieure
+ignorée par l'arbre d'accessibilité tant qu'un dialogue natif est ouvert.
+Recette du build courant lancée avec Chrome installé et axe-core 4.14.0,
+API entièrement simulée ; script reproductible `review-accessibility-ui.mjs`,
+axe local de recette hors Git. Les constats WCAG sont distingués des règles
+de bonne pratique et des limites de couverture après vérification des écrans.
+Recette terminée : 101 scans axe, 24 routes et 22 dialogues clair/sombre,
+quatre vues à 320 px, menu à 375 px et contrôles clavier/CDP. Sept constats
+rapportés (trois P1, quatre P2) ; aucune erreur JavaScript ni écriture simulée
+ou réelle. Les cinq premiers sélecteurs de recette ont été corrigés puis seuls
+ces scénarios repris ; aucune erreur applicative liée à ces reprises.
+Rapport : [accessibilite-wcag-review.md](specs/accessibilite-wcag-review.md),
+JSON synthétique et quatre captures dans `specs/screenshots/accessibility-review/`.
+Les résultats axe complets restent hors Git dans `.a11y-review.local/`.
+14 couples de tokens par thème conformes ; diagnostics `best-practice`
+distincts des constats WCAG, examens automatiques incomplets et absence de
+recette NVDA/zoom natif explicités. Script de revue vérifié par Node et lint,
+avertissement Figma préexistant. Aucun fichier applicatif corrigé pendant la revue.
+Preuves, absence d'écriture et périmètre de fichiers revérifiés ; Graphify
+actualisé : 3 003 nœuds uniques, 6 086 liens, 187 communautés, aucun lien
+orphelin, HTML/JSON cohérents et 181 empreintes de code conformes. Limites
+CSS/SQL et sémantique documentaire inchangées. `git diff --check` conforme ;
+tête distante identique à `852e5a2` après fetch. Rapport, script, captures,
+passation et Graphify livrés par commit et push sur `origin/main`.
+
 **13 novembre — installation de WCAG Accessibility** : demande
 utilisateur d'exécuter `npx skills add github.com/addyosmani/web-quality-skills
 --skill wcag-accessibility`, de vérifier la disponibilité puis d'attendre.

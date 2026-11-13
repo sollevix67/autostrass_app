@@ -1,0 +1,2541 @@
+{
+  "date": "2026-11-13",
+  "tool": "axe-core",
+  "axeVersion": "4.14.0",
+  "browser": "157.0.8103.51",
+  "api": "simulated",
+  "scans": [
+    {
+      "path": "/",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "empty-table-header"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Bonjour Camille ",
+      "horizontalOverflow": false,
+      "passedRules": 36
+    },
+    {
+      "path": "/",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "empty-table-header"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Bonjour Camille ",
+      "horizontalOverflow": false,
+      "passedRules": 36
+    },
+    {
+      "path": "/catalogue",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du catalogue",
+      "horizontalOverflow": false,
+      "passedRules": 39
+    },
+    {
+      "path": "/catalogue",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du catalogue",
+      "horizontalOverflow": false,
+      "passedRules": 39
+    },
+    {
+      "path": "/stock",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du stock",
+      "horizontalOverflow": false,
+      "passedRules": 43
+    },
+    {
+      "path": "/stock",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du stock",
+      "horizontalOverflow": false,
+      "passedRules": 43
+    },
+    {
+      "path": "/stock/inventaire",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Inventaire physique",
+      "horizontalOverflow": false,
+      "passedRules": 36
+    },
+    {
+      "path": "/stock/inventaire",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Inventaire physique",
+      "horizontalOverflow": false,
+      "passedRules": 36
+    },
+    {
+      "path": "/receptions",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Réceptions fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/receptions",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Réceptions fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/ventes-comptoir",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "empty-table-header"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Ventes au comptoir",
+      "horizontalOverflow": false,
+      "passedRules": 37
+    },
+    {
+      "path": "/ventes-comptoir",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "empty-table-header"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Ventes au comptoir",
+      "horizontalOverflow": false,
+      "passedRules": 37
+    },
+    {
+      "path": "/caisse",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion de caisse",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/caisse",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion de caisse",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/commandes-clients",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Commandes clients",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/commandes-clients",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Commandes clients",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/livraisons",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Suivi des livraisons",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/livraisons",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Suivi des livraisons",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/retours",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des retours",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/retours",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des retours",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/clients",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des clients",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/clients",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des clients",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/fournisseurs",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/fournisseurs",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/vehicules",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des vehicules",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/vehicules",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des vehicules",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/utilisateurs",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Utilisateurs et droits",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/utilisateurs",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Utilisateurs et droits",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/parametres",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Paramètres",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Paramètres",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres/base-de-donnees",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Base de données",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/base-de-donnees",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Base de données",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/limites-api",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Limites de requêtes API",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/limites-api",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Limites de requêtes API",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/connexion",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Tentatives de connexion",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/connexion",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Tentatives de connexion",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/caisse",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Caisse",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/caisse",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Caisse",
+      "horizontalOverflow": false,
+      "passedRules": 34
+    },
+    {
+      "path": "/parametres/emplacements",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Emplacements de stockage",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/parametres/emplacements",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Emplacements de stockage",
+      "horizontalOverflow": false,
+      "passedRules": 41
+    },
+    {
+      "path": "/parametres/secteurs",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Secteurs de livraison",
+      "horizontalOverflow": false,
+      "passedRules": 40
+    },
+    {
+      "path": "/parametres/secteurs",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Secteurs de livraison",
+      "horizontalOverflow": false,
+      "passedRules": 40
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 38
+    },
+    {
+      "path": "/parametres/https",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Certificats HTTPS",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres/https",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Certificats HTTPS",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres/turnstile",
+      "state": "page",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Cloudflare Turnstile",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres/turnstile",
+      "state": "page",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Cloudflare Turnstile",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/stock",
+      "state": "page",
+      "theme": "light",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Gestion du stock",
+      "horizontalOverflow": false,
+      "passedRules": 44
+    },
+    {
+      "path": "/clients",
+      "state": "page",
+      "theme": "light",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Gestion des clients",
+      "horizontalOverflow": false,
+      "passedRules": 39
+    },
+    {
+      "path": "/caisse",
+      "state": "page",
+      "theme": "light",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role"
+      ],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Gestion de caisse",
+      "horizontalOverflow": false,
+      "passedRules": 32
+    },
+    {
+      "path": "/parametres/emplacements",
+      "state": "page",
+      "theme": "light",
+      "width": 320,
+      "version": "4.14.0",
+      "violations": [
+        "aria-allowed-role",
+        "heading-order"
+      ],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Emplacements de stockage",
+      "horizontalOverflow": false,
+      "passedRules": 42
+    },
+    {
+      "path": "/",
+      "state": "login",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Connexion au depot",
+      "horizontalOverflow": false,
+      "passedRules": 35
+    },
+    {
+      "path": "/",
+      "state": "login",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Connexion au depot",
+      "horizontalOverflow": false,
+      "passedRules": 35
+    },
+    {
+      "path": "/",
+      "state": "login-errors",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [],
+      "title": "autostrass_app",
+      "h1": "Connexion au depot",
+      "horizontalOverflow": false,
+      "passedRules": 35
+    },
+    {
+      "path": "/vehicules",
+      "state": "dialog-vehicule",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des vehicules",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/vehicules",
+      "state": "dialog-vehicule",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des vehicules",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/utilisateurs",
+      "state": "dialog-utilisateur",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Utilisateurs et droits",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/utilisateurs",
+      "state": "dialog-utilisateur",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Utilisateurs et droits",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/commandes-clients",
+      "state": "dialog-commande",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Commandes clients",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/commandes-clients",
+      "state": "dialog-commande",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Commandes clients",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/commandes-clients",
+      "state": "dialog-order-errors",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Commandes clients",
+      "horizontalOverflow": false,
+      "passedRules": 25
+    },
+    {
+      "path": "/livraisons",
+      "state": "dialog-livraison",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Suivi des livraisons",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/livraisons",
+      "state": "dialog-livraison",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Suivi des livraisons",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/retours",
+      "state": "dialog-retour",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des retours",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/retours",
+      "state": "dialog-retour",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des retours",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/ventes-comptoir",
+      "state": "dialog-vente",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Ventes au comptoir",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/ventes-comptoir",
+      "state": "dialog-vente",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Ventes au comptoir",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/caisse",
+      "state": "dialog-caisse",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion de caisse",
+      "horizontalOverflow": false,
+      "passedRules": 25
+    },
+    {
+      "path": "/caisse",
+      "state": "dialog-caisse",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion de caisse",
+      "horizontalOverflow": false,
+      "passedRules": 25
+    },
+    {
+      "path": "/stock",
+      "state": "dialog-stock",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du stock",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/stock",
+      "state": "dialog-stock",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du stock",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/stock/inventaire",
+      "state": "dialog-inventaire",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Inventaire physique",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/stock/inventaire",
+      "state": "dialog-inventaire",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Inventaire physique",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/stock/inventaire",
+      "state": "dialog-inventory-errors",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Inventaire physique",
+      "horizontalOverflow": false,
+      "passedRules": 29
+    },
+    {
+      "path": "/parametres/base-de-donnees",
+      "state": "dialog-database",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Base de données",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/base-de-donnees",
+      "state": "dialog-database",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Base de données",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/limites-api",
+      "state": "dialog-api",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Limites de requêtes API",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/limites-api",
+      "state": "dialog-api",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Limites de requêtes API",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/connexion",
+      "state": "dialog-connexion",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Tentatives de connexion",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/connexion",
+      "state": "dialog-connexion",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Tentatives de connexion",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/caisse",
+      "state": "dialog-plafond",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Caisse",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/caisse",
+      "state": "dialog-plafond",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Caisse",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/https",
+      "state": "dialog-https",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Certificats HTTPS",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/parametres/https",
+      "state": "dialog-https",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Certificats HTTPS",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/parametres/turnstile",
+      "state": "dialog-turnstile",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Cloudflare Turnstile",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/turnstile",
+      "state": "dialog-turnstile",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Cloudflare Turnstile",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "dialog-categories",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "dialog-categories",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "dialog-sous-categories",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/parametres/categories",
+      "state": "dialog-sous-categories",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role"
+      ],
+      "title": "autostrass_app",
+      "h1": "Catégories d’articles",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/parametres/secteurs",
+      "state": "dialog-secteurs",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Secteurs de livraison",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/parametres/secteurs",
+      "state": "dialog-secteurs",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Secteurs de livraison",
+      "horizontalOverflow": false,
+      "passedRules": 21
+    },
+    {
+      "path": "/clients",
+      "state": "dialog-client",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des clients",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/clients",
+      "state": "dialog-client",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des clients",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/fournisseurs",
+      "state": "dialog-fournisseur",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/fournisseurs",
+      "state": "dialog-fournisseur",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion des fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/catalogue",
+      "state": "dialog-catalogue",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du catalogue",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/catalogue",
+      "state": "dialog-catalogue",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Gestion du catalogue",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/receptions",
+      "state": "dialog-reception",
+      "theme": "light",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Réceptions fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    },
+    {
+      "path": "/receptions",
+      "state": "dialog-reception",
+      "theme": "dark",
+      "width": 1440,
+      "version": "4.14.0",
+      "violations": [],
+      "incomplete": [
+        "aria-allowed-role",
+        "color-contrast"
+      ],
+      "title": "autostrass_app",
+      "h1": "Réceptions fournisseurs",
+      "horizontalOverflow": false,
+      "passedRules": 22
+    }
+  ],
+  "manual": {
+    "loginValidation": {
+      "inlineErrors": 2,
+      "summaryVisible": false,
+      "focused": "<button type=\"submit\" class=\"primary-button login-submit\">Se connecter</button>"
+    },
+    "orderErrors": [],
+    "modalToast": {
+      "dom": "La quantité et le seuil doivent être des entiers positifs ou nuls.",
+      "modalOpen": true,
+      "accessibility": [
+        {
+          "role": {
+            "type": "role",
+            "value": "none"
+          },
+          "ignored": true,
+          "ignoredReasons": [
+            {
+              "name": "activeModalDialog",
+              "value": {
+                "type": "idref",
+                "relatedNodes": [
+                  {
+                    "backendDOMNodeId": 293
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "role": {
+            "type": "role",
+            "value": "none"
+          },
+          "ignored": true,
+          "ignoredReasons": [
+            {
+              "name": "activeModalDialog",
+              "value": {
+                "type": "idref",
+                "relatedNodes": [
+                  {
+                    "backendDOMNodeId": 293
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "role": {
+            "type": "internalRole",
+            "value": "RootWebArea"
+          },
+          "name": {
+            "type": "computedString",
+            "value": "autostrass_app",
+            "sources": [
+              {
+                "type": "relatedElement",
+                "attribute": "aria-labelledby"
+              },
+              {
+                "type": "attribute",
+                "attribute": "aria-label"
+              },
+              {
+                "type": "attribute",
+                "attribute": "aria-label",
+                "superseded": true
+              },
+              {
+                "type": "relatedElement",
+                "value": {
+                  "type": "computedString",
+                  "value": "autostrass_app"
+                },
+                "nativeSource": "title"
+              }
+            ]
+          },
+          "ignored": false
+        }
+      ],
+      "dialogText": "Modifier DLG-1QuantiteSeuil minimumEnregistrerAnnuler"
+    },
+    "inventoryFocus": {
+      "attempted": "10",
+      "value": "1",
+      "activeId": "",
+      "activeClass": "error-summary",
+      "errorLinks": [
+        {
+          "text": "Motif : Le motif du comptage est obligatoire.",
+          "href": "#motif",
+          "targetExists": true
+        },
+        {
+          "text": "Stock non affecté : Saisissez une quantité.",
+          "href": "#count-0",
+          "targetExists": true
+        }
+      ]
+    },
+    "categoryValidation": {
+      "alert": "Trop grand : chaîne de caractères doit avoir <=64 caractères",
+      "fields": [
+        {
+          "id": "categories-code",
+          "invalid": null,
+          "describedBy": "_r_6_-hint",
+          "maxLength": -1
+        },
+        {
+          "id": "categories-libelle",
+          "invalid": null,
+          "describedBy": null,
+          "maxLength": -1
+        },
+        {
+          "id": "",
+          "invalid": null,
+          "describedBy": null,
+          "maxLength": -1
+        }
+      ]
+    },
+    "mobileMenu": {
+      "active": "<button class=\"mobile-menu\" aria-label=\"Ouvrir le menu\" aria-controls=\"main-navigation\" aria-expanded=\"true\"><svg class=\"icon\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" role=\"presentation\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 7h16M4 12h16M4 17h16\"></path></svg></button>",
+      "focusedRect": {
+        "x": 12,
+        "y": 14.5,
+        "width": 34,
+        "height": 34
+      },
+      "topElement": "<span class=\"brand-mark\">A</span>",
+      "coveredAtCenter": true,
+      "navOpen": true,
+      "afterTab": {
+        "active": "<button class=\"icon-button notification\" aria-label=\"Notifications\"><svg class=\"icon\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" role=\"presentation\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 3a5 5 0 0 0-5 5v3.5L5.5 15h13L17 11.5V8a5 5 0 0 0-5-5zM10 18a2 2 0 0 0 4 0\"></path></svg><i></i></button>",
+        "insideNavigation": false
+      },
+      "afterEscape": {
+        "restored": true,
+        "expanded": "false"
+      }
+    },
+    "tableSort": [
+      {
+        "text": "N°",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      },
+      {
+        "text": "NOM",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "ascending",
+        "nativeControl": false
+      },
+      {
+        "text": "TELEPHONE",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      },
+      {
+        "text": "EMAIL",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      },
+      {
+        "text": "VILLE",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      },
+      {
+        "text": "TYPE",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      },
+      {
+        "text": "SIRET",
+        "tabIndex": -1,
+        "role": null,
+        "sort": "none",
+        "nativeControl": false
+      }
+    ],
+    "tableMouseSort": {
+      "before": "none",
+      "after": "ascending"
+    },
+    "tableTabStops": [
+      {
+        "tag": "BUTTON",
+        "text": "Modifier",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "← Retour au dashboard",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BODY",
+        "text": "AAUTOSTRASSDepot principalOuvert aujourd hui⌄ESPACE DE TRAVAILVue d’ensembleCatalogueStock",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Vue d’ensemble",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Catalogue",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Stock12",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Receptions",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Ventes comptoir",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Caisse",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Commandes clients",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Livraisons",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Retours",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Clients",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Fournisseurs",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Vehicules",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Utilisateurs & droits",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Paramètres",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Actualiser",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Actualiser",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Nouveau client",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Modifier",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "← Retour au dashboard",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "BODY",
+        "text": "AAUTOSTRASSDepot principalOuvert aujourd hui⌄ESPACE DE TRAVAILVue d’ensembleCatalogueStock",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Vue d’ensemble",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Catalogue",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Stock12",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Receptions",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Ventes comptoir",
+        "inSortableHeader": false
+      },
+      {
+        "tag": "A",
+        "text": "Caisse",
+        "inSortableHeader": false
+      }
+    ],
+    "forcedColors": {
+      "active": true,
+      "controls": [
+        {
+          "text": "",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)",
+          "border": "rgb(0, 0, 0)"
+        },
+        {
+          "text": "",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)",
+          "border": "rgb(0, 0, 0)"
+        },
+        {
+          "text": "",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)",
+          "border": "rgb(0, 0, 0)"
+        },
+        {
+          "text": "",
+          "color": "rgb(0, 0, 0)",
+          "background": "rgba(255, 255, 255, 0)",
+          "border": "rgb(0, 0, 0)"
+        }
+      ]
+    },
+    "selfEditPurpose": [
+      {
+        "name": "nom",
+        "type": "text",
+        "autoComplete": null,
+        "value": "Test"
+      },
+      {
+        "name": "prenom",
+        "type": "text",
+        "autoComplete": null,
+        "value": "Camille"
+      },
+      {
+        "name": "email",
+        "type": "email",
+        "autoComplete": null,
+        "value": "camille@example.test"
+      },
+      {
+        "name": "telephone",
+        "type": "tel",
+        "autoComplete": null,
+        "value": ""
+      },
+      {
+        "name": "motDePasse",
+        "type": "password",
+        "autoComplete": null,
+        "value": ""
+      }
+    ],
+    "tokenContrast": {
+      "light": [
+        {
+          "foreground": "text-strong",
+          "background": "color-surface",
+          "foregroundHex": "#172b4d",
+          "backgroundHex": "#ffffff",
+          "ratio": 14.102,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-body",
+          "background": "color-surface",
+          "foregroundHex": "#334155",
+          "backgroundHex": "#ffffff",
+          "ratio": 10.355,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-muted",
+          "background": "color-surface",
+          "foregroundHex": "#526277",
+          "backgroundHex": "#ffffff",
+          "ratio": 6.227,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-faint",
+          "background": "color-surface",
+          "foregroundHex": "#5c6a7d",
+          "backgroundHex": "#ffffff",
+          "ratio": 5.508,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-on-primary",
+          "background": "color-primary",
+          "foregroundHex": "#ffffff",
+          "backgroundHex": "#1e40af",
+          "ratio": 8.722,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-on-accent",
+          "background": "color-accent",
+          "foregroundHex": "#231700",
+          "backgroundHex": "#d97706",
+          "ratio": 5.521,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-sidebar-text",
+          "background": "color-sidebar",
+          "foregroundHex": "#cfdaec",
+          "backgroundHex": "#12264b",
+          "ratio": 10.603,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-sidebar-muted",
+          "background": "color-sidebar",
+          "foregroundHex": "#a7bad8",
+          "backgroundHex": "#12264b",
+          "ratio": 7.588,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-success",
+          "background": "status-success-bg",
+          "foregroundHex": "#166534",
+          "backgroundHex": "#ecf8f0",
+          "ratio": 6.537,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-warning",
+          "background": "status-warning-bg",
+          "foregroundHex": "#92400e",
+          "backgroundHex": "#fff4dc",
+          "ratio": 6.491,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-info",
+          "background": "status-info-bg",
+          "foregroundHex": "#1e40af",
+          "backgroundHex": "#edf3ff",
+          "ratio": 7.836,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-danger",
+          "background": "status-danger-bg",
+          "foregroundHex": "#b91c1c",
+          "backgroundHex": "#fff1f2",
+          "ratio": 5.89,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-border-strong",
+          "background": "color-surface",
+          "foregroundHex": "#8190a5",
+          "backgroundHex": "#ffffff",
+          "ratio": 3.248,
+          "minimum": 3
+        },
+        {
+          "foreground": "color-ring",
+          "background": "color-surface",
+          "foregroundHex": "#1e40af",
+          "backgroundHex": "#ffffff",
+          "ratio": 8.722,
+          "minimum": 3
+        }
+      ],
+      "dark": [
+        {
+          "foreground": "text-strong",
+          "background": "color-surface",
+          "foregroundHex": "#f0f5ff",
+          "backgroundHex": "#162338",
+          "ratio": 14.426,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-body",
+          "background": "color-surface",
+          "foregroundHex": "#d7e2f3",
+          "backgroundHex": "#162338",
+          "ratio": 12.062,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-muted",
+          "background": "color-surface",
+          "foregroundHex": "#b1c1d8",
+          "backgroundHex": "#162338",
+          "ratio": 8.628,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "text-faint",
+          "background": "color-surface",
+          "foregroundHex": "#a5b8d1",
+          "backgroundHex": "#162338",
+          "ratio": 7.793,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-on-primary",
+          "background": "color-primary",
+          "foregroundHex": "#12264b",
+          "backgroundHex": "#a9c3ff",
+          "ratio": 8.499,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-on-accent",
+          "background": "color-accent",
+          "foregroundHex": "#231700",
+          "backgroundHex": "#fbbf24",
+          "ratio": 10.536,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-sidebar-text",
+          "background": "color-sidebar",
+          "foregroundHex": "#cfdaec",
+          "backgroundHex": "#0a1426",
+          "ratio": 13.053,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-sidebar-muted",
+          "background": "color-sidebar",
+          "foregroundHex": "#a7bad8",
+          "backgroundHex": "#0a1426",
+          "ratio": 9.341,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-success",
+          "background": "status-success-bg",
+          "foregroundHex": "#86efac",
+          "backgroundHex": "#183b2e",
+          "ratio": 8.778,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-warning",
+          "background": "status-warning-bg",
+          "foregroundHex": "#fcd68c",
+          "backgroundHex": "#3f301a",
+          "ratio": 9.179,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-info",
+          "background": "status-info-bg",
+          "foregroundHex": "#a9c3ff",
+          "backgroundHex": "#223659",
+          "ratio": 6.861,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "status-danger",
+          "background": "status-danger-bg",
+          "foregroundHex": "#fda4af",
+          "backgroundHex": "#442632",
+          "ratio": 7.078,
+          "minimum": 4.5
+        },
+        {
+          "foreground": "color-border-strong",
+          "background": "color-surface",
+          "foregroundHex": "#758aa8",
+          "backgroundHex": "#162338",
+          "ratio": 4.474,
+          "minimum": 3
+        },
+        {
+          "foreground": "color-ring",
+          "background": "color-surface",
+          "foregroundHex": "#a9c3ff",
+          "backgroundHex": "#162338",
+          "ratio": 8.964,
+          "minimum": 3
+        }
+      ]
+    }
+  },
+  "javascriptErrors": [],
+  "writes": [],
+  "sourceCommit": "852e5a29fba7aedc5cb7e457fde28af2f6d668f9",
+  "rawResultsPath": ".a11y-review.local/raw-results.json",
+  "rules": {
+    "aria-allowed-role": {
+      "impact": "minor",
+      "help": "ARIA role should be appropriate for the element",
+      "tags": [
+        "cat.aria",
+        "best-practice"
+      ],
+      "examples": [
+        {
+          "target": [
+            "footer"
+          ],
+          "html": "<footer class=\"app-footer\" role=\"status\" aria-live=\"polite\">",
+          "failureSummary": "Fix any of the following:\n  ARIA role status is not allowed for given element",
+          "checks": [
+            {
+              "id": "aria-allowed-role",
+              "data": [
+                "status"
+              ],
+              "message": "ARIA role status is not allowed for given element"
+            }
+          ]
+        }
+      ]
+    },
+    "empty-table-header": {
+      "impact": "minor",
+      "help": "Table header text should not be empty",
+      "tags": [
+        "cat.name-role-value",
+        "best-practice"
+      ],
+      "examples": [
+        {
+          "target": [
+            "th:nth-child(5)"
+          ],
+          "html": "<th></th>",
+          "failureSummary": "Fix any of the following:\n  Element does not have text that is visible to screen readers",
+          "checks": []
+        },
+        {
+          "target": [
+            ".align-center"
+          ],
+          "html": "<th class=\"align-center\" scope=\"col\"></th>",
+          "failureSummary": "Fix any of the following:\n  Element does not have text that is visible to screen readers",
+          "checks": []
+        }
+      ]
+    },
+    "color-contrast": {
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT",
+        "RGAAv4",
+        "RGAA-3.2.1"
+      ],
+      "examples": [
+        {
+          "target": [
+            ".chevron"
+          ],
+          "html": "<span class=\"chevron\">⌄</span>",
+          "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "messageKey": "nonBmp"
+              },
+              "message": "Element content contains only non-text characters"
+            }
+          ]
+        },
+        {
+          "target": [
+            ".text-button > span"
+          ],
+          "html": "<span>→</span>",
+          "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "messageKey": "nonBmp"
+              },
+              "message": "Element content contains only non-text characters"
+            }
+          ]
+        },
+        {
+          "target": [
+            ".blue"
+          ],
+          "html": "<span class=\"quick-icon blue\">↓</span>",
+          "failureSummary": "Fix any of the following:\n  Element content contains only non-text characters",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "messageKey": "nonBmp"
+              },
+              "message": "Element content contains only non-text characters"
+            }
+          ]
+        },
+        {
+          "target": [
+            "#_r_0_-title"
+          ],
+          "html": "<h2 id=\"_r_0_-title\">Nouveau vehicule</h2>",
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "15.0pt (20px)",
+                "fontWeight": "normal",
+                "messageKey": "bgOverlap",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "message": "Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        },
+        {
+          "target": [
+            "label[for=\"immatriculation\"]"
+          ],
+          "html": "<label for=\"immatriculation\">Immatriculation<span class=\"required\">*</span></label>",
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "9.0pt (12px)",
+                "fontWeight": "normal",
+                "messageKey": "bgOverlap",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "message": "Element's background color could not be determined because it is overlapped by another element"
+            }
+          ]
+        },
+        {
+          "target": [
+            "#immatriculation"
+          ],
+          "html": "<input id=\"immatriculation\" placeholder=\"AB-123-CD\" required=\"\" type=\"text\" name=\"immatriculation\">",
+          "failureSummary": "Fix any of the following:\n  Element has no value; test color contrast with a value entered",
+          "checks": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "contrastRatio": 0,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "normal",
+                "messageKey": "emptyValue",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "message": "Element has no value; test color contrast with a value entered"
+            }
+          ]
+        }
+      ]
+    },
+    "heading-order": {
+      "impact": "moderate",
+      "help": "Heading levels should only increase by one",
+      "tags": [
+        "cat.semantics",
+        "best-practice"
+      ],
+      "examples": [
+        {
+          "target": [
+            "section:nth-child(1) > .panel-header > h3"
+          ],
+          "html": "<h3>Articles en stock</h3>",
+          "failureSummary": "Fix any of the following:\n  Heading order invalid",
+          "checks": []
+        },
+        {
+          "target": [
+            "h3"
+          ],
+          "html": "<h3>Emplacements</h3>",
+          "failureSummary": "Fix any of the following:\n  Heading order invalid",
+          "checks": []
+        }
+      ]
+    }
+  }
+}
