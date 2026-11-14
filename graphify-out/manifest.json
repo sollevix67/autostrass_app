@@ -174,16 +174,16 @@
     "semantic_hash": "f5d99288827b293f4b6fdb86b8b56229"
   },
   ".github/prompts/ui-ux-pro-max/data/catalog-summary.json": {
-    "mtime": 1790366324.1874335,
-    "seen": 1791062054.8103058,
-    "ast_hash": "7e5ed9c8eb4042461e482907bb260618",
-    "semantic_hash": "7e5ed9c8eb4042461e482907bb260618"
+    "mtime": 1794653615.057014,
+    "seen": 1794653720.7757397,
+    "ast_hash": "91e54ebf613dfd15683009cde2e64cd5",
+    "semantic_hash": ""
   },
   ".github/prompts/ui-ux-pro-max/data/data-provenance.json": {
-    "mtime": 1790366324.1954653,
-    "seen": 1791062054.810307,
-    "ast_hash": "4f0fbe5f16c919f87170d6f493fad5e3",
-    "semantic_hash": "4f0fbe5f16c919f87170d6f493fad5e3"
+    "mtime": 1794653615.0575142,
+    "seen": 1794653720.775744,
+    "ast_hash": "7f78da3413d22df39f2e67ec985d3b05",
+    "semantic_hash": ""
   },
   ".github/prompts/ui-ux-pro-max/data/google-font-licenses.json": {
     "mtime": 1790366324.2056344,
@@ -192,10 +192,10 @@
     "semantic_hash": "c6f70c775c4b6ac26441cf1b0022ad71"
   },
   ".github/prompts/ui-ux-pro-max/data/phosphor-icons-upstream.json": {
-    "mtime": 1790366324.2145717,
-    "seen": 1791062054.8103094,
-    "ast_hash": "933217ce321daf2458d12c41e5f19cb1",
-    "semantic_hash": "933217ce321daf2458d12c41e5f19cb1"
+    "mtime": 1794653615.050006,
+    "seen": 1794653720.7759542,
+    "ast_hash": "6c288c6b65d10f280a30854b23a2a047",
+    "semantic_hash": ""
   },
   ".github/prompts/ui-ux-pro-max/scripts/core.py": {
     "mtime": 1790366324.283938,
@@ -246,10 +246,10 @@
     "semantic_hash": "b690ec6f034bddc7902730d4cdeae73f"
   },
   ".github/prompts/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-core.json": {
-    "mtime": 1790366324.2120695,
-    "seen": 1791062054.8103201,
-    "ast_hash": "75b4d81152b32684a434ffd102341583",
-    "semantic_hash": "75b4d81152b32684a434ffd102341583"
+    "mtime": 1794653403.5746238,
+    "seen": 1794653720.7776918,
+    "ast_hash": "2ce4d4edbe1c93cc4b1074c2a34118c5",
+    "semantic_hash": ""
   },
   ".github/prompts/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-package.json": {
     "mtime": 1790366324.215577,
@@ -984,10 +984,10 @@
     "semantic_hash": "8cedb5a9d3ddff0d5f7d98affd1fadfc"
   },
   ".github/prompts/brand/references/asset-organization.md": {
-    "mtime": 1790366324.2281342,
-    "seen": 1791573312.3211517,
-    "ast_hash": "8c359aaccb0d5f5a9c0daed9128fd9e9",
-    "semantic_hash": "8c359aaccb0d5f5a9c0daed9128fd9e9"
+    "mtime": 1794653159.6592944,
+    "seen": 1794653720.8161802,
+    "ast_hash": "a79ddc91293912cf65f522ed0b445e94",
+    "semantic_hash": ""
   },
   ".github/prompts/brand/references/brand-guideline-template.md": {
     "mtime": 1790366324.2314873,
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794650190.4791882,
-    "seen": 1794650196.3342662,
-    "ast_hash": "a2153fb19cca49cbce785223d73cad83",
+    "mtime": 1794653996.2707205,
+    "seen": 1794654033.1104147,
+    "ast_hash": "df435cbaed2075cc77eadaa31772b5bd",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2297,36 +2297,6 @@
     "ast_hash": "32421d9675fa1d0c18304ecdedae9122",
     "semantic_hash": ""
   },
-  "design-system/autostrass/figma-library-discovery.md": {
-    "mtime": 1794650013.9984672,
-    "seen": 1794650019.4429004,
-    "ast_hash": "1d52539df14f50eb54e8b5255c4c50ec",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-discovery.json": {
-    "mtime": 1794134716.8519218,
-    "seen": 1794134747.9277787,
-    "ast_hash": "b292db6deb9fa2f28e2086bc794ccb95",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-foundation-plan.json": {
-    "mtime": 1794136170.0743856,
-    "seen": 1794136881.936979,
-    "ast_hash": "c23488f89878fa470cc181612fb6e9c7",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-library-state.json": {
-    "mtime": 1794650190.4776871,
-    "seen": 1794650196.2995021,
-    "ast_hash": "8338d9f9d5b9440b2d7b1129e0495f4d",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-scripts/check-foundations.js": {
-    "mtime": 1794136453.0999036,
-    "seen": 1794136881.9369826,
-    "ast_hash": "569accb43f54ca59ab28cbd93244cf79",
-    "semantic_hash": ""
-  },
   "scripts/test-caisse-ui.mjs": {
     "mtime": 1794340949.6398733,
     "seen": 1794341802.9147604,
@@ -2784,9 +2754,9 @@
     "semantic_hash": ""
   },
   "specs/fichiers-inutiles.md": {
-    "mtime": 1794602798.1082919,
-    "seen": 1794602803.2136245,
-    "ast_hash": "ac354b4e0999a3d988ab3123bc5ad345",
+    "mtime": 1794653159.6567948,
+    "seen": 1794653720.831537,
+    "ast_hash": "db6b062db75ffe93cc35faac4864f3bb",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -2826,9 +2796,9 @@
     "semantic_hash": ""
   },
   "specs/accessibilite-wcag-review.md": {
-    "mtime": 1794604419.5537283,
-    "seen": 1794604476.873627,
-    "ast_hash": "16df4e411e3906e920bf467048111c57",
+    "mtime": 1794653159.6577928,
+    "seen": 1794653720.8308299,
+    "ast_hash": "5fab0afdce401c2b44f469e27dbde840",
     "semantic_hash": ""
   },
   "specs/screenshots/accessibility-review/categories-erreur.png": {
@@ -2856,9 +2826,9 @@
     "semantic_hash": ""
   },
   "specs/tokeneconomizer-analyse.md": {
-    "mtime": 1794644350.3878198,
-    "seen": 1794644356.2932298,
-    "ast_hash": "fb3108108a0d8312f1d1b7f53b881485",
+    "mtime": 1794653159.6582942,
+    "seen": 1794653720.8326566,
+    "ast_hash": "7ced5807de0218332a061fe980f88acd",
     "semantic_hash": ""
   },
   "specs/tokeneconomizer-validation.json": {
@@ -2877,18 +2847,6 @@
     "mtime": 1794644350.3863182,
     "seen": 1794644356.2932324,
     "ast_hash": "3a19f1babd7c9b82807526eec5ab27b6",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-foundation-validation-2026-11-14.json": {
-    "mtime": 1794649747.2895353,
-    "seen": 1794650019.4114645,
-    "ast_hash": "edf9fcd454f12a577c3ac820427106ed",
-    "semantic_hash": ""
-  },
-  "design-system/autostrass/figma-phase2-attempt-2026-11-14.json": {
-    "mtime": 1794650191.9072514,
-    "seen": 1794650196.2995055,
-    "ast_hash": "3101ac4abbd8a8b8b4f11cb46d8469e6",
     "semantic_hash": ""
   },
   "package-lock.json": {

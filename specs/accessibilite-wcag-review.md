@@ -176,8 +176,7 @@ assimilées à une absence totale d'identification des erreurs.
 - Aucune erreur JavaScript, aucun débordement global dans les quatre vues à
   320 px et **aucune écriture**, même simulée. Toutes les routes `/api` sont
   interceptées ; aucun serveur API ni accès MariaDB n'a été utilisé.
-- `node --check` et lint conformes ; avertissement préexistant du vérificateur
-  Figma inutilisé. Le code applicatif n'a pas été modifié.
+- `node --check` et lint conformes. Le code applicatif n'a pas été modifié.
 
 Axe ne signale aucun échec étiqueté WCAG dans ces états, alors que les parcours
 manuels révèlent les problèmes ci-dessus. Ses résultats incomplets comprennent

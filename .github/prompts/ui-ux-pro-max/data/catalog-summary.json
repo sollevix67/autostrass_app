@@ -15,7 +15,7 @@
     "fontPairings": 74,
     "googleFonts": 1934,
     "curatedIcons": 105,
-    "upstreamPhosphorIcons": 1512,
+    "upstreamPhosphorIcons": 1511,
     "uxGuidelines": 119,
     "motionPresets": 17,
     "chartTypes": 25,
@@ -33,7 +33,7 @@
       "sha256": "50816c6012030178195a16ee481ebf58b47bd985d70e8ec58886cc83f6eddafc"
     },
     "phosphor-icons-upstream.json": {
-      "sha256": "2399325233b277b5c97a80e6a5e8941154f5d057beee4e7613db87c87d700236"
+      "sha256": "93dd44e79e67dad893dcefce1aef93422dc9689529cb5c721e06c6637eac7956"
     }
   },
   "promotionPolicy": {

@@ -107,8 +107,7 @@ Sources : [README, résultats](https://github.com/microsoft/TokenEconomizer/blob
 ## Compatibilité et limites utiles à Autostrass
 
 **Codex ne retire que trois groupes de capacités** : collaboration, goals et
-image_media. Le code live n'offre pas le retrait des MCP ou des skills. Le plugin
-ne supprimera donc pas les définitions Figma pour économiser leur coût dans Codex.
+image_media. Le code live n'offre pas le retrait des MCP ou des skills.
 Avec Copilot, le retrait porte sur des serveurs MCP entiers ; avec Claude Code,
 il peut porter sur des outils individuels.
 

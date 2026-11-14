@@ -21,8 +21,7 @@ Le guide inclus décrit la restauration. Les nettoyages conditionnels listés
 plus bas ne font pas partie de cette suppression.
 
 Validation du nettoyage : `npm run build`, `npm run lint` et `npm run test:errors`
-réussis ; seuls les avertissements préexistants de taille du bundle Vite et de
-fonction du vérificateur Figma inutilisée subsistent. Graphify actualisé :
+réussis ; avertissement préexistant de taille du bundle Vite. Graphify actualisé :
 **2 908 nœuds, 5 987 liens, 192 communautés**, 180 empreintes de code conformes,
 aucune source manquante, aucun lien orphelin, HTML/JSON cohérents. Les sources
 supprimées ne figurent plus dans le manifeste ni dans les nœuds et liens.

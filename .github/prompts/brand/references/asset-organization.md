@@ -114,7 +114,7 @@ infographic_evergreen_pricing-comparison_20251209.png
 | platform | instagram, twitter, linkedin, facebook, youtube, email, web |
 | content-type | promotional, educational, brand, product, testimonial |
 | format | 1x1, 4x5, 9x16, 16x9, story, reel, banner |
-| source | imagen-4, veo-3, user-upload, canva, figma |
+| source | imagen-4, veo-3, user-upload, canva |
 
 ### Tag Usage
 - Each asset should have: status + platform + content-type
