@@ -11,8 +11,8 @@ Les **16 constats R01–R16** sont corrigés et testés ; détail, migration et 
 dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inventaire
 SHA-256 documentent l'ancien état et restent conservés.
 
-1. Déployer la migration **0011** et redémarrer l'API après sauvegarde ; elle a
-   été appliquée uniquement sur bases jetables. Rapprocher les anciennes ventes
+1. Migration **0011** appliquée et API redémarrée sur `autostrass_test` le 14
+   novembre après sauvegarde ; vérifier les autres installations. Rapprocher les anciennes ventes
    HT encaissées de leurs justificatifs, sans réécriture ni reset d'empreintes.
 2. Développer les **devis**, puis les **commandes fournisseurs** : numérotation,
    conversion, attribution des réceptions et PDF manquants. [TODO.md](TODO.md)
@@ -51,7 +51,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 |---|---|---|
 | Stock | Emplacements hiérarchiques, allocations, transferts, inventaire par référence et historique | Recette Zebra ; campagnes multi-articles et brouillons partagés |
 | Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
-| Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF | Déploiement 0011 ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
+| Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF ; migration 0011 locale appliquée | Autres installations ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
 | Devis | Non commencé | CRUD, numéro `yyyymmdd-D-xxxxxx`, PDF, email/WhatsApp, conversion |
 | Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
 | Commandes clients | Création, lignes et statuts | Numérotation métier, bon PDF |
@@ -144,8 +144,12 @@ Turnstile vérifie jeton, hostname et action via Siteverify.
 
 Journal Drizzle versionné **0000 à 0011** : `0007` référentiels, `0008` inventaire,
 `0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2.
-`0011` contrôlée sur bases jetables, non appliquée à la base configurée. Dernier état de la base
-configurée : `0008`–`0010` appliquées le 6 novembre, données existantes conservées.
+`0011` appliquée le 14 novembre à la base configurée **autostrass_test** (MariaDB
+10.11.14) après sauvegarde locale ; quatre colonnes et journal contrôlés, 55 ventes
+et lignes conservées, SHA-256 des 36 tables anciennes inchangés. Les douze
+migrations `0000`–`0011` correspondent au journal ; SHA-256 0006 écrit en majuscules
+en base, contenu identique au fichier courant. API redémarrée, HTTP 3001 et HTTPS
+3443 ; caisse ouverte conservée. Le statut doit être vérifié sur les autres bases.
 Ce statut ne remplace pas une vérification de chaque installation. Sauvegarder,
 comparer schéma/journal, lancer `npm run db:migrate` puis redémarrer l'API ; ne pas
 compléter artificiellement le journal. `database/schema.sql` est le socle catalogue
@@ -257,7 +261,8 @@ de deux connexions sans blocage ; rollback de vente sur échec journal vérifié
 Route réelle : plus de 5 000 ventes, altération/empreinte absente finale refusées ;
 archive annuelle SQL exportée et relue avec SHA-256. MariaDB portable 11.4.5
 isolée puis arrêtée, bases jetables supprimées ; aucune donnée réelle modifiée.
-Migration 0011 et redémarrage API encore requis sur les installations.
+Migration 0011 et redémarrage API étaient encore requis à la fin des correctifs ;
+application locale réalisée ci-dessous, autres installations à vérifier.
 Compilation autonome des nouveaux scripts conforme avec la déclaration pdfmake
 locale ; 155 UI-Pro et deux CLI tokens réexécutés par le conducteur, réussis.
 `git diff --check` conforme ; fetch confirme `origin/main` sur `402e283` avant
@@ -271,3 +276,39 @@ quatre hyperedges valides et HTML/JSON identiques avec multiplicité.
 Limites conservées : CSS non indexé, **16 SQL** sans parseur ; extraction sémantique
 et renommage LLM non relancés. Métadonnée de commit = base applicative `fa66b63` ;
 le second commit ne contient que la passation et les artefacts du graphe.
+
+## Application de la migration 0011 — 14 novembre
+
+Migration demandée explicitement par l'utilisateur. Passation/Graphify relus,
+script Drizzle et configuration effective contrôlés ; sauvegarde, comparaison
+schéma/journal et identification de l'API en cours avant application.
+Inspection : `autostrass_test`, MariaDB 10.11.14, 37 tables InnoDB, 55 ventes et
+55 lignes, une caisse ouverte. Seule 0011 en attente, ses quatre colonnes absentes.
+Empreinte historique 0006 différente du fichier actuel : rapprochement Git en
+cours. Premier dump natif refusé pour son exigence TLS par défaut ; transport
+aligné sur la connexion locale de l'application avant nouvelle sauvegarde.
+Sauvegarde SQL réussie hors dépôt/OneDrive, sous le profil local Autostrass,
+ACL limitées au propriétaire et SYSTEM : 105 095 octets, SHA-256 conservé,
+38 objets dont 37 tables ; aucune routine, événement ou trigger. Identifiants
+du dump effacés après exécution. Préparation de la comparaison de toutes les
+anciennes colonnes et du journal avant/après, API locale à suspendre brièvement.
+API locale suspendue, état initial de 36 tables métier/journaux et de la caisse
+ouverte conservé. `npm run db:migrate` réussi : 0011 appliquée. L'écart 0006 était
+uniquement la casse de son SHA-256 (majuscule en base), identique au fichier
+actuel ; aucune réconciliation ni modification des anciennes entrées effectuée.
+Contrôle après migration conforme : quatre définitions SQL exactes, entrée 0011
+correcte, 36 tables identiques sur toutes leurs anciennes colonnes, 55 ventes et
+55 lignes préservées, empreintes et anciens montants inchangés. TVA/TTC historiques
+restent NULL et version 1 ; une caisse ouverte conservée sans clôture.
+API redémarrée en fenêtre masquée : lanceur PID 40248, serveur PID 33636,
+HTTP 3001/HTTPS 3443 ; health 200 connected dans les deux modes, certificat HTTPS
+vérifié. Lectures ventes/session conformes ; fiscal 200 `anterieures`, aucune rupture.
+Aucune vente ni donnée de recette créée sur cette base.
+Sauvegarde restaurable, état avant/après et résultats API hors Git :
+`%LOCALAPPDATA%/Autostrass/backups/migrations/0011-2026-11-14T13-40-40-449Z-6e173183/`.
+Dump `avant-0011.sql`, SHA-256 `a62775f50f5f272db45a3cfd5d3f88969fce3b293f417d2114720a5eac1f55c1`.
+Logs API : `%TEMP%/autostrass-api-20261114-migration.{out,err}.log`.
+Application terminée ; Graphify actualisé sans LLM : **3 188 nœuds**, **6 562
+liens**, **197 communautés**, quatre hyperedges. Audit indépendant : 193 empreintes
+de code et 508 entrées conformes, HTML/JSON identiques, 20 localisations recalées ; documentation et graphe
+livrés par commit et push sur `origin/main`. Sauvegarde et journaux restent hors Git.

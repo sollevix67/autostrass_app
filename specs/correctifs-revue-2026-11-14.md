@@ -72,3 +72,15 @@ d'un autre runtime. Ils restent inchangés, et ce diagnostic ne constitue pas un
 validation des seuils. Avertissement Vite >500 kB préexistant conservé.
 Les sept constats WCAG, les fonctionnalités manquantes, les recettes de déploiement
 et les opérations sur matériel réel restent dans la passation.
+
+## Application locale du 14 novembre
+
+Sur demande explicite, `npm run db:migrate` a appliqué 0011 à **autostrass_test**,
+MariaDB 10.11.14, après sauvegarde SQL hors dépôt et hors OneDrive. Les quatre
+colonnes et l'entrée du journal sont conformes ; les anciennes colonnes des 36
+tables comparées sont identiques, 55 ventes et 55 lignes préservées. La caisse
+ouverte n'a pas été clôturée. API redémarrée en HTTP/HTTPS ; état connected,
+lectures authentifiées conformes et contrôle fiscal 200 `anterieures`.
+Aucune vente de test créée ; preuve et emplacement de sauvegarde dans la passation.
+Cette application locale complète l'état de déploiement décrit plus haut ;
+les autres installations restent à vérifier.
