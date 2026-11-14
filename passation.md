@@ -1,5 +1,64 @@
 # Passation — Autostrass App
 
+**14 novembre — analyse de Microsoft TokenEconomizer** : demande d'analyse
+du dépôt public `microsoft/TokenEconomizer`. Lecture préalable de la passation,
+des consignes et des artefacts Graphify ; tête initiale `4483813`, arbre propre.
+Le graphe courant indique 3 003 nœuds, 6 086 liens et 187 communautés ; ses
+empreintes seront contrôlées puis ses artefacts actualisés avant livraison.
+Analyse du code et des preuves de performance dans une copie temporaire externe,
+avec revue répartie entre architecture et qualité, sans intégration applicative.
+Copie temporaire créée hors dépôt ; révision examinée
+`7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0` (12 novembre 2026).
+Contrôle initial Graphify réussi : 181 empreintes de code conformes,
+aucun nœud dupliqué ni lien orphelin. Lecture du README et de l'inventaire ;
+revues architecture/Codex/Windows et tests/méthodologie déléguées en lecture seule.
+Aucune activation du plugin ou exécution de benchmark facturé autorisée par cette analyse.
+Métadonnées publiques GitHub contrôlées : dépôt créé le 13 octobre 2026,
+publication `v0.1.0` le 26 octobre, dernière tête du 12 novembre ; licence Apache-2.0.
+Runtime Python ≥3.10 sans dépendance obligatoire ; défauts actuels : micro-skills
+désactivées, pruning et loopguard activés. Distinction relevée entre support
+Codex/Windows et problème ouvert des hooks Copilot sous PowerShell.
+PR tarifaire GPT-6/Gemini 4 encore ouverte ; fiabilité du coût à vérifier sur la tête.
+Lecture croisée architecture/configuration/CI et page officielle : chiffres annoncés
+cohérents entre README, figures et site, mais artefacts bruts non versionnés.
+Les contrôleurs de benchmark peuvent arrêter un run ; le plugin se limite à
+rediriger/signaler. Pruning Codex limité à collaboration/goals/image_media,
+sans retrait MCP Figma ou DB. Suite hors ligne lancée dans un environnement
+temporaire isolé par l'agent qualité, sans CLI agent ni appels de modèle.
+Rapport rédigé dans `specs/tokeneconomizer-analyse.md` : architecture, résultats,
+limites de transposition, repli GPT-6, données et proposition d'essai non activée.
+CI publique de la tête analysée vérifiée réussie ; contradiction documentaire
+Windows résolue par la couverture Codex 0.164.0 avec modèle local simulé.
+Revue architecture terminée : protection de collaboration/image_media conseillée,
+et proxy de vérification incomplet pour build/lint/scripts directs Autostrass.
+Suite locale hors ligne terminée avec dix échecs initiaux ; diagnostic ciblé en cours,
+notamment attentes POSIX dans les tests expérimentaux sous Windows.
+Graphify 0.9.108 actualisé sans LLM : 3 011 nœuds, 6 093 liens,
+192 communautés, sauvegarde du 14 novembre et HTML/JSON/rapport régénérés.
+Limites conservées : CSS non classé, 15 SQL sans parseur, sémantique documentaire
+non relancée. Avertissement de compétence Graphify Copilot ancienne inchangé ;
+aucune installation supplémentaire effectuée.
+Validation initiale du graphe réussie : 181 empreintes conformes, aucun doublon
+ni lien orphelin. Tests externes : 1 414 collectés ; premier passage 1 366 réussis,
+38 ignorés, dix échecs. Deux échecs dus au PATH isolé ont réussi en reprise ciblée.
+Bilan contrôlé : plugin 985 réussis/32 ignorés, expériences 383 réussis/6 ignorés/
+huit échecs POSIX sous Windows ; aucune suite complète présentée comme verte.
+Manifeste SWE-Bench 277 tâches confirmé ; anciens commentaires 229 distingués.
+Rapport complété avec ces résultats et limites ; aucun test applicatif Autostrass
+requis pour les seuls changements documentaires et artefacts de graphe.
+Synthèse versionnée `specs/tokeneconomizer-validation.json` : Python 3.13.17,
+pytest 9.2.0, commandes, isolation, échecs et empreintes de quatre journaux
+temporaires vérifiées. Données de test et chemins temporaires anonymisés ;
+aucun journal brut ni identifiant réel versionné. Graphify HTML/JSON contrôlés :
+3 011 identifiants et 6 093 extrémités de liens identiques ; rapport indexé
+avec ses sections, sans prétendre à une nouvelle extraction sémantique.
+Contrôles finaux conformes : liens locaux, JSON de validation, empreinte du
+rapport et 181 sources de code, HTML/JSON sans doublon ni orphelin ;
+`git diff --check` réussi. Après fetch, `origin/main` identique à `4483813`.
+Rapport, synthèse, passation et artefacts Graphify livrés par commit et push
+sur `origin/main`. Aucun changement applicatif, migration, accès DB, configuration
+Codex ou activation du plugin ; résidus de revue conservés dans le répertoire temporaire.
+
 **13 novembre — revue WCAG 2.2** : demande de revoir le code avec la
 nouvelle compétence `accessibility` 2.0. Lecture préalable de la passation,
 de Graphify et du skill/références ; tête initiale `852e5a2`, arbre propre,
@@ -503,16 +562,13 @@ effectué pendant cette intervention.
 ## Graphify et dernière intervention
 
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
-et `manifest.json`. Le **10 novembre**, `graphify update .` **0.9.104** a
+et `manifest.json`. Le **14 novembre**, `graphify update .` **0.9.108** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-la migration des formulaires et la modification des utilisateurs : **140 empreintes
-sources conformes**, **2 918 nœuds**,
-**5 990 liens**, **172 communautés**, aucun identifiant
-en double ni lien orphelin ; identifiants HTML identiques au JSON et même nombre
-de liens et mêmes extrémités, sans lien HTML orphelin. Métadonnée de départ
-**`f1d4b3a`**. Le vérificateur Figma, les scripts de recette Caisse/formulaires/utilisateurs,
-`CashCountFields.tsx`, `cashCounting.ts`, `CaisseSettingsView.tsx` et
-`FormDialog.tsx` sont indexés.
+l'analyse de Microsoft TokenEconomizer : **181 empreintes de code conformes**,
+**3 011 nœuds**, **6 093 liens**, **192 communautés**, aucun identifiant en
+double ni lien orphelin ; identifiants HTML identiques au JSON et mêmes extrémités
+de liens. Métadonnée de départ **`4483813`**. Le rapport TokenEconomizer et ses
+sections sont indexés, ainsi que les sources de recette et composants déjà livrés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.

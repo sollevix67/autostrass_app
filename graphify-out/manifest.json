@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794604606.4311895,
-    "seen": 1794604610.5168169,
-    "ast_hash": "bda66ce59fb3a75e95adeb8cc5cb31d3",
+    "mtime": 1794643234.9849458,
+    "seen": 1794643239.264458,
+    "ast_hash": "b53f0bfd4b9a007723252c1bc055a3f2",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2853,6 +2853,18 @@
     "mtime": 1794603949.3151546,
     "seen": 1794604476.8752632,
     "ast_hash": "faf7fd826bb1d60630f4ac235e51799a",
+    "semantic_hash": ""
+  },
+  "specs/tokeneconomizer-analyse.md": {
+    "mtime": 1794643155.5898447,
+    "seen": 1794643160.0799565,
+    "ast_hash": "4c70e79274f18572b830b573de806c3a",
+    "semantic_hash": ""
+  },
+  "specs/tokeneconomizer-validation.json": {
+    "mtime": 1794643155.3797917,
+    "seen": 1794643160.0473254,
+    "ast_hash": "72d07f83892f729ea23b8b3613d26caa",
     "semantic_hash": ""
   },
   "package-lock.json": {

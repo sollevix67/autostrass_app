@@ -1,0 +1,188 @@
+{
+  "repository": "https://github.com/microsoft/TokenEconomizer",
+  "commit": "7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0",
+  "review_date": "2026-11-14",
+  "platform": "Windows native / Git Bash",
+  "versions": {
+    "python": "3.13.17",
+    "pytest": "9.2.0"
+  },
+  "scope": "offline tests only; no model benchmark or agent CLI execution",
+  "command": [
+    "${REVIEW_ROOT}\\test-venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "tests",
+    "experiments/tests",
+    "-q",
+    "-rfEs",
+    "--tb=short",
+    "--basetemp",
+    "${REVIEW_ROOT}\\pytest-tmp"
+  ],
+  "initial_environment": {
+    "PATH": [
+      "${REVIEW_ROOT}\\test-venv\\Scripts",
+      "C:/Program Files/Git/cmd",
+      "C:/Program Files/Git/bin",
+      "C:/Windows/System32",
+      "C:/Windows"
+    ],
+    "TE_CODEX_E2E": "0",
+    "TE_OPENCODE_E2E": "0",
+    "TE_HERMES_E2E": "0",
+    "PYTHONUTF8": "1",
+    "removed_env_prefixes": [
+      "TE_",
+      "TOKENECONOMIZER",
+      "ANTHROPIC",
+      "OPENAI",
+      "COPILOT",
+      "CLAUDE",
+      "CODEX",
+      "PI_",
+      "GROK",
+      "HERMES"
+    ],
+    "removed_env_substrings": [
+      "SECRET",
+      "API_KEY",
+      "AUTH_TOKEN"
+    ]
+  },
+  "initial_run": {
+    "collected": 1414,
+    "passed": 1366,
+    "skipped": 38,
+    "failed": 10,
+    "exit_code": 1,
+    "plugin": {
+      "collected": 1017,
+      "passed": 984,
+      "skipped": 32,
+      "failed": 1
+    },
+    "experiments": {
+      "collected": 397,
+      "passed": 382,
+      "skipped": 6,
+      "failed": 9
+    }
+  },
+  "targeted_retest": {
+    "tests": [
+      "tests/test_plugin_package.py::test_on_windows_the_launcher_prefers_python_outside_windowsapps",
+      "experiments/tests/test_sweep_arms.py::test_the_codex_lane_runs_the_whole_evaluated_workload_by_default"
+    ],
+    "passed": 2,
+    "failed": 0,
+    "seconds": 1.07,
+    "environment_change": "original PATH filtered to remove directories containing agent CLIs; venv/Scripts and Git/bin prepended; PYTHON set to venv python; credentials/E2E flags still isolated",
+    "command_flags": [
+      "-o",
+      "addopts=",
+      "-q",
+      "--tb=short",
+      "--junitxml",
+      "${REVIEW_ROOT}\\pytest-reprise-final.xml",
+      "--basetemp",
+      "${REVIEW_ROOT}\\pytest-reprise-final-tmp"
+    ],
+    "explanation": "two initial failures caused by overly restricted PATH / Python discovery, resolved with targeted rerun only"
+  },
+  "remaining_failures": [
+    {
+      "test": "experiments/tests/test_baselines.py::test_rtk_cache_dir_requires_configuration",
+      "location": "experiments/tests/test_baselines.py:386",
+      "error": "AssertionError: /somewhere\\scaffolds != /somewhere/scaffolds",
+      "classification": "Windows native path separator differs from POSIX literal"
+    },
+    {
+      "test": "experiments/tests/test_codex_webbench.py::test_the_contract_names_host_paths_not_container_paths",
+      "location": "experiments/tests/test_codex_webbench.py:193",
+      "error": "AssertionError: unescaped Windows host path literal not found in escaped TOML config",
+      "classification": "Windows TOML backslash escaping differs from asserted POSIX string"
+    },
+    {
+      "test": "experiments/tests/test_fleet_budget.py::test_the_cap_lands_on_the_cgroup_the_container_scopes_share",
+      "location": "experiments/tests/test_fleet_budget.py:24",
+      "error": "AttributeError: os.getuid absent",
+      "classification": "Linux cgroup fixture unsupported on Windows"
+    },
+    {
+      "test": "experiments/tests/test_fleet_budget.py::test_the_canonical_path_is_the_fallback_when_no_container_is_running",
+      "location": "experiments/tests/test_fleet_budget.py:24",
+      "error": "AttributeError: os.getuid absent",
+      "classification": "Linux cgroup fixture unsupported on Windows"
+    },
+    {
+      "test": "experiments/tests/test_fleet_budget.py::test_a_report_reads_the_budget_back",
+      "location": "experiments/tests/test_fleet_budget.py:24",
+      "error": "AttributeError: os.getuid absent",
+      "classification": "Linux cgroup fixture unsupported on Windows"
+    },
+    {
+      "test": "experiments/tests/test_fleet_budget.py::test_zero_leaves_the_cgroup_alone",
+      "location": "experiments/tests/test_fleet_budget.py:24",
+      "error": "AttributeError: os.getuid absent",
+      "classification": "Linux cgroup fixture unsupported on Windows"
+    },
+    {
+      "test": "experiments/tests/test_fleet_budget.py::test_an_unwritable_cgroup_warns_and_never_fails_the_launch",
+      "location": "experiments/tests/test_fleet_budget.py:24",
+      "error": "AttributeError: os.getuid absent",
+      "classification": "Linux cgroup fixture unsupported on Windows"
+    },
+    {
+      "test": "experiments/tests/test_runner_registry.py::test_webbench_refuses_a_scaffold_it_cannot_install",
+      "location": "experiments/te_harness/webbench.py:160",
+      "error": "AttributeError: signal.SIGHUP absent",
+      "classification": "POSIX signal cleanup unsupported on Windows"
+    }
+  ],
+  "logs": [
+    {
+      "name": "pytest-offline.log",
+      "sha256": "79c6286d0dff91d76638a5cfcda317c3414542ef38e4eeb0a9db69511c0328b5",
+      "bytes": 13326
+    },
+    {
+      "name": "pytest-reprise-final.log",
+      "sha256": "80141ad22bb5235f1d933a30fda24c5191c293e97e51d2667004d9f7071c021f",
+      "bytes": 100
+    },
+    {
+      "name": "pytest-reprise-final.xml",
+      "sha256": "347c7b7222aefecb77bec53ab040a0e5d2f15ed124dae723ee9926ecd3359230",
+      "bytes": 519
+    },
+    {
+      "name": "pytest-collected.log",
+      "sha256": "0856c9a653a8c709c637835ab43b57eca538e7427a411aec343c2dad1d59883c",
+      "bytes": 135827
+    }
+  ],
+  "controlled_cases_after_targeted_retest": {
+    "passed": 1368,
+    "skipped": 38,
+    "failed": 8,
+    "full_suite_rerun": false,
+    "plugin": {
+      "passed": 985,
+      "skipped": 32,
+      "failed": 0
+    },
+    "experiments": {
+      "passed": 383,
+      "skipped": 6,
+      "failed": 8
+    }
+  },
+  "logs_storage": "Temporary review directory only; hashes retained here, raw logs not committed",
+  "github_ci": {
+    "url": "https://github.com/microsoft/TokenEconomizer/actions/runs/43313846118",
+    "head_sha": "7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0",
+    "conclusion": "success",
+    "checked_on": "2026-11-14"
+  }
+}
