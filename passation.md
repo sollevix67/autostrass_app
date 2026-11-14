@@ -373,3 +373,39 @@ Vite utilisateur 28084 toujours sur 5173. L'utilisateur peut faire Ctrl+C dans
 son terminal puis relancer `npm run dev`. Aucun code applicatif, réglage ni
 donnée métier modifié. README clarifié sur le démarrage d'une seule API.
 Passation/Graphify actualisés et livrés par commit/push sur `origin/main`.
+
+## Relance automatique du développement — 14 novembre
+
+Demande utilisateur : `npm run dev` doit arrêter les anciennes instances avant
+de redémarrer. Passation, instructions et Graphify relus. Conception d'un lanceur
+qui identifie les processus de développement de ce dépôt, préserve les processus
+étrangers et nettoie ses enfants à la fermeture. Module système et tests confiés
+à un agent ; câblage npm, précontrôle des ports et documentation par le conducteur.
+`predev` est intégré avant `dev` : arrêt ciblé puis contrôle des ports configurés
+HTTP/HTTPS/Vite. `concurrently --kill-others` arrête le service restant si l'autre
+sort ; `vite --strictPort` évite un changement silencieux de port. README et
+commande `test:dev` ajoutés ; module de nettoyage et validation encore en cours.
+Compilation frontend/backend réussie, avec l'avertissement Vite >500 kB antérieur.
+Préparation de la recette complète : processus étranger préservé, relance de
+deux développements successifs et arrêt de Vite après échec de l'API ; seules
+les lectures health sont prévues sur la base configurée.
+Module livré et relu : chemins CLI normalisés, script Node réellement exécuté,
+racines voisines/tests/preview protégés, lanceur et ancêtres exclus. Identité
+PID/date de création/commande revalidée avant arrêt ciblé de l'arbre ; aucune
+suppression globale de Node ni arrêt par port. **29 contrôles** réussis, dont
+arbres factices et projet voisin préservé ; syntaxe, lint et diff conformes.
+L'ancien arbre réel 12176/Vite 28084 sera remplacé par la recette de relance,
+explicitement autorisée par la demande utilisateur. Arrêt compagnon borné à 3 s.
+Recette réelle `npm run dev` réussie : **huit contrôles**, service étranger 3001
+conservé et refus explicite, ancien Vite nettoyé, premier lancement API HTTP/
+HTTPS + Vite, deuxième lancement remplaçant les deux PID sans conflit, health
+et proxy 200 `connected`. L'arrêt forcé de l'API entraîne celui de Vite et une
+sortie npm non nulle. Nettoyage final effectué, aucun service de recette restant,
+aucune écriture métier/MariaDB. Script de reproduction privé :
+`%TEMP%/autostrass-test-dev-relance.cjs`. Revue finale : un CLI tsx en mode eval
+avec un argument `server/index.ts` pouvait être confondu avec l'API. Exclusion
+eval/print partagée avec Node ajoutée et test négatif des variantes. Validation
+finale réussie : **30 contrôles processus + huit contrôles de relance = 38**,
+build, lint, syntaxe Node et diff conformes. Recettes système sur Windows ; branche
+POSIX implémentée mais non exécutée sur un hôte Linux/macOS. Préparation du
+commit fonctionnel puis de Graphify et de la livraison sur `origin/main`.

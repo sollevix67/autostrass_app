@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"tsx server/index.ts\" \"vite\"",
+    "predev": "node scripts/stop-dev.mjs",
+    "dev": "concurrently --kill-others --kill-timeout 3000 --names api,web \"tsx server/index.ts\" \"vite --strictPort\"",
     "dev:api": "tsx server/index.ts",
     "build": "npx tsc -b && npx tsc -p tsconfig.server.json --noEmit && vite build",
     "lint": "oxlint",
@@ -18,6 +19,7 @@
     "test:api": "tsx scripts/test-api.ts",
     "test:security": "tsx scripts/test-security.ts",
     "test:errors": "tsx scripts/test-error-mapping.ts",
+    "test:dev": "node scripts/test-dev-processes.mjs",
     "test:pdf": "tsx scripts/test-pdf-invoice.ts",
     "test:ventes": "tsx scripts/test-vente-validation.ts && tsx scripts/test-fiscal-integrity.ts && tsx scripts/test-ventes-caisse.ts",
     "test:parametres": "tsx scripts/test-parametres-unit.ts && tsx scripts/test-parametres.ts --all",
