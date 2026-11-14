@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1794659242.2572944,
-    "seen": 1794660683.9964476,
-    "ast_hash": "42692b8b95b382dcdcb77f4ac08ff088",
+    "mtime": 1794691687.280365,
+    "seen": 1794692012.4957285,
+    "ast_hash": "1091d8eb1b35437c79b728e23ad4b7f3",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1794690895.5860753,
-    "seen": 1794690902.7845092,
-    "ast_hash": "51e887b5c25bbc2bfc2b4711dcbf33b3",
+    "mtime": 1794691430.2816703,
+    "seen": 1794692012.5274696,
+    "ast_hash": "211ac96e9d9645ac2dcc99ccea14b5fc",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794690895.5870776,
-    "seen": 1794690902.7857654,
-    "ast_hash": "e4fcb79b65b770e2b5916c6cbe6e007d",
+    "mtime": 1794692074.5202577,
+    "seen": 1794692081.6787832,
+    "ast_hash": "01dbcced0bd90a774073b6c4e232246c",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -3039,6 +3039,24 @@
     "mtime": 1794660334.7246673,
     "seen": 1794660684.0632803,
     "ast_hash": "c4885365eb7654ddad86dbe736f35681",
+    "semantic_hash": ""
+  },
+  "scripts/lib/dev-processes.mjs": {
+    "mtime": 1794691947.4791596,
+    "seen": 1794692012.4961588,
+    "ast_hash": "01be5d719979310469c9937a6e88a2ae",
+    "semantic_hash": ""
+  },
+  "scripts/stop-dev.mjs": {
+    "mtime": 1794691430.2796714,
+    "seen": 1794692012.496923,
+    "ast_hash": "05d4cb2523b67e5715fcd0b76aec4a2b",
+    "semantic_hash": ""
+  },
+  "scripts/test-dev-processes.mjs": {
+    "mtime": 1794691947.4801598,
+    "seen": 1794692012.4975088,
+    "ast_hash": "597e8eeb998398d5193647e9cdbf1408",
     "semantic_hash": ""
   },
   "package-lock.json": {

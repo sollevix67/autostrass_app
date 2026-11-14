@@ -407,5 +407,11 @@ avec un argument `server/index.ts` pouvait être confondu avec l'API. Exclusion
 eval/print partagée avec Node ajoutée et test négatif des variantes. Validation
 finale réussie : **30 contrôles processus + huit contrôles de relance = 38**,
 build, lint, syntaxe Node et diff conformes. Recettes système sur Windows ; branche
-POSIX implémentée mais non exécutée sur un hôte Linux/macOS. Préparation du
-commit fonctionnel puis de Graphify et de la livraison sur `origin/main`.
+POSIX implémentée mais non exécutée sur un hôte Linux/macOS. Fonctionnalité et
+preuves commitées dans `7e7a7a2`. Graphify 0.9.108 actualisé depuis cette base :
+**3 221 nœuds, 6 633 liens, 195 communautés**, quatre hyperedges, trois nouveaux
+scripts présents ; **196 empreintes de code et 511 entrées du manifeste conformes**,
+aucune source manquante, aucun doublon ni lien orphelin. Localisations passation
+et README recalées, HTML régénéré ; limites CSS/16 SQL et absence d'appel LLM
+conservées. Passation et Graphify livrés dans un second commit avec la fonctionnalité
+sur `origin/main`.
