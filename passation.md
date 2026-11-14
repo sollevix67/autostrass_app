@@ -1,5 +1,51 @@
 # Passation — Autostrass App
 
+**14 novembre — reprise du travail** : passation, consignes et artefacts
+Graphify relus avant intervention ; tête initiale `0a57f69`, arbre propre sur
+`main`. Reprise de la priorité Figma P1.g : contrôle distant des fondations
+existantes avant documentation et composants. Compétences `figma-use` et
+`figma-generate-library` chargées ; contrôle indépendant du graphe et du plan
+local délégué en lecture seule. Aucun résultat de validation distante encore
+obtenu ; identifiants existants à conserver. Actualisation de Graphify et
+livraison des preuves/passation par commit et push prévues après contrôle.
+Session de reprise ouverte : `5f2f50c6-3b8f-441b-b144-7cc85872a1b0`.
+Plan et vérificateur corrigé relus ; APIs de lecture vérifiées dans les types
+du plugin. Contrôle indépendant initial Graphify conforme : 181 MD5 de code,
+3 018 nœuds uniques, 6 100 liens, 188 communautés, aucun lien orphelin,
+identifiants et extrémités HTML/JSON identiques avec leur multiplicité.
+P1.g exécuté avec succès via le MCP officiel dans la session de reprise :
+112 variables, 23 alias, quatre collections à un mode, 12 styles de texte
+et six styles d'effet conformes au plan approuvé. Le quota ne bloque plus
+cette lecture. Résultat distant à persister avec les identifiants relus,
+puis poursuite automatique P2 conformément au périmètre Figma approuvé.
+Les 134 identifiants du registre ont été confirmés par une lecture distante,
+sans divergence. Preuve P1.g versionnée et registre actualisé vers P2.a.
+Revue locale : dix des 15 sources Figma inchangées depuis `6fdba67` ; cinq
+modifiées par les dialogues/comptages, sans changement des fondations.
+Tenir compte de `FormDialog` et du code actuel pour les futurs composants.
+P2.a : premier script interrompu par sa garde d'identité/vacuité de `Page 1`
+avant mutation. Le MCP confirme l'erreur atomique ; inspection de la page
+nécessaire pour comprendre son chargement avant une reprise corrigée.
+L'inspection `get_metadata` de `0:1` a ensuite été refusée par le quota MCP
+Starter. P1.g reste validé ; P2.a–P2.c sont suspendus jusqu'à la lecture
+effective de la page existante et aux contrôles de structure/captures.
+Aucune page, documentation ou composant créé pendant cette reprise.
+Preuve de tentative P2 et nouveau blocage enregistrés ; le contenu actuel
+de `Page 1` n'est pas confirmé. Ne pas réexécuter les créations de fondations.
+Passation prioritaire, état Figma et découverte actualisés : P1.g terminé,
+P2.a à reprendre après inspection. `graphify update .` 0.9.108 réussi sans
+appel LLM : 3 019 nœuds, 6 102 liens, 187 communautés ; JSON, HTML, rapport
+et sauvegarde du 14 novembre régénérés. Limites CSS/SQL et sémantique
+documentaire inchangées ; vérifications finales avant commit et push.
+Revue indépendante finale conforme : 181 MD5 de code, 3 019 identifiants
+uniques, 6 102 liens, 187 communautés, aucun lien orphelin et HTML/JSON
+identiques avec multiplicité. Entités et périmètre Figma conservés intégralement.
+Syntaxe du vérificateur et `git diff --check` conformes ; après fetch,
+`origin/main` identique à `0a57f69`. Aucun fichier applicatif, dépendance,
+migration ou donnée DB modifié ; aucun test applicatif supplémentaire requis.
+Livraison des preuves P1/P2, découverte, registre, passation et Graphify par
+commit et push sur `origin/main` ; reprise Figma à P2.a au retour de la lecture.
+
 **14 novembre — configuration de TokenEconomizer** : compétence
 `tokeneconomizer:config` invoquée, consultation `show` uniquement. Passation,
 consignes et Graphify relus ; tête initiale `874fc96`, arbre propre,
@@ -374,11 +420,13 @@ nécessairement toutes ses exigences métier.
 
 ## Reprise prioritaire
 
-1. **Figma** : reprendre le contrôle final P1.g dès que l'accès de lecture est
-   disponible. Architecture Starter approuvée ; quatre collections, 112 variables,
-   six styles d'ombre et 12 styles de texte créés dans `Untitled`. Le quota MCP
-   Starter refuse le vérificateur corrigé ; P1 reste incomplet. Aucune page de
-   documentation ni aucun composant créé. Réutiliser les identifiants du registre.
+1. **Figma** : reprendre P2.a dès que l'accès de lecture est disponible.
+   **P1.g validé le 14 novembre**, avec 134 identifiants confirmés : quatre
+   collections, 112 variables, six styles d'ombre et 12 styles de texte dans
+   `Untitled`. La garde du premier script P2.a a échoué avant mutation ;
+   l'inspection de `Page 1` a ensuite été refusée par le quota MCP Starter.
+   Inspecter son contenu réel avant de créer les pages de documentation.
+   Aucun composant créé ; réutiliser le registre et conserver les fondations.
 2. **Métier** : devis, puis commandes fournisseurs, avec numérotation, conversion
    et attribution des réceptions. Compléter ensuite les documents PDF manquants.
 3. **Déploiement** : vérifier le journal des migrations de chaque installation,
@@ -588,8 +636,10 @@ Aucun lien OAuth temporaire ni secret conservé dans le dépôt.
 
 **Fichier cible** : [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe),
 clé `UP7nQVTU4dlyfEiQdG2IYe`, type `design`. Session de construction :
-`82b3d40c-67bb-4e75-845b-cf6fd28f137d`. Le canevas reste une page
-`Page 1` (`0:1`) vide ; les variables et styles locaux existent désormais.
+`82b3d40c-67bb-4e75-845b-cf6fd28f137d`. Session de reprise du 14 novembre :
+`5f2f50c6-3b8f-441b-b144-7cc85872a1b0`. La liste courante contient une page
+`Page 1` (`0:1`) ; son contenu n'a pas pu être confirmé le 14 novembre.
+Les variables et styles locaux existent et leurs contrats sont validés.
 Fira Sans et Fira Code sont disponibles, avec Regular, Medium et SemiBold.
 
 **P0.a–P0.f réalisés et approuvés** : neuf bibliothèques ajoutées, pagination
@@ -612,39 +662,51 @@ un mode Value. Le modèle CSS et les dimensions littérales restent exacts.
 | Styles d'effet | `Shadow/Light/{sm,md,lg}` et `Shadow/Dark/{sm,md,lg}` |
 | Styles de texte | Body, Heading/Page/Min, Heading/Page/Max, Heading/Card, Heading/Dialog, Field/Label, Field/Input/Desktop, Field/Input/Mobile, Button/Standard, Button/Compact, Badge, Table/Header |
 
-**P1.g — contrôle final incomplet** : le premier script a parcouru les 112
+**P1.g — historique du 8 novembre** : le premier script a parcouru les 112
 variables avant d'échouer sur la comparaison JSON intégrale de `fontName` pour
 Heading/Page/Min. Figma ajoute `variationSettings` à Fira Code ; une lecture
 suivante des 18 styles a montré les propriétés attendues, avec métadonnées
 supplémentaires et précision float32. Le
 [vérificateur corrigé](design-system/autostrass/figma-scripts/check-foundations.js)
 compare les propriétés attendues et tolère un écart numérique de 0,00001.
-Son exécution a été refusée : **`You've reached the Figma MCP tool call limit
-on the Starter plan.`** Aucun résultat de validation globale réussi enregistré.
+Son exécution a été refusée le 8 novembre : **`You've reached the Figma MCP
+tool call limit on the Starter plan.`** Ce blocage historique a été dépassé
+pendant la reprise du 14 novembre.
+
+**P1.g — validé le 14 novembre** : le vérificateur corrigé a réussi sur les
+112 variables, 23 alias, 12 styles de texte et six ombres. Une seconde lecture
+a confirmé les 134 identifiants du registre et les modes. Preuve :
+[figma-foundation-validation-2026-11-14.json](design-system/autostrass/figma-foundation-validation-2026-11-14.json).
 
 La [documentation Figma](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/),
 consultée le 8 novembre, indique jusqu'à **20 appels de lecture par mois** pour
 Starter et les sièges View/Collab. Certaines écritures et `whoami` sont exemptés ;
 cela ne garantit pas la disponibilité des écritures `use_figma`. Le contrôle
-requis est effectivement refusé. La date de réinitialisation n'est pas connue.
+de P2.a a de nouveau été refusé le 14 novembre par `get_metadata`.
+La date de réinitialisation n'est pas connue.
 Ne pas ajouter de mutation artificielle au contrôle pour contourner le quota.
 
-**Reprise** : relire le
+**Reprise P2.a** : relire le
 [registre versionné](design-system/autostrass/figma-library-state.json) et le
-[plan exact](design-system/autostrass/figma-foundation-plan.json), puis ouvrir
-`create_session` lorsque la lecture est disponible. Charger `figma-use` et
-`figma-generate-library`, incorporer le plan et la fonction de vérification au
-script, puis `return await validateFoundations(expected)`. Confirmer les
-identifiants réels et persister le résultat avant P2. L'ancien registre
+[plan exact](design-system/autostrass/figma-foundation-plan.json), puis réutiliser
+la session de reprise pour ce même travail lorsque la lecture est disponible.
+Charger `figma-use` et `figma-generate-library`, puis inspecter `Page 1` avant
+mutation. La garde d'identité/type/vacuité a interrompu le script P2.a ;
+sa cause précise reste inconnue, l'inspection étant refusée. Ne pas recréer
+les fondations validées. L'ancien registre
 `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` est absent ; le registre
 versionné le remplace. Les 15 sources de découverte ont été comparées au commit
-`6fdba67`, sans changement ; 66 tokens, 35 surcharges sombres et 12 alias CSS.
+`6fdba67` le 14 novembre : dix inchangées et cinq modifiées pour les dialogues
+et comptages ; fondations inchangées. Conserver les 66 tokens, 35 surcharges
+sombres et 12 alias CSS ; suivre les composants actuels pour P3.
 
 P2 reste à créer : couverture, guide et documentation des fondations avec captures.
+Preuve de tentative et refus d'inspection :
+[figma-phase2-attempt-2026-11-14.json](design-system/autostrass/figma-phase2-attempt-2026-11-14.json).
 P3 : construire les 16 familles séparément, icônes exactes d'abord, puis vérifier
 structure et rendu ; INSTANCE_SWAP pour les icônes imbriquées. P4 : accessibilité,
 noms, liaisons et Code Connect. Aucun composant ni aucune documentation Figma
-créé avant la réussite du contrôle des fondations.
+créé pendant cette reprise ; P1.g est désormais terminé.
 
 ## Limites et points à confirmer
 
@@ -669,10 +731,11 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **14 novembre**, `graphify update .` **0.9.108** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-l'analyse et l'installation de Microsoft TokenEconomizer : **181 empreintes de code conformes**,
-**3 018 nœuds**, **6 100 liens**, **188 communautés**, aucun identifiant en
-double ni lien orphelin ; identifiants HTML identiques au JSON et mêmes extrémités
-de liens. Métadonnée de départ **`3b167e8`** après l'installation dans Codex.
+la reprise Figma : **181 empreintes de code conformes** au contrôle final,
+**3 019 nœuds**, **6 102 liens**, **187 communautés** après actualisation.
+Contrôle final conforme : aucun doublon ni orphelin, mêmes identifiants et
+extrémités de liens HTML/JSON avec leur multiplicité.
+Métadonnée de départ **`0a57f69`** pour cette reprise.
 Le rapport et le guide d'installation TokenEconomizer ainsi que leurs sections
 sont indexés, avec les sources de recette et composants déjà livrés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire

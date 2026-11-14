@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794643234.9849458,
-    "seen": 1794643239.264458,
-    "ast_hash": "b53f0bfd4b9a007723252c1bc055a3f2",
+    "mtime": 1794649012.1802266,
+    "seen": 1794649016.8024049,
+    "ast_hash": "5fa07b5011d4ee9554fad9cac638b594",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2856,15 +2856,27 @@
     "semantic_hash": ""
   },
   "specs/tokeneconomizer-analyse.md": {
-    "mtime": 1794643155.5898447,
-    "seen": 1794643160.0799565,
-    "ast_hash": "4c70e79274f18572b830b573de806c3a",
+    "mtime": 1794644350.3878198,
+    "seen": 1794644356.2932298,
+    "ast_hash": "fb3108108a0d8312f1d1b7f53b881485",
     "semantic_hash": ""
   },
   "specs/tokeneconomizer-validation.json": {
     "mtime": 1794643155.3797917,
     "seen": 1794643160.0473254,
     "ast_hash": "72d07f83892f729ea23b8b3613d26caa",
+    "semantic_hash": ""
+  },
+  "specs/tokeneconomizer-installation.json": {
+    "mtime": 1794644350.8772826,
+    "seen": 1794644356.2672176,
+    "ast_hash": "036ddae17f891b548074cbb944e3b212",
+    "semantic_hash": ""
+  },
+  "specs/tokeneconomizer-installation.md": {
+    "mtime": 1794644350.3863182,
+    "seen": 1794644356.2932324,
+    "ast_hash": "3a19f1babd7c9b82807526eec5ab27b6",
     "semantic_hash": ""
   },
   "package-lock.json": {

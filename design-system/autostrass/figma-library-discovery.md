@@ -1,8 +1,8 @@
 # Bibliothèque Figma Autostrass — découverte
 
-Date : 2026-11-08. Exécution : `ds-autostrass-2026-11-08`.
+Date de découverte : 2026-11-08. Reprise : 2026-11-14. Exécution : `ds-autostrass-2026-11-08`.
 
-Statut : **P0.a–P0.f réalisés ; adaptation Starter approuvée, fondations créées, contrôle final P1.g bloqué par le quota MCP**. Dans [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe), quatre collections à un mode contiennent 112 variables ; six styles d'effet et 12 styles de texte sont créés. P1 reste incomplet jusqu'à la réussite du vérificateur corrigé. Aucun composant ni aucune page de documentation créé.
+Statut : **P0.a–P0.f réalisés, architecture Starter approuvée et P1.g validé le 14 novembre ; P2.a bloqué par l'inspection refusée au quota MCP**. Dans [Untitled](https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe), les quatre collections, 112 variables, 23 alias, six styles d'effet et 12 styles de texte sont conformes ; les 134 identifiants du registre sont confirmés. Aucun composant ni aucune page de documentation créé pendant cette reprise.
 
 ## P0.a — Sources et tokens
 
@@ -166,7 +166,7 @@ Les couleurs et valeurs de modes viennent du code ; les conventions d'organisati
 
 ## Reprise et vérifications
 
-État courant persistant : [figma-library-state.json](figma-library-state.json), avec les identifiants des quatre collections, des 112 variables et des 18 styles, les créations réussies et le contrôle final en attente. Le [plan exact](figma-foundation-plan.json) contient les valeurs, scopes, alias, syntaxes WEB et styles attendus. L'ancien registre `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` est absent à cette reprise ; le registre versionné le remplace. Les preuves de découverte initiales restent [figma-discovery.json](figma-discovery.json).
+État courant persistant : [figma-library-state.json](figma-library-state.json), avec les identifiants des quatre collections, des 112 variables et des 18 styles, les créations réussies et P1.g validé le 14 novembre. Le [plan exact](figma-foundation-plan.json) contient les valeurs, scopes, alias, syntaxes WEB et styles attendus. L'ancien registre `%TEMP%/design-system-state-ds-autostrass-2026-11-08.json` est absent ; le registre versionné le remplace. Les preuves initiales restent [figma-discovery.json](figma-discovery.json).
 
 **Reprise du 8 novembre après compaction.** Les 15 empreintes SHA-256 correspondent aux sources actuelles ; recomptage de `src/tokens.css` : 66 tokens de base, 35 surcharges sombres et 12 alias. Fichier cible et page enregistrés ; aucun composant créé.
 
@@ -189,7 +189,7 @@ Le 8 novembre, une session de construction a été ouverte : `013a854e-8718-4bfc
 
 La seconde possibilité a ensuite été explicitement approuvée par l'utilisateur. P1.a a réussi avec Color Light, Color Dark, Dimensions et Typography, à un mode Value chacune. Le registre courant est [figma-library-state.json](figma-library-state.json) ; l'ancien registre temporaire est absent à cette reprise. Les 15 sources ont été comparées au commit de découverte approuvé, sans changement.
 
-## P1.b–P1.h — Fondations créées et contrôle final en attente
+## P1.b–P1.h — Fondations créées ; contrôle final validé le 14 novembre
 
 Session de construction : `82b3d40c-67bb-4e75-845b-cf6fd28f137d`.
 
@@ -204,8 +204,14 @@ Les 112 variables ont été créées avec leurs scopes et syntaxes WEB du plan. 
 
 P1.f/P1.h — six styles d'effet créés : `Shadow/Light/sm`, `Shadow/Light/md`, `Shadow/Light/lg`, `Shadow/Dark/sm`, `Shadow/Dark/md`, `Shadow/Dark/lg`. Douze styles de texte créés : `Body`, `Heading/Page/Min`, `Heading/Page/Max`, `Heading/Card`, `Heading/Dialog`, `Field/Label`, `Field/Input/Desktop`, `Field/Input/Mobile`, `Button/Standard`, `Button/Compact`, `Badge`, `Table/Header`. Une lecture indépendante des styles a montré les propriétés attendues, avec métadonnées supplémentaires et précision float32.
 
-P1.g — le [vérificateur corrigé](figma-scripts/check-foundations.js) compare les propriétés attendues et accepte une tolérance numérique de 0,00001. Son appel a été refusé avant exécution : **`You've reached the Figma MCP tool call limit on the Starter plan.`** P1 n'est pas marqué terminé ; le canevas reste `Page 1` (`0:1`) vide.
+P1.g — le [vérificateur corrigé](figma-scripts/check-foundations.js) compare les propriétés attendues et accepte une tolérance numérique de 0,00001. Son appel a été refusé le 8 novembre par le quota MCP. **Le contrôle global a réussi le 14 novembre** : 112 variables, 23 alias, quatre collections, 12 styles de texte et six effets. Les 134 identifiants sont confirmés. Preuve : [figma-foundation-validation-2026-11-14.json](figma-foundation-validation-2026-11-14.json). Le contenu courant de `Page 1` (`0:1`) n'a pas pu être confirmé pendant cette reprise.
 
 La [documentation officielle des quotas](https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/), consultée le 8 novembre, indique jusqu'à 20 appels de lecture par mois sur Starter ou avec un siège View/Collab. Elle cite des exemptions : `add_code_connect_map`, `create_new_file`, `generate_figma_design` et `whoami`. Elle n'établit pas que toute écriture `use_figma` reste disponible. Le blocage observé porte sur le contrôle final requis ; la date de réinitialisation n'est pas connue. Aucune mutation artificielle ni changement d'abonnement effectué.
 
-À la reprise, lorsque la lecture est disponible : ouvrir `create_session` dans le fichier existant, charger `figma-use` et `figma-generate-library`, incorporer le plan JSON et la fonction corrigée, puis `return await validateFoundations(expected)`. Confirmer les identifiants et enregistrer le résultat avant P2. Les phases P2 (documentation), P3 (16 familles) et P4 (intégration/QA) restent à réaliser ; aucune nouvelle approbation de l'architecture Starter n'est nécessaire.
+## P2.a — Reprise du 14 novembre et blocage de l'inspection
+
+Session de reprise : `5f2f50c6-3b8f-441b-b144-7cc85872a1b0`. P1.g est terminé et persistant. Dix des 15 sources de découverte sont inchangées depuis `6fdba67` ; `MASTER.md`, `App.css`, `ConfirmDialog.tsx`, `FormFields.tsx` et `forms.css` ont évolué pour les dialogues/comptages, sans modifier les fondations. Les futures familles devront suivre le code actuel, notamment `FormDialog`.
+
+Le script P2.a s'est arrêté avant mutation sur sa garde vérifiant l'identité, le type et la vacuité de `Page 1`. La cause précise reste inconnue : `get_metadata` sur `0:1` a ensuite été refusé par **`You've reached the Figma MCP tool call limit on the Starter plan.`** Aucun objet de P2 créé. Preuve : [figma-phase2-attempt-2026-11-14.json](figma-phase2-attempt-2026-11-14.json).
+
+Quand la lecture est disponible, réutiliser cette session pour ce même travail, inspecter le contenu réel de la page et créer le squelette approuvé sans écraser de contenu existant. Continuer P2.b (fondations documentées), P2.c (structure et captures), puis P3 (16 familles) et P4 (intégration/QA). Ne pas recréer les variables ou styles validés ; aucune nouvelle approbation de l'architecture Starter n'est nécessaire.

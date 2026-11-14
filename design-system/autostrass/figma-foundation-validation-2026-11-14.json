@@ -1,0 +1,151 @@
+{
+  "date": "2026-11-14",
+  "sourceCommit": "0a57f69",
+  "fileKey": "UP7nQVTU4dlyfEiQdG2IYe",
+  "sessionId": "5f2f50c6-3b8f-441b-b144-7cc85872a1b0",
+  "step": "P1.g",
+  "tool": "mcp__figma__use_figma",
+  "plan": "figma-foundation-plan.json",
+  "checker": "figma-scripts/check-foundations.js",
+  "result": {
+    "validation": {
+      "kind": "foundations",
+      "variables": 112,
+      "aliases": 23,
+      "collections": [
+        {
+          "name": "Color Light",
+          "variableCount": 49,
+          "modes": 1
+        },
+        {
+          "name": "Color Dark",
+          "variableCount": 49,
+          "modes": 1
+        },
+        {
+          "name": "Dimensions",
+          "variableCount": 11,
+          "modes": 1
+        },
+        {
+          "name": "Typography",
+          "variableCount": 3,
+          "modes": 1
+        }
+      ],
+      "textStyles": 12,
+      "effectStyles": 6,
+      "passed": true
+    }
+  },
+  "identifierCheck": {
+    "step": "P1.g",
+    "identifiersVerified": 134,
+    "mismatches": [],
+    "pages": [
+      {
+        "id": "0:1",
+        "name": "Page 1"
+      }
+    ],
+    "availableFonts": [
+      {
+        "family": "Fira Code",
+        "style": "Bold"
+      },
+      {
+        "family": "Fira Code",
+        "style": "Light"
+      },
+      {
+        "family": "Fira Code",
+        "style": "Medium"
+      },
+      {
+        "family": "Fira Code",
+        "style": "Regular"
+      },
+      {
+        "family": "Fira Code",
+        "style": "Retina"
+      },
+      {
+        "family": "Fira Code",
+        "style": "SemiBold"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Black"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Black Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Bold"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Bold Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "ExtraBold"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "ExtraBold Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "ExtraLight"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "ExtraLight Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Light"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Light Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Medium"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Medium Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Regular"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "SemiBold"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "SemiBold Italic"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Thin"
+      },
+      {
+        "family": "Fira Sans",
+        "style": "Thin Italic"
+      }
+    ]
+  }
+}

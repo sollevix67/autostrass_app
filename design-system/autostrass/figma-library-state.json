@@ -3,9 +3,9 @@
   "date": "2026-11-08",
   "fileKey": "UP7nQVTU4dlyfEiQdG2IYe",
   "fileUrl": "https://www.figma.com/design/UP7nQVTU4dlyfEiQdG2IYe",
-  "sessionId": "82b3d40c-67bb-4e75-845b-cf6fd28f137d",
-  "phase": "phase1",
-  "step": "P1.g",
+  "sessionId": "5f2f50c6-3b8f-441b-b144-7cc85872a1b0",
+  "phase": "phase2",
+  "step": "P2.a",
   "status": "blocked",
   "approvedScope": {
     "architecture": "separate-light-dark-collections",
@@ -937,16 +937,52 @@
     "P1.b:Typography:4",
     "P1.f:effects",
     "P1.f:text:0",
-    "P1.f:text:1"
+    "P1.f:text:1",
+    "P1.g"
   ],
   "createdNodeIds": [],
-  "validations": [],
+  "validations": [
+    {
+      "date": "2026-11-14",
+      "step": "P1.g",
+      "validation": {
+        "kind": "foundations",
+        "variables": 112,
+        "aliases": 23,
+        "collections": [
+          {
+            "name": "Color Light",
+            "variableCount": 49,
+            "modes": 1
+          },
+          {
+            "name": "Color Dark",
+            "variableCount": 49,
+            "modes": 1
+          },
+          {
+            "name": "Dimensions",
+            "variableCount": 11,
+            "modes": 1
+          },
+          {
+            "name": "Typography",
+            "variableCount": 3,
+            "modes": 1
+          }
+        ],
+        "textStyles": 12,
+        "effectStyles": 6,
+        "passed": true
+      },
+      "identifiersVerified": 134
+    }
+  ],
   "pendingValidations": [
-    "P1.b",
-    "P1.c",
-    "P1.d",
-    "P1.e",
-    "P1.f"
+    "P2.a:existing-page-inspection",
+    "P2.a:page-structure",
+    "P2.b:foundations-documentation",
+    "P2.c:metadata-and-screenshots"
   ],
   "literalGeometryPolicy": "Dimensions CSS littérales conservées exactement et documentées ; aucun arrondi vers un token voisin.",
   "creationSummary": {
@@ -986,54 +1022,135 @@
       "script": "design-system/autostrass/figma-scripts/check-foundations.js",
       "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
       "executed": false
+    },
+    {
+      "date": "2026-11-14",
+      "step": "P1.g",
+      "status": "passed",
+      "script": "design-system/autostrass/figma-scripts/check-foundations.js",
+      "sessionId": "5f2f50c6-3b8f-441b-b144-7cc85872a1b0",
+      "executed": true,
+      "complete": true,
+      "identifiersVerified": 134
+    },
+    {
+      "date": "2026-11-14",
+      "step": "P2.a",
+      "status": "failed",
+      "message": "Page initiale différente du registre ; contrôler avant création.",
+      "checksReached": "Existing page identity/type/empty-content guard; reason unresolved because the metadata inspection was quota-blocked.",
+      "mutationsApplied": false,
+      "debugUuid": "2170bba6-00ad-4a13-a78e-37c6c9142db7",
+      "complete": false
+    },
+    {
+      "date": "2026-11-14",
+      "step": "P2.a",
+      "status": "blocked",
+      "tool": "get_metadata",
+      "nodeId": "0:1",
+      "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
+      "executed": false
     }
   ],
   "blocker": {
     "code": "FIGMA_MCP_STARTER_READ_QUOTA",
-    "date": "2026-11-08",
+    "date": "2026-11-14",
+    "step": "P2.a",
     "plan": "Starter",
-    "seat": "View",
     "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
+    "tool": "get_metadata",
+    "nodeId": "0:1",
     "documentation": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/",
-    "documentedLimit": "Up to 20 read tool calls per month",
-    "exemptions": [
-      "add_code_connect_map",
-      "create_new_file",
-      "generate_figma_design",
-      "whoami"
-    ],
-    "interpretation": "The corrected foundation read check was rejected. Write exemptions do not establish that use_figma writes or mandatory validation are available.",
-    "resetDate": null
+    "resetDate": null,
+    "interpretation": "P1.g succeeded before the quota rejection. P2.a failed its existing-page guard before mutation; required inspection was then denied. No P2 pages or nodes created."
   },
   "resume": {
-    "step": "P1.g",
-    "prerequisites": "Figma read access available again; reuse the existing file and approved Starter architecture.",
-    "script": "design-system/autostrass/figma-scripts/check-foundations.js",
-    "invocation": "Load figma-use and figma-generate-library, create_session, embed the plan JSON and validation function, then return await validateFoundations(expected).",
+    "step": "P2.a",
+    "prerequisites": "Read access available again; inspect actual existing-page content before any mutation. P1.g is validated and existing foundation identifiers were confirmed on 2026-11-14.",
+    "foundationChecker": "figma-scripts/check-foundations.js",
+    "invocation": "Reuse the recorded session for this same task. Inspect Page 1 (0:1), confirm the current source files, then create and validate the approved documentation structure incrementally.",
     "afterValidation": [
-      "Persist successful validation and actual identifiers",
-      "P2: documentation and visual verification",
-      "P3: 16 families, separately in dependency order",
+      "P2.a: inspect and build the page structure without overwriting existing content",
+      "P2.b: document all approved foundations",
+      "P2.c: validate metadata and screenshots",
+      "P3: build 16 component families separately from current sources",
       "P4: integration and QA"
     ],
-    "preserveExistingEntities": true
+    "preserveExistingEntities": true,
+    "doNotRepeatCompletedFoundationCreation": true
   },
   "localVerification": {
-    "date": "2026-11-08",
-    "scope": "Repository artifacts only; does not replace the pending remote Figma check.",
+    "date": "2026-11-14",
+    "scope": "Repository artifacts; remote P1.g also passed separately.",
     "variablesCssParity": 112,
     "aliasesResolvedInPlan": 23,
     "stylesRegistered": 18,
     "entityIdsUnique": true,
     "checkerSyntaxPassed": true,
-    "graphify": {
-      "version": "0.9.104",
-      "nodes": 2832,
-      "edges": 5764,
-      "communities": 164,
-      "md5Sources": 133,
-      "htmlJsonConsistent": true
+    "sourceComparison": {
+      "referenceCommit": "6fdba67",
+      "sources": 15,
+      "unchanged": 10,
+      "changed": [
+        "design-system/autostrass/MASTER.md",
+        "src/App.css",
+        "src/components/ConfirmDialog.tsx",
+        "src/components/forms/FormFields.tsx",
+        "src/forms.css"
+      ],
+      "foundationsAffected": false
     },
-    "applicationSourcesUnchangedFrom": "6fdba67"
-  }
+    "graphify": {
+      "version": "0.9.108",
+      "nodes": 3019,
+      "edges": 6102,
+      "communities": 187,
+      "md5Sources": 181,
+      "htmlJsonConsistent": true
+    }
+  },
+  "previousSessionIds": [
+    "82b3d40c-67bb-4e75-845b-cf6fd28f137d"
+  ],
+  "updatedAt": "2026-11-14",
+  "blockerHistory": [
+    {
+      "code": "FIGMA_MCP_STARTER_READ_QUOTA",
+      "date": "2026-11-08",
+      "plan": "Starter",
+      "seat": "View",
+      "message": "You've reached the Figma MCP tool call limit on the Starter plan.",
+      "documentation": "https://developers.figma.com/docs/figma-mcp-server/rate-limits-access/",
+      "documentedLimit": "Up to 20 read tool calls per month",
+      "exemptions": [
+        "add_code_connect_map",
+        "create_new_file",
+        "generate_figma_design",
+        "whoami"
+      ],
+      "interpretation": "The corrected foundation read check was rejected. Write exemptions do not establish that use_figma writes or mandatory validation are available.",
+      "resetDate": null
+    }
+  ],
+  "localVerificationHistory": [
+    {
+      "date": "2026-11-08",
+      "scope": "Repository artifacts only; does not replace the pending remote Figma check.",
+      "variablesCssParity": 112,
+      "aliasesResolvedInPlan": 23,
+      "stylesRegistered": 18,
+      "entityIdsUnique": true,
+      "checkerSyntaxPassed": true,
+      "graphify": {
+        "version": "0.9.104",
+        "nodes": 2832,
+        "edges": 5764,
+        "communities": 164,
+        "md5Sources": 133,
+        "htmlJsonConsistent": true
+      },
+      "applicationSourcesUnchangedFrom": "6fdba67"
+    }
+  ]
 }
