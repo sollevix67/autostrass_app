@@ -338,4 +338,11 @@ depuis le correctif fiscal précédent. Fixture alignée (TVA 20 %), nouvelle
 exécution réussie : **544 contrôles sur 19 formulaires**, confirmations empilées
 comprises. Total : **1 030 contrôles Chromium réussis** ; captures et rapports des
 recettes existantes actualisés. Guides alignés sur le nouveau comportement.
-Préparation du commit applicatif puis de l'actualisation Graphify et du push.
+Revue indépendante finale conforme : périmètre exhaustif, fixtures, scripts et
+guides cohérents. Correctif et preuves commités dans `515aa8f`. Graphify 0.9.108
+actualisé depuis cette base : **3 188 nœuds, 6 562 liens, 197 communautés**,
+quatre hyperedges ; 508 entrées du manifeste conformes, aucune source manquante,
+aucun doublon ni lien orphelin. Les 20 localisations de passation sont recalées
+et le HTML régénéré depuis le JSON. Sans appel LLM ; limites antérieures
+conservées : CSS non indexé, 16 SQL sans parseur. Documentation et Graphify sont
+livrés dans un second commit, avec le correctif, sur `origin/main`.
