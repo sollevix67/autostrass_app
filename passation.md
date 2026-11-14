@@ -1,5 +1,19 @@
 # Passation — Autostrass App
 
+**14 novembre — retraits d'outils TokenEconomizer** : compétence
+`tokeneconomizer:toolprune` invoquée, consultation `show` uniquement. Passation,
+consignes et Graphify relus ; tête initiale `6ad0aff`, arbre propre,
+`origin/main` identique après fetch. Commande native PowerShell via le bootstrap
+installé réussie : zéro session observée, zéro prompt, catalogue absent,
+aucun retrait appliqué ou proposé. Aucun avertissement, configuration inchangée.
+Contrôle Graphify délégué en lecture seule ; actualisation du manifeste/cache
+et livraison de cette trace documentaire par commit/push sur `origin/main`.
+Contrôle conforme : 181 empreintes de code, 3 018 nœuds uniques, 6 100 liens,
+188 communautés et aucun lien orphelin ; JSON/HTML versionnés inchangés depuis
+la précédente vérification. Graphify 0.9.108 actualisé sans appel LLM, sans
+changement de topologie ; limites CSS/SQL et sémantique documentaire conservées.
+Contrôles Git avant livraison ; aucun changement applicatif ni test requis.
+
 **14 novembre — état de TokenEconomizer** : compétence `tokeneconomizer:status`
 invoquée par l'utilisateur. Passation, consignes et artefacts Graphify relus ;
 tête initiale `13c150c`, arbre propre. Consultation des statistiques locales,
