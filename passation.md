@@ -1,747 +1,227 @@
-# Passation — Autostrass App
+# Passation — Autostrass
 
-**14 novembre — retrait de Figma du dépôt** : demande utilisateur de supprimer
-les éléments liés à Figma en raison des quotas. Passation, consignes et
-Graphify relus avant intervention ; tête initiale `e5f1907`, arbre propre.
-Inventaire : sept artefacts dédiés dans `design-system/autostrass`, aucune
-dépendance npm Figma. Nettoyage des références documentaires et inspection
-des sauvegardes/caches du graphe délégués ; retrait des priorités de reprise,
-actualisation Graphify, vérifications et livraison par commit/push prévus.
-Sept artefacts dédiés supprimés, états et historiques de construction retirés
-de cette passation ; la reprise prioritaire porte désormais sur les devis.
-Les sources React/CSS et le design system applicatif sont conservés.
-Références isolées retirées de trois rapports, du guide d'organisation des
-assets et du catalogue de styles. Les métadonnées inutilisées des icônes
-sont retirées avec actualisation de l'empreinte du catalogue ; contrôles
-des contrats de données et validation du catalogue délégués.
-Le plugin utilisateur et le fichier distant sont hors du périmètre demandé.
-`npm run lint` réussi sans avertissement. Inventaire Graphify : quatre
-sauvegardes datées et un cache AST conservent les artefacts retirés ; purge
-ciblée prévue après régénération, en conservant les autres données du graphe.
-Les suppressions de dossiers via PowerShell ont été refusées par le contrôle
-automatique ; suppression des seuls fichiers versionnés via `apply_patch`.
-Métadonnées d'icônes retirées ; un logo de la marque reste à retirer du
-catalogue avec ajustement des compteurs et empreintes.
-Catalogue terminé : 1 514 métadonnées inutilisées et le logo retirés,
-1 511 icônes conservées. Trois compteurs et l'empreinte SHA-256 du catalogue
-actualisés. Vingt-quatre tests de contrats réussis ; validation des 12 domaines,
-22 stacks et règles UI conforme. Aucune référence résiduelle dans les rapports
-ou les prompts. Aucun rafraîchissement réseau des catalogues effectué.
-`graphify update . --force` 0.9.108 réussi sans appel LLM : 3 006 nœuds,
-6 087 liens et 188 communautés. Les quatre sauvegardes concernées (20 fichiers)
-et le cache AST obsolète ont été retirés après régénération du graphe courant.
-Recherche globale : les seuls résultats restants figurent dans cette trace
-du retrait ; aucune référence dans les artefacts du graphe. Revue indépendante
-finale conforme : 180 MD5 de code, aucun fichier manquant, aucun lien orphelin,
-quatre hyperedges valides et HTML/JSON identiques avec multiplicité. Les trois
-nœuds de `MASTER.md` sont conservés. `git diff --check` conforme ; après fetch,
-`origin/main` identique à `e5f1907`. Aucun changement applicatif ni migration.
-Métadonnées Graphify réactualisées après cette trace, sans changement de
-topologie ni nouvelle sauvegarde. Livraison de tous les changements par
-commit et push sur `origin/main` ; prochaine priorité métier : les devis.
+État consolidé le **14 novembre 2026**, à partir du code et de la revue achevée
+sur `397ddee` (`main`). Ce fichier sert à reprendre le travail ; les preuves et
+procédures détaillées sont dans les guides liés. L'ancien journal reste disponible
+avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
 
-**14 novembre — configuration de TokenEconomizer** : compétence
-`tokeneconomizer:config` invoquée, consultation `show` uniquement. Passation,
-consignes et Graphify relus ; tête initiale `874fc96`, arbre propre,
-`origin/main` identique après fetch. Commande native PowerShell via le bootstrap
-installé réussie, sans avertissement : plugin activé, micro-skills `envfacts`
-(quatre faits, 150 jetons maximum), retraits `propose` avec protections
-`collaboration`/`image_media`, garde `nudge`. Import historique, repomap et
-droid désactivés ; mode `auto`, shadow désactivé. Aucun réglage modifié.
-Contrôle indépendant ciblé sur l'absence de changement de code et de graphe ;
-actualisation Graphify et livraison documentaire par commit/push sur `origin/main`.
-Contrôle conforme : code et JSON/HTML versionnés identiques à `6ad0aff`,
-3 018 nœuds, 6 100 liens et 188 communautés. Actualisation du manifeste/cache
-sans appel LLM ; limites CSS/SQL et sémantique documentaire conservées.
-Aucun changement applicatif ni test supplémentaire requis pour cette consultation.
+## Prochaines priorités
 
-**14 novembre — retraits d'outils TokenEconomizer** : compétence
-`tokeneconomizer:toolprune` invoquée, consultation `show` uniquement. Passation,
-consignes et Graphify relus ; tête initiale `6ad0aff`, arbre propre,
-`origin/main` identique après fetch. Commande native PowerShell via le bootstrap
-installé réussie : zéro session observée, zéro prompt, catalogue absent,
-aucun retrait appliqué ou proposé. Aucun avertissement, configuration inchangée.
-Contrôle Graphify délégué en lecture seule ; actualisation du manifeste/cache
-et livraison de cette trace documentaire par commit/push sur `origin/main`.
-Contrôle conforme : 181 empreintes de code, 3 018 nœuds uniques, 6 100 liens,
-188 communautés et aucun lien orphelin ; JSON/HTML versionnés inchangés depuis
-la précédente vérification. Graphify 0.9.108 actualisé sans appel LLM, sans
-changement de topologie ; limites CSS/SQL et sémantique documentaire conservées.
-Contrôles Git avant livraison ; aucun changement applicatif ni test requis.
+1. Traiter les **16 défauts de la [revue intégrale](specs/revue-code-2026-11-14.md)**
+   (sept P1, huit P2, un P3), en priorité Caisse, intégrité fiscale et faux succès API.
+2. Développer les **devis**, puis les **commandes fournisseurs** : numérotation,
+   conversion, attribution des réceptions et PDF manquants. [TODO.md](TODO.md)
+   reste le cahier des charges ; un CRUD ne couvre pas toutes ses exigences.
+3. Vérifier les migrations et le redémarrage API sur chaque installation ;
+   réaliser les recettes certificat, Cloudflare Turnstile et PDA Zebra TC22.
+   L'authentification Android avec Turnstile reste à définir.
+4. Réconcilier le stock historique excédentaire par comptage explicite, sans
+   redistribution automatique ; recontrôler le proxy Vite après les anciens
+   `ECONNRESET` documentés lors de la recette transferts.
 
-**14 novembre — état de TokenEconomizer** : compétence `tokeneconomizer:status`
-invoquée par l'utilisateur. Passation, consignes et artefacts Graphify relus ;
-tête initiale `13c150c`, arbre propre. Consultation des statistiques locales,
-contrôle du graphe et livraison de cette trace documentaire par commit/push.
-Commande native PowerShell via le bootstrap installé réussie : zéro session
-consolidée, zéro jeton effectif, zéro surcoût et aucun fait injecté ou retrait
-proposé/appliqué ; garde non encore appris. Configuration conservée : `envfacts`,
-`propose`, `nudge`, repomap désactivé. Aucun avertissement du statut.
-`graphify update .` 0.9.108 réussi sans appel LLM : aucun changement de
-topologie ; JSON, HTML et rapport intacts, manifeste et cache actualisés.
-Limites CSS/SQL et ancienne compétence
-Copilot inchangées ; contrôle indépendant du graphe délégué en lecture seule.
-`git diff --check` réussi ; après fetch, `origin/main` identique à `13c150c`.
-Périmètre documentaire et métadonnées Graphify, sans changement applicatif.
-Contrôle indépendant conforme : 181 empreintes de code, 3 018 nœuds uniques,
-6 100 liens, 188 communautés, aucun lien orphelin, HTML/JSON identiques.
-La métadonnée de construction reste à `3b167e81`, conformément à l'absence
-de changement de topologie ; manifeste/cache réactualisés après cette trace.
-Livraison de la passation et des métadonnées par commit/push sur `origin/main`.
+## Architecture et repères
 
-**14 novembre — installation de TokenEconomizer dans Codex** : installation
-demandée après analyse. Lecture préalable de la passation, des consignes et de
-Graphify ; tête initiale `3b167e8`, arbre propre. Installation prévue dans un
-emplacement utilisateur persistant, hors Autostrass, avec `microskills=envfacts`,
-`toolprune=propose` et protection de collaboration/image_media pour ce dépôt.
-Vérification du CLI et des hooks avant installation ; contrôle indépendant des
-commandes et protections délégué en lecture seule. Aucun benchmark ni appel de
-modèle nécessaire à cette installation.
-CLI détecté : `codex-cli 0.166.0`, commandes marketplace/add/list disponibles,
-Python 3.13 et Git présents ; 181 empreintes Graphify conformes. Documentation
-du plugin relue : hooks Windows natifs, clone source à conserver, approbation
-des hooks requise par Codex au démarrage ; aucun contournement de confiance utilisé.
-Source durable clonée dans `~/.codex/plugin-sources/TokenEconomizer`, révision
-`7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0` identique à celle analysée.
-Manifestes vérifiés : plugin `tokeneconomizer` 0.1.0, cinq événements de hooks
-Codex et cinq compétences de commande. Codex Security présent avant ajout.
-Marketplace locale ajoutée, puis `codex plugin add tokeneconomizer@tokeneconomizer`
-réussi : version 0.1.0 copiée dans le cache Codex. Configuration via le bootstrap
-de la copie installée pour vérifier aussi sa résolution du package source.
-L'approbation persistante des hooks reste distincte de l'installation du plugin.
-Configuration locale relue conforme : `envfacts`, `propose`, protections
-collaboration/image_media, repomap et import historique désactivés ; garde
-`nudge` conservé. `status` indique zéro session, aucun retrait appliqué et aucun
-coût ; `doctor` confirme Python, état accessible, dépôt approuvé et absence
-d'erreurs. `plugin list --json` confirme installé et activé. Diagnostic complémentaire
-de confiance des hooks via le protocole officiel du CLI, sans appel de modèle.
-Le protocole `hooks/list` détecte les cinq événements activés, sans erreur, mais
-encore non approuvés. Manifestes et bootstrap installés identiques à la source
-analysée. L'installation demandée autorise l'enregistrement de confiance des
-seuls cinq hooks TokenEconomizer via les clés `hooks.state.*.trusted_hash`,
-en conservant le contrôle d'empreinte de Codex et les autres réglages.
-Confiance enregistrée via `config/batchWrite` avec contrôle de version du fichier.
-Le contrôle d'égalité littérale a détecté la normalisation officielle de Codex :
-l'empreinte combinée est répartie entre `trusted_hash` et `trusted_content_hash`.
-Inspection ciblée : cinq enregistrements TokenEconomizer, aucun réglage hors
-hooks modifié ; validation adaptée à ce format, sans réécriture de la configuration.
-Contrôle final via une nouvelle instance locale : cinq hooks activés et approuvés,
-empreintes normalisées conformes, aucune erreur. `repos migrate` initialisé sans
-état à déplacer ; diagnostic conforme. Plugin prêt pour un nouveau démarrage
-de Codex, sans lancer de session LLM dans cette intervention. Guide rédigé dans
-`specs/tokeneconomizer-installation.md`, rapport d'analyse relié à l'état installé.
-Seuls les documents et Graphify sont versionnés ; source, configuration et
-mémoire utilisateur restent hors dépôt.
-Preuves d'installation enregistrées dans `specs/tokeneconomizer-installation.json`
-sans copie de configuration utilisateur ou secret. Graphify 0.9.108 actualisé :
-3 018 nœuds, 6 100 liens et 188 communautés ; guide et sections indexés,
-sauvegarde du jour actualisée, sans appel LLM. Limites CSS/SQL et sémantique
-documentaire inchangées. Vérifications finales et synchronisation Git en cours.
-Vérifications finales conformes : plugins et hooks Codex stables activés,
-cinq hooks approuvés, installation relue, guide/preuves cohérents et liens valides.
-Graphify : 181 empreintes de code conformes, HTML/JSON identiques, aucun doublon
-ni lien orphelin. `git diff --check` réussi ; après fetch, `origin/main` identique
-à `3b167e8`. Livraison des documents, passation et Graphify par commit/push sur
-`origin/main`. Aucun changement applicatif ni accès DB ; redémarrer Codex pour
-charger le plugin dans une nouvelle session.
+React 19, TypeScript, Vite et React Router 7 ; Express 5, MariaDB/mysql2 et Drizzle.
+Express est le backend livré, malgré la mention initiale NestJS dans TODO.
+Vite relaie `/api` vers le port 3001. Les commandes `tsx` actuelles ne surveillent
+pas les fichiers : **redémarrer l'API** après un changement serveur.
 
-**14 novembre — analyse de Microsoft TokenEconomizer** : demande d'analyse
-du dépôt public `microsoft/TokenEconomizer`. Lecture préalable de la passation,
-des consignes et des artefacts Graphify ; tête initiale `4483813`, arbre propre.
-Le graphe courant indique 3 003 nœuds, 6 086 liens et 187 communautés ; ses
-empreintes seront contrôlées puis ses artefacts actualisés avant livraison.
-Analyse du code et des preuves de performance dans une copie temporaire externe,
-avec revue répartie entre architecture et qualité, sans intégration applicative.
-Copie temporaire créée hors dépôt ; révision examinée
-`7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0` (12 novembre 2026).
-Contrôle initial Graphify réussi : 181 empreintes de code conformes,
-aucun nœud dupliqué ni lien orphelin. Lecture du README et de l'inventaire ;
-revues architecture/Codex/Windows et tests/méthodologie déléguées en lecture seule.
-Aucune activation du plugin ou exécution de benchmark facturé autorisée par cette analyse.
-Métadonnées publiques GitHub contrôlées : dépôt créé le 13 octobre 2026,
-publication `v0.1.0` le 26 octobre, dernière tête du 12 novembre ; licence Apache-2.0.
-Runtime Python ≥3.10 sans dépendance obligatoire ; défauts actuels : micro-skills
-désactivées, pruning et loopguard activés. Distinction relevée entre support
-Codex/Windows et problème ouvert des hooks Copilot sous PowerShell.
-PR tarifaire GPT-6/Gemini 4 encore ouverte ; fiabilité du coût à vérifier sur la tête.
-Lecture croisée architecture/configuration/CI et page officielle : chiffres annoncés
-cohérents entre README, figures et site, mais artefacts bruts non versionnés.
-Les contrôleurs de benchmark peuvent arrêter un run ; le plugin se limite à
-rediriger/signaler. Pruning Codex limité à collaboration/goals/image_media,
-sans retrait MCP ou DB. Suite hors ligne lancée dans un environnement
-temporaire isolé par l'agent qualité, sans CLI agent ni appels de modèle.
-Rapport rédigé dans `specs/tokeneconomizer-analyse.md` : architecture, résultats,
-limites de transposition, repli GPT-6, données et proposition d'essai non activée.
-CI publique de la tête analysée vérifiée réussie ; contradiction documentaire
-Windows résolue par la couverture Codex 0.164.0 avec modèle local simulé.
-Revue architecture terminée : protection de collaboration/image_media conseillée,
-et proxy de vérification incomplet pour build/lint/scripts directs Autostrass.
-Suite locale hors ligne terminée avec dix échecs initiaux ; diagnostic ciblé en cours,
-notamment attentes POSIX dans les tests expérimentaux sous Windows.
-Graphify 0.9.108 actualisé sans LLM : 3 011 nœuds, 6 093 liens,
-192 communautés, sauvegarde du 14 novembre et HTML/JSON/rapport régénérés.
-Limites conservées : CSS non classé, 15 SQL sans parseur, sémantique documentaire
-non relancée. Avertissement de compétence Graphify Copilot ancienne inchangé ;
-aucune installation supplémentaire effectuée.
-Validation initiale du graphe réussie : 181 empreintes conformes, aucun doublon
-ni lien orphelin. Tests externes : 1 414 collectés ; premier passage 1 366 réussis,
-38 ignorés, dix échecs. Deux échecs dus au PATH isolé ont réussi en reprise ciblée.
-Bilan contrôlé : plugin 985 réussis/32 ignorés, expériences 383 réussis/6 ignorés/
-huit échecs POSIX sous Windows ; aucune suite complète présentée comme verte.
-Manifeste SWE-Bench 277 tâches confirmé ; anciens commentaires 229 distingués.
-Rapport complété avec ces résultats et limites ; aucun test applicatif Autostrass
-requis pour les seuls changements documentaires et artefacts de graphe.
-Synthèse versionnée `specs/tokeneconomizer-validation.json` : Python 3.13.17,
-pytest 9.2.0, commandes, isolation, échecs et empreintes de quatre journaux
-temporaires vérifiées. Données de test et chemins temporaires anonymisés ;
-aucun journal brut ni identifiant réel versionné. Graphify HTML/JSON contrôlés :
-3 011 identifiants et 6 093 extrémités de liens identiques ; rapport indexé
-avec ses sections, sans prétendre à une nouvelle extraction sémantique.
-Contrôles finaux conformes : liens locaux, JSON de validation, empreinte du
-rapport et 181 sources de code, HTML/JSON sans doublon ni orphelin ;
-`git diff --check` réussi. Après fetch, `origin/main` identique à `4483813`.
-Rapport, synthèse, passation et artefacts Graphify livrés par commit et push
-sur `origin/main`. Aucun changement applicatif, migration, accès DB, configuration
-Codex ou activation du plugin ; résidus de revue conservés dans le répertoire temporaire.
-
-**13 novembre — revue WCAG 2.2** : demande de revoir le code avec la
-nouvelle compétence `accessibility` 2.0. Lecture préalable de la passation,
-de Graphify et du skill/références ; tête initiale `852e5a2`, arbre propre,
-180 empreintes de code conformes. Revue des composants, navigation, formulaires
-et styles, avec contrôles de l'interface et vérification des constats avant
-rapport. Aucun changement métier ni écriture en base prévu pour cette revue.
-Revue répartie entre composants, navigation/styles et vues. Trois mécanismes
-confirmés indépendamment dans Chromium : tri `DataTable` inaccessible au clavier,
-résumé d'erreurs reprenant le focus à chaque rendu et notification extérieure
-ignorée par l'arbre d'accessibilité tant qu'un dialogue natif est ouvert.
-Recette du build courant lancée avec Chrome installé et axe-core 4.14.0,
-API entièrement simulée ; script reproductible `review-accessibility-ui.mjs`,
-axe local de recette hors Git. Les constats WCAG sont distingués des règles
-de bonne pratique et des limites de couverture après vérification des écrans.
-Recette terminée : 101 scans axe, 24 routes et 22 dialogues clair/sombre,
-quatre vues à 320 px, menu à 375 px et contrôles clavier/CDP. Sept constats
-rapportés (trois P1, quatre P2) ; aucune erreur JavaScript ni écriture simulée
-ou réelle. Les cinq premiers sélecteurs de recette ont été corrigés puis seuls
-ces scénarios repris ; aucune erreur applicative liée à ces reprises.
-Rapport : [accessibilite-wcag-review.md](specs/accessibilite-wcag-review.md),
-JSON synthétique et quatre captures dans `specs/screenshots/accessibility-review/`.
-Les résultats axe complets restent hors Git dans `.a11y-review.local/`.
-14 couples de tokens par thème conformes ; diagnostics `best-practice`
-distincts des constats WCAG, examens automatiques incomplets et absence de
-recette NVDA/zoom natif explicités. Script de revue vérifié par Node et lint,
-aucun fichier applicatif corrigé pendant la revue.
-Preuves, absence d'écriture et périmètre de fichiers revérifiés ; Graphify
-actualisé : 3 003 nœuds uniques, 6 086 liens, 187 communautés, aucun lien
-orphelin, HTML/JSON cohérents et 181 empreintes de code conformes. Limites
-CSS/SQL et sémantique documentaire inchangées. `git diff --check` conforme ;
-tête distante identique à `852e5a2` après fetch. Rapport, script, captures,
-passation et Graphify livrés par commit et push sur `origin/main`.
-
-**13 novembre — installation de WCAG Accessibility** : demande
-utilisateur d'exécuter `npx skills add github.com/addyosmani/web-quality-skills
---skill wcag-accessibility`, de vérifier la disponibilité puis d'attendre.
-Lecture préalable de la passation, de Graphify et de `skill-installer` ; tête
-initiale `468f184`, arbre propre, 180 empreintes de code conformes. Installation
-limitée à la compétence demandée ; aucun audit d'accessibilité ni changement
-applicatif lancé. Vérification de l'emplacement, du nom et du fichier `SKILL.md`
-après installation, puis documentation et synchronisation du dépôt.
-Commande exacte exécutée avec `skills` 1.8.1 : dépôt cloné, six compétences
-découvertes, échec `SKILLS_NO_MATCHING_SKILLS` pour `wcag-accessibility`.
-Le nom disponible est `accessibility`. Vérification du contenu officiel et de
-la correspondance WCAG avant correction du nom ; aucun autre skill installé.
-Correspondance confirmée : la page AI UX Playground expose `name: accessibility`
-et WCAG 2.2 (copie 1.1) ; le dépôt officiel fournit le même skill en version 2.0,
-avec `references/WCAG.md`. Correction du sélecteur vers `--skill accessibility`,
-installation pour Codex uniquement, à la portée du projet.
-Installation réussie par `npx skills add github.com/addyosmani/web-quality-skills
---skill accessibility --agent codex --yes --json` : compétence `accessibility`
-copiée dans `.agents/skills/accessibility`, scope `project`, Codex uniquement.
-Disponibilité confirmée par `npx skills list --agent codex --json` : statut
-`tracked`, nom `accessibility`, source correcte ; `skills-lock.json` conserve
-l'empreinte `c668809f5df57feb87cc06f1bc37fb340d1d92e26bacb6edbeab9258d22e76a5`.
-Contrôle indépendant réussi : version 2.0, fichiers `SKILL.md`, `WCAG.md` et
-`A11Y-PATTERNS.md` présents, références internes résolues. Aucun autre skill
-installé ni audit lancé. Actualisation Graphify et livraison documentaire,
-puis attente de la prochaine instruction utilisateur.
-Graphify actualisé et contrôlé : 2 972 nœuds uniques, 6 050 liens,
-185 communautés, aucun lien orphelin, HTML/JSON cohérents et 180 empreintes
-de code conformes. Limites CSS/SQL et sémantique documentaire inchangées.
-`git diff --check` conforme ; tête distante identique à `468f184` après fetch.
-Compétence, registre d'installation, passation et Graphify livrés par commit
-et push sur `origin/main`. Aucun changement applicatif ou de dépendance npm,
-aucun test applicatif requis. Compétence disponible dès la prochaine instruction.
-Contrôle des fichiers indexés : un espace final dans l'exemple HTML du `SKILL.md`
-tiers (ligne 61) est conservé pour préserver le contenu installé et son empreinte.
-Le contrôle `git diff --cached --check` hors ce fichier tiers est conforme.
-
-**13 novembre — archivage et suppression des neuf fichiers inutilisés** :
-demande utilisateur de sauvegarder les fichiers identifiés dans un ZIP puis de
-les supprimer. Périmètre : les neuf fichiers sans usage interne du rapport,
-41 350 octets ; les nettoyages conditionnels et les anciennes preuves restent
-distincts. Lecture préalable de la passation et de Graphify ; tête initiale
-`181c545`, arbre propre, 182 empreintes de code conformes. Préparation d'une
-archive versionnée avec chemins relatifs et manifeste SHA-256 ; vérification
-intégrale du ZIP avant suppression, puis build/lint et actualisation Graphify.
-Archive créée : [fichiers-inutilises-2026-11-13.zip](backups/nettoyage/fichiers-inutilises-2026-11-13.zip),
-23 660 octets, neuf fichiers sources et deux documents de manifeste/restauration.
-Vérification CRC, chemins relatifs, tailles, SHA-256 et égalité binaire avec les
-originaux réussie ; empreinte ZIP
-`989ebcb8182022a727f078d23c40a592fb7869adb1f8f63afaa191d3594a3065`.
-Contrôle indépendant : aucune référence applicative, import dynamique ou glob
-consommant les candidats ; suppression seulement après sauvegarde conforme.
-Contrôle indépendant du ZIP réussi : neuf sources, deux documents, CRC et
-empreintes conformes, chemins sûrs et contenus identiques aux fichiers présents.
-La commande groupée PowerShell avec cibles calculées a été refusée avant
-exécution par le contrôle automatique (`blocked by policy`) ; aucune suppression
-effectuée par cette tentative. Reprise par chemins littéraux explicites,
-sans suppression récursive, avec la même sauvegarde vérifiée.
-Les neuf suppressions ciblées ont réussi ; archive conservée. Compilation,
-lint et test de correspondance des erreurs SQL lancés après suppression ;
-rapport d'audit mis à jour pour relier la sauvegarde et distinguer l'état initial.
-Validation après suppression : `npm run build`, `npm run lint` et
-`npm run test:errors` réussis ; avertissement Vite (>500 kB) préexistant.
-Contrôle final de l'archive réussi,
-neuf chemins absents, aucun fichier applicatif restant modifié. Actualisation
-Graphify lancée pour retirer les sources supprimées du graphe courant.
-Graphify 0.9.108 actualisé et vérifié : 2 908 nœuds uniques, 5 987 liens,
-192 communautés, aucun lien orphelin, HTML/JSON cohérents ; 180 empreintes
-de code conformes (dont 138 TS/TSX/JS/MJS), aucune source manquante et aucun
-des neuf fichiers supprimés dans les sources du manifeste, des nœuds ou liens.
-Limites CSS, 15 SQL sans parseur et sémantique documentaire inchangées.
-`git diff --check` conforme ; après fetch, tête distante identique à `181c545`.
-Archive, suppressions, rapport, passation et Graphify livrés par commit et push
-sur `origin/main`. Aucun changement de schéma, droit ou donnée applicative.
-
-**13 novembre — audit des fichiers inutiles** : lecture de la passation,
-des consignes du dépôt, du rapport et du manifeste Graphify avant l'analyse.
-État initial propre sur `main`, tête `aec0e60`. Inventaire des fichiers suivis,
-recherche des références applicatives, doublons et artefacts en lecture seule ;
-aucune suppression demandée. Le graphe du 10 novembre a servi à l'orientation.
-Inventaire terminé : 805 fichiers suivis, 47 511 424 octets ; Graphify représente
-28 579 367 octets, dont sept sauvegardes datées (19 551 100 octets) et un cache.
-Les 182 empreintes de code (TS/TSX/JS/MJS/CJS/Python) du manifeste initial sont
-conformes, aucun fichier indexé manquant. Audits complémentaires répartis entre
-code, scripts/documents et assets/doublons, sans modification applicative.
-Résultats recoupés : neuf fichiers sans usage interne retrouvé (41 350 octets) :
-deux utilitaires TS, quatre assets, deux journaux et l'ancien journal Drizzle `.bak`.
-Les cinq captures `-PCDT67` (701 563 octets) reproduisent les originales du commit
-`f1d4b3a`, pas les captures actuelles ; ce sont des sauvegardes récupérables via Git.
-Les seeds, snapshots/migrations actifs et scripts de recette restent utiles.
-Résidu local `.ventes-review.local` : 149 486 120 octets, ignoré par Git ; aucun
-processus MariaDB et aucun processus Node pointant vers ce répertoire détecté.
-Aucun contenu sensible de ces données ni aucune base applicative consultés.
-Rapport rédigé : [fichiers-inutiles.md](specs/fichiers-inutiles.md), avec preuves,
-tailles, neuf candidats, sauvegardes/caches et fichiers à conserver. Six paires
-de références de prompts sont identiques mais leurs chemins sont utilisés ;
-mutualiser exige de corriger les liens. Aucun des fichiers candidats supprimé.
-`graphify update .` 0.9.108 a actualisé le graphe, le manifeste, le HTML, le
-rapport et la sauvegarde du 13 novembre : 2 925 nœuds uniques, 5 999 liens,
-172 communautés, aucun lien orphelin ; identifiants et extrémités HTML/JSON
-identiques. Les 182 empreintes de code (dont 140 TS/TSX/JS/MJS) sont conformes.
-Le CLI a automatiquement remplacé l'ancien cache AST 0.9.104 par celui de
-0.9.108 ; ces changements techniques accompagnent l'actualisation du graphe,
-pas une suppression des candidats. Compétence Claude locale actualisée par le
-CLI ; aucun renommage LLM ni extraction sémantique documentaire relancé.
-Limites CSS et 15 SQL sans parseur inchangées. Contrôles de références et
-SHA-256 réussis ; `git diff --check` conforme. Aucun test applicatif/SQL requis.
-Après fetch, `origin/main` était identique à la tête initiale. Livraison du
-rapport, de la passation et des artefacts Graphify par commit et push sur `main`.
-
-**10 novembre — modification des utilisateurs** : l'API PUT existante
-est reliée à une action Modifier par compte et au dialogue de création partagé.
-Nom, prénom, email, téléphone et rôle sont préremplis ; le nouveau mot de passe
-reste vide et n'est envoyé que s'il est saisi. Le rôle du compte administrateur
-connecté est protégé ; sa session est actualisée après modification. Fermeture
-après succès API, saisie conservée en cas de refus, effacement du mot de passe
-à la fermeture. Le schéma PUT accepte un téléphone null pour effacer le numéro ;
-une clé absente conserve la valeur existante. Pas de migration SQL.
-La recette a aussi révélé une identité périmée dans `/auth/me` : cette route
-utilise désormais `requireAuth` pour relire le compte ; `refreshUser` actualise
-le jeton CSRF renouvelé, pour préserver les écritures après modification de soi.
-Validation : build/lint et `test:errors` conformes ; **63 contrôles** Chromium/API
-réelle, **127 API** et **59 sécurité**, sur MariaDB portable 11.4.5 jetable,
-instance arrêtée. Quatre largeurs, deux thèmes, mots de passe, rôles, CSRF,
-erreurs/reprise et retour à la création vérifiés. Guide :
-[utilisateurs.md](specs/utilisateurs.md), cinq captures et rapport dans
-`specs/screenshots/utilisateurs/`. Redémarrer l'API après mise à jour.
-Graphify actualisé et vérifié : **140 empreintes sources conformes**, **2 918
-nœuds uniques**, **5 990 liens sans orphelin**, **172 communautés**, HTML/JSON
-cohérents. Livraison sur `origin/main` ; tête initiale `f1d4b3a`.
-Les cinq captures modifiées et leurs cinq copies `-PCDT67` présentes au démarrage
-sont conservées et incluses suivant la consigne de commiter tous les changements ;
-les copies sont identiques aux captures de la tête initiale.
-
-**10 novembre — formulaires restants en fenêtres contextuelles** : 19 parcours
-migrés pour les véhicules, comptes, commandes clients, livraisons, retours,
-ventes, ouverture de Caisse, édition/transfert Stock, inventaire et Administration.
-Les paramètres affichent leurs valeurs enregistrées avec un bouton Modifier ;
-catégories, sous-catégories et secteurs utilisent des dialogues d'ajout/édition.
-Clients, Fournisseurs, Catalogue, Réceptions et emplacements étaient déjà migrés.
-Les filtres, le sélecteur de référence d'inventaire et la connexion restent dans
-leur page. Guide : [formulaires-modaux.md](specs/formulaires-modaux.md).
-
-`FormDialog` natif commun : focus contenu, retour au déclencheur disponible,
-défilement bloqué et champs/fermetures bloqués pendant les écritures. Les erreurs
-conservent la saisie ; fermeture seulement après succès API. Les créations métier
-et l'édition Stock requièrent une réponse API, sans faux succès hors ligne.
-Le panier de vente se conserve à la fermeture et peut être repris. L'inventaire
-conserve les confirmations explicites empilées, les protections de navigation,
-les erreurs et la reprise après conflit avec nouveau comptage obligatoire.
-
-Corrections nécessaires révélées par la recette : Livraisons attend désormais
-la réponse API avant succès/remise à zéro ; les identifiants des clients,
-commandes et ventes sont convertis en nombres, avec références facultatives
-nulles conservées. Droits, CSRF, transactions et contrats serveur inchangés ;
-aucune migration ni changement serveur dans cette livraison.
-
-Validation : build/lint et `test:errors` conformes ; **524 contrôles** pour les
-19 parcours, **122 Caisse**, **157 Clients**, **142 Fournisseurs**, API simulée.
-Recette réelle d'inventaire : **85 contrôles** sur MariaDB portable 11.4.5 isolée,
-base jetable et instance arrêtée ; aucune donnée ni permission applicative
-modifiée. Quatre largeurs, deux thèmes, champs obligatoires, focus/Échap,
-confirmations empilées, double envoi, erreurs/reprise et accès par rôle couverts.
-Documentation, design et captures actualisés. Graphify actualisé et vérifié :
-139 empreintes de code conformes, 2 904 nœuds uniques, 5 971 liens sans orphelin,
-193 communautés, HTML/JSON cohérents. `git diff --check` conforme ; branche
-distante synchronisée après fetch. Livraison sur `origin/main`, tête initiale `e31eb72`.
-
-**Synthèse au 8 novembre 2026.** Cette version remplace le journal chronologique
-par l'état livré, les contrats à préserver et les points de reprise.
-L'[historique intégral avant compaction](https://github.com/sollevix67/autostrass_app/blob/37ac9167d92d33d9997f2ad3f560ec34e94379f4/passation.md)
-est conservé dans Git : `git show 37ac916:passation.md`.
-Le cahier des charges reste [TODO.md](TODO.md) ; un CRUD livré ne couvre pas
-nécessairement toutes ses exigences métier.
-
-## Reprise prioritaire
-
-1. **Métier** : devis, puis commandes fournisseurs, avec numérotation, conversion
-   et attribution des réceptions. Compléter ensuite les documents PDF manquants.
-2. **Déploiement** : vérifier le journal des migrations de chaque installation,
-   charger les contrats récents par redémarrage API, puis tester certificat,
-   Cloudflare Turnstile et PDA Zebra TC22 réels. L'authentification Android reste
-   à définir si Turnstile est activé.
-3. **Stock historique** : réconcilier les allocations excédentaires par un
-   comptage explicite ; aucune redistribution automatique ni masquage des écarts.
-4. **Recette locale** : confirmer le redémarrage de l'API habituelle et recontrôler
-   le proxy Vite, qui avait produit des `ECONNRESET` pendant la recette transferts.
-
-## Repères techniques
-
-React 19, TypeScript, Vite, React Router 7 ; Express 5, MariaDB/mysql2 et Drizzle.
-Le backend actuel est Express, malgré la mention initiale de NestJS dans TODO.
-Le développement utilise Vite → `/api` → port 3001. `tsx` n'utilise pas de
-surveillance dans les commandes actuelles : redémarrer l'API après un changement
-serveur ou de configuration nécessitant une prise d'effet au démarrage.
-
-| Repère | Source |
+| Périmètre | Entrées |
 |---|---|
-| Routes, shell, thèmes | `src/App.tsx` |
-| Client HTTP, contrats, indisponibilité | `src/services/api.ts`, `contracts.ts`, `resilience.ts` |
-| Hooks métier et référentiels | `src/hooks/` ; `useResource`, `useCatalogue`, `useStock`, `useReferentials` |
-| Formulaires et composants partagés | `src/schemas/`, `src/components/` ; RHF/Zod, `PageLayout`, `DataTable`, `ConfirmDialog`, toasts |
-| API, validation, repositories | `server/index.ts`, `server/middleware/`, `server/repositories/` |
-| Schémas et migrations | `server/db/schema.ts` réexporte aussi `schema_step2.ts` ; `database/drizzle/` |
-| Design | [MASTER.md](design-system/autostrass/MASTER.md), `src/tokens.css`, `components.css`, `forms.css` |
+| Routes, navigation, thèmes | `src/App.tsx` |
+| HTTP et contrats | `src/services/{api,contracts,resilience}.ts` |
+| Hooks et formulaires | `src/hooks/`, `src/schemas/`, `src/components/` (RHF/Zod) |
+| Serveur et accès aux données | `server/index.ts`, `server/middleware/`, `server/repositories/` |
+| Schéma | `server/db/schema.ts`, `schema_step2.ts`, `database/drizzle/` |
+| Design | [MASTER.md](design-system/autostrass/MASTER.md), `src/*.css` |
 
-Conserver les contrats API autoritatifs, les identifiants numériques et les
-services partagés. Style : deux espaces, apostrophes simples, sans points-virgules,
-imports backend avec `.js`. Réponses en français ; après chaque intervention,
-mettre à jour cette passation, vérifier Graphify, commiter et pousser les changements.
+Conserver les services et validations partagés, les identifiants numériques,
+les imports backend en `.js`, deux espaces, apostrophes simples et aucun
+point-virgule. Répondre en français. Après chaque action, actualiser cette
+passation ; avant livraison, actualiser Graphify, committer et pousser.
 
-## État fonctionnel et écarts métier
+## Modules livrés et travail restant
 
-Le tableau reprend les livraisons documentées et les exigences restantes de TODO ;
-les modules anciens n'ont pas fait l'objet d'un nouvel audit exhaustif.
-
-| Module | Livré | Reste à compléter |
+| Module | Livré | À compléter |
 |---|---|---|
-| Stock | Emplacements hiérarchiques, allocations, transferts, inventaire physique par référence et historique | Recette Zebra ; campagnes multi-articles et brouillons partagés hors périmètre actuel |
-| Catalogue | CRUD, catégories/sous-catégories administrables, TVA et prix TTC, forcing, délai, EAN13 ; création/modification en dialogue | Recherche EAN13 dédiée, compatibilité immatriculation/VIN et autres exigences à rapprocher de TODO |
-| Caisse et comptoir | Sessions, comptage, clôture, ventes figées, empreintes chaînées, facture PDF ; auteur issu du compte connecté | Complétude clavier/autocomplétion et exigences NF203/NF525 de déploiement à confirmer |
-| Devis | Non commencé | Numérotation, CRUD, PDF, email/WhatsApp et conversion en commande |
-| Commandes/réceptions fournisseurs | Réceptions persistées, lignes et historique, formulaire en dialogue | Commandes fournisseurs, horaires, liste à commander, suivi par fournisseur, attribution automatique et intégration au carnet |
-| Commandes clients | Création en dialogue, API, lignes et statuts | Numérotation métier et bons de commande PDF |
-| Livraisons | Création en dialogue, CRUD lié aux commandes, transporteur, dates, adresse et statut ; secteurs clients administrables | Bons automatiques, numérotation, tournées et intégration des secteurs |
-| Retours clients | Création en dialogue, API et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock et bons de retour refusé avec motifs |
-| Clients | CRUD en dialogue, numéro personnalisable limité à six chiffres, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, suivi des documents et paiements, suspension/limitation, tournées |
-| Fournisseurs | CRUD, coordonnées facultatives, SIRET, création/modification en dialogue | Suivi des commandes lié au futur module fournisseurs |
-| Véhicules | CRUD, création en dialogue, statut modifiable | Kilométrage, entretiens/réparations, carburant et coût/km |
-| Personnels/utilisateurs | Création/modification en dialogue, mot de passe facultatif en édition, rôles, activation, identité de session actualisée et protections contre l'auto-verrouillage | Plannings, horaires et profils/accès métier détaillés |
-| Paramètres | Neuf rubriques, plafond de Caisse, routes, API, référentiels, sauvegardes, HTTPS et Turnstile | Recette certificat/Cloudflare/terminaux réels ; guides de déploiement ci-dessous |
+| Stock | Emplacements hiérarchiques, allocations, transferts, inventaire par référence et historique | Recette Zebra ; campagnes multi-articles et brouillons partagés |
+| Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
+| Caisse/comptoir | Sessions, comptage ouverture/clôture, plafond administrable, ventes figées, empreintes chaînées, facture PDF | Défauts de revue ; complétude clavier/autocomplétion et recette fiscale |
+| Devis | Non commencé | CRUD, numéro `yyyymmdd-D-xxxxxx`, PDF, email/WhatsApp, conversion |
+| Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
+| Commandes clients | Création, lignes et statuts | Numérotation métier, bon PDF |
+| Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut | Bons automatiques, numérotation, tournées et secteurs |
+| Retours | Création et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock, motifs et bons de refus |
+| Clients | CRUD, numéro personnalisable, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, documents/paiements, limites et tournées |
+| Véhicules | CRUD et statut | Kilométrage, entretien, carburant et coût/km |
+| Utilisateurs | Création/édition, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires, accès métier détaillés |
+| Paramètres | Neuf rubriques, référentiels, plafond Caisse, DB, quotas, HTTPS et Turnstile | Recette de déploiement réelle |
 
-## Contrats à préserver
+## Contrats métier à préserver
 
-### Stock et inventaire
+Ces invariants expriment le comportement attendu. Les écarts découverts lors de
+la revue sont suivis dans son rapport et ne doivent pas être présentés comme corrigés.
 
-Les transferts choisissent explicitement l'origine (allocation ou stock non affecté).
-La référence vient de l'URL encodée, les emplacements sont numériques et une
-destination `null` prime sur l'alias historique `destination_id`. Quantités entières,
-stock disponible et cohérence des allocations contrôlés. Verrouillage transactionnel,
-stock total conservé, allocations épuisées supprimées et destination fusionnée ;
-origine identique sans effet. Mouvement `TRANSFERT` de delta nul et audit atomique :
-un échec de journalisation annule tout. Suppression d'emplacement sérialisée.
+**Stock et inventaire.** Origine de transfert explicite (allocation ou non affecté),
+référence dans l'URL encodée, emplacements numériques ; destination `null` prioritaire
+sur l'ancien alias `destination_id`. Quantités entières, stock disponible et
+allocations cohérentes. Transactions/verrous, stock total conservé, fusion à la
+destination, allocation vide supprimée ; transfert à soi sans effet. Mouvement
+`TRANSFERT` de delta nul et audit atomiques, rollback si journalisation impossible.
+Suppression d'emplacement sérialisée.
+L'inventaire compte une référence complète, stock non affecté compris, avec motif
+et confirmation. Version obsolète/rejouée refusée ; transaction `READ COMMITTED`
+pour stock, allocations, historique, mouvement et audit. Après conflit, nouveau
+comptage obligatoire. Historique autonome, filtre/pagination de 50, sans édition
+ni suppression. Pas de brouillon serveur ni interception du bouton Précédent.
+Guides : [inventaire](specs/inventaire-physique.md),
+[emplacements](specs/stock-emplacements-design.md).
 
-L'inventaire `/stock/inventaire` / `/api/inventaires` compte une référence complète,
-stock non affecté compris, avec motif et confirmation. Une version obsolète ou rejouée
-est refusée ; transaction `READ COMMITTED` pour stock, allocations, historique,
-mouvement `INVENTAIRE_PHYSIQUE` et audit. Historique autonome, filtre par référence,
-pagination de 50, sans modification/suppression. Pas de brouillon serveur ni
-interception du bouton Précédent ; après conflit, nouveau comptage exigé.
-Les chemins d'emplacement se regroupent par référence sans dupliquer les articles ;
-les panneaux Stock occupent toute la largeur et les codes longs reviennent à la ligne.
-Guide : [inventaire-physique.md](specs/inventaire-physique.md) ;
-[affichage des emplacements](specs/stock-emplacements-design.md).
+**Clients et fournisseurs.** Écritures confirmées par l'API, saisie conservée en cas
+d'échec ; caissiers en lecture seule. Numéro client : 1 à 6 chiffres ASCII, zéros
+initiaux préservés, facultatif en création, requis dans l'édition. Génération
+transactionnelle `000001`–`999999`, saturation sans insertion, doublon
+`409 CLIENT_NUMBER_EXISTS`. Les documents utilisent l'id interne ; anciens numéros
+lisibles et remplacés seulement explicitement. SIRET facultatif de 14 chiffres,
+`VARCHAR(14) NULL` ; effacement → `NULL`, clé omise en PUT → valeur conservée.
+Client particulier → SIRET effacé atomiquement. Fournisseur : seul le nom requis,
+coordonnées vides à `null`, erreurs API associées aux champs.
+Guides : [clients](specs/client-modal.md), [fournisseurs](specs/fournisseurs.md).
 
-### Clients et fournisseurs
+**Caisse, ventes et PDF.** Une session ouverte au maximum par caissier ; vente sans
+session refusée. Clôture par son propriétaire, y compris pour un admin, sérialisée
+avec les ventes. Total théorique calculé au serveur ; seules les espèces touchent
+le tiroir. Vente et mouvement atomiques. Vente validée/clôture figées ; correction
+par avoir puis nouvelle vente. Empreintes SHA-256 chaînées, événements système,
+archivage et mode dégradé fiscal : ne jamais réinitialiser les empreintes de
+production pour masquer une anomalie.
+L'auteur de vente vient du compte authentifié ; un nom fourni par le client est
+ignoré, l'identité est conservée dans l'empreinte, le journal et la facture.
+Ouverture et clôture en dialogue : 15 coupures de 500 € à 0,01 €, sous-totaux et
+calcul en centimes, total incomplet signalé. Confirmation de clôture dans le même
+dialogue et protection synchrone contre les doubles envois. À l'ouverture, seul
+le total `fondsCaisse` est persisté ; plafond dynamique admin, défaut 10 000 €,
+maximum lié au `DECIMAL(12,2)`, zéro autorisé. Lecture indisponible → ouverture
+bloquée ; actualiser ne perd pas la saisie. Changement appliqué aux ouvertures
+suivantes, sans modifier les sessions existantes ni la clôture.
+Guides : [ouverture](specs/caisse-ouverture.md), [clôture](specs/caisse-cloture.md).
+Seule la facture `GET /api/ventes/:id/facture` existe. `pdfInvoice.ts` refuse les
+URL et limite les fichiers locaux aux quatre polices Roboto de pdfmake.
+Devis, bons de commande/livraison et avoirs PDF restent à créer.
 
-Les écritures Clients/Fournisseurs exigent une confirmation API : une panne conserve
-la saisie et ne produit pas de faux succès local. Caissiers en lecture seule.
-Numéro client : 1 à 6 chiffres ASCII, zéros initiaux conservés ; facultatif à la
-création, obligatoire dans le formulaire de modification. Génération transactionnelle
-`000001` à `999999`, collisions évitées, saturation sans insertion partielle.
-Doublon : `409 CLIENT_NUMBER_EXISTS`. Les documents référencent l'id interne.
-Les anciens numéros restent lisibles et ne sont remplacés qu'explicitement.
+**Formulaires et utilisateurs.** Les formulaires métier et Administration sont
+migrés en dialogues natifs : focus contenu/restitué, Annuler/croix/Échap/fond,
+fermeture et doubles envois bloqués pendant l'écriture, saisie conservée en erreur.
+Filtres, sélection de référence inventaire et connexion restent dans la page.
+Panier conservé à la fermeture ; confirmations d'inventaire empilées conservées.
+Référence catalogue immuable. Locale HTML/Zod française, traductions natives
+réinitialisées après correction/réouverture. L'aperçu intégré relaie aussi Échap.
+Edition utilisateur : mot de passe vide conservé, téléphone `null` effacé, clé
+omise conservée. `/auth/me` relit le compte ; actualisation de soi recharge aussi
+le CSRF. [Formulaires](specs/formulaires-modaux.md), [utilisateurs](specs/utilisateurs.md).
 
-SIRET facultatif : 14 chiffres ASCII, stockage `VARCHAR(14) NULL`. Un champ effacé
-vaut `NULL`, une clé omise dans un PUT conserve la valeur. Côté clients, SIRET réservé
-aux professionnels ; enregistrer comme particulier l'efface dans la même écriture SQL.
-Côté fournisseurs, seul le nom est requis ; coordonnées vides normalisées à `null`,
-téléphone acceptant les séparateurs autorisés, erreurs API reliées aux champs.
-Guides : [client-modal.md](specs/client-modal.md), [fournisseurs.md](specs/fournisseurs.md).
+**Paramètres.** Admin : toutes rubriques ; magasinier : emplacements ; caissier :
+exclu. Catégories/sous-catégories/secteurs en MariaDB, codes stables, suppression
+refusée si utilisés. Réglages techniques atomiques dans
+`config/runtime/settings.json` hors Git, secrets masqués. Connexion DB testée avant
+sauvegarde ; nouveau pool DB et HTTPS au redémarrage, quotas/Turnstile/plafond à
+chaud. PEM validés ; HTTPS sert API/build, HTTP conservé ou redirigé en 308.
+Turnstile vérifie jeton, hostname et action via Siteverify.
+[Guide](specs/parametres.md), [roadmap](specs/parametres-roadmap.md).
 
-### Caisse et PDF
+## Base et déploiement
 
-Une seule session ouverte par caissier ; vente sans session refusée. Clôture réservée
-au propriétaire, même pour un administrateur, et sérialisée avec les ventes.
-Total théorique calculé côté serveur ; seules les espèces touchent le tiroir.
-Vente et mouvement de caisse sont atomiques. Vente validée et clôture figées ;
-correction par avoir puis nouvelle vente. Empreintes SHA-256 chaînées, événements
-système, mécanismes de mode dégradé et archivage fiscal ; ne pas réinitialiser les
-empreintes de production pour résoudre une anomalie.
+Journal Drizzle versionné **0000 à 0010** : `0007` référentiels, `0008` inventaire,
+`0009` SIRET fournisseur, `0010` SIRET client. Dernier état documenté de la base
+configurée : `0008`–`0010` appliquées le 6 novembre, données existantes conservées.
+Ce statut ne remplace pas une vérification de chaque installation. Sauvegarder,
+comparer schéma/journal, lancer `npm run db:migrate` puis redémarrer l'API ; ne pas
+compléter artificiellement le journal. `database/schema.sql` est le socle catalogue
+v1 ; seeds réservés à la démonstration, allocations incohérentes signalées sans
+les redistribuer. Aucun accès à la base applicative pendant cette revue.
 
-Depuis le 8 novembre, le champ « Caissier » est retiré du formulaire comptoir :
-le serveur détermine l'auteur depuis le compte authentifié, ignore un nom fourni
-par le client et conserve cette identité dans l'empreinte, le journal et la facture.
-Seule la facture `GET /api/ventes/:id/facture` est livrée. Génération serveur
-`server/services/pdfInvoice.ts` : accès URL refusé, accès local limité aux quatre
-polices Roboto du paquet pdfmake. Devis, bons de commande/livraison et avoirs restent
-à créer, avec routes et boutons de téléchargement. Numérotation détaillée dans TODO.
+`.env.example` → `.env`, `DB_*`, `JWT_SECRET` ≥32 caractères. `/api/health` distingue
+`connected`, `unavailable`, `unconfigured` ; pannes SQL → `503 DATABASE_UNAVAILABLE`
+sans détails internes. JWT HS256 12 h en mémoire/cookie httpOnly, compte relu par
+requête. Conserver RBAC/CSRF/en-têtes et intégrité fiscale. Admin : tous droits ;
+magasinier : dépôt ; caissier : caisse/documents. Ne jamais versionner secrets,
+`config/ssl/`, `config/runtime/` ou `archives/`. [Ancienne revue](SECURITY-REVIEW.md).
 
-### Interface et paramètres
+## Vérifications et outils
 
-Clients, Fournisseurs, Catalogue et Réceptions utilisent des dialogues natifs :
-focus contenu puis restitué, Annuler/croix/Échap/fond, erreurs conservant les valeurs,
-fermeture et doubles envois bloqués pendant la sauvegarde. Création/édition explicites ;
-référence catalogue immuable. Échap relayé par l'aperçu intégré est aussi pris en charge.
-Document en français, locale Zod française et traductions natives réinitialisées lors
-des corrections/réouvertures ; contraintes HTML, focus et messages métier conservés.
-Replis locaux historiques des autres hooks inchangés : distinguer démonstration et
-persistance. Réutiliser les tokens bleu/ambre, Fira Sans/Fira Code et thèmes auto/clair/sombre.
-La refonte du 4 novembre remplace les surcharges de l'ancien essai Modern CSS.
+Commandes courantes : `npm ci`, `npm run dev`/`dev:api`, `build`, `lint`, `preview`,
+`test:errors`, `test:pdf`. `test:stock`, `test:inventaire`, `test:integration`,
+`test:parametres` et `test:utilisateurs:ui` créent une base/API jetable via
+`TEST_DB_*` (compte pouvant créer/supprimer une base). Les appels directs
+`test:api`/`test:security` écrivent dans la base ciblée : uniquement sur base jetable.
+Le harnais `createTestEnvironment` charge les seeds dans sa base dédiée.
+`test:repos`/`test:caisse` : diagnostics
+manuels ; `caisse:diagnostic` en lecture seule. Conserver les scénarios concurrence,
+rollback, droits et intégrité fiscale lors des correctifs.
 
-Paramètres : admin pour toutes les rubriques, magasinier pour les emplacements,
-caissier exclu. Catégories, sous-catégories et secteurs persistés dans MariaDB ;
-codes stables et suppression refusée si utilisée. Réglages techniques atomiques dans
-`config/runtime/settings.json`, hors Git, secrets masqués par l'API. Connexion DB
-testée avant sauvegarde et appliquée au redémarrage du pool commun Express/Drizzle ;
-HTTPS au redémarrage, quotas et Turnstile à chaud. PEM validés, Express servant le
-build/API en HTTPS, HTTP maintenu ou redirigé en 308. Turnstile contrôle jeton,
-hostname et action via Siteverify. Guides : [parametres.md](specs/parametres.md),
-[parametres-roadmap.md](specs/parametres-roadmap.md).
+Dernières recettes historiques (distinctes des contrôles du jour) : **127 API,
+59 sécurité**, MariaDB portable 11.4.5 jetable ; **524 contrôles** de formulaires,
+**122 Caisse**, **63 utilisateurs**, **85 inventaire**. Guides/scripts/captures dans
+`specs/` et `scripts/`. Revue WCAG du 13 novembre : 101 scans axe, 24 routes,
+22 dialogues ; **sept constats ouverts (trois P1, quatre P2)**, aucun correctif
+livré. [Rapport WCAG](specs/accessibilite-wcag-review.md).
 
-## Base, activation et sécurité
+Compétence `accessibility` 2.0 installée au projet dans `.agents/skills/`.
+TokenEconomizer 0.1.0 installé et activé pour Codex avec cinq hooks approuvés ;
+source/configuration/mémoire hors dépôt. Configuration documentée : micro-skills
+`envfacts`, retraits `propose`, protections `collaboration`/`image_media`, garde
+`nudge` ; repomap/import historique désactivés. [Analyse](specs/tokeneconomizer-analyse.md),
+[installation](specs/tokeneconomizer-installation.md). Catalogue design :
+`npm run uipro -- "erp inventory operations internal tool data dense" --design-system -p "Autostrass"`
+ou `uipro:node`. Nettoyage antérieur : [audit](specs/fichiers-inutiles.md),
+[ZIP restaurable](backups/nettoyage/fichiers-inutilises-2026-11-13.zip).
 
-Le journal versionné contient **0000 à 0010**. Les migrations récentes sont :
+## Limites et points ouverts
 
-| Migration | Changement |
-|---|---|
-| `0007_parametres_referentiels` | Référentiels catégories/sous-catégories/secteurs et rattachements |
-| `0008_inventaire_stock` | Historique d'inventaire et index |
-| `0009_fournisseur_siret` | `fournisseurs.siret VARCHAR(14) NULL` |
-| `0010_client_siret` | `clients.siret VARCHAR(14) NULL` |
+CSP complète à définir selon déploiement ; pas de révocation JWT avant expiration,
+quotas en mémoire par processus (stockage partagé nécessaire en multi-instance).
+Service et conditions d'accès immatriculation/VIN à choisir, saisie manuelle à
+préserver. Certificat de production, Cloudflare réel, Zebra et recette NVDA/zoom
+natif non fournis aux campagnes précédentes. Contrôles fiscaux logiciels et
+certification/déploiement sont à distinguer.
 
-Dernier état documenté de la base configurée : `0008`, `0009` et `0010` appliquées
-le 6 novembre ; les trois fournisseurs et quatre clients existants ont été conservés,
-SIRET initial à `NULL`. Les anciennes mentions « 0008 à appliquer » concernent
-les installations qui n'ont pas été migrées. Aucun accès DB ni contrôle de la base
-active effectué pendant cette compaction. Sur chaque installation : sauvegarder,
-comparer schéma et journal Drizzle, puis `npm run db:migrate` et redémarrer l'API.
-Ne pas compléter artificiellement le journal. `database/schema.sql` ne crée que le
-socle catalogue v1 ; les seeds sont réservés aux données de démonstration.
-Le contrôle de conservation du seed signale les allocations incohérentes sans
-les redistribuer ni les écraser.
+Nettoyage local à confirmer avant toute suppression : ancien résidu ignoré
+`.ventes-review.local/database-data/`, répertoires temporaires
+`autostrass-inventaire-verification-20261106` (identifiants de test) et
+`autostrass-transfer-verification/data`. Ces traces historiques ne constituent
+pas un contrôle actuel de présence ou de processus.
 
-Configurer `.env` depuis `.env.example`, `DB_*` et `JWT_SECRET` d'au moins 32 caractères.
-`/api/health` distingue `connected`, `unavailable`, `unconfigured` ; les erreurs SQL
-de connexion sont mappées en `503 DATABASE_UNAVAILABLE` sans exposer la cause au client.
-JWT HS256 de 12 h en mémoire/cookie httpOnly, compte relu à chaque requête ; conserver
-RBAC, CSRF, normalisation et en-têtes de sécurité. Admin : tous droits ; magasinier :
-écritures dépôt ; caissier : caisse/documents. Aucun secret, `config/ssl/`,
-`config/runtime/` ou `archives/` fiscal dans Git. Revue historique :
-[SECURITY-REVIEW.md](SECURITY-REVIEW.md).
+## Graphify et intervention du 14 novembre
 
-## Validation et commandes
-
-**Dernière recette applicative documentée, 8 novembre** : build, lint et
-`test:errors` réussis ; **126 contrôles API**, **59 sécurité**, **21 Chromium**
-pour l'attribution des ventes, avec API réelle et MariaDB 11.4.5 jetable.
-Avertissement Vite préexistant : paquet JavaScript >500 kB.
-Les autres campagnes restent consultables dans leurs scripts, guides et captures :
-
-| Sujet | Validation conservée | Preuves |
-|---|---|---|
-| Traductions des formulaires | 54 contrôles Chromium `en-US`, API simulée | `scripts/test-french-validation-ui.mjs`, `specs/screenshots/validation-fr/` |
-| PDF | Vrais PDF, quatre polices, multi-pages, refus URL/fichier puis génération réussie | `npm run test:pdf` |
-| Dialogues | Clients 157, fournisseurs 142, catalogue 79, réceptions 62 contrôles Chromium | `specs/screenshots/{client-edit,fournisseurs,catalogue-modal,reception-modal}/` |
-| SIRET/numérotation | 9 scénarios SIRET client, 11 fournisseurs, 12 de numérotation réelle | `scripts/test-client-siret.ts`, `test-fournisseurs.ts`, `test-client-numbers.ts` |
-| Stock | 13 scénarios transferts, 14 inventaire, 84 contrôles Chromium inventaire | `npm run test:stock`, `npm run test:inventaire`, `specs/screenshots/inventaire/` |
-| Paramètres | 5 groupes unitaires, 8 groupes API, 336 contrôles navigateur | `npm run test:parametres`, `specs/screenshots/parametres/` |
-| Refonte CSS | 451 contrôles, 104 rendus, contrastes et absence de débordement | [css-review.md](specs/css-review.md), `specs/screenshots/css-review/` |
-| Ventes et identité | Relecture SQL/API, PDF et contrôle des empreintes | `specs/screenshots/ventes-utilisateur/` |
-
-`npm ci` ; `npm run dev` ou `dev:api` ; `npm run build` ; `npm run lint` ;
-`npm run preview`. Recherche design : `npm run uipro -- "erp inventory operations
-internal tool data dense" --design-system -p "Autostrass"`, ou `uipro:node`.
-
-`test:stock`, `test:inventaire`, `test:integration` et `test:parametres` utilisent une
-base/API jetable via `TEST_DB_*` ; le compte doit pouvoir créer/supprimer la base.
-Les appels directs `test:api` et `test:security` écrivent dans la base de l'API ciblée,
-et `test:api` recharge les seeds : uniquement sur base jetable. `test:repos` et
-`test:caisse` sont des diagnostics manuels ; `caisse:diagnostic` reste en lecture seule.
-Pour les futurs correctifs, conserver les tests de concurrence, rollback du journal,
-droits et intégrité fiscale. Aucune nouvelle recette applicative pour cette compaction.
-
-## Limites et points à confirmer
-
-CSP complète à définir pour les domaines de déploiement ; déconnexion sans révocation
-du JWT avant expiration ; quotas en mémoire par processus, stockage partagé requis
-en multi-instance. La compatibilité immatriculation/VIN nécessite un choix de service
-et de conditions d'accès, avec saisie manuelle conservée. Pas de certificat de
-production, de compte Cloudflare réel ni de Zebra fourni pour les campagnes passées.
-Les contrôles logiciels fiscaux ne remplacent pas la validation du déploiement et
-des exigences de certification du cahier des charges.
-
-**Nettoyage restant, présence revérifiée pendant la compaction** : les anciennes
-suppressions ont été refusées par le contrôle automatique. Subsistent
-`.ventes-review.local/database-data/` (ignoré par Git),
-`%TEMP%/autostrass-inventaire-verification-20261106/` avec son `credentials.json`
-de test, et `%TEMP%/autostrass-transfer-verification/data/`. Les campagnes avaient
-arrêté leurs API/MariaDB et supprimé leurs bases ; aucun service arrêté ni nettoyage
-effectué pendant cette intervention.
-
-## Graphify et dernière intervention
-
-Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
-et `manifest.json`. Le **14 novembre**, `graphify update . --force` **0.9.108**
-a actualisé JSON, HTML, rapport, manifeste et cache après le retrait des
-artefacts abandonnés : **3 006 nœuds**, **6 087 liens**, **188 communautés**.
-Les quatre sauvegardes qui les conservaient et le cache AST obsolète ont été
-retirés ; les cinq autres sauvegardes restent présentes. Contrôle final
-conforme : 180 empreintes de code, aucun orphelin, quatre hyperedges valides
-et identifiants/extrémités HTML/JSON identiques avec leur multiplicité.
-Métadonnée de départ **`e5f1907`** pour ce nettoyage.
-Le rapport et le guide d'installation TokenEconomizer ainsi que leurs sections
-sont indexés, avec les sources de recette et composants déjà livrés.
+[Graphique](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`, `manifest.json`.
+`graphify update . --force` **0.9.108** réussi sans appel LLM : **3 028 nœuds**,
+**6 136 liens**, **194 communautés** ; rapport de revue ajouté au graphe,
+sauvegarde du 14 novembre et HTML/JSON/rapport/manifeste/cache actualisés.
+Contrôle final : 180 empreintes de code conformes, aucun identifiant dupliqué,
+source manquante ou lien orphelin ; quatre hyperedges valides et HTML/JSON
+identiques avec multiplicité. Les 22 nœuds du rapport de revue sont présents.
+Les 20 localisations de la passation ont été recalées sans changer les relations.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
-et renommage LLM non relancés ; le graphe ne prouve pas
-le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
+et renommage LLM non relancés ; les liens du graphe ne prouvent pas le câblage runtime.
 
-**8 novembre — compaction** : suppression des doublons et états périmés,
-regroupement des livraisons/validations, conservation des contrats, migrations,
-blocages et liens de reprise. Ancien journal : **2 476 lignes, 154 252 octets**.
-Modification documentaire uniquement, sans changement applicatif ni migration.
-Livraison prévue par commit et push sur `origin/main` ; tête initiale `37ac916`.
-
-**10 novembre — clôture de Caisse** : demande précisée par
-l'utilisateur : déplacer le formulaire dans une fenêtre contextuelle comme les
-autres formulaires, puis vérifier le comptage. Relecture de la vue, de RHF/Zod,
-des dialogues natifs et du repository de caisse. Points à corriger : huit coupures
-seulement (pièces sous 0,50 € absentes), total pouvant afficher `NaN` lorsque la
-quantité est effacée, comparaison en flottants et soumission clavier contournant
-la confirmation. Conserver le comptage physique explicite et le calcul serveur.
-Graphify initial vérifié : 133 empreintes sources conformes, aucun fichier source
-manquant ; 2 832 nœuds et 5 764 liens. Tête initiale `052eb33`.
-
-Implémentation : bouton de clôture dans les actions de page, dialogue natif
-avec Annuler/croix/Échap/fond et restitution du focus. Validation puis confirmation
-dans le même dialogue pour rester dans la couche modale native ; valeurs confirmées
-figées avant l'appel API. Protection synchrone contre les doubles envois, fermeture
-et champs bloqués pendant l'écriture ; saisie conservée si l'API échoue. Quinze
-coupures de 500 € à 0,01 €, sous-totaux par coupure et calcul en centimes ; total
-incomplet signalé au lieu de `NaN`. Le repository arrondit déjà les montants à deux
-décimales et accepte ces coupures : aucune modification serveur ni migration.
-Premier passage navigateur : défaut supplémentaire reproduit, le total mémorisé
-restait à zéro après une modification de quantité. Remplacement de `watch` et du
-cache `useMemo` par `useWatch` avec recalcul à chaque rendu. Ajout du script
-`test:caisse:ui` et de Playwright en dépendance de développement pour une recette
-reproductible sans base réelle. Focus de confirmation corrigé pour attendre la
-fin de validation RHF, afin que le bouton de retour soit activé avant le focus.
-
-Validation : `build`, `lint` et `test:errors` réussis ; **53 contrôles Chromium**
-réussis avec quatre requêtes simulées, aucune écriture MariaDB et aucune erreur
-JavaScript. Totaux de 162,88 € et 888,88 €, écart d'un centime, scénario
-0,10 + 0,20 €, saisies invalides, confirmation, échec/reprise, comptage vide,
-droits, clavier et huit variantes responsive/thème vérifiés. Quatre captures
-versionnées ; guide et preuves : [caisse-cloture.md](specs/caisse-cloture.md).
-Avertissement existant : bundle Vite supérieur à 500 kB. Aucun nouvel avertissement de lint.
-Graphify actualisé puis contrôlé : 134 empreintes conformes, 2 865 nœuds,
-5 825 liens et 187 communautés ; aucun doublon ni lien orphelin, HTML/JSON
-identiques pour les identifiants et les extrémités des liens. Nouveau test indexé,
-cache et sauvegarde du 10 novembre versionnés. La modification de package.json
-a entraîné la reconstruction complète du graphe de code, sans LLM ; limites
-CSS, SQL et sémantique documentaire inchangées. `git diff --check` réussi.
-Livraison par commit et push sur `origin/main`, tête initiale `052eb33`.
-
-**10 novembre — comptage à l'ouverture de Caisse** : ajout demandé par
-l'utilisateur. Le formulaire d'ouverture utilise les mêmes quinze coupures et
-sous-totaux que la clôture, désormais partagés dans `CashCountFields`. Le calcul
-en centimes est partagé dans `src/utils/cashCounting.ts`. Quantités initiales à
-zéro ; total calculé utilisé comme `fondsCaisse`, avec validation Zod du plafond
-API de 10 000 €. Champs et double envoi bloqués pendant l'ouverture ; erreur API
-conservant les quantités et les notes. Seul le total du fond est persisté via le
-contrat actuel, sans modification serveur ni migration. Tête initiale `9999503`.
-Compilation, lint et `test:errors` réussis. Première recette : clôture conforme,
-plafond d'ouverture refusé mais message de collection RHF absent du résumé ; ajout
-du message `comptage.root` directement dans le formulaire. Recette finale réussie :
-**87 contrôles Chromium** (34 ouverture et 53 clôture), huit requêtes simulées,
-aucune écriture MariaDB et aucune erreur JavaScript. Plafond exact accepté,
-10 000,01 € refusé, fond nul, calcul des centimes, notes, erreur/reprise, double
-envoi, lecture seule et indépendance ouverture/clôture vérifiés. Quatre nouvelles
-captures, huit variantes responsive/thème. Guide et preuves :
-[caisse-ouverture.md](specs/caisse-ouverture.md). Avertissement Vite existant inchangé ; aucun nouvel avertissement de lint.
-Graphify actualisé et vérifié : 136 empreintes sources conformes, 2 878 nœuds,
-5 854 liens, 190 communautés, aucun doublon ni lien orphelin, HTML/JSON cohérents.
-Les champs et le calcul partagés sont indexés ; cache et sauvegarde du jour
-actualisés, sans relancer la sémantique documentaire ni le renommage LLM.
-`git diff --check` réussi. Livraison par commit et push sur `origin/main`.
-
-**10 novembre — plafond de Caisse paramétrable** : demande utilisateur
-pour Administration → Paramètres. Nouvelle rubrique Caisse admin, plafond en
-euros/centimes, défaut 10 000 €. Configuration persistée atomiquement dans le
-stockage existant ; anciens fichiers compatibles grâce à la valeur par défaut.
-`PUT /api/parametres/caisse` protégé par admin et CSRF ; lecture métier authentifiée
-`GET /api/caisse/configuration`, limitée au plafond. Validation commune frontend/API
-avec plafond courant relu à chaque ouverture ; pas d'ouverture si sa lecture échoue.
-Plafond nul autorisant seulement un fond nul ; borne maximale liée au DECIMAL(12,2).
-Application immédiate aux prochaines ouvertures ; aucune modification des sessions
-déjà ouvertes ni de la clôture. Actualiser recharge le plafond sans effacer les
-quantités ni les notes. Aucune migration ; redémarrer l'API au déploiement du code.
-
-Validation : build/lint conformes ; 7 groupes unitaires, 9 groupes
-API Paramètres, 127 contrôles API et 59 contrôles sécurité réussis sur une instance
-MariaDB portable 11.4.5 temporaire (boucle locale, base jetable, arrêt confirmé).
-Le compte de test habituel ne pouvant créer de base, aucun droit ni donnée de
-la base applicative n'a été modifié. `npm run test:errors` conforme.
-Recette Chromium : **122 contrôles** (53 clôture, 34 ouverture, 35 paramètres et
-plafond dynamique), API simulée. Plafond 12 000,50 €, centime au-dessus refusé,
-baisse pendant une saisie, changement concurrent refusé côté API, lecture
-indisponible bloquant l'ouverture, erreur de sauvegarde sans perte de saisie,
-double envoi bloqué et accès admin vérifié. Captures à quatre largeurs et deux
-thèmes ; preuves dans `specs/screenshots/parametres-caisse/verification.json`.
-Documentation Paramètres/ouverture mise à jour : défaut compatible, centimes,
-plafond nul, droits, nouvelles API, application à chaud après déploiement,
-configuration indisponible et conservation des sessions déjà ouvertes.
-Graphify actualisé : 137 empreintes TS/TSX/MJS/JS conformes, 2 889 nœuds uniques,
-5 876 liens sans orphelin, 170 communautés, HTML/JSON cohérents. Limites CSS/SQL
-et sémantique documentaire inchangées. `git diff --check` conforme, tête distante
-vérifiée après fetch ; livraison sur `origin/main`, tête initiale `74501ff`.
+Revue répartie entre trois agents et le conducteur : **203 fichiers de code,
+style et SQL, 40 374 lignes**, outils `.github` inclus, configurations et snapshots
+également examinés. Contrôles du jour : build, lint, `test:errors`, `test:pdf`,
+**7 groupes unitaires Paramètres**, syntaxe **35 Python / 16 JS-MJS-CJS** conformes.
+Avertissement Vite existant : bundle >500 kB. Référentiels StrictMode reproduits
+dans Chromium avec API simulée ; anomalies Caisse/fiscales reproduites en mémoire.
+Passation compactée de 747 à 227 lignes (environ −72 % en taille), contrats conservés.
+Outils : 59 tests UI-styling/brand et 2 tests de tokens réussis. Ces derniers
+nécessitent pytest et `-X utf8` sous Windows ; premier essai sans dépendance puis
+échec cp1252 identifiés. Suite UI-Pro : 130 réussites et deux erreurs d'import
+dues à trois scripts absents ; collecte incomplète et résultat global non conforme.
+Contrôle fiscal : préfixe de 5 000 ventes déclaré intact malgré une rupture sur
+la 5 001e, et dernière empreinte absente acceptée, reproduits avec les fonctions
+réelles en mémoire. Constat authentification SQL → 401 également reproduit.
+Rapport de 16 constats et [inventaire SHA-256](specs/revue-code-2026-11-14.json)
+rédigés ; 203 sources effectivement revues et code inchangé. Revue indépendante
+conforme : contrats conservés, références corrigées, liens locaux et 203 SHA-256
+valides. `git diff --check` conforme, `origin/main` identique à la tête initiale
+après fetch. Revue indépendante du graphe conforme ; livraison de la passation,
+du rapport, de l'inventaire et de Graphify par commit et push sur `origin/main`.
+Aucun correctif applicatif livré.

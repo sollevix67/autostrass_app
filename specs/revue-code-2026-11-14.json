@@ -1,0 +1,1377 @@
+{
+  "review_date": "2026-11-14",
+  "source_revision": "397ddee2951016ed5283397b35d822132528558b",
+  "scope": {
+    "code_files": 203,
+    "code_lines": 40374,
+    "auxiliary_files": [
+      "index.html",
+      "package.json",
+      ".env.example",
+      ".gitignore",
+      ".oxlintrc.json",
+      "tsconfig.json",
+      "tsconfig.app.json",
+      "tsconfig.node.json",
+      "tsconfig.server.json",
+      "database/drizzle/meta/0000_snapshot.json",
+      "database/drizzle/meta/0001_snapshot.json",
+      "database/drizzle/meta/0002_snapshot.json",
+      "database/drizzle/meta/0003_snapshot.json",
+      "database/drizzle/meta/0004_snapshot.json",
+      "database/drizzle/meta/0007_snapshot.json",
+      "database/drizzle/meta/0008_snapshot.json",
+      "database/drizzle/meta/0009_snapshot.json",
+      "database/drizzle/meta/0010_snapshot.json",
+      "database/drizzle/meta/_journal.json"
+    ],
+    "generated_graph_and_archives_excluded_from_source_review": true,
+    "sha256_basis": "working_tree_bytes_as_reviewed_on_windows"
+  },
+  "findings": [
+    {
+      "id": "R01",
+      "priority": "P1",
+      "title": "Le comptoir encaisse le HT alors que la facture réclame le TTC"
+    },
+    {
+      "id": "R02",
+      "priority": "P1",
+      "title": "Une monnaie arbitraire permet une recette nulle ou négative"
+    },
+    {
+      "id": "R03",
+      "priority": "P1",
+      "title": "Un prix accepté peut rompre sa propre empreinte après stockage"
+    },
+    {
+      "id": "R04",
+      "priority": "P1",
+      "title": "Le contrôle fiscal déclare intact un préfixe seulement"
+    },
+    {
+      "id": "R05",
+      "priority": "P1",
+      "title": "Deux ouvertures peuvent créer deux caisses pour le même compte"
+    },
+    {
+      "id": "R06",
+      "priority": "P1",
+      "title": "L'archive annuelle refuse une chaîne intacte entre deux années"
+    },
+    {
+      "id": "R07",
+      "priority": "P1",
+      "title": "Réceptions et Catalogue affichent un succès après un refus API"
+    },
+    {
+      "id": "R08",
+      "priority": "P2",
+      "title": "Le journal soustrait deux fois la monnaie rendue"
+    },
+    {
+      "id": "R09",
+      "priority": "P2",
+      "title": "Une empreinte manquante récente est qualifiée d'historique ancien"
+    },
+    {
+      "id": "R10",
+      "priority": "P2",
+      "title": "StrictMode laisse des référentiels vides dans les formulaires"
+    },
+    {
+      "id": "R11",
+      "priority": "P2",
+      "title": "Actualiser Caisse ne recharge pas son journal"
+    },
+    {
+      "id": "R12",
+      "priority": "P2",
+      "title": "Une panne SQL est renvoyée comme une authentification invalide"
+    },
+    {
+      "id": "R13",
+      "priority": "P2",
+      "title": "La recherche de tokens boucle sans fin à la racine Windows"
+    },
+    {
+      "id": "R14",
+      "priority": "P2",
+      "title": "Trois scripts absents empêchent la suite d'outils de se charger"
+    },
+    {
+      "id": "R15",
+      "priority": "P3",
+      "title": "Les dates des utilisateurs sont perdues par le mapper"
+    },
+    {
+      "id": "R16",
+      "priority": "P2",
+      "title": "Le générateur de design ignore la couleur de texte contrastée"
+    }
+  ],
+  "validation": {
+    "build": "passed; existing Vite chunk warning >500 kB",
+    "lint": "passed",
+    "test_errors": "passed",
+    "test_pdf": "passed",
+    "settings_unit_groups": 7,
+    "python_syntax_files": 35,
+    "node_syntax_files": 16,
+    "tool_tests": {
+      "ui_styling_and_brand": {
+        "passed": 59,
+        "command": "python -m pytest .github/prompts/ui-styling/scripts/tests .github/prompts/brand/scripts/tests -q -p no:cacheprovider"
+      },
+      "design_system": {
+        "passed": 2,
+        "command": "python -X utf8 -m pytest .github/prompts/design-system/scripts/tests -q -p no:cacheprovider"
+      },
+      "ui_pro": {
+        "passed": 130,
+        "module_loading_errors": 2,
+        "collection_complete": false,
+        "command": "python -m unittest discover -s .github/prompts/ui-ux-pro-max/scripts/tests -v"
+      }
+    },
+    "chromium_mock_api_reproductions": [
+      "referentiels_strictmode",
+      "reception_false_success_503",
+      "catalogue_false_success_503",
+      "cash_movements_reload"
+    ],
+    "in_memory_reproductions": [
+      "invalid_change",
+      "cash_movements_double_change",
+      "fractional_price_fingerprint",
+      "fiscal_prefix_5000",
+      "missing_fingerprint",
+      "annual_chain_boundary",
+      "database_failure_as_401",
+      "generated_button_contrast"
+    ],
+    "application_database_access": false,
+    "new_mariadb_integration_tests": false,
+    "sql_concurrency_runtime_reproduction": false
+  },
+  "source_files": [
+    {
+      "path": ".github/prompts/brand/scripts/extract-colors.cjs",
+      "lines": 341,
+      "sha256": "36d21f3905e5762cfc8054b3f3b7276f6bc656884fe57c6bfa539526044778ed",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/brand/scripts/inject-brand-context.cjs",
+      "lines": 349,
+      "sha256": "5b98abdeb5c636f247102cd235f1d3421db7a4de53fd853360feaa0c471b5c96",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/brand/scripts/sync-brand-to-tokens.cjs",
+      "lines": 248,
+      "sha256": "390a760570fdba6d6ecfdfd8907fc802b64659b6178f8920349b0c6a2c822106",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/brand/scripts/tests/test_sync_brand_to_tokens.py",
+      "lines": 52,
+      "sha256": "0ace0cf7c6a8c12c0b9154f317e847b1084eb00b065b6f22431e37b7c7e948d6",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": ".github/prompts/brand/scripts/validate-asset.cjs",
+      "lines": 387,
+      "sha256": "4546c9109fb0f4f767426508cb29e60d02b301f8897cf16d8e378b7ce9d997fc",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/embed-tokens.cjs",
+      "lines": 99,
+      "sha256": "23a9ce214e3c0d2fb4c5442b3bf1222c66721f7988a181ab29dcb549a5e5f511",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/fetch-background.py",
+      "lines": 317,
+      "sha256": "cecedad0a9054e6e65f31ab7ba7d07eb6af2179e237c5632bc962dad69fd6d66",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/generate-slide.py",
+      "lines": 770,
+      "sha256": "0463c98efea54870816925015fe5819e42a29aaba57408c2c38bacb33e2605b9",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/generate-tokens.cjs",
+      "lines": 205,
+      "sha256": "aac8a0f4ec4dccf0d371f9ee5a9111e44977bb0cad7e40a3754aba5571aa1231",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/html-token-validator.py",
+      "lines": 327,
+      "sha256": "9556a65e7aacda23388478294ee9a5cb84b315d964fbbf754aa0dcdbcfee58e6",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/search-slides.py",
+      "lines": 218,
+      "sha256": "fded9548bc1bbe1303da67fabe34006c6a7c57934c9d171ea3dc3eb5f6eee010",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/slide-token-validator.py",
+      "lines": 35,
+      "sha256": "66da5da5e8e659d405a89b342e13dd1e469e79726c46002d9d2368c3c7aaf945",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/slide_search_core.py",
+      "lines": 453,
+      "sha256": "2464050ae338eb50728086046b644845fa7ae943f32efead3908fdbe1473edbe",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/tests/test_validate_tokens.py",
+      "lines": 48,
+      "sha256": "a32f34a9e89542a341b6ff3ee4392494b48dea622b22b99652d3cf0c1a1ee966",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design-system/scripts/validate-tokens.cjs",
+      "lines": 246,
+      "sha256": "65f03a29290b9029d8cc27537701f226de7bcffc303b3bc361648fadfa09b77d",
+      "reviewed_by": "conducteur"
+    },
+    {
+      "path": ".github/prompts/design/scripts/cip/core.py",
+      "lines": 215,
+      "sha256": "78a78a51f12d2382b2854414df395dc62b68532626ef724ddd5de713507911e4",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/cip/generate.py",
+      "lines": 484,
+      "sha256": "2745040c9b534cf4113d2f7f4d7a52bc96a9fbfa12204c4f8460be4e15449069",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/cip/render-html.py",
+      "lines": 424,
+      "sha256": "a49a89a017ea4a2c492438055f05dfba3dfb4f91563f5f913359939beeaeccab",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/cip/search.py",
+      "lines": 127,
+      "sha256": "6619fbbe71983003a858c5eb79bc59c607b342610a1178b6976c687c2932161b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/icon/generate.py",
+      "lines": 487,
+      "sha256": "1a6be99dc233f6d9f8b558c26148203418be5b47c677cd83e48e41e78e38780c",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/logo/core.py",
+      "lines": 175,
+      "sha256": "4f8b36ffe538e5995d0e0b740053a0899a1adf445ffdf484bd47f94e71ade8d0",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/logo/generate.py",
+      "lines": 362,
+      "sha256": "6e4358f21cd85fec51c8d01b03e3696d6db180815309d7e10a19c623d4d4462c",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/design/scripts/logo/search.py",
+      "lines": 114,
+      "sha256": "693b3a1824831f120d4c60ed72477847604da1f6b654343381f8e9d3800a28f2",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": ".github/prompts/ui-styling/scripts/shadcn_add.py",
+      "lines": 308,
+      "sha256": "0c11d28ce9f12217df2c3306f24ae1f73527d5116db63707ab55cbe1a8bcf28c",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": ".github/prompts/ui-styling/scripts/tailwind_config_gen.py",
+      "lines": 473,
+      "sha256": "2e264ec871499681aecd6111f60743fba31b5ceb7e9ccb2b71b7346039285f89",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": ".github/prompts/ui-styling/scripts/tests/test_shadcn_add.py",
+      "lines": 266,
+      "sha256": "35f60ac5d74c4a7f950854a0337883c3e8dd812c58fcf6c5153876e43a6effa2",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": ".github/prompts/ui-styling/scripts/tests/test_tailwind_config_gen.py",
+      "lines": 394,
+      "sha256": "4efa59fdbe318d55e6a452d85401db5d1aa4504f93739878bb40d8bb504af585",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/core.py",
+      "lines": 993,
+      "sha256": "e544826963efefce3c59b65e18d83d92a5baf571f05458025bf1fa9021eced42",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/design_system.py",
+      "lines": 1643,
+      "sha256": "6a94743c3362c9c7e6d1450b94f4014d9ea752e7b4e151f6f0bdb217e0544bf7",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/reasoning_contract.py",
+      "lines": 123,
+      "sha256": "b8bac1af82aa280d3e06f00aabaeac4337e632996b07fed874e2b6ee6e9c5913",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/search.py",
+      "lines": 171,
+      "sha256": "8373e2dd2d560d9853ec116140de0e0d5bee45a6abe5e041173c84e1c36a7f87",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_catalog_refresh.py",
+      "lines": 354,
+      "sha256": "3e2ca5d12702318f641ae62d0c14f22a3bcc84d84e79b863c0e947d475604adb",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_core.py",
+      "lines": 343,
+      "sha256": "3527fe2f4b852f69f07c17ddc0d615d9a6e025c924e45a33985579a94a8d2118",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_core_data_quality.py",
+      "lines": 198,
+      "sha256": "3ffc6b4905c9ea26d7ac4527ab154d153584231aee71b2ae4bd017977fa09cc5",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_data_contracts.py",
+      "lines": 421,
+      "sha256": "0360d6e10080c0bca214f2b0bbad582ba50702a542ce21013351aca54938df3a",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_design_system_mode.py",
+      "lines": 189,
+      "sha256": "517ba1ba6195c94811126d1162139c51aff77fc68c3e320c7bb6c1e89e76bc9b",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_native_desktop_stack_freshness.py",
+      "lines": 176,
+      "sha256": "904f90bc6d364763673fa6067d98a4227d535760fa8b6d26abe22208176997ca",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_relevance_evaluator.py",
+      "lines": 182,
+      "sha256": "2fe56a4d6fe5fff15ff592274b0eeaba925146cefea6c0fa29d8f1b77c9aca1f",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_style_taxonomy.py",
+      "lines": 175,
+      "sha256": "cd14d0092e8a454d213aa104b53e4e70ba698491fa00fde9fdec5ca8a3d70011",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py",
+      "lines": 120,
+      "sha256": "b51d32ee8a15505b87cb81957fb2d1b385e041e8beb4463c311d236bfd29ebd4",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py",
+      "lines": 177,
+      "sha256": "becc5fa40e7516613d4e9930f226aa483e3796090c17cb16542c93d1927e680d",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": ".github/prompts/ui-ux-pro-max/scripts/validate_data.py",
+      "lines": 1091,
+      "sha256": "718ad4cbb227436015c9c2bc80fc583d6ed738b01c1a940ef85e350780d99f58",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0000_faithful_sway.sql",
+      "lines": 166,
+      "sha256": "cbcd6397db0d0dd627eda5b484108d989103100e0bdf02c6ec5cb8f411578b60",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0001_timestamps_defaults.sql",
+      "lines": 14,
+      "sha256": "a896cf64d1bca412f868b8b60f85ab3a12eccb6685b2a21fbcff9e4d9d7795d0",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0002_lucky_silver_centurion.sql",
+      "lines": 48,
+      "sha256": "60fa18e8545f1cea59aa13d6c963a8f3ce3df022374094db26ba49a06328f2a2",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0003_wakeful_exiles.sql",
+      "lines": 25,
+      "sha256": "747ef16aa35a0214eaec731bb5b6dfb452829d6054890aac6ad81f01dddff8ec",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0004_natural_senator_kelly.sql",
+      "lines": 98,
+      "sha256": "ac8af785f37683ce33d4d116155d31f43b92926ee78e786ccd3868251673ce20",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0005_migrate_articles_location_to_emplacement.sql",
+      "lines": 44,
+      "sha256": "54a7875197faa125de389700093e4331e95032b34d7c53568d12282d4f3cea52",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0006_add_catalogue_fields_and_compatibilite.sql",
+      "lines": 44,
+      "sha256": "d066c5e57634984f0a5590b0b90a5c31b662c8408ed52f397e5d4802fb80eb72",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0007_parametres_referentiels.sql",
+      "lines": 44,
+      "sha256": "39fd5589ec85278a13a3719b6da8d428765832eb34737b13d29ccfea64404b3f",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0008_inventaire_stock.sql",
+      "lines": 15,
+      "sha256": "41d205e6b5dc6ecf112398f64e0f79f34ae3ace9e73c37aa6a4c948ebf6cd78e",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0009_fournisseur_siret.sql",
+      "lines": 1,
+      "sha256": "f7a8f8927204e1b89747f113c4bfa5a43766ac2a19fb0ea7cd9868a15771b7ff",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/drizzle/0010_client_siret.sql",
+      "lines": 1,
+      "sha256": "42b9e13d4123b458cf2efc60300ca84821281d085403eb24d1258b78f48644f7",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/migrate_v1.sql",
+      "lines": 175,
+      "sha256": "36766729625ee1f2e33a1b4d70a3d83f7ac6033421d39f72272ceccb43483f4d",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/schema.sql",
+      "lines": 90,
+      "sha256": "615c79e187d194b55da62eab199a5feaa9daeb3a63f6bf514ffad1ae5f13f8df",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/seed_v2.sql",
+      "lines": 128,
+      "sha256": "bbdfc63787b855a3db33ea8a9b18a856fccff79d7fa1bc8f78fc5a9a08a2426d",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "database/seed_v3.sql",
+      "lines": 150,
+      "sha256": "6bc75ab63d69c3f947c631d119cd22f77611485013e94fe4bd6854f55fe6c888",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "drizzle.config.ts",
+      "lines": 24,
+      "sha256": "72cca12dfe08da2b6e19b8bac8fe208da22ef5490e5149e2e6c01b8839f0c6db",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/apply-migration.ts",
+      "lines": 55,
+      "sha256": "ea7cc5a4ccbd304b93934737a5fae06163d8941509bc8e324fea474e6a75b2eb",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/archive-fiscal.ts",
+      "lines": 180,
+      "sha256": "8f004355bf250a62c44f22f0622ee6755cb8e99394f8e0e9116c3d3da86c9914",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/close-open-sessions.ts",
+      "lines": 41,
+      "sha256": "0f57b0f324232848e8370437ba28879ef8cbc41082b6ee50870c86c5638b07d4",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/lib/sql.ts",
+      "lines": 43,
+      "sha256": "7042eb1b63c666dc2a31e138e40a8c081749d57e44ffd7033bc69f158ab1bd2f",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/lib/test-environment.ts",
+      "lines": 257,
+      "sha256": "d7fab487987a339a321b17134a7222fd1e2d42841c28d800b4c7393f41d47da1",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/migrate.ts",
+      "lines": 24,
+      "sha256": "bbf438f0a13da718402fd05b8aac2a6ec28e91aa81f6f0d7a93abc564865c18b",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/reset-fingerprints.ts",
+      "lines": 38,
+      "sha256": "d3d3a718031e507a66733447f02918c401923fe7756ebb9335726334ff134160",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/review-accessibility-ui.mjs",
+      "lines": 252,
+      "sha256": "9c83e05bdc2f83785d351e228e81d8c304abca413da6b6f38d6b8a17434d21fc",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/seed.ts",
+      "lines": 110,
+      "sha256": "a5e626f05b207ef40e4b5307e9e7a0ffb09dbc31690e26b55633cd5bb81763d0",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-api.ts",
+      "lines": 825,
+      "sha256": "400d203e79fee06f98f2aa5393ccedbc3b82e5c24d32867da3194e6160b937ad",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-caisse-ui.mjs",
+      "lines": 518,
+      "sha256": "c945426764af30e1bb6c0f1f89c288dc2e2aa5d6208b706e7c0cc3c7f9cb1941",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-client-numbers.ts",
+      "lines": 170,
+      "sha256": "c8da596cb55bad7d41974b54f4108a6304b0071ffb316112557bc7b4d7b4cf5e",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-client-siret.ts",
+      "lines": 124,
+      "sha256": "706675383929c49f79da6ed3dc6c6b30ad40daec633760205de5db72d5877751",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-clients-ui.mjs",
+      "lines": 326,
+      "sha256": "98acb3d64ced7f86920643e39ddf23200698031f569148b85ced35f21db1b7df",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-error-mapping.ts",
+      "lines": 33,
+      "sha256": "abdb0aa67fef9b95b991ee25226e8c117131d310adefc6e1fc3896b60107113a",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-form-dialogs-ui.mjs",
+      "lines": 250,
+      "sha256": "60f6d499a0ecb5d2bafcae61c85ac2d9fbe803c6e305ca6ff605d971d89be293",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-fournisseurs-ui.mjs",
+      "lines": 277,
+      "sha256": "5a6c68b064b39a693ee2ab67c6c63a28b4fbf0f7e8e99a5fed770d14c72a379a",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-fournisseurs.ts",
+      "lines": 143,
+      "sha256": "b87c62f5f45cd459123e7e8ce2017b72443a491472b88ccf24c921bb064148e9",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-french-validation-ui.mjs",
+      "lines": 179,
+      "sha256": "0ec4f571f38fbde310e2fe414032373321617cb71a9db899020e973ddff6e2f8",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-inventaire-ui.mjs",
+      "lines": 212,
+      "sha256": "d446cb53a3327d5177f9defa6aa8a6eced9a8e645312b6894f059ae7539be5ad",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-inventaires.ts",
+      "lines": 229,
+      "sha256": "100efac8bb08c04b3050e329e67e7757ed1d94463a98346d0af247a0256f3c03",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-parametres-unit.ts",
+      "lines": 102,
+      "sha256": "b97e99b83ee71b8a2940b2aff88b7bc71bbbd44eb5f5227d750968de8d3b6c91",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-parametres.ts",
+      "lines": 184,
+      "sha256": "07a7701c2abe4730440d607b8f6563fc19dd477267874fc979a1ac35cb846266",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-pdf-invoice.ts",
+      "lines": 88,
+      "sha256": "f092ed9c4be5bb9ac7ca9dd8aaf7d4e26ee70d16d12d6461f0e679377d64769e",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-security.ts",
+      "lines": 403,
+      "sha256": "c0b5ceca63ee9601d7c5a5f8cd1b6777ef12cc585bf0d9c525c99b5d08de8b77",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-stock-transfer-validation.ts",
+      "lines": 66,
+      "sha256": "4e98cd847000a2a5b85cf8af89edf6de7259be8e7f4396d9de623b18908f9474",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-stock-transfers.ts",
+      "lines": 271,
+      "sha256": "1816eeb4a8685af237e6f2197fbededc2ab4e7ea1ca6565539abacdf3bcc7b60",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/test-utilisateurs-ui.mjs",
+      "lines": 232,
+      "sha256": "d08c8062d6ea2af99657a67960e203cc55a48f5c2382a735922d1631bfe6c05c",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/uipro-search.mjs",
+      "lines": 152,
+      "sha256": "05d3b1303ad2c192e92ce7f28780bf6eddefc4cb8588bacd0c56b266ff03b2df",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/verify-caisse.ts",
+      "lines": 198,
+      "sha256": "1bd7bd606973e3c92d6b5cc047bc6a59655b1de642877b01bd7cc6f6a79c9932",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "scripts/verify-repositories.ts",
+      "lines": 89,
+      "sha256": "aff725a740af881388becb4b83b132d3c94ee1fa6172fe76ac89ec30dea6c7fe",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/db/client.ts",
+      "lines": 34,
+      "sha256": "7fb357d41d30e1b401374360fb3478a70d5946258f1a5fde7d4955f823dd1a25",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/db/schema.ts",
+      "lines": 710,
+      "sha256": "dea5676a8e46383a4985d5c3b89d4d9ae09fa70b4c080f74943288b5c4f60279",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/db/schema_step2.ts",
+      "lines": 121,
+      "sha256": "8a8cce4d1f9a6acff5738dcf0aebcdcb05951592340552cd10f61c7bd5a690b7",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/index.ts",
+      "lines": 859,
+      "sha256": "295eaa61506cbdf5cc635f871d2985bd84d7c63d8e85fb96ccc5e8f40e3f428d",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/auth.ts",
+      "lines": 225,
+      "sha256": "f0a28681d0a2620d6d503657903d48abe9c79baf18443329ba49bcc83597a983",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/authRoutes.ts",
+      "lines": 119,
+      "sha256": "7bf6ec378d1499db1be6f5caaea6ecc00089ac56793b1ba13ba1a28e87d633db",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/compliance.ts",
+      "lines": 150,
+      "sha256": "a1b718308cae802bf7ab8b919f14cfdb84d989d20a2f84655377ff989ed7e962",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/complianceRoutes.ts",
+      "lines": 254,
+      "sha256": "a5bf6a716bf7895c3038e5b9b256734a81b7b877754fedae298e4261eb5e0908",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/crud.ts",
+      "lines": 245,
+      "sha256": "f01a25808c333e42b88d36497824d07d01eff3a159fe02d9d29cbaab8a926b7b",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/csrf.ts",
+      "lines": 301,
+      "sha256": "9938bf4d86bfa3f30ea3ff0c0d84eba58f030702e0bde1ec2ad74e6fec82d92e",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/documentRoutes.ts",
+      "lines": 227,
+      "sha256": "14414107a8186fd5e3e4c841b4bfdc00368e3616ba1805dae05fd0442ffeaa7b",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/inventaireRoutes.ts",
+      "lines": 45,
+      "sha256": "63838fdf724ab613e2e9264ad9348e207f0d8c5a50a859b7a54ee47f0185daa3",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/rateLimit.ts",
+      "lines": 32,
+      "sha256": "4c02f3bf10ee1c432f3d0eca3c65a28a841a5d298cd5998def3b93d3e0b5cc63",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/referentielSettingsRoutes.ts",
+      "lines": 44,
+      "sha256": "29566bcfedd6a7ab8c726fd21dbe4755497642c63ae02581bf5d86438a2c6515",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/resourceRoutes.ts",
+      "lines": 684,
+      "sha256": "4d6427ad6e03df1b11e47381aaf24bb7555afd8e526a8412a8ab6d5b0edae829",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/sanitize.ts",
+      "lines": 225,
+      "sha256": "d8b211ba5946a2d8334b7834911e7d226d77587e2d610de0238ec8fb0160d3fb",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/schemas.ts",
+      "lines": 532,
+      "sha256": "8eeec4c82b5f8b4e33bd6362eabb5b0b20200203650053b0c6688e12d85b92d3",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/middleware/security.ts",
+      "lines": 60,
+      "sha256": "d495161934bb572398295825e9a3c13f65d1253af33e38b2312a150b531fe71a",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/settingsRoutes.ts",
+      "lines": 81,
+      "sha256": "90e916854a0ddb4a94fbd2972bbdf63ce5b5c91ffe0d6516d9c5034632520f49",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/middleware/validation.ts",
+      "lines": 302,
+      "sha256": "95cd36ec349feddc914638358ce3e0992946966cd6164cd1f18e34c08241c1c7",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/articleRepository.ts",
+      "lines": 274,
+      "sha256": "36fab83aca28babe791bfc29fe7f8ee4d5a634c19500eedae8167f968132f43d",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/cashRegisterRepository.ts",
+      "lines": 494,
+      "sha256": "efafd92986605630f424d2cc69e605e41528d1476eb326c51cfc9cc1d1a8fd73",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/documentRepositories.ts",
+      "lines": 420,
+      "sha256": "8dfc981cdd465c711d51b6995897d84e0167d36b575dd07c4d715c7195ec97f6",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/inventaireRepository.ts",
+      "lines": 170,
+      "sha256": "08fb9c710b236d631909cb2b2dc5fc636ff33c16dfacd31204fcde5d4f83c5dd",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/livraisonRepository.ts",
+      "lines": 117,
+      "sha256": "30bd67d32157ffce8ed7430679a6c1a617ce5e16be207b8a81f4542b15beb021",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/mapping.ts",
+      "lines": 112,
+      "sha256": "bee43f5bd03119f47fa6cf8a5d2df52ba488b58f725a6949d61589c3c543cd8f",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/parametreRepository.ts",
+      "lines": 62,
+      "sha256": "71c2cbf798089ab7d1b84e0b56d890542903e6b918723f3a93824bcaf6bd0a78",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/referentielRepositories.ts",
+      "lines": 428,
+      "sha256": "c8e77684722c836734fd5de8f9fdbbf2805820ef6a4084e9660cd8296f6d6e0c",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/simpleRepositories.ts",
+      "lines": 114,
+      "sha256": "9b5e62b6225cb87a20fda4ce732eb00b3efc90234b0681751f39fcd9f27d0954",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/repositories/utilisateurRepository.ts",
+      "lines": 167,
+      "sha256": "4ef3e5bd0b1319c96d004f0ae174d0afb2b9a9288cff20fd4a41b827bfd038ce",
+      "reviewed_by": "metier"
+    },
+    {
+      "path": "server/services/httpsSettings.ts",
+      "lines": 29,
+      "sha256": "1dc810afe3d75b96b45905986cc396f67ff66b6dfc5c9cda730b6522ee02664a",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/services/pdfInvoice.ts",
+      "lines": 236,
+      "sha256": "322236f16127bc1463fa87dcb09b20cc5aca8289bd858f4c8e55c5c5cdf7baf9",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/services/settingsStore.ts",
+      "lines": 85,
+      "sha256": "acd73201750e1a4b76f9672eebbb7456650fd6a09c300512be40e81e0729f91f",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/services/turnstile.ts",
+      "lines": 19,
+      "sha256": "054b413b19144c562b63ba4a8c0a5f52ad4326184413b8068827b7bcc699a113",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "server/types/pdfmake.d.ts",
+      "lines": 13,
+      "sha256": "34231dc25da61639dc32ed39f54cef3868db9e0008b88d57555c200230b0e50b",
+      "reviewed_by": "infrastructure"
+    },
+    {
+      "path": "src/App.css",
+      "lines": 279,
+      "sha256": "b95b45c8dbe715678a04c41c366bdb9f61a361f3edf151a45d9d0897abb37da9",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/App.tsx",
+      "lines": 292,
+      "sha256": "af3bc67cd48864e1693053a4d1e7dea168288628a5bc888c131ab84e7b51eaaa",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/auth.css",
+      "lines": 44,
+      "sha256": "a53c3bf00999140bfae4de1dc73336b79838cabf7f3af551e6437a4e81714d25",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components.css",
+      "lines": 156,
+      "sha256": "33c2e1eb2010281547028af13853e46c11324638508c2a9aa972eac0a9f9423b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/AuthProvider.tsx",
+      "lines": 98,
+      "sha256": "d495b2bf64ec7fc62a0fb94a3efa5a44bf0ee4d00dffb344507011bf0641e5f2",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/ConfirmDialog.tsx",
+      "lines": 25,
+      "sha256": "6fd2e01d29dfeb0a90523d6d003e5a6820e6be6efd44e8915e644d41d48e1009",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/DataTable.tsx",
+      "lines": 142,
+      "sha256": "446f911c618e2214cded964289bea5954c68923fabcc810d229d84f09131f900",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/EmplacementsManager.tsx",
+      "lines": 101,
+      "sha256": "c9d37a427dfccce7d2657cce93345d5661ac8780f1a35b54a72e13f7ff11d2ae",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/FormDialog.tsx",
+      "lines": 69,
+      "sha256": "627e892221cb0b1f5f73cad889d587d893e4d244db91354a6588e4766510c29d",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/Icon.tsx",
+      "lines": 109,
+      "sha256": "abe96956615245605731e984ac8a9affe5c4579f05b324ba4ca2b2494a48afba",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/PageLayout.tsx",
+      "lines": 37,
+      "sha256": "58d8fc4227389309710b667ac084c2ad1b9da1bb1dc0bf4425c354374628ec1a",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/ResourceBanners.tsx",
+      "lines": 93,
+      "sha256": "e381a93a06c034f6a92cb44e495c78ebb05a3a1642f22372c60bd33f65c51ce8",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/Toast.tsx",
+      "lines": 81,
+      "sha256": "88637d5c676c4d02e3742847f1cccf1f88173bae283846895ead436a95a9c456",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/TurnstileWidget.tsx",
+      "lines": 48,
+      "sha256": "1e7287c3004f9094b2ad17f46e6a20fd1f158f9cc60a371a7ac3d31d505c284e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/authContext.ts",
+      "lines": 34,
+      "sha256": "e2ef4611fcb1bc07943ba633e3ecfa5923f400fcceb24a5d3a6921fdf37354c9",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/forms/CashCountFields.tsx",
+      "lines": 41,
+      "sha256": "46977f17223ed3f4e53677461ab4147ba82ffacb71f4c5f09accf91a2726b12f",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/forms/ErrorSummary.tsx",
+      "lines": 137,
+      "sha256": "db1faf2c306a38428ed23d499b79fe35401f9d130957569e932579bd0118075e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/forms/FormFields.tsx",
+      "lines": 310,
+      "sha256": "30e211defd041e0dc4552aac1072d06c8c15fa0363da164bbf4d7b32c30f1709",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/toastContext.ts",
+      "lines": 26,
+      "sha256": "47492e3411720467485df51b50aca7a48d8a25a2ecc2bab5aa36c8ca176e1028",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/useAuth.ts",
+      "lines": 25,
+      "sha256": "73833ca282894d1fd2952e307158b87aab638cedc05c8e17b9e1455971b69334",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/useConfirm.ts",
+      "lines": 30,
+      "sha256": "86a2346b82ea59493dae1131d072ac1f996ad6a7c8bf4a4ec18b6eb117332d3e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/components/useToast.ts",
+      "lines": 21,
+      "sha256": "cb53a521c5c6a632e962c61d3b76937cb1fcaaa92b4e3fb68f95b01303724624",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/forms.css",
+      "lines": 120,
+      "sha256": "f994714880de827ede4295567cfc93cd72c3c5b11c990c8ff4dc422f937e3792",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useCashSession.ts",
+      "lines": 161,
+      "sha256": "a589f5dd281df7b784c788cefb34ee2605ce1b1ea57143abdf0e617a1ad6cd84",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useCatalogue.ts",
+      "lines": 213,
+      "sha256": "424c2701a661ad653738faa039fed9eb4fbd9d22fd2a7995228d1ff5aa89a446",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useDashboard.ts",
+      "lines": 93,
+      "sha256": "d01d0fd6d87f8c369a08c545d60a2ad36124c2e9e7f9e5635bfc492d7de43df4",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useEmplacements.ts",
+      "lines": 36,
+      "sha256": "883f1f530ff3b2acf1a41dfec8370c562ee4d80727c979944a93e938caabc81b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useReferentials.ts",
+      "lines": 113,
+      "sha256": "009a3474ed6d0cae29d7c34ed9045a40d4a5dbbe2c99c1249d4dfca1cfb8b331",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useRemoteValue.ts",
+      "lines": 21,
+      "sha256": "c43f2b0a79704a15da6ad254b47548f47d56b0637bc8a99c7feff75f546d8c2b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useResource.ts",
+      "lines": 193,
+      "sha256": "bb6c3da479cd07c3616470b20c0191857e0a128373d2f168618a7424eb20030e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/hooks/useStock.ts",
+      "lines": 221,
+      "sha256": "5b2692a9708df834de178170c0234b0eb7ede8af72d4ba18de0b963cc7ccacf5",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/index.css",
+      "lines": 62,
+      "sha256": "4057179b109f23708b8b8ac56077d2fc43a77913596d00c7fa957a54926c4d52",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/inventaire.css",
+      "lines": 18,
+      "sha256": "19222319ab2fe49c83e9bf96e884291dbb01d9face008798987c0e4b4145135e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/main.tsx",
+      "lines": 17,
+      "sha256": "9fea49080a4fc6a85025c864e81c1e738a019cbfcdbd90ea2fcf82e67762bb6b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/options.ts",
+      "lines": 140,
+      "sha256": "165ed3d9f4cc6f550e718b0781f120241601b35b15244cf67463ad89b533114e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/parametres.css",
+      "lines": 47,
+      "sha256": "06c158b17ac6770b96981b9c64e7b565c83ee7d9d31d0e3fea7ae75cd92038e6",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/parametres.ts",
+      "lines": 35,
+      "sha256": "8a91f6c3d3a1a4ba240efcb9c79057c6b36b9f994d55033db00db4540039369a",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/schemas/index.ts",
+      "lines": 414,
+      "sha256": "69e11611bcd57ed1cdcc6030ca5dee2294719e9429983d1fbe76f48b7eaeafb1",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/schemas/inventaire.ts",
+      "lines": 28,
+      "sha256": "56844b8479fbd15b065110dfc84383428ea103c24242cae1f243d8223871a5b1",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/schemas/parametres.ts",
+      "lines": 64,
+      "sha256": "02f9ea9132cf5d497e8c1bab1cf197a7ade6237c18bc99092dcd8aff16546506",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/services/api.ts",
+      "lines": 202,
+      "sha256": "c04072af0654124733249b3a0297ad1d0de5c9747b0d6b180c046fe30facf178",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/services/contracts.ts",
+      "lines": 316,
+      "sha256": "c225588cadc543432ec445b8f99a790af0753df6d50ef4c5a0c63825d3cd818b",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/services/resilience.ts",
+      "lines": 18,
+      "sha256": "9cc05382f14429fd5c4ea419315516dcb9e8af170ffd9546134491146a97eab6",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/tokens.css",
+      "lines": 115,
+      "sha256": "3f200f08fe495d8cedf01c0cef13c7380197ea65f0b8d07b23cbc4fcd1a8379d",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/types/index.ts",
+      "lines": 89,
+      "sha256": "43cc7131a3579cca6633523474aa550bdabc252cdd472d4ddb96d86e613d2cec",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/utils/cashCounting.ts",
+      "lines": 6,
+      "sha256": "9dd25f7caa49132082cce27cdaecdb97536714a355b70b89d31bbd1692aaabf2",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/utils/frenchValidation.ts",
+      "lines": 80,
+      "sha256": "f152fa929754c023ead74a0cb8c1d327ad753c84a246a46e38db23d46295dbdb",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/CaisseView.tsx",
+      "lines": 477,
+      "sha256": "6a1a3ff6fe746334205db67e93ffef7fab578fe9773b03b1054b2365737737ab",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/CatalogueView.tsx",
+      "lines": 513,
+      "sha256": "db71f408362a6fc3b1a487be9c8441a2dec687734b7511a6d236771c05b11b42",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/ClientsView.tsx",
+      "lines": 421,
+      "sha256": "151c0551b20fae7694fcaa27d753f2283d6f0b4e246be4a625defe131c10e586",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/CommandesClientsView.tsx",
+      "lines": 383,
+      "sha256": "f67b3a261f35b852c6c5e39b4291d710cc532edd3efae6f2ab90a8f8c63fba02",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/DashboardView.tsx",
+      "lines": 118,
+      "sha256": "5923a564f8a764b460359d68d326080d571ba28d4f85577a367995cb915a6353",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/FournisseursView.tsx",
+      "lines": 380,
+      "sha256": "e96581466f098c27b099b8ad19c18b1d74cfc92563a1b119cae29d40ec75c581",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/InventaireView.tsx",
+      "lines": 241,
+      "sha256": "5776f12e9caceffa980fff109ef766ef33cd00a800cd6f5f291caf934c5587d4",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/LivraisonsView.tsx",
+      "lines": 323,
+      "sha256": "32031f2967ad08c8c3dc8d0c88f6ee638e1ee154e622ab2129f33214e24d5645",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/LoginView.tsx",
+      "lines": 168,
+      "sha256": "3c65cc5d4f2cf6f62f209a33ca773eb7ef44f822e35d7de69494946ca1e7eaf0",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/ReceptionsView.tsx",
+      "lines": 423,
+      "sha256": "ddb0caa1e84eb4bc238ae2562e72bc625a6f427fae504cc10ccedb57174d82fe",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/RetoursView.tsx",
+      "lines": 348,
+      "sha256": "a848fa8bf41cc24d8f14405046903125d521729977ba3dd06195335fb0491855",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/StockView.tsx",
+      "lines": 557,
+      "sha256": "2da3e719a773979dc98e504e60446dd1daaffff6fde69423e0485c809a0d783c",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/UtilisateursView.tsx",
+      "lines": 338,
+      "sha256": "4875566a777cf8a12fd96bce5e24649e8efe047b9cb7af76bde546dbe9bd1df9",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/VehiculesView.tsx",
+      "lines": 354,
+      "sha256": "7d3cae6da7f111b21ea539ba74aae695c80651d17d3fc4b1cfbaafc7686f019e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/VentesComptoirView.tsx",
+      "lines": 417,
+      "sha256": "159aab1b63b5e6f7068504295f5f55c56d6254377351267a9fa9e1bc84963249",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/BaseDonneesView.tsx",
+      "lines": 5,
+      "sha256": "f7984628b929e9435b40507ae38eb1309f22a06cb597933947e3df1badc6e6de",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/CaisseSettingsView.tsx",
+      "lines": 5,
+      "sha256": "a8cfdf7312156a583f657a06b8b57cd317a053bcfa99638f6bf46763f1f963e6",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/CategoriesView.tsx",
+      "lines": 14,
+      "sha256": "fb74498979ef1fcd92dc42b8b594b72d01365b4103192cf403f43e5ef12c01b9",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/ConfigurationView.tsx",
+      "lines": 86,
+      "sha256": "13c4649549c2984b4f0343affc4c41cbcc5f776c544924094c7262444c802616",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/ConnexionView.tsx",
+      "lines": 5,
+      "sha256": "acfc1a03a146d84166805409afc79ad4077d547b1f0ac67c40a7ba9b46252762",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/EmplacementsView.tsx",
+      "lines": 10,
+      "sha256": "37c133f371e9bdcb8552ddd97fc69db44fe7f1d44f882d3c098c7c36a87c49f3",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/HttpsForm.tsx",
+      "lines": 71,
+      "sha256": "b72ae280e4d64a549fbf7dcd2d56843eea20f623ddba843682939b66ddbc90b3",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/HttpsView.tsx",
+      "lines": 13,
+      "sha256": "dc6ca09001c1a75948b1549a65b49bb8680144a9a4daf3a5408b3b4f85a05675",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/LimitesApiView.tsx",
+      "lines": 5,
+      "sha256": "3bf26f3ac4247af1361c929aa425735400fa4ec6c5ff2d944333a27124df3e01",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/ParametresLayout.tsx",
+      "lines": 40,
+      "sha256": "9bec636359a9ae85046d129ba9b7c5e20d7f32d395862edc05af65751a87704e",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/ParametresView.tsx",
+      "lines": 26,
+      "sha256": "9b779b9797a9c6003f76743c5608d8a8139588c37caf848b42454366b376d987",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/ReferentielEditor.tsx",
+      "lines": 81,
+      "sha256": "f71ddd23543d3bf277b78b80335f5f01f20ce9e6e6f9d11ef2d58f367b7057cc",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/SecteurClients.tsx",
+      "lines": 29,
+      "sha256": "5fe4124734a3305c4aa05ecf1ed878adc23146548f15d2bc4beafa823c8962e3",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/SecteursView.tsx",
+      "lines": 15,
+      "sha256": "7e436ed67b72a0247492813b93b06ea214ef665fd7b26715f52a07fba304fd8a",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/TurnstileForm.tsx",
+      "lines": 55,
+      "sha256": "1c7cd03060811143c1cea223afe18dde2a7801caa08b896f876157f15097fa47",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "src/views/parametres/TurnstileView.tsx",
+      "lines": 13,
+      "sha256": "10bb02fe7b1ca82a373bcd46ee840766d263676a2674bea8898e45ff3d30e58f",
+      "reviewed_by": "frontend"
+    },
+    {
+      "path": "vite.config.ts",
+      "lines": 12,
+      "sha256": "1f6f3e5f6cdbb166618f75c01d4411071cae2dea8f12a1425841983186a1539a",
+      "reviewed_by": "infrastructure"
+    }
+  ]
+}
