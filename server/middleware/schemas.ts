@@ -16,6 +16,7 @@
 
 import { z } from 'zod'
 import { fondsCaisseSchema } from '../../src/schemas/parametres.js'
+import { hasCentPrecision } from '../../src/utils/venteTotals.js'
 import { USER_ROLES, CLIENT_TYPES, VEHICLE_TYPES, VEHICLE_STATUSES, ORDER_STATUSES, DELIVERY_STATUSES, PAYMENT_MODES, DELIVERY_MODES } from '../db/schema.js'
 import { sanitizeCode, sanitizeText, normalizeText } from './sanitize.js'
 
@@ -330,7 +331,9 @@ const documentLineSchema = z.object({
   reference,
   designation: required('La designation', 255),
   quantite: positiveInt('La quantite', 9999),
-  prixUnitaire: nonNegative('Le prix unitaire').refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
+  prixUnitaire: nonNegative('Le prix unitaire')
+    .refine(hasCentPrecision, 'Le prix unitaire doit être exprimé en centimes.')
+    .refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
 })
 
 /**
@@ -369,9 +372,12 @@ export const venteBodySchema = z
     clientId: z.number({ message: 'Le client est requis.' }).int().positive().nullable().optional(),
     dateVente: dateTimeISO('La date de la vente'),
     modePaiement: z.enum(PAYMENT_MODES, { message: 'Mode de paiement invalide.' }),
-    montantPaye: nonNegative('Le montant paye'),
-    monnaie: nonNegative('La monnaie').optional(),
-    articles: documentLines,
+    montantPaye: nonNegative('Le montant paye').refine(hasCentPrecision, 'Le montant payé doit être exprimé en centimes.'),
+    monnaie: nonNegative('La monnaie').refine(hasCentPrecision, 'La monnaie doit être exprimée en centimes.').optional(),
+    articles: z.array(documentLineSchema.extend({
+      // Facultatif pour les clients existants : le serveur lit le taux du catalogue.
+      tauxTva: nonNegative('Le taux de TVA').max(100).refine(hasCentPrecision, 'Le taux de TVA doit avoir deux décimales au maximum.').optional(),
+    })).min(1, 'Ajoutez au moins une ligne.').max(200, 'Maximum 200 lignes par document.'),
   })
   // Le total étant recalculé par le serveur, on vérifie ici que la somme
   // encaissee couvre le total calcule, plutot que de comparer a un total fourni.

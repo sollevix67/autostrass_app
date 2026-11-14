@@ -12,11 +12,11 @@
  */
 
 import { Router, type Request } from 'express'
-import { desc, eq, isNull } from 'drizzle-orm'
+import { desc, eq, gt, inArray, isNull } from 'drizzle-orm'
 import { handler, requireDb, requireId } from './crud.js'
 import { requireAuth, requireRole } from './auth.js'
 import { requireCsrf } from './csrf.js'
-import { GENESIS_HASH, verifyFingerprints } from './compliance.js'
+import { GENESIS_HASH, scanFingerprints, type FingerprintedSale } from './compliance.js'
 import * as schema from '../db/schema.js'
 import { toIsoString, toNumber } from '../repositories/mapping.js'
 import type { UserRole } from '../db/schema.js'
@@ -25,18 +25,7 @@ import type { UserRole } from '../db/schema.js'
 const CAISSE_WRITE: readonly UserRole[] = ['caissier']
 
 /** Ligne de vente ramenee par le controle, avec ses lignes pour le recalcul. */
-type SaleForFingerprint = {
-  id: number
-  sessionId: number | null
-  dateVente: string
-  caissier: string
-  modePaiement: string
-  totalHT: number
-  montantPaye: number
-  monnaie: number
-  fingerprint: string | null
-  articles: Array<{ reference: string; designation: string; quantite: number; prixUnitaire: number }>
-}
+type SaleForFingerprint = FingerprintedSale
 
 export function createComplianceRouter(): Router {
   const router = Router()
@@ -64,57 +53,56 @@ export function createComplianceRouter(): Router {
       const client = requireDb(response)
       if (!client) return
 
-      const ventes = await client
-        .select()
-        .from(schema.ventes)
-        .orderBy(schema.ventes.id)
-        .limit(Number.parseInt(String(request.query.limite ?? '5000'), 10) || 5000)
-
-      // Lignes de toutes les ventes examinees, groupees par vente.
-      const lignes = await client
-        .select()
-        .from(schema.venteLines)
-        .orderBy(schema.venteLines.vente_id, schema.venteLines.ligne)
-
-      const parVente = new Map<number, SaleForFingerprint['articles']>()
-      for (const ligne of lignes) {
-        const venteId = Number(ligne.vente_id)
-        const list = parVente.get(venteId) ?? []
-        list.push({
-          reference: String(ligne.reference ?? ''),
-          designation: String(ligne.designation ?? ''),
-          quantite: Number(ligne.quantite ?? 0),
-          prixUnitaire: toNumber(ligne.prix_unitaire as string | number | null),
-        })
-        parVente.set(venteId, list)
+      // `limite` règle la taille des lots, jamais la longueur de la chaîne.
+      const requestedSize = Number(request.query.limite ?? 1000)
+      if (!Number.isInteger(requestedSize) || requestedSize < 1 || requestedSize > 5000) {
+        response.status(400).json({ error: 'INVALID_LIMIT', message: 'La taille des lots doit être comprise entre 1 et 5000.' })
+        return
       }
+      // En REPEATABLE READ, le premier SELECT établit le snapshot conservé
+      // jusqu'au commit. Drizzle 0.45 concatène ses options START TRANSACTION
+      // sans virgule ; combiner READ ONLY et WITH CONSISTENT SNAPSHOT serait invalide.
+      const resultat = await client.transaction(async (tx) => scanFingerprints(async (afterId, size) => {
+        const ventes = await tx.select().from(schema.ventes)
+          .where(gt(schema.ventes.id, afterId)).orderBy(schema.ventes.id).limit(size)
+        if (ventes.length === 0) return []
 
-      const candidats: SaleForFingerprint[] = ventes.map((vente) => ({
-        id: Number(vente.id),
-        sessionId: vente.session_id === null ? null : Number(vente.session_id),
-        dateVente: toIsoString(vente.date_vente as Date | null),
-        caissier: String(vente.caissier ?? ''),
-        modePaiement: String(vente.mode_paiement ?? ''),
-        totalHT: toNumber(vente.total_ht as string | number | null),
-        montantPaye: toNumber(vente.montant_paye as string | number | null),
-        monnaie: toNumber(vente.monnaie as string | number | null),
-        fingerprint: vente.fingerprint === null || vente.fingerprint === undefined ? null : String(vente.fingerprint),
-        articles: parVente.get(Number(vente.id)) ?? [],
-      }))
-
-      // Le contrôle rejoue la chaîne sur l'intégralité des ventes, dans
-      // l'ordre des identifiants : c'est cet ordre qui constitue la memoire
-      // de vente. Les ventes anterieures a la mise en conformite n'ont pas
-      // d'empreinte et sont comptees a part par `verifyFingerprints`.
-      const resultat = verifyFingerprints(candidats)
+        const lignes = await tx.select().from(schema.venteLines)
+          .where(inArray(schema.venteLines.vente_id, ventes.map((vente) => vente.id)))
+          .orderBy(schema.venteLines.vente_id, schema.venteLines.ligne)
+        const parVente = new Map<number, SaleForFingerprint['articles']>()
+        for (const ligne of lignes) {
+          const venteId = Number(ligne.vente_id)
+          const list = parVente.get(venteId) ?? []
+          list.push({
+            reference: String(ligne.reference ?? ''), designation: String(ligne.designation ?? ''),
+            quantite: Number(ligne.quantite ?? 0), prixUnitaire: toNumber(ligne.prix_unitaire),
+            tauxTva: ligne.taux_tva === null ? null : toNumber(ligne.taux_tva),
+          })
+          parVente.set(venteId, list)
+        }
+        return ventes.map((vente): SaleForFingerprint => ({
+          id: Number(vente.id), sessionId: vente.session_id === null ? null : Number(vente.session_id),
+          dateVente: toIsoString(vente.date_vente), caissier: String(vente.caissier ?? ''),
+          modePaiement: String(vente.mode_paiement ?? ''), totalHT: toNumber(vente.total_ht),
+          fingerprintVersion: Number(vente.fingerprint_version),
+          totalTVA: vente.total_tva === null ? null : toNumber(vente.total_tva),
+          totalTTC: vente.total_ttc === null ? null : toNumber(vente.total_ttc),
+          montantPaye: toNumber(vente.montant_paye), monnaie: toNumber(vente.monnaie),
+          fingerprint: vente.fingerprint === null ? null : String(vente.fingerprint),
+          articles: parVente.get(Number(vente.id)) ?? [],
+        }))
+      }, requestedSize), { isolationLevel: 'repeatable read', accessMode: 'read only' })
 
       if (resultat.intacte) {
         response.json({
           etat: resultat.anterieures > 0 ? 'anterieures' : 'intacte',
-          ventesVerifiees: candidats.length - resultat.anterieures,
+          ventesVerifiees: resultat.verifiees,
           ventesAnterieures: resultat.anterieures,
           rupture: null,
           genine: GENESIS_HASH,
+          derniereVente: resultat.derniereVente,
+          controleComplet: true,
         })
         return
       }
@@ -125,7 +113,7 @@ export function createComplianceRouter(): Router {
         details: {
           etat: 'rompue',
           rupture: resultat.rupture,
-          ventesVerifiees: candidats.length - resultat.anterieures,
+          ventesVerifiees: resultat.verifiees,
           ventesAnterieures: resultat.anterieures,
         },
       })

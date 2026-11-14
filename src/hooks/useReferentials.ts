@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { api, isAbortError } from '../services/api'
+import { api } from '../services/api'
 import type { ApiClient, ApiCommande, ApiVente } from '../services/contracts'
 
 /** Etape du cache : `undefined` = jamais demande, `null` = demande en cours. */
@@ -34,24 +34,26 @@ const cache = new Map<string, CacheEntry>()
  * de la meme liste, et chaque appelant verifie le type qu'il attend. Le typer
  * ici figerait le type de la premiere reponse pour toutes les vues suivantes.
  */
-function fetchOnce(path: string, signal?: AbortSignal): Promise<unknown[]> {
+function fetchOnce(path: string): Promise<unknown[]> {
   const existing = cache.get(path)
+  if (existing?.data) return Promise.resolve(existing.data)
   if (existing?.promise) return existing.promise
 
   const promise = api
-    .get<unknown[]>(path, { signal })
+    // La requête appartient au cache, pas à l'un des composants abonnés.
+    .get<unknown[]>(path)
     .then((data) => (Array.isArray(data) ? data : []))
-    .catch((cause: unknown) => {
-      if (isAbortError(cause)) return []
-      // Un referentiel absent ne doit pas casser la vue : on renvoie une liste
-      // vide et l'utilisateur saisira le reste du document.
-      return []
-    })
     .then((data) => {
       const entry = cache.get(path)
       // La reference ne doit changer que si `invalidate` a ete appele entre-temps.
       if (entry?.promise === promise) cache.set(path, { data, promise: null })
       return data
+    })
+    .catch(() => {
+      // Un échec ne constitue pas un référentiel vide valide : le montage
+      // suivant doit pouvoir réessayer plutôt que réutiliser cette réponse.
+      if (cache.get(path)?.promise === promise) cache.delete(path)
+      return []
     })
 
   cache.set(path, { data: null, promise })
@@ -68,7 +70,7 @@ export function invalidateReferentials(paths?: string[]): void {
 }
 
 /**
- * Charge un referentiel et le rend au composant, avec annulation au demontage.
+ * Charge un référentiel ; le démontage retire uniquement cet abonné.
  *
  * L'état ne contient que la réponse du réseau. Le cache est relu pendant le
  * rendu, pas dans l'effet : y ecrire declencherait un second rendu en cascade
@@ -78,16 +80,14 @@ function useReferential<T>(path: string): T[] {
   const [fetched, setFetched] = useState<{ path: string; rows: T[] } | null>(null)
 
   useEffect(() => {
-    const controller = new AbortController()
     let active = true
 
-    void fetchOnce(path, controller.signal).then((data) => {
+    void fetchOnce(path).then((data) => {
       if (active) setFetched({ path, rows: data as T[] })
     })
 
     return () => {
       active = false
-      controller.abort()
     }
   }, [path])
 

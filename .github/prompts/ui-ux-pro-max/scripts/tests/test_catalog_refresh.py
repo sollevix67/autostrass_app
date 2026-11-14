@@ -349,6 +349,23 @@ class CatalogRefreshTest(unittest.TestCase):
         self.assertIn("alias collides", alias_result.stderr)
         self.assertIn("React exports missing", exports_result.stderr)
 
+    def test_icon_refresh_accepts_and_validates_optional_figma_category(self):
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            icons = json.loads((FIXTURES / "phosphor-core.json").read_text())
+            icons[0]["figma_category"] = "nature"
+            source = directory / "extended.json"
+            source.write_text(json.dumps(icons))
+            result = self.run_command(*self.icon_args(directory, source=source))
+            self.assertEqual(0, result.returncode, result.stderr)
+            manifest = json.loads((directory / "phosphor-icons-upstream.json").read_text())
+            self.assertEqual("nature", manifest["icons"][0]["figmaCategory"])
+            icons[0]["figma_category"] = ""
+            source.write_text(json.dumps(icons))
+            result = self.run_command(*self.icon_args(directory, source=source))
+            self.assertEqual(2, result.returncode)
+            self.assertIn("invalid figma_category", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

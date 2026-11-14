@@ -89,7 +89,7 @@ type UseCatalogueResult = {
   loading: boolean
   saving: boolean
   error: string | null
-  /** `true` si l'API catalogue est indisponible : les ecritures restent locales. */
+  /** `true` si l'API catalogue est indisponible ; aucune écriture locale. */
   offline: boolean
   reload: () => void
   create: (article: Article) => Promise<Article | null>
@@ -108,8 +108,8 @@ function upsertByReference(list: Article[], article: Article): Article[] {
 /**
  * CRUD articles : charge la liste, crée, met à jour et supprime.
  *
- * Si l'API est injoignable (503, 404, reseau coupe), le hook bascule en mode
- * local : les modifications restent en memoire et l'UI previent l'utilisateur.
+ * Si l'API est injoignable, la lecture utilise le jeu de démonstration.
+ * Chaque écriture exige une réponse du serveur avant de modifier la liste.
  */
 export function useCatalogue(): UseCatalogueResult {
   const [articles, setArticles] = useState<Article[]>([])
@@ -151,11 +151,10 @@ export function useCatalogue(): UseCatalogueResult {
   }, [nonce])
 
   /**
-   * Exécute une écriture et bascule en mode local si l'API est indisponible.
-   * `apply` est appele en cas de succes reseau, ou avec `fallback` en mode local.
+   * Exécute une écriture ; `apply` est appelé uniquement après succès API.
    */
   const write = useCallback(
-    async <T,>(run: () => Promise<T>, apply: (result: T) => void, fallback: T): Promise<T | null> => {
+    async <T,>(run: () => Promise<T>, apply: (result: T) => void): Promise<T | null> => {
       setSaving(true)
       try {
         const result = await run()
@@ -165,11 +164,7 @@ export function useCatalogue(): UseCatalogueResult {
         return result
       } catch (cause) {
         if (isAbortError(cause)) return null
-        if (isApiUnavailable(cause)) {
-          apply(fallback)
-          setOffline(true)
-          return fallback
-        }
+        if (isApiUnavailable(cause)) setOffline(true)
         setError(toErrorMessage(cause))
         return null
       } finally {
@@ -184,7 +179,6 @@ export function useCatalogue(): UseCatalogueResult {
       write(
         () => api.post<Article>('/articles', article),
         (created) => setArticles((prev) => upsertByReference(prev, created)),
-        article,
       ),
     [write],
   )
@@ -194,7 +188,6 @@ export function useCatalogue(): UseCatalogueResult {
       write(
         () => api.put<Article>(`/articles/${encodeURIComponent(article.reference)}`, article),
         (updated) => setArticles((prev) => upsertByReference(prev, updated)),
-        article,
       ),
     [write],
   )
@@ -204,7 +197,6 @@ export function useCatalogue(): UseCatalogueResult {
       write<boolean>(
         () => api.delete(`/articles/${encodeURIComponent(reference)}`).then(() => true),
         () => setArticles((prev) => prev.filter((item) => item.reference !== reference)),
-        true,
       ).then((result) => result ?? false),
     [write],
   )

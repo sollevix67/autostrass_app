@@ -55,9 +55,12 @@ export function fingerprintVente(
     caissier: string
     modePaiement: string
     totalHT: number
+    fingerprintVersion?: number
+    totalTVA?: number | null
+    totalTTC?: number | null
     montantPaye: number
     monnaie: number
-    articles: Array<{ reference: string; designation: string; quantite: number; prixUnitaire: number }>
+    articles: Array<{ reference: string; designation: string; quantite: number; prixUnitaire: number; tauxTva?: number | null }>
   },
   previous: string,
 ): string {
@@ -84,6 +87,26 @@ export function fingerprintVente(
   }
 
   const centimes = (value: number): number => Math.round(value * 100)
+  const version = input.fingerprintVersion ?? 1
+  if (version !== 1 && version !== 2) throw new Error('Version d\'empreinte inconnue.')
+  if (version === 2) {
+    if (typeof input.totalTVA !== 'number' || !Number.isFinite(input.totalTVA)
+      || typeof input.totalTTC !== 'number' || !Number.isFinite(input.totalTTC)
+      || input.articles.some((line) => typeof line.tauxTva !== 'number' || !Number.isFinite(line.tauxTva))) {
+      throw new Error('Montants fiscaux absents pour une vente scellée en version 2.')
+    }
+    const lignes = input.articles.map((line) => JSON.stringify([
+      line.reference, line.designation, line.quantite, centimes(line.prixUnitaire), centimes(line.tauxTva as number),
+    ])).sort()
+    const charge = JSON.stringify([
+      version, previous, input.id, input.sessionId ?? 0, dateOnly(input.dateVente), input.caissier,
+      input.modePaiement, centimes(input.totalHT), centimes(input.totalTVA), centimes(input.totalTTC),
+      centimes(input.montantPaye), centimes(input.monnaie), lignes,
+    ])
+    return createHash('sha256').update(charge, 'utf8').digest('hex')
+  }
+
+  // Conserver exactement la charge v1 : aucune empreinte ancienne n'est réécrite.
   const lignes = input.articles
     .map((line) => [line.reference, line.designation, line.quantite, centimes(line.prixUnitaire)].join('|'))
     .sort()
@@ -104,47 +127,109 @@ export function fingerprintVente(
   return createHash('sha256').update(charge, 'utf8').digest('hex')
 }
 
-/** Vérifie qu'une chaîne d'empreintes est intacte. */
-export function verifyFingerprints(
-  ventes: Array<{
-    id: number
-    sessionId: number | null
-    dateVente: string
-    caissier: string
-    modePaiement: string
-    totalHT: number
-    montantPaye: number
-    monnaie: number
-    fingerprint: string | null
-    articles: Array<{ reference: string; designation: string; quantite: number; prixUnitaire: number }>
-  }>,
-): { intacte: boolean; rupture: number | null; anterieures: number } {
-  // La chaîne ne **saute** jamais une vente : une vente sans empreinte
-  // antérieure à la mise en conformité n'a pas de chaînon, et la vente
-  // suivante a été scellée sur le généèse. Filtrer ces ventes ferait porter le
-  // chaînon à la mauvaise vente, et le contrôle signalerait une rupture
-  // inexistante.
-  //
-  // On les compte séparément, et le contrôle les qualifie d'« antérieures »
-  // plutôt que de rompues : absence d'empreinte ≠ altération.
-  let previous = GENESIS_HASH
-  let anterieures = 0
-  let rupture: number | null = null
+export type FingerprintedSale = Parameters<typeof fingerprintVente>[0] & { fingerprint: string | null }
 
-  for (const vente of ventes) {
-    if (vente.fingerprint === null) {
-      anterieures += 1
-      previous = GENESIS_HASH
-      continue
-    }
+export type FingerprintResult = { intacte: boolean; rupture: number | null; anterieures: number }
 
-    const attendu = fingerprintVente(vente, previous)
-    if (vente.fingerprint !== attendu) {
-      rupture = vente.id
-      break
-    }
-    previous = vente.fingerprint
+/** État partagé entre les lots : une page ne recommence jamais à la genèse. */
+export class FingerprintVerifier {
+  private previous: string
+  private started: boolean
+  private lastId: number
+  private pendingFirstId: number | null = null
+  private pendingCount = 0
+  private readonly historicalBeforeId: number | undefined
+  private anterieures = 0
+  private rupture: number | null = null
+  private verifiees = 0
+
+  constructor(anchor: { fingerprint: string; id: number; historicalBeforeId?: number } = { fingerprint: GENESIS_HASH, id: 0 }) {
+    this.previous = anchor.fingerprint
+    this.lastId = anchor.id
+    this.started = anchor.fingerprint !== GENESIS_HASH
+    this.historicalBeforeId = anchor.historicalBeforeId
   }
 
-  return { intacte: rupture === null, rupture, anterieures }
+  get previousHash(): string { return this.previous }
+  get checkedCount(): number { return this.verifiees }
+  get lastExaminedId(): number { return this.lastId }
+  get broken(): boolean { return this.rupture !== null }
+
+  add(vente: FingerprintedSale): void {
+    if (this.broken) return
+    if (!Number.isInteger(vente.id) || vente.id <= this.lastId) {
+      this.rupture = vente.id
+      return
+    }
+    this.lastId = vente.id
+
+    if (vente.fingerprint === null) {
+      // La version 2 existe uniquement après le déploiement du scellement.
+      // Elle ne peut jamais être requalifiée comme un ancien historique.
+      if ((vente.fingerprintVersion ?? 1) !== 1 || this.started
+        || (this.historicalBeforeId !== undefined && vente.id >= this.historicalBeforeId)) {
+        this.rupture = vente.id
+      } else if (this.historicalBeforeId !== undefined && vente.id < this.historicalBeforeId) {
+        // Une archive peut fournir le premier bloc scellé, vérifié séparément.
+        this.anterieures++
+      } else {
+        this.pendingFirstId ??= vente.id
+        this.pendingCount++
+      }
+      return
+    }
+
+    let attendu: string
+    try {
+      attendu = fingerprintVente(vente, this.previous)
+    } catch {
+      this.rupture = vente.id
+      return
+    }
+    if (vente.fingerprint !== attendu) {
+      this.rupture = vente.id
+      return
+    }
+
+    // Le premier bloc valide sur la genèse établit la fin de l'historique.
+    // Un historique entièrement dépourvu d'empreintes reste non vérifiable.
+    this.anterieures += this.pendingCount
+    this.pendingCount = 0
+    this.pendingFirstId = null
+    this.started = true
+    this.previous = vente.fingerprint
+    this.verifiees++
+  }
+
+  result(): FingerprintResult {
+    const rupture = this.rupture ?? this.pendingFirstId
+    return { intacte: rupture === null, rupture, anterieures: this.anterieures }
+  }
+}
+
+/** Vérifie la chaîne complète, en conservant uniquement son état courant. */
+export function verifyFingerprints(ventes: readonly FingerprintedSale[]): FingerprintResult {
+  const verifier = new FingerprintVerifier()
+  for (const vente of ventes) verifier.add(vente)
+  return verifier.result()
+}
+
+/** Parcourt toutes les pages, y compris lorsqu'une limite de lot est demandée. */
+export async function scanFingerprints(
+  readBatch: (afterId: number, size: number) => Promise<readonly FingerprintedSale[]>,
+  batchSize = 1000,
+): Promise<FingerprintResult & { verifiees: number; derniereVente: number | null }> {
+  if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 5000) {
+    throw new Error('La taille des lots doit être comprise entre 1 et 5000.')
+  }
+  const verifier = new FingerprintVerifier()
+  let afterId = 0
+  while (!verifier.broken) {
+    const batch = await readBatch(afterId, batchSize)
+    if (batch.length === 0) break
+    for (const vente of batch) verifier.add(vente)
+    if (verifier.broken) break
+    afterId = batch[batch.length - 1].id
+  }
+  return { ...verifier.result(), verifiees: verifier.checkedCount, derniereVente: verifier.lastExaminedId || null }
 }

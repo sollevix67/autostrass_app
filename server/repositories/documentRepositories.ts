@@ -38,6 +38,7 @@ export type DocumentLine = {
   designation: string
   quantite: number
   prixUnitaire: number
+  tauxTva?: number | null
   montant: number
 }
 
@@ -47,6 +48,7 @@ export type LineInput = {
   designation: string
   quantite: number
   prixUnitaire: number
+  tauxTva?: number
 }
 
 /** Dossier de mapping : comment convertir entete et lignes d'une table donnee. */
@@ -70,6 +72,7 @@ function baseLine(raw: Record<string, unknown>): DocumentLine {
     designation: String(raw.designation ?? ''),
     quantite,
     prixUnitaire,
+    ...(raw.taux_tva !== undefined && { tauxTva: raw.taux_tva === null ? null : Number(raw.taux_tva) }),
     // `montant` n'existe que sur les ventes ; ailleurs on le derive.
     montant:
       raw.montant === undefined || raw.montant === null
@@ -91,6 +94,7 @@ function toLine(input: LineInput, index: number): DocumentLine {
     designation: input.designation,
     quantite: input.quantite,
     prixUnitaire: input.prixUnitaire,
+    ...(input.tauxTva !== undefined && { tauxTva: input.tauxTva }),
     montant: Math.round(input.quantite * input.prixUnitaire * 100) / 100,
   }
 }
@@ -281,6 +285,9 @@ export type VenteRow = {
   caissier: string
   articles: DocumentLine[]
   totalHT: number
+  totalTVA: number | null
+  totalTTC: number | null
+  fingerprintVersion: number
   montantPaye: number
   monnaie: number
   modePaiement: schema.PaymentMode
@@ -301,6 +308,9 @@ export function createVenteRepository(db: MySql2Database<Tables>): DocumentRepos
       articles: lines,
       totalHT: totalOf(lines),
       montantPaye: toNumber(raw.montant_paye as string | number | null),
+      totalTVA: raw.total_tva == null ? null : Number(raw.total_tva),
+      totalTTC: raw.total_ttc == null ? null : Number(raw.total_ttc),
+      fingerprintVersion: Number(raw.fingerprint_version ?? 1),
       monnaie: toNumber(raw.monnaie as string | number | null),
       modePaiement: (raw.mode_paiement as schema.PaymentMode) ?? 'espèces',
       createdAt: toIsoString(raw.created_at as Date | null),
@@ -315,6 +325,7 @@ export function createVenteRepository(db: MySql2Database<Tables>): DocumentRepos
           designation: line.designation,
           quantite: line.quantite,
           prix_unitaire: line.prixUnitaire.toFixed(2),
+          taux_tva: line.tauxTva?.toFixed(2) ?? null,
           montant: (line.quantite * line.prixUnitaire).toFixed(2),
         })),
       )

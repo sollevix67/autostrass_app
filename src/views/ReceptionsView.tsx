@@ -45,6 +45,7 @@ export default function ReceptionsView() {
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const { rows, loading, saving, error, offline, reload, create, remove } = useResource<ApiReception>({
+    allowOfflineWrites: false,
     path: '/receptions',
     sort: byDateDesc,
   })

@@ -64,8 +64,8 @@ function mapUtilisateur(raw: Record<string, unknown>): UtilisateurRow {
     role: (raw.role as schema.UserRole) ?? 'caissier',
     // mysql2 renvoie 0 ou 1 pour un BOOLEAN : on normalise en `boolean`.
     actif: Boolean(raw.actif),
-    createdAt: toIsoString(raw.created_at as Date | null),
-    updatedAt: toIsoString(raw.updated_at as Date | null),
+    createdAt: toIsoString(raw.createdAt as Date | string | null),
+    updatedAt: toIsoString(raw.updatedAt as Date | string | null),
   }
 }
 

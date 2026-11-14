@@ -21,6 +21,7 @@ export type LinePayload = {
   designation: string
   quantite: number
   prixUnitaire: number
+  tauxTva?: number
 }
 
 /** Valeurs d'un document apres validation. */

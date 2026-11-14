@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { totalCashCount } from '../utils/cashCounting'
+import { hasCentPrecision } from '../utils/venteTotals'
 import { fondsCaisseSchema } from './parametres'
 
 /**
@@ -139,7 +140,9 @@ export const documentLineSchema = z.object({
   quantite: nonNegative('La quantite')
     .refine((value) => Number.isInteger(value) && value > 0, 'La quantite doit etre un entier positif.')
     .refine((value) => value <= 9999, 'Quantite maximale : 9999.'),
-  prixUnitaire: nonNegative('Le prix unitaire').refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
+  prixUnitaire: nonNegative('Le prix unitaire')
+    .refine(hasCentPrecision, 'Le prix unitaire doit être exprimé en centimes.')
+    .refine((value) => value <= 1_000_000, 'Prix unitaire trop eleve.'),
 })
 
 /** Ligne de reception : alias conserve pour les formulaires existants. */
@@ -169,20 +172,23 @@ const venteBase = z.object({
   clientId: optionalRef('Le client'),
   dateVente: dateTimeISO('La date de vente'),
   modePaiement: z.enum(['espèces', 'carte', 'chèque'], { message: 'Mode de paiement invalide.' }),
-  montantPaye: nonNegative('Le montant paye'),
+  montantPaye: nonNegative('Le montant paye').refine(hasCentPrecision, 'Le montant payé doit être exprimé en centimes.'),
 })
 
 /** Ajoute la règle "montant encaissé >= total" avec un message contextuel. */
-export function venteContext(totalHT: number) {
-  return venteBase.refine((value) => value.montantPaye >= totalHT - 0.005, {
-    message: `Le montant encaissé est inférieur au total de ${totalHT.toFixed(2)} EUR.`,
+export function venteContext(totalTTC: number) {
+  return venteBase.refine((value) => value.montantPaye >= totalTTC - 0.005, {
+    message: `Le montant encaissé est inférieur au total TTC de ${totalTTC.toFixed(2)} EUR.`,
+    path: ['montantPaye'],
+  }).refine((value) => value.modePaiement === 'espèces' || Math.round(value.montantPaye * 100) === Math.round(totalTTC * 100), {
+    message: 'Le paiement par carte ou chèque doit être égal au total TTC.',
     path: ['montantPaye'],
   })
 }
 
 /** Schema de vente a valider en submission : depend du total calcule. */
-export function venteSchema(totalHT: number) {
-  return venteContext(totalHT)
+export function venteSchema(totalTTC: number) {
+  return venteContext(totalTTC)
 }
 
 const SIRET_PATTERN = /^[0-9]{14}$/

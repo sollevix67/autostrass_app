@@ -36,7 +36,7 @@ export default function CatalogueView() {
   const [submitFailed, setSubmitFailed] = useState(false)
   const articleDialogRef = useRef<HTMLDialogElement>(null)
   const pending = useRef(false)
-  const { articles, loading, saving, error, offline, create, update, remove } = useCatalogue()
+  const { articles, loading, saving, error, offline, reload, create, update, remove } = useCatalogue()
   const toast = useToast()
   const { dialogProps, confirm } = useConfirm()
   const taxes = useRemoteValue<Tva[]>('/tva')
@@ -151,9 +151,7 @@ export default function CatalogueView() {
       toast.success(
         isEditing
           ? `Article ${payload.reference} mis a jour.`
-          : offline
-            ? `Article ${payload.reference} ajoute en local (non persiste).`
-            : `Article ${payload.reference} cree.`,
+          : `Article ${payload.reference} cree.`,
       )
       reset(EMPTY_ARTICLE)
       setEditingId(null)
@@ -300,9 +298,14 @@ export default function CatalogueView() {
       title="Gestion du catalogue"
       description="Ajouter, modifier ou supprimer des articles du catalogue."
       actions={
-        <button type="button" className="primary-button" disabled={busy} onClick={handleCreate} aria-haspopup="dialog">
-          <Icon name="plus" size="sm" /> Nouvel article
-        </button>
+        <>
+          <button type="button" className="secondary-button" disabled={loading || busy} onClick={reload}>
+            <Icon name="rotate-ccw" size="sm" /> Actualiser
+          </button>
+          <button type="button" className="primary-button" disabled={busy} onClick={handleCreate} aria-haspopup="dialog">
+            <Icon name="plus" size="sm" /> Nouvel article
+          </button>
+        </>
       }
     >
       {offline && (
@@ -354,6 +357,7 @@ export default function CatalogueView() {
           </button>
         </div>
         {offline && <p className="info-banner" role="status">L'enregistrement nécessite une connexion au serveur.</p>}
+        {offline && <button type="button" className="secondary-button" disabled={loading || busy} onClick={reload}>Actualiser la connexion</button>}
         {submitFailed && error && <p className="error-banner" role="alert">{error}</p>}
 
         <form onSubmit={onSubmit} noValidate aria-busy={busy}>

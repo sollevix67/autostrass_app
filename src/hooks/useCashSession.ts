@@ -11,7 +11,7 @@
  * session : `ApiError` ne szerait pas publie, d'ou le type `| null`.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api, isAbortError, toErrorMessage } from '../services/api'
 import type { ApiCashMovement, ApiCashSession } from '../services/contracts'
 
@@ -121,25 +121,29 @@ export function useCashMovements(sessionId: number | null): {
   movements: ApiCashMovement[]
   loading: boolean
   error: string | null
+  reload: () => void
 } {
   // L'état ne porte que la réponse du réseau, avec la session concernée :
   // l'identifiant permet de savoir si une reponse parvenue apres le
   // changement de session est encore pertinente.
   const [fetched, setFetched] = useState<{ sessionId: number; rows: ApiCashMovement[] } | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [completedRequest, setCompletedRequest] = useState<{ sessionId: number; nonce: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const requestedRef = useRef<number | null>(null)
+  const [nonce, setNonce] = useState(0)
+
+  const reload = useCallback(() => {
+    setNonce((value) => value + 1)
+  }, [])
 
   useEffect(() => {
-    if (sessionId === null || requestedRef.current === sessionId) return
+    if (sessionId === null) return
 
     const controller = new AbortController()
-    requestedRef.current = sessionId
-    setLoading(true)
 
     api
       .get<ApiCashMovement[]>(`/caisse/${sessionId}/mouvements`, { signal: controller.signal })
       .then((data) => {
+        if (controller.signal.aborted) return
         setFetched({ sessionId, rows: Array.isArray(data) ? data : [] })
         setError(null)
       })
@@ -148,14 +152,15 @@ export function useCashMovements(sessionId: number | null): {
         setError(toErrorMessage(cause))
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false)
+        if (!controller.signal.aborted) setCompletedRequest({ sessionId, nonce })
       })
 
     return () => controller.abort()
-  }, [sessionId])
+  }, [sessionId, nonce])
 
   // Une reponse arrivee pour une autre session ne doit jamais s'afficher dans
   // le journal de la session courante.
   const movements = fetched?.sessionId === sessionId ? fetched.rows : []
-  return { movements, loading, error }
+  const loading = sessionId !== null && (completedRequest?.sessionId !== sessionId || completedRequest?.nonce !== nonce)
+  return { movements, loading, error: sessionId === null ? null : error, reload }
 }

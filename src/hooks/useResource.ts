@@ -34,7 +34,7 @@ type Options<TRow> = {
   fallback?: TRow[]
   /** Tri applique a la liste renvoyee. */
   sort?: (rows: TRow[]) => TRow[]
-  /** Autorise le repli local des écritures ; false exige une confirmation API. */
+  /** Autorise explicitement le repli local ; les écritures exigent l'API par défaut. */
   allowOfflineWrites?: boolean
 }
 
@@ -52,7 +52,7 @@ function shouldDegrade(error: unknown): boolean {
 }
 
 export function useResource<TRow extends { id: number }>(options: Options<TRow>): ResourceState<TRow> {
-  const { path, fallback = [], sort, allowOfflineWrites = true } = options
+  const { path, fallback = [], sort, allowOfflineWrites = false } = options
 
   const [rows, setRows] = useState<TRow[]>([])
   const [loading, setLoading] = useState(true)

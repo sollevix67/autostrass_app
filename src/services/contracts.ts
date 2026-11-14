@@ -53,6 +53,7 @@ export type ApiLine = {
   quantite: number
   prixUnitaire: number
   montant: number
+  tauxTva?: number | null
 }
 
 /** Client renvoye par `GET /api/clients`. */
@@ -141,6 +142,9 @@ export type ApiVente = {
   caissier: string
   articles: ApiLine[]
   totalHT: number
+  totalTVA?: number | null
+  totalTTC?: number | null
+  fingerprintVersion?: number
   montantPaye: number
   monnaie: number
   modePaiement: 'espèces' | 'carte' | 'chèque'

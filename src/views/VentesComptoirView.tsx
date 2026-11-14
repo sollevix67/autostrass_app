@@ -32,6 +32,8 @@ import { useCatalogue } from '../hooks/useCatalogue'
 import { useResource } from '../hooks/useResource'
 import { useClientOptions } from '../hooks/useReferentials'
 import { useCashSession } from '../hooks/useCashSession'
+import { useRemoteValue } from '../hooks/useRemoteValue'
+import { venteTotals, type TaxedLine } from '../utils/venteTotals'
 import { useAuth, canWrite } from '../components/useAuth'
 import { venteSchema, type DocumentLineFormValues } from '../schemas'
 import { PAYMENT_MODE_OPTIONS, formatEuros } from '../options'
@@ -39,22 +41,23 @@ import type { ApiVente } from '../services/contracts'
 import { buildUrl } from '../services/api'
 
 /** Ligne du panier local. `lineId` est la cle React stable de la ligne. */
-type CartLine = DocumentLineFormValues & { lineId: string }
+type CartLine = DocumentLineFormValues & TaxedLine & { lineId: string }
 
 const todayIso = () => new Date().toISOString()
 
 const byDateDesc = (rows: ApiVente[]) =>
   [...rows].sort((a, b) => b.dateVente.localeCompare(a.dateVente))
 
-/** Somme des lignes du panier, arrondie au centime. */
-function totalOf(lines: readonly CartLine[]): number {
-  return Math.round(lines.reduce((sum, line) => sum + line.quantite * line.prixUnitaire, 0) * 100) / 100
+function formatLineTotal(line: CartLine): string {
+  try { return formatEuros(venteTotals([line]).totalTTC) }
+  catch { return 'Limite dépassée' }
 }
 
 export default function VentesComptoirView() {
   const { user } = useAuth()
   const toast = useToast()
   const { articles: catalogue } = useCatalogue()
+  const taxes = useRemoteValue<Array<{ id: number; taux: number }>>('/tva')
   const clients = useClientOptions()
   const { session: cashSession } = useCashSession()
   const { rows, loading, saving, error, offline, reload, create } = useResource<ApiVente>({
@@ -68,7 +71,10 @@ export default function VentesComptoirView() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const pending = useRef(false)
 
-  const totalHT = useMemo(() => totalOf(cart), [cart])
+  const totals = useMemo(() => {
+    try { return venteTotals(cart) } catch { return null }
+  }, [cart])
+  const { totalHT, totalTVA, totalTTC } = totals ?? { totalHT: 0, totalTVA: 0, totalTTC: 0 }
 
   const canEdit = canWrite(user?.role, 'caisse')
 
@@ -78,7 +84,7 @@ export default function VentesComptoirView() {
    * pour les types et on appelle `venteSchema` à chaque rendu.
    */
   const form = useForm({
-    resolver: zodResolver(venteSchema(totalHT)),
+    resolver: zodResolver(venteSchema(totalTTC)),
     mode: 'onSubmit',
     defaultValues: {
       clientId: null as number | null,
@@ -92,7 +98,7 @@ export default function VentesComptoirView() {
 
   const modePaiement = form.watch('modePaiement')
   const montantPaye = form.watch('montantPaye') || 0
-  const monnaie = Math.round((montantPaye - totalHT) * 100) / 100
+  const monnaie = modePaiement === 'espèces' ? Math.round((montantPaye - totalTTC) * 100) / 100 : 0
 
   const FIELD_LABELS = {
     clientId: 'Client',
@@ -105,14 +111,20 @@ export default function VentesComptoirView() {
   function addToCart(reference: string) {
     const article = catalogue.find((item) => item.reference === reference)
     if (!article) return
+    const rate = taxes.data?.find((tax) => tax.id === article.tvaId)?.taux
+    if (rate === undefined) {
+      toast.error('Le taux de TVA est indisponible. Actualisez les données avant de vendre cet article.')
+      return
+    }
 
     setCart((current) => {
       const existing = current.find((line) => line.reference === article.reference)
       if (existing) {
         return current.map((line) =>
-          line.reference === article.reference ? { ...line, quantite: line.quantite + 1 } : line,
+          line.reference === article.reference ? { ...line, quantite: Math.min(9999, line.quantite + 1) } : line,
         )
       }
+      if (current.length >= 200) return current
       return [
         ...current,
         {
@@ -123,6 +135,7 @@ export default function VentesComptoirView() {
           designation: article.designation,
           quantite: 1,
           prixUnitaire: article.prixUnitaireHT,
+          tauxTva: rate,
         },
       ]
     })
@@ -132,7 +145,7 @@ export default function VentesComptoirView() {
 
   function updateQuantity(lineId: string, value: number) {
     setCart((current) =>
-      current.map((line) => (line.lineId === lineId ? { ...line, quantite: value } : line)),
+      current.map((line) => (line.lineId === lineId ? { ...line, quantite: Math.max(1, Math.min(9999, value)) } : line)),
     )
   }
 
@@ -141,7 +154,7 @@ export default function VentesComptoirView() {
   }
 
   const submit = form.handleSubmit(async (values) => {
-    if (!user || !canEdit || !cashSession || pending.current) return
+    if (!user || !canEdit || !cashSession || !totals || pending.current) return
     pending.current = true
     try {
       const created = await create({
@@ -152,12 +165,13 @@ export default function VentesComptoirView() {
         montantPaye: values.montantPaye,
         // La monnaie n'est pas un champ saisi : elle vaut l'encaissement moins
         // le total, et le serveur la recalcule de toute facon.
-        monnaie: Math.max(0, Math.round((values.montantPaye - totalHT) * 100) / 100),
+        monnaie: values.modePaiement === 'espèces' ? Math.max(0, Math.round((values.montantPaye - totalTTC) * 100) / 100) : 0,
         articles: cart.map((line) => ({
           reference: line.reference,
           designation: line.designation,
           quantite: line.quantite,
           prixUnitaire: line.prixUnitaire,
+          tauxTva: line.tauxTva,
         })),
       })
       if (created === null) return
@@ -169,7 +183,7 @@ export default function VentesComptoirView() {
         modePaiement: 'espèces',
         montantPaye: 0,
       })
-      toast.success(`Vente enregistree : ${formatEuros(created.totalHT)} HT.`)
+      toast.success(`Vente enregistrée : ${formatEuros(created.totalTTC ?? created.totalHT)} TTC.`)
     } finally { pending.current = false }
   })
 
@@ -197,12 +211,12 @@ export default function VentesComptoirView() {
       render: (row) => <span className="type-badge">{row.modePaiement}</span>,
     },
     {
-      key: 'totalHT',
-      header: 'TOTAL HT',
+      key: 'totalTTC',
+      header: 'TOTAL TTC',
       align: 'right',
       sortable: true,
-      sortValue: (row) => row.totalHT,
-      render: (row) => <b>{formatEuros(row.totalHT)}</b>,
+      sortValue: (row) => row.totalTTC ?? row.totalHT,
+      render: (row) => row.totalTTC == null ? <span>{formatEuros(row.totalHT)} HT (historique)</span> : <b>{formatEuros(row.totalTTC)}</b>,
     },
     {
       key: 'actions',
@@ -250,7 +264,9 @@ export default function VentesComptoirView() {
         </p>
       )}
 
-      {cart.length > 0 && <p className="info-banner">Vente en préparation : {cart.length} ligne(s), {formatEuros(totalHT)} HT.</p>}
+      {cart.length > 0 && <p className="info-banner">Vente en préparation : {cart.length} ligne(s), {formatEuros(totalTTC)} TTC.</p>}
+      {!totals && <p className="error-banner" role="alert">Le montant du panier dépasse la limite autorisée.</p>}
+      {taxes.error && <p className="error-banner" role="alert">TVA indisponible : {taxes.error} <button type="button" onClick={taxes.reload}>Actualiser la TVA</button></p>}
       <FormDialog open={dialogOpen && canEdit && cashSession !== null} title="Vente en cours" size="wide" busy={busy} onClose={() => setDialogOpen(false)} cancelLabel="Fermer et garder le panier">
           <ResourceBanners error={error} offline={offline} readOnly={null} resource="ventes" />
         <form onSubmit={submit} noValidate>
@@ -323,7 +339,7 @@ export default function VentesComptoirView() {
                   <span className="static-value">{line.designation}</span>
                 </div>
                 <div className="form-group">
-                  <label>Prix unitaire</label>
+                  <label>Prix unitaire HT</label>
                   <span className="static-value">{formatEuros(line.prixUnitaire)}</span>
                 </div>
                 <div className="form-group">
@@ -341,8 +357,8 @@ export default function VentesComptoirView() {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Montant</label>
-                  <span className="static-value">{formatEuros(line.quantite * line.prixUnitaire)}</span>
+                  <label>Montant TTC (TVA {line.tauxTva} %)</label>
+                  <span className="static-value">{formatLineTotal(line)}</span>
                 </div>
               </div>
               <button
@@ -359,6 +375,8 @@ export default function VentesComptoirView() {
           <div className="vente-total">
             <div>
               <strong>Total HT : {formatEuros(totalHT)}</strong>
+              <p>TVA : {formatEuros(totalTVA)}</p>
+              <strong>Total TTC : {formatEuros(totalTTC)}</strong>
             </div>
             <div className="form-group">
               <label htmlFor="montantPaye">Montant encaisse</label>
@@ -372,7 +390,7 @@ export default function VentesComptoirView() {
                   const value = event.target.value
                   form.setValue('montantPaye', value === '' ? 0 : Number.parseFloat(value))
                 }}
-                placeholder={totalHT.toFixed(2)}
+                placeholder={totalTTC.toFixed(2)}
                 aria-invalid={form.formState.errors.montantPaye ? true : undefined}
                 aria-describedby={form.formState.errors.montantPaye ? 'montantPaye-error' : undefined}
               />
@@ -389,7 +407,7 @@ export default function VentesComptoirView() {
             <button
               type="submit"
               className="primary-button"
-              disabled={saving || cart.length === 0 || modePaiement === undefined}
+              disabled={saving || cart.length === 0 || !totals || modePaiement === undefined}
               title={cart.length === 0 ? 'Ajoutez au moins un article' : undefined}
             >
               <Icon name="check" size="sm" /> Valider la vente

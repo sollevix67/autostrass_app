@@ -24,8 +24,11 @@ export type VenteForPdf = {
     designation: string
     quantite: number
     prixUnitaire: number
+    tauxTva?: number | null
   }>
   totalHT: number
+  totalTVA?: number | null
+  totalTTC?: number | null
   montantPaye: number
   monnaie: number
   modePaiement: string
@@ -147,13 +150,14 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
       {
         table: {
           headerRows: 1,
-          widths: ['*', 70, 50, 70, 80],
+          widths: ['*', 65, 35, 65, 45, 70],
           body: [
             [
               { text: 'Designation', style: 'th' },
               { text: 'Ref.', style: 'th' },
               { text: 'Qte', style: 'th', alignment: 'right' },
               { text: 'PU HT', style: 'th', alignment: 'right' },
+              { text: 'TVA %', style: 'th', alignment: 'right' },
               { text: 'Total HT', style: 'th', alignment: 'right' },
             ],
             ...vente.articles.map(
@@ -163,6 +167,7 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
                   { text: line.reference },
                   { text: line.quantite.toString(), alignment: 'right' },
                   { text: formatEuros(line.prixUnitaire), alignment: 'right' },
+                  { text: line.tauxTva == null ? 'N/D' : String(line.tauxTva), alignment: 'right' },
                   { text: formatEuros(line.quantite * line.prixUnitaire), alignment: 'right' },
                 ] as any[],
             ),
@@ -204,12 +209,12 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
                   { text: formatEuros(vente.totalHT), style: 'tv' },
                 ],
                 [
-                  { text: 'TVA (20%)', style: 'tl' },
-                  { text: formatEuros(vente.totalHT * 0.2), style: 'tv' },
+                  { text: 'TVA', style: 'tl' },
+                  { text: vente.totalTVA == null ? 'Non figée (historique)' : formatEuros(vente.totalTVA), style: 'tv' },
                 ],
                 [
                   { text: 'Total TTC', style: 'tt' },
-                  { text: formatEuros(vente.totalHT * 1.2), style: 'tv' },
+                  { text: vente.totalTTC == null ? 'Non figé (historique)' : formatEuros(vente.totalTTC), style: 'tv' },
                 ],
               ],
             },

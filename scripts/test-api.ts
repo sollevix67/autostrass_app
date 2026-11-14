@@ -581,16 +581,17 @@ const vente = await call('/api/ventes', {
   body: {
     dateVente: '2026-09-26T10:00:00.000Z',
     modePaiement: 'carte',
-    montantPaye: 31,
+    montantPaye: 37.2,
     articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 2, prixUnitaire: 15.5 }],
   },
 })
 check('POST /api/ventes (caissier) repond 201', vente.status === 201, vente.body)
 check('une vente sans champ caissier utilise le compte connecte', vente.body?.caissier === 'Sophie Bernard', vente.body?.caissier)
 check('le total de la vente est correct', vente.body?.totalHT === 31, vente.body?.totalHT)
+check('le paiement couvre le TTC figé', vente.body?.totalTVA === 6.2 && vente.body?.totalTTC === 37.2, vente.body)
 check('la vente est rattachee a la session', vente.body?.sessionId === sessionId, vente.body?.sessionId)
 
-// Vente especes de 31 EUR payes en 40 : 31 au tiroir, 9 de monnaie rendue.
+// Vente de 31 EUR HT, 37,20 TTC payés en 40 : 2,80 de monnaie rendue.
 const venteEspeces = await call('/api/ventes', {
   method: 'POST',
   token: caissierToken!,
@@ -599,7 +600,7 @@ const venteEspeces = await call('/api/ventes', {
     caissier: 'Identite falsifiee',
     modePaiement: 'espèces',
     montantPaye: 40,
-    monnaie: 9,
+    monnaie: 2.8,
     articles: [{ reference: 'FIL-0920', designation: 'Filtre a huile', quantite: 1, prixUnitaire: 31 }],
   },
 })
@@ -612,7 +613,7 @@ const courante = await call('/api/caisse/actuelle', { token: caissierToken! })
 check('la session ouverte est retrouvee', courante.body?.id === sessionId, courante.body?.id)
 check(
   'la recette especes exclut la carte et deduit la monnaie',
-  courante.body?.totalEspeces === 31,
+  courante.body?.totalEspeces === 37.2,
   courante.body?.totalEspeces,
 )
 check(
@@ -631,17 +632,17 @@ check(
   (mouvements.body as Array<{ venteId: number | null }> | null)?.filter((m) => m.type === 'encaissement').length === 1,
 )
 
-// Comptage exact : fond 200 + recette especes 31 = 231.
+// Comptage exact : fond 200 + recette espèces 37,20 TTC = 237,20.
 const cloture = await call(`/api/caisse/${sessionId}/cloturer`, {
   method: 'POST',
   token: caissierToken!,
-  body: { comptage: [{ denomination: 200, quantite: 1 }, { denomination: 20, quantite: 1 }, { denomination: 10, quantite: 1 }, { denomination: 1, quantite: 1 }] },
+  body: { comptage: [{ denomination: 200, quantite: 1 }, { denomination: 20, quantite: 1 }, { denomination: 10, quantite: 1 }, { denomination: 5, quantite: 1 }, { denomination: 2, quantite: 1 }, { denomination: 0.2, quantite: 1 }] },
 })
 check('POST /api/caisse/:id/cloturer repond 200', cloture.status === 200, cloture.body)
-check('le total reel est la somme des billets', cloture.body?.totalReel === 231, cloture.body?.totalReel)
-check('le total theorique vaut fond + recettes', cloture.body?.totalTheorique === 231, cloture.body?.totalTheorique)
+check('le total reel est la somme des billets', cloture.body?.totalReel === 237.2, cloture.body?.totalReel)
+check('le total theorique vaut fond + recettes TTC', cloture.body?.totalTheorique === 237.2, cloture.body?.totalTheorique)
 check('un comptage conforme donne un ecart nul', cloture.body?.ecart === 0, cloture.body?.ecart)
-check('le detail du comptage est conserve', (cloture.body?.comptage as unknown[])?.length === 4, cloture.body?.comptage)
+check('le detail du comptage est conserve', (cloture.body?.comptage as unknown[])?.length === 6, cloture.body?.comptage)
 check('la session est cloturee', cloture.body?.statut === 'clôturée', cloture.body?.statut)
 
 const reCloture = await call(`/api/caisse/${sessionId}/cloturer`, {

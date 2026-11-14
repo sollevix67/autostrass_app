@@ -1,16 +1,19 @@
 /**
- * Remet a zero les empreintes calculees avec une regle obsolete.
+ * Ancien outil de remise à zéro, réservé à une base de démonstration jetable.
  *
  * Usage : npx tsx scripts/reset-fingerprints.ts
  *
- * A n'executer que si la regle de calcul d'empreinte a ete modifiee. Les
- * ventes sans empreinte ne sont pas « rompues » : `verifyFingerprints` les
- * compte comme anterieures et repart du genine, ce qui est exactement le
- * comportement voulu apres un changement de regle.
+ * Ne jamais effacer les empreintes d'une installation réelle. Les changements
+ * de calcul sont versionnés (v1/v2) ; une empreinte effacée dans la période
+ * scellée est une rupture. Restaurer les preuves depuis une sauvegarde fiable.
  */
 
 import 'dotenv/config'
 import mysql from 'mysql2/promise'
+
+if (process.env.NODE_ENV !== 'test' || !/^autostrass_transfer_test_[a-f0-9]{16}$/.test(process.env.DB_NAME ?? '')) {
+  throw new Error('Effacement réservé à la base jetable du harnais de test. Conserver les empreintes réelles et utiliser leur version.')
+}
 
 const connection = await mysql.createConnection({
   host: process.env.DB_HOST,

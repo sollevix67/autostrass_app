@@ -1,0 +1,200 @@
+{
+  "date": "2026-11-14",
+  "api": "simulated",
+  "modes": [
+    "development",
+    "production"
+  ],
+  "checks": [
+    "development : R01 prix 31 € HT, TVA 20 %, total 37,20 € TTC",
+    "development : R01 prix 31 € HT, TVA 20 %, total 37,20 € TTC : paiement proposé en TTC",
+    "development : R01 sous-paiement 31 € refusé, panier et paiement conservés",
+    "development : R02 paiement espèces 50 € : monnaie proposée 12,80 €",
+    "development : R02 aucun rendu proposé pour une carte",
+    "development : R02 carte 50 € refusée pour une vente 37,20 € TTC",
+    "development : R01/R02 carte exacte 37,20 € transmise sans monnaie",
+    "development : R01 prix HT et taux de TVA transmis pour être figés",
+    "development : R01 succès et journal affichent le total TTC confirmé par API",
+    "development : R01 vente espèces avec TVA normale",
+    "development : R01 vente espèces avec TVA normale : paiement proposé en TTC",
+    "development : R02 rendu espèces 50 € → 12,80 € transmis à l’API",
+    "development : R01 panier mixte : TVA 20 % et 5,5 %",
+    "development : R01 panier mixte : TVA 20 % et 5,5 % : paiement proposé en TTC",
+    "development : R01 TVA réduite : 10 € HT donnent 10,55 € TTC dans la ligne",
+    "development : R01 changement quantité : TVA et TTC recalculés",
+    "development : R01 changement quantité : TVA et TTC recalculés : paiement proposé en TTC",
+    "development : R01 panier mixte : paiement TTC et taux réduits transmis",
+    "development : R01 les totaux sont laissés au calcul serveur",
+    "development : R01 limite DECIMAL : prix HT maximal × 9999, dialogue et saisie conservés",
+    "development : R01 limite DECIMAL : validation désactivée sans plantage de rendu",
+    "development : R01 limite DECIMAL : soumission programmatique refusée sans POST",
+    "development : R01 limite DECIMAL : fermeture et reprise conservent la saisie",
+    "development : R01 correction du panier hors limite : montants de nouveau calculables",
+    "development : R01 correction du panier hors limite : montants de nouveau calculables : paiement proposé en TTC",
+    "development : R01 correction du panier hors limite : validation de nouveau disponible, aucune écriture automatique",
+    "production : R01 prix 31 € HT, TVA 20 %, total 37,20 € TTC",
+    "production : R01 prix 31 € HT, TVA 20 %, total 37,20 € TTC : paiement proposé en TTC",
+    "production : R01 sous-paiement 31 € refusé, panier et paiement conservés",
+    "production : R02 paiement espèces 50 € : monnaie proposée 12,80 €",
+    "production : R02 aucun rendu proposé pour une carte",
+    "production : R02 carte 50 € refusée pour une vente 37,20 € TTC",
+    "production : R01/R02 carte exacte 37,20 € transmise sans monnaie",
+    "production : R01 prix HT et taux de TVA transmis pour être figés",
+    "production : R01 succès et journal affichent le total TTC confirmé par API",
+    "production : R01 vente espèces avec TVA normale",
+    "production : R01 vente espèces avec TVA normale : paiement proposé en TTC",
+    "production : R02 rendu espèces 50 € → 12,80 € transmis à l’API",
+    "production : R01 panier mixte : TVA 20 % et 5,5 %",
+    "production : R01 panier mixte : TVA 20 % et 5,5 % : paiement proposé en TTC",
+    "production : R01 TVA réduite : 10 € HT donnent 10,55 € TTC dans la ligne",
+    "production : R01 changement quantité : TVA et TTC recalculés",
+    "production : R01 changement quantité : TVA et TTC recalculés : paiement proposé en TTC",
+    "production : R01 panier mixte : paiement TTC et taux réduits transmis",
+    "production : R01 les totaux sont laissés au calcul serveur",
+    "production : R01 limite DECIMAL : prix HT maximal × 9999, dialogue et saisie conservés",
+    "production : R01 limite DECIMAL : validation désactivée sans plantage de rendu",
+    "production : R01 limite DECIMAL : soumission programmatique refusée sans POST",
+    "production : R01 limite DECIMAL : fermeture et reprise conservent la saisie",
+    "production : R01 correction du panier hors limite : montants de nouveau calculables",
+    "production : R01 correction du panier hors limite : montants de nouveau calculables : paiement proposé en TTC",
+    "production : R01 correction du panier hors limite : validation de nouveau disponible, aucune écriture automatique",
+    "production : aucune erreur JavaScript"
+  ],
+  "errors": [],
+  "writes": [
+    {
+      "mode": "development",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:28.613Z",
+        "caissier": "Camille Test",
+        "modePaiement": "carte",
+        "montantPaye": 37.2,
+        "monnaie": 0,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          }
+        ]
+      }
+    },
+    {
+      "mode": "development",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:30.036Z",
+        "caissier": "Camille Test",
+        "modePaiement": "espèces",
+        "montantPaye": 50,
+        "monnaie": 12.8,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          }
+        ]
+      }
+    },
+    {
+      "mode": "development",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:31.835Z",
+        "caissier": "Camille Test",
+        "modePaiement": "carte",
+        "montantPaye": 58.3,
+        "monnaie": 0,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          },
+          {
+            "reference": "TVA-55",
+            "designation": "Article à TVA réduite",
+            "quantite": 2,
+            "prixUnitaire": 10,
+            "tauxTva": 5.5
+          }
+        ]
+      }
+    },
+    {
+      "mode": "production",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:34.407Z",
+        "caissier": "Camille Test",
+        "modePaiement": "carte",
+        "montantPaye": 37.2,
+        "monnaie": 0,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          }
+        ]
+      }
+    },
+    {
+      "mode": "production",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:35.392Z",
+        "caissier": "Camille Test",
+        "modePaiement": "espèces",
+        "montantPaye": 50,
+        "monnaie": 12.8,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          }
+        ]
+      }
+    },
+    {
+      "mode": "production",
+      "body": {
+        "clientId": null,
+        "dateVente": "2026-11-14T12:45:36.115Z",
+        "caissier": "Camille Test",
+        "modePaiement": "carte",
+        "montantPaye": 58.3,
+        "monnaie": 0,
+        "articles": [
+          {
+            "reference": "TVA-20",
+            "designation": "Article à TVA normale",
+            "quantite": 1,
+            "prixUnitaire": 31,
+            "tauxTva": 20
+          },
+          {
+            "reference": "TVA-55",
+            "designation": "Article à TVA réduite",
+            "quantite": 2,
+            "prixUnitaire": 10,
+            "tauxTva": 5.5
+          }
+        ]
+      }
+    }
+  ]
+}

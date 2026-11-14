@@ -16,6 +16,7 @@ import { jwtVerify, SignJWT } from 'jose'
 import bcrypt from 'bcryptjs'
 import { db } from '../db/client.js'
 import { UtilisateurRepository } from '../repositories/utilisateurRepository.js'
+import { RepositoryError } from '../repositories/simpleRepositories.js'
 import type { UserRole } from '../db/schema.js'
 
 /** Duree de validite du jeton : une jornada de travail. */
@@ -116,7 +117,7 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
  * « mot de passe invalide » permettrait d enumerer les comptes existants.
  */
 export async function authenticate(email: string, password: string): Promise<AuthenticatedUser> {
-  if (!db) throw new AuthError(401, 'AUTH_UNAVAILABLE', 'Base de donnees non configuree.')
+  if (!db) throw new RepositoryError(503, 'DATABASE_UNAVAILABLE', 'Base de donnees non configuree.')
 
   const repository = new UtilisateurRepository(db)
   const found = await repository.findByEmailWithSecret(email)
@@ -162,7 +163,10 @@ function readToken(request: Request): string | null {
   if (typeof cookies !== 'string') return null
   for (const part of cookies.split(';')) {
     const [name, ...rest] = part.trim().split('=')
-    if (name === AUTH_COOKIE) return decodeURIComponent(rest.join('=')) || null
+    if (name === AUTH_COOKIE) {
+      try { return decodeURIComponent(rest.join('=')) || null }
+      catch { throw new AuthError(401, 'INVALID_TOKEN', 'Jeton invalide.') }
+    }
   }
   return null
 }
@@ -180,7 +184,7 @@ export async function requireAuth(request: Request, _response: Response, next: N
 
     const payload = await verifyToken(token)
 
-    if (!db) throw new AuthError(401, 'AUTH_UNAVAILABLE', 'Base de donnees non configuree.')
+    if (!db) throw new RepositoryError(503, 'DATABASE_UNAVAILABLE', 'Base de donnees non configuree.')
     const repository = new UtilisateurRepository(db)
     const user = await repository.findById(payload.sub)
 
@@ -201,7 +205,7 @@ export async function requireAuth(request: Request, _response: Response, next: N
     }
     next()
   } catch (error) {
-    next(error instanceof AuthError ? error : new AuthError(401, 'UNAUTHENTICATED', 'Authentification requise.'))
+    next(error)
   }
 }
 

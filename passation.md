@@ -1,14 +1,19 @@
 # Passation — Autostrass
 
-État consolidé le **14 novembre 2026**, à partir du code et de la revue achevée
-sur `397ddee` (`main`). Ce fichier sert à reprendre le travail ; les preuves et
+État consolidé le **14 novembre 2026**, après correction des 16 constats de la
+revue initiale sur `397ddee` et reprise depuis `402e283` (`main`). Les preuves et
 procédures détaillées sont dans les guides liés. L'ancien journal reste disponible
 avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
 
 ## Prochaines priorités
 
-1. Traiter les **16 défauts de la [revue intégrale](specs/revue-code-2026-11-14.md)**
-   (sept P1, huit P2, un P3), en priorité Caisse, intégrité fiscale et faux succès API.
+Les **16 constats R01–R16** sont corrigés et testés ; détail, migration et preuves
+dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inventaire
+SHA-256 documentent l'ancien état et restent conservés.
+
+1. Déployer la migration **0011** et redémarrer l'API après sauvegarde ; elle a
+   été appliquée uniquement sur bases jetables. Rapprocher les anciennes ventes
+   HT encaissées de leurs justificatifs, sans réécriture ni reset d'empreintes.
 2. Développer les **devis**, puis les **commandes fournisseurs** : numérotation,
    conversion, attribution des réceptions et PDF manquants. [TODO.md](TODO.md)
    reste le cahier des charges ; un CRUD ne couvre pas toutes ses exigences.
@@ -46,7 +51,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 |---|---|---|
 | Stock | Emplacements hiérarchiques, allocations, transferts, inventaire par référence et historique | Recette Zebra ; campagnes multi-articles et brouillons partagés |
 | Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
-| Caisse/comptoir | Sessions, comptage ouverture/clôture, plafond administrable, ventes figées, empreintes chaînées, facture PDF | Défauts de revue ; complétude clavier/autocomplétion et recette fiscale |
+| Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF | Déploiement 0011 ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
 | Devis | Non commencé | CRUD, numéro `yyyymmdd-D-xxxxxx`, PDF, email/WhatsApp, conversion |
 | Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
 | Commandes clients | Création, lignes et statuts | Numérotation métier, bon PDF |
@@ -59,8 +64,8 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 
 ## Contrats métier à préserver
 
-Ces invariants expriment le comportement attendu. Les écarts découverts lors de
-la revue sont suivis dans son rapport et ne doivent pas être présentés comme corrigés.
+Ces invariants expriment le comportement attendu. Les défauts de la revue initiale
+sont corrigés dans la livraison liée ; les limites métier et WCAG restent ouvertes.
 
 **Stock et inventaire.** Origine de transfert explicite (allocation ou non affecté),
 référence dans l'URL encodée, emplacements numériques ; destination `null` prioritaire
@@ -97,6 +102,12 @@ archivage et mode dégradé fiscal : ne jamais réinitialiser les empreintes de
 production pour masquer une anomalie.
 L'auteur de vente vient du compte authentifié ; un nom fourni par le client est
 ignoré, l'identité est conservée dans l'empreinte, le journal et la facture.
+Prix HT en centimes ; taux TVA du catalogue figé à la création, taxe arrondie par
+ligne puis sommée ; TTC commun au paiement, rendu, journal, empreinte v2 et PDF.
+Carte/chèque au TTC exact, rendu espèces calculé au serveur ; montant incohérent
+refusé. Historique v1 inchangé, TVA/TTC inconnus signalés dans son PDF.
+Contrôle fiscal complet par lots, absence d'empreinte récente/v2 refusée ; archive
+annuelle v2 ancrée avec chaînons interannées et contrôle SHA-256 à relecture.
 Ouverture et clôture en dialogue : 15 coupures de 500 € à 0,01 €, sous-totaux et
 calcul en centimes, total incomplet signalé. Confirmation de clôture dans le même
 dialogue et protection synchrone contre les doubles envois. À l'ouverture, seul
@@ -131,14 +142,15 @@ Turnstile vérifie jeton, hostname et action via Siteverify.
 
 ## Base et déploiement
 
-Journal Drizzle versionné **0000 à 0010** : `0007` référentiels, `0008` inventaire,
-`0009` SIRET fournisseur, `0010` SIRET client. Dernier état documenté de la base
+Journal Drizzle versionné **0000 à 0011** : `0007` référentiels, `0008` inventaire,
+`0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2.
+`0011` contrôlée sur bases jetables, non appliquée à la base configurée. Dernier état de la base
 configurée : `0008`–`0010` appliquées le 6 novembre, données existantes conservées.
 Ce statut ne remplace pas une vérification de chaque installation. Sauvegarder,
 comparer schéma/journal, lancer `npm run db:migrate` puis redémarrer l'API ; ne pas
 compléter artificiellement le journal. `database/schema.sql` est le socle catalogue
 v1 ; seeds réservés à la démonstration, allocations incohérentes signalées sans
-les redistribuer. Aucun accès à la base applicative pendant cette revue.
+les redistribuer. Aucun accès à la base applicative pendant la revue ni les correctifs.
 
 `.env.example` → `.env`, `DB_*`, `JWT_SECRET` ≥32 caractères. `/api/health` distingue
 `connected`, `unavailable`, `unconfigured` ; pannes SQL → `503 DATABASE_UNAVAILABLE`
@@ -150,7 +162,7 @@ magasinier : dépôt ; caissier : caisse/documents. Ne jamais versionner secrets
 ## Vérifications et outils
 
 Commandes courantes : `npm ci`, `npm run dev`/`dev:api`, `build`, `lint`, `preview`,
-`test:errors`, `test:pdf`. `test:stock`, `test:inventaire`, `test:integration`,
+`test:errors`, `test:pdf`, `test:ventes`. `test:stock`, `test:inventaire`, `test:integration`,
 `test:parametres` et `test:utilisateurs:ui` créent une base/API jetable via
 `TEST_DB_*` (compte pouvant créer/supprimer une base). Les appels directs
 `test:api`/`test:security` écrivent dans la base ciblée : uniquement sur base jetable.
@@ -191,7 +203,7 @@ Nettoyage local à confirmer avant toute suppression : ancien résidu ignoré
 `autostrass-transfer-verification/data`. Ces traces historiques ne constituent
 pas un contrôle actuel de présence ou de processus.
 
-## Graphify et intervention du 14 novembre
+## Graphify et revue initiale du 14 novembre
 
 [Graphique](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`, `manifest.json`.
 `graphify update . --force` **0.9.108** réussi sans appel LLM : **3 028 nœuds**,
@@ -225,3 +237,28 @@ valides. `git diff --check` conforme, `origin/main` identique à la tête initia
 après fetch. Revue indépendante du graphe conforme ; livraison de la passation,
 du rapport, de l'inventaire et de Graphify par commit et push sur `origin/main`.
 Aucun correctif applicatif livré.
+
+## Reprise et correctifs du 14 novembre
+
+Passation/Graphify lus avant travail ; répartition entre trois agents et conducteur.
+Les 16 constats sont corrigés, avec revue indépendante des montants/concurrence
+et des archives. Reproductions résiduelles corrigées : rendu d'un panier hors
+DECIMAL, saturation du pool à l'ouverture, snapshot SQL Drizzle mal séparé et
+empreintes v2 manquantes dans préfixe/ancrage. Les seuils historiques de l'évaluateur
+UI-Pro restent incompatibles avec le runtime local ; diagnostic sans seuils
+documenté, sans modifier les approbations ni présenter ce contrôle comme vert.
+
+Contrôles finaux : build, lint, erreurs SQL, PDF réel (taux mixtes/historique),
+montants/JWT et mapper utilisateurs conformes ; **neuf groupes fiscaux**, **11
+groupes SQL ventes/Caisse**, **128 API**, **59 sécurité**, **90 Chromium** (Vite
+StrictMode et production), **155 UI-Pro** et **deux CLI tokens Windows** réussis.
+Douze ouvertures concurrentes → une session/11 conflits ; deux comptes avec pool
+de deux connexions sans blocage ; rollback de vente sur échec journal vérifié.
+Route réelle : plus de 5 000 ventes, altération/empreinte absente finale refusées ;
+archive annuelle SQL exportée et relue avec SHA-256. MariaDB portable 11.4.5
+isolée puis arrêtée, bases jetables supprimées ; aucune donnée réelle modifiée.
+Migration 0011 et redémarrage API encore requis sur les installations.
+Compilation autonome des nouveaux scripts conforme avec la déclaration pdfmake
+locale ; 155 UI-Pro et deux CLI tokens réexécutés par le conducteur, réussis.
+`git diff --check` conforme ; fetch confirme `origin/main` sur `402e283` avant
+livraison. Correctifs prêts au commit ; Graphify et livraison Git en cours.

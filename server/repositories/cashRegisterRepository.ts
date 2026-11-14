@@ -132,14 +132,14 @@ export class CashRegisterRepository {
   }
 
   /** Convertit une ligne de session SQL vers la forme exposee. */
-  private async hydrate(raw: Record<string, unknown>): Promise<CashSessionRow> {
+  private async hydrate(raw: Record<string, unknown>, tx?: Tx): Promise<CashSessionRow> {
     const id = Number(raw.id)
-    const total = await this.especesRecette(id)
-    const totalVentes = await this.countVentes(id)
+    const total = await this.especesRecette(id, tx)
+    const totalVentes = await this.countVentes(id, tx)
 
     // Le detail du comptage n'a de sens que sur une session fermee : le
     // charger pour une session ouverte serait une requete inutile.
-    const comptage = raw.statut === 'clôturée' ? await this.findComptage(id) : []
+    const comptage = raw.statut === 'clôturée' ? await this.findComptage(id, tx) : []
 
     return {
       id,
@@ -212,8 +212,8 @@ export class CashRegisterRepository {
   }
 
   /** Detail du comptage, trie par denomination decroissante. */
-  async findComptage(sessionId: number): Promise<CashCountRow[]> {
-    const rows = await this.db
+  async findComptage(sessionId: number, tx?: Tx): Promise<CashCountRow[]> {
+    const rows = await (tx ?? this.db)
       .select()
       .from(schema.cashSessionBreaks)
       .where(eq(schema.cashSessionBreaks.session_id, sessionId))
@@ -248,11 +248,8 @@ export class CashRegisterRepository {
    * Ouvre une session de caisse.
    *
    * Refuse (409) si le caissier en a deja une ouverte : la regle est
-   * verifiee puis l'insertion effectuee dans la meme transaction, sans verrou
-   * explicite. Deux ouvertures simultanees passent donc par la base, qui
-   * n'a pas de contrainte d'unicite partielle sur ce cas — un caissier qui
-   * double-clique sur le bouton recoit un 409, ce qui est le comportement
-   * voulu meme si la session qu'il cree reste orpheline cote tri.
+   * vérifiée sous verrou du compte, une ligne stable même sans session.
+   * La lecture verrouillée des sessions voit l'ouverture qui vient de terminer.
    */
   async open(input: {
     utilisateurId: number
@@ -261,6 +258,9 @@ export class CashRegisterRepository {
     notes?: string
   }): Promise<CashSessionRow> {
     return this.db.transaction(async (tx) => {
+      const [owner] = await tx.select({ id: schema.users.id }).from(schema.users)
+        .where(eq(schema.users.id, input.utilisateurId)).limit(1).for('update')
+      if (!owner) throw new RepositoryError(422, 'UNKNOWN_REFERENCE', 'Compte introuvable.')
       const existing = await tx
         .select({ id: schema.cashSessions.id })
         .from(schema.cashSessions)
@@ -271,6 +271,7 @@ export class CashRegisterRepository {
           ),
         )
         .limit(1)
+        .for('update')
 
       if (existing[0]) {
         throw new RepositoryError(
@@ -301,8 +302,8 @@ export class CashRegisterRepository {
       })
 
       const rows = await tx.select().from(schema.cashSessions).where(eq(schema.cashSessions.id, result.insertId)).limit(1)
-      return this.hydrate(rows[0] as unknown as Record<string, unknown>)
-    })
+      return this.hydrate(rows[0] as unknown as Record<string, unknown>, tx)
+    }, { isolationLevel: 'read committed' })
   }
 
   /**
@@ -336,23 +337,21 @@ export class CashRegisterRepository {
    * l'insertion de la vente : sans cela, un encaissement sans vente (ou
    * l'inverse) fausserait le total theorique de la session.
    *
-   * Le montant journalise est la recette nette (`montant_paye - monnaie`) :
-   * c'est ce qui entre physiquement dans le tiroir.
+   * Le montant journalisé est le paiement brut ; le rendu est une sortie séparée.
    */
   async recordVente(
     tx: Tx,
     session: { id: number },
-    vente: { id: number; montantPaye: number; monnaie: number; totalHT: number },
+    vente: { id: number; montantPaye: number; monnaie: number; totalTTC: number },
   ): Promise<void> {
     if (session.id === null || session.id === undefined) return
-    const net = round2(vente.montantPaye - vente.monnaie)
 
     await tx.insert(schema.cashMovements).values({
       session_id: session.id,
       type: 'encaissement',
-      montant: toDecimal(net),
+      montant: toDecimal(vente.montantPaye),
       vente_id: vente.id,
-      libelle: `Vente #${vente.id} — ${vente.totalHT.toFixed(2)} EUR`,
+      libelle: `Vente #${vente.id} — ${vente.totalTTC.toFixed(2)} EUR TTC`,
     })
 
     // La monnaie rendue est une sortie de liquide. Elle n'est journalisee que

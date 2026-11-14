@@ -441,8 +441,12 @@ export const ventes = mysqlTable(
     date_vente: datetime('date_vente', { mode: 'date' }).notNull(),
     caissier: varchar('caissier', { length: 128 }).notNull(),
     total_ht: decimal('total_ht', { precision: 12, scale: 2 }).notNull().default('0.00'),
+    /** NULL sur l'historique : aucune taxe ne doit être inventée à sa relecture. */
+    total_tva: decimal('total_tva', { precision: 12, scale: 2 }),
+    total_ttc: decimal('total_ttc', { precision: 12, scale: 2 }),
+    fingerprint_version: int('fingerprint_version').notNull().default(1),
     montant_paye: decimal('montant_paye', { precision: 12, scale: 2 }).notNull().default('0.00'),
-    /** Monnaie rendue, calcule par le client. */
+    /** Monnaie rendue, calculée au serveur sur le total TTC. */
     monnaie: decimal('monnaie', { precision: 12, scale: 2 }).notNull().default('0.00'),
     mode_paiement: varchar('mode_paiement', { length: 16, enum: PAYMENT_MODES }).notNull().default('espèces'),
     /**
@@ -483,6 +487,7 @@ export const venteLines = mysqlTable(
     designation: varchar('designation', { length: 255 }).notNull(),
     quantite: int('quantite').notNull(),
     prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull().default('0.00'),
+    taux_tva: decimal('taux_tva', { precision: 5, scale: 2 }),
     montant: decimal('montant', { precision: 12, scale: 2 }).notNull().default('0.00'),
   },
   (table) => [primaryKey({ columns: [table.vente_id, table.ligne] })],

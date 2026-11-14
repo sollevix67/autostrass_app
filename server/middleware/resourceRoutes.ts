@@ -13,7 +13,8 @@
  */
 
 import { Router, type Request } from 'express'
-import { desc, eq, lt } from 'drizzle-orm'
+import { desc, eq, lt, sql } from 'drizzle-orm'
+import { venteTotals, ventePayment, type TaxedLine } from '../../src/utils/venteTotals.js'
 import { requireAuth, requireRole, hashPassword, validatePasswordStrength, AuthError, type AuthenticatedRequest } from './auth.js'
 import { crudRoutes, handler, parseBody, requireDb, requireId, type CrudRepository } from './crud.js'
 import { requireCsrf } from './csrf.js'
@@ -48,7 +49,6 @@ import {
   type FournisseurPatch,
   type LivraisonInput,
   type LivraisonPatch,
-  type VenteInput,
   type VehiculeInput,
   type VehiculePatch,
 } from './schemas.js'
@@ -328,21 +328,12 @@ export function createApiRouter(): Router {
     // NF525 : une vente enregistree est figee. La correction passe par un
     // avoir puis une nouvelle vente, jamais par une edition a posteriori.
     frozen: true,
-    toHead: (value) => {
-      const articles = value.articles as VenteInput['articles']
-      // Le total est un champ physique de la table : on le calcule ici pour
-      // qu'il soit coherent des la premiere ecriture. Le repository le
-      // recalcule de toute facon a la lecture, c'est la source de verite.
-      const total = articles.reduce((sum, line) => sum + line.quantite * line.prixUnitaire, 0)
-      return {
-        client_id: (value.clientId as number | null | undefined) ?? null,
-        date_vente: new Date(String(value.dateVente)),
-        total_ht: total.toFixed(2),
-        montant_paye: Number(value.montantPaye).toFixed(2),
-        monnaie: Number(value.monnaie ?? 0).toFixed(2),
-        mode_paiement: value.modePaiement,
-      }
-    },
+    // Montants calculés une seule fois, après lecture des taux dans `before`.
+    toHead: (value) => ({
+      client_id: (value.clientId as number | null | undefined) ?? null,
+      date_vente: new Date(String(value.dateVente)),
+      mode_paiement: value.modePaiement,
+    }),
     toHeadPatch: (value) => ({
       ...(value.clientId !== undefined && { client_id: value.clientId }),
       ...(value.dateVente !== undefined && { date_vente: new Date(String(value.dateVente)) }),
@@ -372,6 +363,7 @@ export function createApiRouter(): Router {
       // Resolue dans la transaction de creation : c'est elle qui doit ecrire
       // le mouvement d'encaissement, pas une transaction separee.
       let sessionId = 0
+      let totals: ReturnType<typeof venteTotals>
 
       return {
         before: async (tx) => {
@@ -384,17 +376,41 @@ export function createApiRouter(): Router {
             )
           }
           sessionId = session.id
-          return { session_id: sessionId, caissier }
+          // Figer le taux du catalogue dans la même transaction que la vente.
+          const articles = value.articles
+          const references = [...new Set(articles.map((line) => line.reference))]
+          const [taxRows] = await tx.execute(sql`
+            SELECT a.reference, t.taux FROM articles a JOIN tva t ON t.id = a.tva_id
+            WHERE a.reference IN (${sql.join(references.map((reference) => sql`${reference}`), sql`, `)})
+          `)
+          const taxes = new Map((taxRows as unknown as Array<{ reference: string; taux: string }>).map((row) => [row.reference, Number(row.taux)]))
+          for (const line of articles) {
+            const rate = taxes.get(line.reference)
+            if (rate === undefined) throw new RepositoryError(422, 'UNKNOWN_REFERENCE', `Article ou TVA introuvable : ${line.reference}.`)
+            if (line.tauxTva !== undefined && line.tauxTva !== rate) {
+              throw new RepositoryError(409, 'TVA_MODIFIEE', 'Le taux de TVA a changé. Actualisez le catalogue et recommencez la vente.')
+            }
+            line.tauxTva = rate
+          }
+          try {
+            totals = venteTotals(articles as TaxedLine[])
+            const payment = ventePayment(totals.totalTTC, String(value.modePaiement), Number(value.montantPaye), value.monnaie as number | undefined)
+            value.montantPaye = payment.montantPaye
+            value.monnaie = payment.monnaie
+          } catch (error) {
+            throw new RepositoryError(422, 'INVALID_PAYMENT', (error as Error).message)
+          }
+          return {
+            session_id: sessionId, caissier, fingerprint_version: 2,
+            total_ht: totals.totalHT.toFixed(2), total_tva: totals.totalTVA.toFixed(2), total_ttc: totals.totalTTC.toFixed(2),
+            montant_paye: Number(value.montantPaye).toFixed(2), monnaie: Number(value.monnaie).toFixed(2),
+          }
         },
         after: async (tx, venteId) => {
           // Seules les ventes en especes touchent le tiroir. Une vente par
           // carte ou cheque ne modifie pas le solde de la caisse : la
           // journaliser fausserait le comptage.
           if (value.modePaiement === 'espèces') {
-            const totalHT = (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
-              (sum, line) => sum + line.quantite * line.prixUnitaire,
-              0,
-            )
             await new CashRegisterRepository(tx as never).recordVente(
               tx,
               { id: sessionId },
@@ -402,7 +418,7 @@ export function createApiRouter(): Router {
                 id: venteId,
                 montantPaye: Number(value.montantPaye),
                 monnaie: Number(value.monnaie ?? 0),
-                totalHT,
+                totalTTC: totals.totalTTC,
               },
             )
           }
@@ -439,10 +455,8 @@ export function createApiRouter(): Router {
               dateVente: String(value.dateVente),
               caissier,
               modePaiement: String(value.modePaiement),
-              totalHT: (value.articles as Array<{ quantite: number; prixUnitaire: number }>).reduce(
-                (sum, line) => sum + line.quantite * line.prixUnitaire,
-                0,
-              ),
+              fingerprintVersion: 2,
+              ...totals,
               montantPaye: Number(value.montantPaye),
               monnaie: Number(value.monnaie ?? 0),
               articles: (value.articles as LinePayload[]) ?? [],

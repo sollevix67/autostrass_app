@@ -19,6 +19,7 @@
     "test:security": "tsx scripts/test-security.ts",
     "test:errors": "tsx scripts/test-error-mapping.ts",
     "test:pdf": "tsx scripts/test-pdf-invoice.ts",
+    "test:ventes": "tsx scripts/test-vente-validation.ts && tsx scripts/test-fiscal-integrity.ts && tsx scripts/test-ventes-caisse.ts",
     "test:parametres": "tsx scripts/test-parametres-unit.ts && tsx scripts/test-parametres.ts --all",
     "test:stock": "tsx scripts/test-stock-transfers.ts",
     "test:inventaire": "tsx scripts/test-inventaires.ts",

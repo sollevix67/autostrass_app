@@ -33,6 +33,7 @@ from design_system import (  # noqa: E402
     _select_palette_for_mode,
     _style_is_dark_primary,
     DesignSystemGenerator,
+    format_master_md,
 )  # noqa: I001 - private helpers first, public class last
 
 LIGHT_PALETTE = {"Product Type": "SaaS", "Background": "#F8FAFC", "Foreground": "#020617"}
@@ -139,6 +140,15 @@ class TestEndToEndCoherence(unittest.TestCase):
     """The exact reproduction from issue #428."""
 
     QUERY = "SaaS invoicing fintech B2B professional dark mode"
+
+    def test_master_button_uses_the_semantic_accent_foreground(self):
+        ds = DesignSystemGenerator().generate("ERP inventory operations internal tool data dense")
+        ds["colors"].update(accent="#D97706", on_accent="#000000", cta="#FFFFFF")
+        master = format_master_md(ds)
+        button = master.split(".btn-primary {", 1)[1].split("}", 1)[0]
+        self.assertIn("background: #D97706;", button)
+        self.assertIn("color: #000000;", button)
+        self.assertGreaterEqual(_contrast_ratio("#000000", "#D97706"), 4.5)
 
     def test_dark_query_gets_a_dark_background(self):
         ds = DesignSystemGenerator().generate(self.QUERY)

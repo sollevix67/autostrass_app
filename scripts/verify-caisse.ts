@@ -98,23 +98,23 @@ if (opened.status !== 201) throw new Error(`Ouverture refusee : ${opened.status}
 show('Session ouverte', `#${opened.body.id} (${opened.body.statut})`)
 show('Fond de caisse', opened.body.fondsCaisse)
 
-// --- Vente en especes : 3 x 15,50 EUR payes en 50 --------------------------
-const vente = await call<{ id: number; totalHT: number; montantPaye: number; monnaie: number }>('/ventes', {
+// --- Vente en espèces : 46,50 HT / 55,80 TTC (TVA 20 %), payés en 60 ---------
+const vente = await call<{ id: number; totalHT: number; totalTTC: number; montantPaye: number; monnaie: number }>('/ventes', {
   method: 'POST',
   session,
   body: {
     dateVente: new Date().toISOString(),
     caissier: 'Sophie Bernard',
     modePaiement: 'espèces',
-    montantPaye: 50,
-    monnaie: 3.5,
+    montantPaye: 60,
+    monnaie: 4.2,
     articles: [
       { reference: 'PLA-2841', designation: 'Plaquettes de frein avant', quantite: 3, prixUnitaire: 15.5 },
     ],
   },
 })
 if (vente.status !== 201) throw new Error(`Vente refusee : ${vente.status} ${JSON.stringify(vente.body)}`)
-show('Vente #1 (46,50 EUR / 50 EUR)', `encaissement ${vente.body.totalHT.toFixed(2)}`)
+show('Vente #1 (55,80 EUR TTC / 60 EUR)', `encaissement ${vente.body.totalTTC.toFixed(2)}`)
 
 // --- Vente par carte : ne doit pas toucher le tiroir ------------------------
 const carte = await call<{ id: number }>('/ventes', {
@@ -124,7 +124,7 @@ const carte = await call<{ id: number }>('/ventes', {
     dateVente: new Date().toISOString(),
     caissier: 'Sophie Bernard',
     modePaiement: 'carte',
-    montantPaye: 31,
+    montantPaye: 37.2,
     articles: [
       { reference: 'BAT-7710', designation: 'Batterie 12V 70Ah', quantite: 1, prixUnitaire: 31 },
     ],
@@ -138,14 +138,14 @@ show('Recette especes de la session', courante.body.totalEspeces)
 show('Ventes rattachees', courante.body.nombreVentes)
 
 // --- Cloture avec un comptage exact -----------------------------------------
-// Theorique = fond 150 + recettes especes 77,50 = 227,50.
-// (La vente par carte de 31 € ne touche pas le tiroir.)
-// Comptage = 2x100 + 1x20 + 1x5 + 5x0,50 = 227,50 -> ecart 0.
+// Théorique = fond 150 + recette espèces 55,80 TTC = 205,80.
+// La carte de 37,20 TTC ne touche pas le tiroir.
 const comptageExact = [
   { denomination: 100, quantite: 2 },
-  { denomination: 20, quantite: 1 },
   { denomination: 5, quantite: 1 },
-  { denomination: 0.5, quantite: 5 },
+  { denomination: 0.5, quantite: 1 },
+  { denomination: 0.2, quantite: 1 },
+  { denomination: 0.1, quantite: 1 },
 ]
 const totalComptage = comptageExact.reduce((sum, l) => sum + l.denomination * l.quantite, 0)
 console.log(`\nComptage saisit : ${totalComptage.toFixed(2)} EUR`)

@@ -61,7 +61,7 @@ export default function CaisseView() {
   const { session, loading, saving, error, reload, open, close } = useCashSession()
   const { data: caisseConfiguration, loading: configurationLoading, error: configurationError, reload: reloadConfiguration } = useRemoteValue<CaisseSettings>('/caisse/configuration')
 
-  const { movements } = useCashMovements(session?.id ?? null)
+  const { movements, loading: movementsLoading, error: movementsError, reload: reloadMovements } = useCashMovements(session?.id ?? null)
 
   const canEdit = canWrite(user?.role, 'caisse')
   const [openingDialogOpen, setOpeningDialogOpen] = useState(false)
@@ -259,7 +259,7 @@ export default function CaisseView() {
       description="Ouverture, suivi et clôture de votre session de caisse."
       actions={
         <>
-          <button type="button" className="secondary-button" onClick={() => { reload(); reloadConfiguration() }} disabled={loading || configurationLoading || busy}>
+          <button type="button" className="secondary-button" onClick={() => { reload(); reloadConfiguration(); reloadMovements() }} disabled={loading || configurationLoading || movementsLoading || busy}>
             <Icon name="rotate-ccw" size="sm" /> Actualiser
           </button>
           {canEdit && session !== null && (
@@ -273,7 +273,7 @@ export default function CaisseView() {
         </>
       }
     >
-      <ResourceBanners error={closingDialogOpen || openingDialogOpen ? null : error ?? configurationError} offline={false} readOnly={null} />
+      <ResourceBanners error={closingDialogOpen || openingDialogOpen ? null : error ?? configurationError ?? movementsError} offline={false} readOnly={null} />
 
       {!canEdit && (
         <p className="info-banner" role="note">

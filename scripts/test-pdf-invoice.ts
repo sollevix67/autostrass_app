@@ -10,8 +10,10 @@ const vente: VenteForPdf = {
   clientId: null,
   dateVente: '2026-11-07',
   caissier: 'Caissier de recette',
-  articles: [{ reference: 'BRK-0428', designation: 'Plaquettes de frein', quantite: 2, prixUnitaire: 12.5 }],
+  articles: [{ reference: 'BRK-0428', designation: 'Plaquettes de frein', quantite: 2, prixUnitaire: 12.5, tauxTva: 20 }],
   totalHT: 25,
+  totalTVA: 5,
+  totalTTC: 30,
   montantPaye: 30,
   monnaie: 0,
   modePaiement: 'carte',
@@ -25,6 +27,8 @@ function verifyPdf(buffer: Buffer) {
 
 const warnings: unknown[][] = []
 const originalWarn = console.warn
+const originalCreatePdf = pdfmake.createPdf
+const definitions: unknown[] = []
 let downloads = 0
 const server = createServer((_request, response) => {
   downloads += 1
@@ -33,9 +37,17 @@ const server = createServer((_request, response) => {
 
 try {
   console.warn = (...args) => { warnings.push(args) }
+  pdfmake.createPdf = (definition) => { definitions.push(definition); return originalCreatePdf.call(pdfmake, definition) }
   verifyPdf(await generateVentePdf(vente, null))
+  const mixed = { ...vente, articles: [...vente.articles, { reference: 'TVA-055', designation: 'Taux réduit', quantite: 1, prixUnitaire: 10, tauxTva: 5.5 }], totalHT: 35, totalTVA: 5.55, totalTTC: 40.55, montantPaye: 40.55 }
+  verifyPdf(await generateVentePdf(mixed, null))
+  const mixedDefinition = JSON.stringify(definitions.at(-1))
+  assert.ok(mixedDefinition.includes('5,55 EUR') && mixedDefinition.includes('40,55 EUR'), 'La facture doit conserver la TVA et le TTC figés de taux mixtes')
+  assert.ok(!mixedDefinition.includes('TVA (20%)'), 'La facture ne doit pas imposer un taux uniforme')
+  verifyPdf(await generateVentePdf({ ...vente, totalTVA: null, totalTTC: null, articles: vente.articles.map((line) => ({ ...line, tauxTva: null })) }, null))
+  assert.ok(JSON.stringify(definitions.at(-1)).includes('Non figé (historique)'), 'Les taxes inconnues de l’historique ne doivent pas être inventées')
   const manyLines = Array.from({ length: 80 }, (_, index) => ({ ...vente.articles[0], reference: `REF-${index}` }))
-  const multipage = await generateVentePdf({ ...vente, clientId: 1, articles: manyLines, totalHT: 2000, montantPaye: 2400 }, {
+  const multipage = await generateVentePdf({ ...vente, clientId: 1, articles: manyLines, totalHT: 2000, totalTVA: 400, totalTTC: 2400, montantPaye: 2400 }, {
     numeroClient: '000001', nom: 'Client', prenom: 'Recette', adresse: '1 rue du Test', ville: 'Strasbourg', codePostal: '67000',
   })
   verifyPdf(multipage)
@@ -82,6 +94,7 @@ try {
   assert.deepEqual(warnings, [], 'La génération PDF ne doit plus émettre les avertissements de politique d’accès')
 } finally {
   console.warn = originalWarn
+  pdfmake.createPdf = originalCreatePdf
   if (server.listening) await new Promise<void>((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose()))
 }
 
