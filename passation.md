@@ -261,4 +261,13 @@ Migration 0011 et redémarrage API encore requis sur les installations.
 Compilation autonome des nouveaux scripts conforme avec la déclaration pdfmake
 locale ; 155 UI-Pro et deux CLI tokens réexécutés par le conducteur, réussis.
 `git diff --check` conforme ; fetch confirme `origin/main` sur `402e283` avant
-livraison. Correctifs prêts au commit ; Graphify et livraison Git en cours.
+livraison. Correctifs commités dans `fa66b63` (65 fichiers), puis documentation et
+Graphify livrés dans un second commit sur `origin/main`.
+Graphify **0.9.108** actualisé depuis `fa66b63` : **3 187 nœuds**, **6 561 liens**,
+**198 communautés**, sans appel LLM. Rapport de correctifs et nouveaux scripts
+présents ; 20 localisations de passation recalées. Audit indépendant conforme :
+193 empreintes de code, 508 entrées du manifeste, aucun doublon ni élément orphelin ;
+quatre hyperedges valides et HTML/JSON identiques avec multiplicité.
+Limites conservées : CSS non indexé, **16 SQL** sans parseur ; extraction sémantique
+et renommage LLM non relancés. Métadonnée de commit = base applicative `fa66b63` ;
+le second commit ne contient que la passation et les artefacts du graphe.

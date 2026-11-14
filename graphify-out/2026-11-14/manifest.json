@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794653996.2707205,
-    "seen": 1794654033.1104147,
-    "ast_hash": "df435cbaed2075cc77eadaa31772b5bd",
+    "mtime": 1794657381.1064813,
+    "seen": 1794657386.6618955,
+    "ast_hash": "1d6424681f0e9e579e2fd1e3ff3eae0e",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -2847,6 +2847,18 @@
     "mtime": 1794644350.3863182,
     "seen": 1794644356.2932324,
     "ast_hash": "3a19f1babd7c9b82807526eec5ab27b6",
+    "semantic_hash": ""
+  },
+  "specs/revue-code-2026-11-14.json": {
+    "mtime": 1794657381.873515,
+    "seen": 1794657386.6313314,
+    "ast_hash": "2918681d4ded2b2d87bc87fa07c223c1",
+    "semantic_hash": ""
+  },
+  "specs/revue-code-2026-11-14.md": {
+    "mtime": 1794657008.743973,
+    "seen": 1794657054.9836037,
+    "ast_hash": "855af348f1a9e927abf45dbdd8f3f27a",
     "semantic_hash": ""
   },
   "package-lock.json": {
