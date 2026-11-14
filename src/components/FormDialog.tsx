@@ -42,14 +42,9 @@ export function FormDialog({ open, title, description, children, onClose, busy =
   }, [open, initialFocus])
 
   if (!open) return null
-  return <dialog ref={dialogRef} className={`modal form-dialog form-dialog-${size} ${className}`}
+  return <dialog ref={dialogRef} closedby="closerequest" className={`modal form-dialog form-dialog-${size} ${className}`}
     aria-labelledby={`${id}-title`} aria-describedby={description ? `${id}-description` : undefined} aria-busy={busy}
     onCancel={(event) => { event.preventDefault(); event.stopPropagation(); if (!busy) onClose() }}
-    onClick={(event) => {
-      if (busy || event.target !== event.currentTarget) return
-      const bounds = event.currentTarget.getBoundingClientRect()
-      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose()
-    }}
     onKeyDown={(event) => {
       if (event.key !== 'Tab' || event.defaultPrevented || event.currentTarget.querySelector('dialog[open]')) return
       const focusable = [...event.currentTarget.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]

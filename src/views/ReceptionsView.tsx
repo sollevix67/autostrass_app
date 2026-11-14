@@ -249,6 +249,7 @@ export default function ReceptionsView() {
 
       {canEdit && (
         <dialog
+          closedby="closerequest"
           ref={receptionDialogRef}
           className="modal reception-modal"
           aria-labelledby="reception-dialog-title"
@@ -272,14 +273,6 @@ export default function ReceptionsView() {
           onCancel={(event) => {
             event.preventDefault()
             closeReceptionDialog()
-          }}
-          onMouseDown={(event) => {
-            if (event.target !== event.currentTarget) return
-            const bounds = event.currentTarget.getBoundingClientRect()
-            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
-              event.preventDefault()
-              closeReceptionDialog()
-            }
           }}
         >
           <div className="reception-modal-header">

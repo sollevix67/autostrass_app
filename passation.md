@@ -121,7 +121,8 @@ URL et limite les fichiers locaux aux quatre polices Roboto de pdfmake.
 Devis, bons de commande/livraison et avoirs PDF restent à créer.
 
 **Formulaires et utilisateurs.** Les formulaires métier et Administration sont
-migrés en dialogues natifs : focus contenu/restitué, Annuler/croix/Échap/fond,
+migrés en dialogues natifs : focus contenu/restitué, Annuler/croix/Échap,
+clic extérieur sans fermeture ni perte de saisie,
 fermeture et doubles envois bloqués pendant l'écriture, saisie conservée en erreur.
 Filtres, sélection de référence inventaire et connexion restent dans la page.
 Panier conservé à la fermeture ; confirmations d'inventaire empilées conservées.
@@ -312,3 +313,29 @@ Application terminée ; Graphify actualisé sans LLM : **3 188 nœuds**, **6 562
 liens**, **197 communautés**, quatre hyperedges. Audit indépendant : 193 empreintes
 de code et 508 entrées conformes, HTML/JSON identiques, 20 localisations recalées ; documentation et graphe
 livrés par commit et push sur `origin/main`. Sauvegarde et journaux restent hors Git.
+
+## Clic extérieur des fenêtres contextuelles — 14 novembre
+
+Demande utilisateur : conserver toutes les fenêtres contextuelles ouvertes lors
+d'un clic extérieur. Passation et fichiers Graphify relus ; dépôt propre sur
+`b8932a6`. Inspection initiale : fermeture du fond dans `FormDialog`, le dialogue
+Emplacements et les cinq dialogues spécialisés Catalogue, Clients, Fournisseurs,
+Réceptions et Caisse. Les confirmations utilisent le composant partagé.
+Les sept définitions natives ont maintenant `closedby="closerequest"` et aucun
+gestionnaire de fermeture extérieure. Annuler/croix/Échap et les protections
+pendant la sauvegarde sont conservés. Audit indépendant : aucun autre dialogue
+applicatif oublié ; la navigation mobile est un menu distinct. Adaptation des
+recettes existantes et des guides réalisée : clic extérieur vérifié avec saisie
+dans les 19 formulaires partagés, une confirmation empilée, Clients, Fournisseurs
+et Caisse ; anciennes attentes de fermeture du fond remplacées. Build frontend/
+backend, lint et `git diff --check` réussis ; avertissement Vite >500 kB existant.
+Recettes Chromium réussies : 122 Caisse, 155 Clients et 139 Fournisseurs ; contrôle
+indépendant Catalogue/Réceptions/Emplacements : 70 contrôles, clic et tap extérieur
+à 1440/375 px, saisie intacte, Échap/Annuler/croix fonctionnels, aucune erreur JS.
+API simulée partout, aucune donnée réelle consultée ou modifiée. La recette des
+19 formulaires s'est arrêtée au panier : sa fixture omettait `/api/tva`, requis
+depuis le correctif fiscal précédent. Fixture alignée (TVA 20 %), nouvelle
+exécution réussie : **544 contrôles sur 19 formulaires**, confirmations empilées
+comprises. Total : **1 030 contrôles Chromium réussis** ; captures et rapports des
+recettes existantes actualisés. Guides alignés sur le nouveau comportement.
+Préparation du commit applicatif puis de l'actualisation Graphify et du push.

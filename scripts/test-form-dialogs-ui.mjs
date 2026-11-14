@@ -51,7 +51,7 @@ try {
     const line = { reference: 'DLG-1', designation: 'Article test', quantite: 2, prixUnitaire: 12.5, montant: 25 }
     const commande = { id: 1, clientId: 1, dateCommande: '2026-11-10', articles: [line], statut: 'en attente', dateLivraisonPrevue: null }
     const category = { id: 1, code: 'freins', libelle: 'Freins', actif: true }
-    const collections = { '/api/clients': [client], '/api/commandes': [commande], '/api/vehicules': [], '/api/utilisateurs': [], '/api/livraisons': [], '/api/retours': [], '/api/ventes': [], '/api/categories': [category], '/api/sous-categories': [], '/api/secteurs': [] }
+    const collections = { '/api/clients': [client], '/api/commandes': [commande], '/api/vehicules': [], '/api/utilisateurs': [], '/api/livraisons': [], '/api/retours': [], '/api/ventes': [], '/api/categories': [category], '/api/sous-categories': [], '/api/secteurs': [], '/api/tva': [{ id: 1, taux: 20 }] }
     const settings = { api: { maxRequests: 100, windowSeconds: 900 }, login: { maxAttempts: 10, windowSeconds: 900, blockSeconds: 900 }, caisse: { maxFondsCaisse: 10000 }, database: { host: 'localhost', port: 3306, database: 'fixture', user: 'fixture', passwordConfigured: true, restartRequired: false }, https: { enabled: false, port: 3443, httpMode: 'serve', publicOrigin: '', active: false, restartRequired: false }, turnstile: { enabled: false, siteKey: '', hostnames: [], secretConfigured: true }, updatedAt: '2026-11-10T08:00:00Z' }
     const stock = { reference: 'DLG-1', designation: 'Article test', quantiteTotale: 10, incoherent: false, version: 'a'.repeat(64), lignes: [{ emplacementId: null, chemin: 'Stock non affecté', quantiteAvant: 10 }] }
     await context.route('**/api/**', async (route) => {
@@ -147,6 +147,8 @@ try {
     await fill(dialog, scenario.values)
     const snapshot = () => dialog.locator('input, select, textarea').evaluateAll((nodes) => nodes.map((node) => [node.name || node.id, node.value, node.checked]))
     const before = await snapshot()
+    await page.mouse.click(1, 1)
+    check(await dialog.isVisible() && JSON.stringify(before) === JSON.stringify(await snapshot()) && state.writes.length === 0, `${scenario.key} : clic extérieur conserve la fenêtre et la saisie sans écriture`)
     if (scenario.key === 'ventes') {
       await dialog.getByRole('button', { name: 'Fermer et garder le panier', exact: true }).click()
       await dialog.waitFor({ state: 'hidden' })
@@ -158,6 +160,8 @@ try {
       const confirmation = page.locator('dialog.confirm-modal')
       await confirmation.waitFor({ state: 'visible' })
       check(await dialog.isVisible() && await confirmation.evaluate((node) => node.matches(':modal')), 'Inventaire : abandon confirmé au-dessus du comptage')
+      await page.mouse.click(1, 1)
+      check(await confirmation.isVisible() && await dialog.isVisible() && JSON.stringify(before) === JSON.stringify(await snapshot()) && state.writes.length === 0, 'Inventaire : clic extérieur conserve les deux fenêtres et la saisie sans écriture')
       await page.keyboard.press('Escape')
       await confirmation.waitFor({ state: 'hidden' })
       check(await dialog.isVisible() && JSON.stringify(before) === JSON.stringify(await snapshot()), 'Inventaire : Échap ferme seulement la confirmation et conserve les quantités')

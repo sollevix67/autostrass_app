@@ -78,7 +78,7 @@ export function EmplacementsManager({ emplacements, loading, error, reload }: { 
         <button className="primary-button" type="button" disabled={!editable || loading || busy || Boolean(error)} onClick={() => { setEditing(null); setValues(initial); setFormError(null); setOpen(true) }}>Nouvel emplacement</button>
       </div></div>
       {error ? <p className="error-banner" role="alert">{error}</p> : <DataTable columns={columns} rows={emplacements.filter((row) => `${row.chemin} ${row.libelle ?? ''}`.toLocaleLowerCase('fr-FR').includes(search))} rowKey={(row) => String(row.id)} loading={loading} caption="Emplacements de stockage" defaultSort={{ key: 'chemin', direction: 'asc' }} emptyMessage="Aucun emplacement à afficher." />}
-      <dialog ref={dialog} className="modal emplacement-dialog" aria-labelledby="emplacement-title" onCancel={(event) => { event.preventDefault(); close() }} onClick={(event) => { const bounds = event.currentTarget.getBoundingClientRect(); if (event.target === event.currentTarget && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) close() }}>
+      <dialog ref={dialog} closedby="closerequest" className="modal emplacement-dialog" aria-labelledby="emplacement-title" onCancel={(event) => { event.preventDefault(); close() }}>
         <h2 id="emplacement-title">{editing ? 'Modifier l’emplacement' : 'Nouvel emplacement'}</h2>
         <form onSubmit={(event) => { event.preventDefault(); void save() }}>
           {formError && <p className="error-banner" role="alert">{formError}</p>}

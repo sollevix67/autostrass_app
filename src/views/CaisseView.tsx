@@ -354,6 +354,7 @@ export default function CaisseView() {
 
           {canEdit && (
             <dialog
+              closedby="closerequest"
               ref={closingDialogRef}
               className="modal caisse-modal"
               aria-labelledby="caisse-dialog-title"
@@ -379,14 +380,6 @@ export default function CaisseView() {
                 event.preventDefault()
                 if (closingValues) backToCounting()
                 else closeClosingDialog()
-              }}
-              onMouseDown={(event) => {
-                if (event.target !== event.currentTarget) return
-                const bounds = event.currentTarget.getBoundingClientRect()
-                if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
-                  event.preventDefault()
-                  closeClosingDialog()
-                }
               }}
             >
               <div className="caisse-modal-header">

@@ -6,7 +6,8 @@ avec les valeurs de la fiche, y compris le SIRET et le statut actif.
 
 Le dialogue suit le modèle Clients : deux colonnes sur ordinateur, une colonne
 défilante sur mobile, focus initial sur Nom et retour au bouton déclencheur à
-la fermeture. Annuler, la croix, Échap et le fond ferment sans enregistrer.
+la fermeture. Annuler, la croix et Échap ferment sans enregistrer. Un clic sur
+le fond conserve la fenêtre ouverte et les valeurs saisies.
 Effacer réinitialise la création ; Rétablir restaure la fiche en modification.
 Une sauvegarde réussie ferme la fenêtre et actualise la liste. Un refus garde
 la fenêtre et la saisie, avec l'erreur API affichée à l'intérieur. Pendant la

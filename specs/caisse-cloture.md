@@ -18,8 +18,10 @@ le même comportement que les formulaires Clients, Catalogue et Réceptions.
 4. **Revenir au comptage** conserve la saisie. **Confirmer la clôture** envoie
    seulement les coupures dont la quantité est positive et le commentaire.
 
-Annuler, la croix, Échap depuis le comptage ou le clic sur le fond ferment la
+Annuler, la croix ou Échap depuis le comptage ferment la
 fenêtre et abandonnent la saisie. Échap depuis la confirmation revient au comptage.
+Un clic sur le fond conserve la fenêtre ouverte, le comptage et le commentaire,
+y compris à l'étape de confirmation.
 La réouverture commence à zéro. Le focus reste dans la fenêtre et revient au
 bouton déclencheur à la fermeture.
 

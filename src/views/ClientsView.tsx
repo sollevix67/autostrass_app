@@ -287,6 +287,7 @@ export default function ClientsView() {
 
       {canEdit && (
         <dialog
+          closedby="closerequest"
           ref={clientDialogRef}
           className="modal client-modal"
           aria-labelledby="client-dialog-title"
@@ -311,14 +312,6 @@ export default function ClientsView() {
           onCancel={(event) => {
             event.preventDefault()
             closeClientDialog()
-          }}
-          onMouseDown={(event) => {
-            if (event.target !== event.currentTarget) return
-            const bounds = event.currentTarget.getBoundingClientRect()
-            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
-              event.preventDefault()
-              closeClientDialog()
-            }
           }}
         >
           <div className="client-modal-header">

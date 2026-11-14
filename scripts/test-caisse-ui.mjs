@@ -234,10 +234,10 @@ try {
   await dialog.waitFor({ state: 'hidden' })
   check(true, 'Échap ferme le formulaire de comptage')
   await trigger.click()
+  await quantity(0.1).fill('3')
+  const beforeBackdrop = writes.length
   await page.mouse.click(1, 1)
-  await dialog.waitFor({ state: 'hidden' })
-  check(true, 'Clic sur le fond ferme le formulaire')
-  await trigger.click()
+  check(await dialog.isVisible() && await quantity(0.1).inputValue() === '3' && writes.length === beforeBackdrop, 'Clic sur le fond conserve le formulaire et le comptage sans écriture')
   await dialog.getByRole('button', { name: 'Fermer la fenêtre' }).click()
   await dialog.waitFor({ state: 'hidden' })
   check(true, 'Croix ferme le formulaire')

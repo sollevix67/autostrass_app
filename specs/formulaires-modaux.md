@@ -28,8 +28,11 @@ si le champ est vide et protège le rôle de l’administrateur connecté.
 ## Comportement
 
 `FormDialog` utilise le dialogue natif du navigateur. Le premier champ disponible
-reçoit le focus ; Tab reste dans la fenêtre. Échap, la croix, Annuler et le clic
-sur le fond ferment la saisie et rendent le focus au déclencheur. Le défilement
+reçoit le focus ; Tab reste dans la fenêtre. Échap, la croix et Annuler ferment
+la saisie et rendent le focus au déclencheur. Depuis le 14 novembre, un clic
+extérieur laisse toutes les fenêtres ouvertes et conserve la saisie, y compris
+les confirmations empilées et les dialogues spécialisés. Les dialogues natifs
+déclarent `closedby="closerequest"`. Le défilement
 de la page est bloqué ; la fenêtre défile si son contenu dépasse la hauteur disponible.
 
 Pendant une sauvegarde, les champs et toutes les fermetures sont bloqués. Une
@@ -65,8 +68,8 @@ node scripts/test-fournisseurs-ui.mjs
 npm run test:errors
 ```
 
-`test:forms:ui` couvre 19 parcours et 524 contrôles sur Chromium avec une API
-simulée : focus, fermeture, quatre largeurs et deux thèmes, droits, champs
+`test:forms:ui` couvre 19 parcours et 544 contrôles sur Chromium avec une API
+simulée : focus, fermeture explicite, clic extérieur sans fermeture, quatre largeurs et deux thèmes, droits, champs
 obligatoires, CSRF, double envoi, erreurs, reprise, lignes, paramètres et
 confirmations empilées. Les [captures et le rapport](screenshots/formulaires-modaux/verification.json)
 précisent les résultats ; aucune donnée MariaDB n'est modifiée par cette recette.
@@ -74,5 +77,7 @@ précisent les résultats ; aucune donnée MariaDB n'est modifiée par cette rec
 La recette réelle d'inventaire utilise `node --import tsx scripts/test-inventaire-ui.mjs`
 avec les variables `TEST_DB_*`, une base jetable et un build existant.
 85 contrôles réussis sur MariaDB portable 11.4.5 isolée ; instance arrêtée après
-la recette. Les contrôles Clients (157), Fournisseurs (142) et Caisse (122)
-passent également. Aucun changement serveur ni migration requis pour cette livraison.
+la recette. Le 14 novembre, les contrôles Clients (155), Fournisseurs (139) et
+Caisse (122) passent avec le clic extérieur désactivé. Le contrôle ciblé Catalogue,
+Réceptions et Emplacements ajoute 70 assertions sur clic/tap extérieur à 1440/375 px.
+Aucun changement serveur ni migration requis pour cette livraison.

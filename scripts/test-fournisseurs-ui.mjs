@@ -78,11 +78,13 @@ try {
   check(await submit.evaluate(button => button === document.activeElement), 'Focus contenu dans le dialogue')
   await page.keyboard.press('Tab')
   check(await dialog.getByRole('button', { name: 'Fermer la fenêtre', exact: true }).evaluate(button => button === document.activeElement), 'Tabulation revient au premier contrôle')
-  for (const close of ['Annuler', 'Fermer la fenêtre', 'Escape', 'keydown relayé', 'fond']) {
+  await dialog.locator('#nom').fill('Modification conservée')
+  await page.mouse.click(5, 5)
+  check(await dialog.isVisible() && await dialog.locator('#nom').inputValue() === 'Modification conservée' && state.writes.length === 0, 'Clic extérieur conserve la fenêtre et la saisie sans écriture')
+  for (const close of ['Annuler', 'Fermer la fenêtre', 'Escape', 'keydown relayé']) {
     await page.locator('#nom').fill('Saisie annulée')
     if (close === 'Escape') await page.keyboard.press('Escape')
     else if (close === 'keydown relayé') await page.evaluate(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })))
-    else if (close === 'fond') await page.mouse.click(5, 5)
     else await dialog.getByRole('button', { name: close, exact: true }).click()
     await dialog.waitFor({ state: 'hidden' })
     check(await createButton.evaluate(button => button === document.activeElement), `Focus restitué après ${close}`)

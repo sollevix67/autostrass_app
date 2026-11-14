@@ -107,11 +107,13 @@ try {
   await dialog.locator('#nom').fill('Modification annulée')
   await dialog.getByRole('button', { name: 'Rétablir', exact: true }).click()
   check(await dialog.locator('#nom').inputValue() === initial[0].nom, 'Rétablir restaure les valeurs initiales')
-  for (const close of ['Annuler', 'Fermer la fenêtre', 'Escape', 'keydown relayé', 'fond']) {
+  await dialog.locator('#nom').fill('Modification conservée')
+  await page.mouse.click(5, 5)
+  check(await dialog.isVisible() && await dialog.locator('#nom').inputValue() === 'Modification conservée' && state.writes.length === 0, 'Clic extérieur conserve la fenêtre et la saisie sans écriture')
+  for (const close of ['Annuler', 'Fermer la fenêtre', 'Escape', 'keydown relayé']) {
     await dialog.locator('#nom').fill('Modification annulée')
     if (close === 'Escape') await page.keyboard.press('Escape')
     else if (close === 'keydown relayé') await page.evaluate(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })))
-    else if (close === 'fond') await page.mouse.click(5, 5)
     else await dialog.getByRole('button', { name: close, exact: true }).click()
     await dialog.waitFor({ state: 'hidden' })
     check(await trigger.evaluate((element) => element === document.activeElement), `Focus restitué après ${close}`)

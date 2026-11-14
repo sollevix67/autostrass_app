@@ -274,6 +274,7 @@ export default function FournisseursView() {
 
       {canEdit && (
         <dialog
+          closedby="closerequest"
           ref={supplierDialogRef}
           className="modal supplier-modal"
           aria-labelledby="supplier-dialog-title"
@@ -298,14 +299,6 @@ export default function FournisseursView() {
           onCancel={(event) => {
             event.preventDefault()
             closeSupplierDialog()
-          }}
-          onMouseDown={(event) => {
-            if (event.target !== event.currentTarget) return
-            const bounds = event.currentTarget.getBoundingClientRect()
-            if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) {
-              event.preventDefault()
-              closeSupplierDialog()
-            }
           }}
         >
           <div className="supplier-modal-header">

@@ -15,7 +15,8 @@ champ **N° de client**. L'identifiant interne et le secteur affecté depuis
 Paramètres sont conservés. Changer de client ou passer à la création
 réinitialise la saisie.
 
-La fermeture est possible avec Annuler, la croix, Échap ou le fond. Le
+La fermeture est possible avec Annuler, la croix ou Échap. Un clic sur le fond
+conserve la fenêtre ouverte et les valeurs saisies. Le
 focus reste dans la fenêtre puis revient au bouton déclencheur. Les champs
 et les fermetures sont désactivés pendant l'enregistrement. Une erreur de
 validation ou de l'API conserve les valeurs ; une réussite actualise la
