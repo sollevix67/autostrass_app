@@ -1332,9 +1332,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1794343047.2654684,
-    "seen": 1794343174.9193335,
-    "ast_hash": "e42da220148a069a466f4bc6d67a2916",
+    "mtime": 1794690895.5860753,
+    "seen": 1794690902.7845092,
+    "ast_hash": "51e887b5c25bbc2bfc2b4711dcbf33b3",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1794683900.9643474,
-    "seen": 1794683907.9123826,
-    "ast_hash": "05508301c17acb1866392950d1395a34",
+    "mtime": 1794690895.5870776,
+    "seen": 1794690902.7857654,
+    "ast_hash": "e4fcb79b65b770e2b5916c6cbe6e007d",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {

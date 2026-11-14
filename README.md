@@ -30,6 +30,11 @@ npm run dev
 
 L’API expose `GET /api/health` et `GET /api/dashboard` sur le port `3001`. Vite relaie automatiquement les appels `/api` vers cette API.
 
+`npm run dev` lance déjà l'API et Vite. `npm run dev:api` sert à lancer uniquement
+l'API ; garder une seule instance active. Une erreur `EADDRINUSE` sur `3001` ou
+le port HTTPS (`3443` par défaut) indique qu'un serveur occupe déjà ce port.
+Arrêter l'ancienne instance, puis relancer le développement.
+
 ## Paramètres du dépôt
 
 Le module `/parametres` administre la connexion MariaDB, les quotas API et

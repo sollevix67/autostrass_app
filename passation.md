@@ -346,3 +346,30 @@ aucun doublon ni lien orphelin. Les 20 localisations de passation sont recalées
 et le HTML régénéré depuis le JSON. Sans appel LLM ; limites antérieures
 conservées : CSS non indexé, 16 SQL sans parseur. Documentation et Graphify sont
 livrés dans un second commit, avec le correctif, sur `origin/main`.
+
+## Arrêt de l'API au démarrage — 14 novembre
+
+Signalement utilisateur : `tsx server/index.ts exited with code 1`.
+Passation et Graphify relus avant diagnostic. Vérification des journaux, ports
+et processus pour identifier la cause ; aucune nouvelle migration à ce stade.
+Reproduction avec `npm run dev:api` : `EADDRINUSE` sur 3443, sortie 1. L'ancienne
+API post-migration (serveur 33636, lanceur 40248, créée à 14:45) occupe 3001/3443
+et répond encore health 200 connected. Le `npm run dev` utilisateur lancé à
+22:10 a conservé Vite sur 5173 mais son API est sortie. Cause : double démarrage,
+sans défaut de code ni de migration. Arrêt ciblé de notre ancienne instance,
+puis recette temporaire de démarrage et libération des ports pour l'utilisateur.
+Identité des deux processus vérifiée avant arrêt ; ancienne instance arrêtée.
+Ports 3001/3443 libérés, Vite utilisateur conservé sur 5173. Audit indépendant
+confirme la cause et l'absence de correctif applicatif requis. Vérification d'un
+démarrage temporaire avec arrêt garanti après contrôles health/proxy en cours.
+Premier démarrage temporaire : health HTTP connecté, puis recette interrompue
+par une hypothèse de chemin de certificat (`settings.json` absent). API temporaire
+arrêtée dans le bloc final. Le serveur utilise ici la reprise des certificats
+locaux prévue par `settingsStore` ; recette alignée sur ce repli avant relance.
+Recette finale réussie : nouveau processus serveur vivant, HTTP/HTTPS health 200
+`connected`, certificat HTTPS vérifié et proxy Vite health 200 `connected`.
+Processus de vérification arrêté ; contrôle final des ports : 3001/3443 libres,
+Vite utilisateur 28084 toujours sur 5173. L'utilisateur peut faire Ctrl+C dans
+son terminal puis relancer `npm run dev`. Aucun code applicatif, réglage ni
+donnée métier modifié. README clarifié sur le démarrage d'une seule API.
+Passation/Graphify actualisés et livrés par commit/push sur `origin/main`.
