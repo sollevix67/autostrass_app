@@ -1,5 +1,20 @@
 # Passation — Autostrass App
 
+**14 novembre — configuration de TokenEconomizer** : compétence
+`tokeneconomizer:config` invoquée, consultation `show` uniquement. Passation,
+consignes et Graphify relus ; tête initiale `874fc96`, arbre propre,
+`origin/main` identique après fetch. Commande native PowerShell via le bootstrap
+installé réussie, sans avertissement : plugin activé, micro-skills `envfacts`
+(quatre faits, 150 jetons maximum), retraits `propose` avec protections
+`collaboration`/`image_media`, garde `nudge`. Import historique, repomap et
+droid désactivés ; mode `auto`, shadow désactivé. Aucun réglage modifié.
+Contrôle indépendant ciblé sur l'absence de changement de code et de graphe ;
+actualisation Graphify et livraison documentaire par commit/push sur `origin/main`.
+Contrôle conforme : code et JSON/HTML versionnés identiques à `6ad0aff`,
+3 018 nœuds, 6 100 liens et 188 communautés. Actualisation du manifeste/cache
+sans appel LLM ; limites CSS/SQL et sémantique documentaire conservées.
+Aucun changement applicatif ni test supplémentaire requis pour cette consultation.
+
 **14 novembre — retraits d'outils TokenEconomizer** : compétence
 `tokeneconomizer:toolprune` invoquée, consultation `show` uniquement. Passation,
 consignes et Graphify relus ; tête initiale `6ad0aff`, arbre propre,
