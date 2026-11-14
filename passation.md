@@ -1,5 +1,25 @@
 # Passation — Autostrass App
 
+**14 novembre — état de TokenEconomizer** : compétence `tokeneconomizer:status`
+invoquée par l'utilisateur. Passation, consignes et artefacts Graphify relus ;
+tête initiale `13c150c`, arbre propre. Consultation des statistiques locales,
+contrôle du graphe et livraison de cette trace documentaire par commit/push.
+Commande native PowerShell via le bootstrap installé réussie : zéro session
+consolidée, zéro jeton effectif, zéro surcoût et aucun fait injecté ou retrait
+proposé/appliqué ; garde non encore appris. Configuration conservée : `envfacts`,
+`propose`, `nudge`, repomap désactivé. Aucun avertissement du statut.
+`graphify update .` 0.9.108 réussi sans appel LLM : aucun changement de
+topologie ; JSON, HTML et rapport intacts, manifeste et cache actualisés.
+Limites CSS/SQL et ancienne compétence
+Copilot inchangées ; contrôle indépendant du graphe délégué en lecture seule.
+`git diff --check` réussi ; après fetch, `origin/main` identique à `13c150c`.
+Périmètre documentaire et métadonnées Graphify, sans changement applicatif.
+Contrôle indépendant conforme : 181 empreintes de code, 3 018 nœuds uniques,
+6 100 liens, 188 communautés, aucun lien orphelin, HTML/JSON identiques.
+La métadonnée de construction reste à `3b167e81`, conformément à l'absence
+de changement de topologie ; manifeste/cache réactualisés après cette trace.
+Livraison de la passation et des métadonnées par commit/push sur `origin/main`.
+
 **14 novembre — installation de TokenEconomizer dans Codex** : installation
 demandée après analyse. Lecture préalable de la passation, des consignes et de
 Graphify ; tête initiale `3b167e8`, arbre propre. Installation prévue dans un
