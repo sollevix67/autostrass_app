@@ -3,6 +3,8 @@
 Analyse du 14 novembre 2026, révision
 [`7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0`](https://github.com/microsoft/TokenEconomizer/tree/7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0).
 Le code a été examiné dans une copie temporaire extérieure à Autostrass.
+Après cette revue, le plugin a été installé sur demande utilisateur :
+voir [l'installation et les réglages actuels](tokeneconomizer-installation.md).
 
 ## Avis
 
@@ -226,7 +228,8 @@ Un éventuel essai devrait se faire sur une copie de travail dédiée, en conser
 les réglages et la mémoire séparés. Commencer avec `microskills=envfacts` et
 `toolprune=propose`, et protéger explicitement collaboration et image_media.
 Mesurer le loopguard activé puis désactivé sur des groupes de tâches comparables.
-Ces réglages constituent une proposition, pas une configuration installée.
+Ces réglages constituaient une proposition lors de l'analyse ; ils ont ensuite
+été appliqués pour Autostrass, comme indiqué dans le guide d'installation.
 
 Comparer le coût total, appels annexes inclus, le temps jusqu'à résultat validé,
 le succès des vérifications et les interventions manuelles nécessaires. Utiliser

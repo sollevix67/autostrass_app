@@ -1,0 +1,75 @@
+{
+  "plugin_id": "tokeneconomizer@tokeneconomizer",
+  "cli_version": "0.166.0",
+  "hook_count": 5,
+  "hooks": [
+    {
+      "event": "postToolUse",
+      "enabled": true,
+      "trust_status": "trusted",
+      "key": "tokeneconomizer@tokeneconomizer:hooks/codex-hooks.json:post_tool_use:0:0",
+      "current_hash": "sha256:1151b6de39e87cc626d26c070c6705a658b4232020b92b382f311b5f628d3c4b/sha256:448022a67c71e8c4ac1d0afb7608b95d7a3ad33455f6fa83a0d3015389df1203"
+    },
+    {
+      "event": "sessionStart",
+      "enabled": true,
+      "trust_status": "trusted",
+      "key": "tokeneconomizer@tokeneconomizer:hooks/codex-hooks.json:session_start:0:0",
+      "current_hash": "sha256:740be2f9549f225834dd5e79a9c2e999951908acc058d1b7da2c08fd73fd67c3/sha256:448022a67c71e8c4ac1d0afb7608b95d7a3ad33455f6fa83a0d3015389df1203"
+    },
+    {
+      "event": "sessionEnd",
+      "enabled": true,
+      "trust_status": "trusted",
+      "key": "tokeneconomizer@tokeneconomizer:hooks/codex-hooks.json:session_end:0:0",
+      "current_hash": "sha256:e5247691fc0272a2421c585e6d03f22f5dc644e67a0e77f2681041f70c413ccb/sha256:448022a67c71e8c4ac1d0afb7608b95d7a3ad33455f6fa83a0d3015389df1203"
+    },
+    {
+      "event": "userPromptSubmit",
+      "enabled": true,
+      "trust_status": "trusted",
+      "key": "tokeneconomizer@tokeneconomizer:hooks/codex-hooks.json:user_prompt_submit:0:0",
+      "current_hash": "sha256:efa2f0b20a2b0e49ec47d16dcf279539ba43637cd6062186b1c578f4daa130aa/sha256:448022a67c71e8c4ac1d0afb7608b95d7a3ad33455f6fa83a0d3015389df1203"
+    },
+    {
+      "event": "stop",
+      "enabled": true,
+      "trust_status": "trusted",
+      "key": "tokeneconomizer@tokeneconomizer:hooks/codex-hooks.json:stop:0:0",
+      "current_hash": "sha256:80df8ce460226adb52bad377f405c5fbedf72e4b80f998c1fe715f769fece658/sha256:448022a67c71e8c4ac1d0afb7608b95d7a3ad33455f6fa83a0d3015389df1203"
+    }
+  ],
+  "errors": [],
+  "approval_method": "config/batchWrite with expectedVersion; fresh hooks/list confirms persisted trust",
+  "normalized_trust_hashes_verified": true,
+  "installed_on": "2026-11-14",
+  "plugin_version": "0.1.0",
+  "source_repository": "https://github.com/microsoft/TokenEconomizer",
+  "source_commit": "7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0",
+  "python_version": "3.13.17",
+  "source_location": "~/.codex/plugin-sources/TokenEconomizer",
+  "installed_location": "~/.codex/plugins/cache/tokeneconomizer/tokeneconomizer/0.1.0",
+  "repository_settings": {
+    "microskills": "envfacts",
+    "toolprune": "propose",
+    "toolprune_protect": [
+      "collaboration",
+      "image_media"
+    ],
+    "loopguard": "nudge",
+    "repomap": "off",
+    "history_import": false
+  },
+  "checks": {
+    "plugin_installed": true,
+    "plugin_enabled": true,
+    "installed_manifests_match_reviewed_source": true,
+    "bootstrap_resolves_source_package": true,
+    "config_show_matches_settings": true,
+    "doctor_errors": false,
+    "state_registry_initialized": true,
+    "model_calls_during_installation": 0,
+    "live_agent_session_started": false,
+    "requires_codex_restart": true
+  }
+}

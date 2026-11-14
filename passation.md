@@ -1,5 +1,61 @@
 # Passation — Autostrass App
 
+**14 novembre — installation de TokenEconomizer dans Codex** : installation
+demandée après analyse. Lecture préalable de la passation, des consignes et de
+Graphify ; tête initiale `3b167e8`, arbre propre. Installation prévue dans un
+emplacement utilisateur persistant, hors Autostrass, avec `microskills=envfacts`,
+`toolprune=propose` et protection de collaboration/image_media pour ce dépôt.
+Vérification du CLI et des hooks avant installation ; contrôle indépendant des
+commandes et protections délégué en lecture seule. Aucun benchmark ni appel de
+modèle nécessaire à cette installation.
+CLI détecté : `codex-cli 0.166.0`, commandes marketplace/add/list disponibles,
+Python 3.13 et Git présents ; 181 empreintes Graphify conformes. Documentation
+du plugin relue : hooks Windows natifs, clone source à conserver, approbation
+des hooks requise par Codex au démarrage ; aucun contournement de confiance utilisé.
+Source durable clonée dans `~/.codex/plugin-sources/TokenEconomizer`, révision
+`7042ea89dd5e5ecbc67ad865ad6e256e61be8bf0` identique à celle analysée.
+Manifestes vérifiés : plugin `tokeneconomizer` 0.1.0, cinq événements de hooks
+Codex et cinq compétences de commande. Figma et Codex Security présents avant ajout.
+Marketplace locale ajoutée, puis `codex plugin add tokeneconomizer@tokeneconomizer`
+réussi : version 0.1.0 copiée dans le cache Codex. Configuration via le bootstrap
+de la copie installée pour vérifier aussi sa résolution du package source.
+L'approbation persistante des hooks reste distincte de l'installation du plugin.
+Configuration locale relue conforme : `envfacts`, `propose`, protections
+collaboration/image_media, repomap et import historique désactivés ; garde
+`nudge` conservé. `status` indique zéro session, aucun retrait appliqué et aucun
+coût ; `doctor` confirme Python, état accessible, dépôt approuvé et absence
+d'erreurs. `plugin list --json` confirme installé et activé. Diagnostic complémentaire
+de confiance des hooks via le protocole officiel du CLI, sans appel de modèle.
+Le protocole `hooks/list` détecte les cinq événements activés, sans erreur, mais
+encore non approuvés. Manifestes et bootstrap installés identiques à la source
+analysée. L'installation demandée autorise l'enregistrement de confiance des
+seuls cinq hooks TokenEconomizer via les clés `hooks.state.*.trusted_hash`,
+en conservant le contrôle d'empreinte de Codex et les autres réglages.
+Confiance enregistrée via `config/batchWrite` avec contrôle de version du fichier.
+Le contrôle d'égalité littérale a détecté la normalisation officielle de Codex :
+l'empreinte combinée est répartie entre `trusted_hash` et `trusted_content_hash`.
+Inspection ciblée : cinq enregistrements TokenEconomizer, aucun réglage hors
+hooks modifié ; validation adaptée à ce format, sans réécriture de la configuration.
+Contrôle final via une nouvelle instance locale : cinq hooks activés et approuvés,
+empreintes normalisées conformes, aucune erreur. `repos migrate` initialisé sans
+état à déplacer ; diagnostic conforme. Plugin prêt pour un nouveau démarrage
+de Codex, sans lancer de session LLM dans cette intervention. Guide rédigé dans
+`specs/tokeneconomizer-installation.md`, rapport d'analyse relié à l'état installé.
+Seuls les documents et Graphify sont versionnés ; source, configuration et
+mémoire utilisateur restent hors dépôt.
+Preuves d'installation enregistrées dans `specs/tokeneconomizer-installation.json`
+sans copie de configuration utilisateur ou secret. Graphify 0.9.108 actualisé :
+3 018 nœuds, 6 100 liens et 188 communautés ; guide et sections indexés,
+sauvegarde du jour actualisée, sans appel LLM. Limites CSS/SQL et sémantique
+documentaire inchangées. Vérifications finales et synchronisation Git en cours.
+Vérifications finales conformes : plugins et hooks Codex stables activés,
+cinq hooks approuvés, installation relue, guide/preuves cohérents et liens valides.
+Graphify : 181 empreintes de code conformes, HTML/JSON identiques, aucun doublon
+ni lien orphelin. `git diff --check` réussi ; après fetch, `origin/main` identique
+à `3b167e8`. Livraison des documents, passation et Graphify par commit/push sur
+`origin/main`. Aucun changement applicatif ni accès DB ; redémarrer Codex pour
+charger le plugin dans une nouvelle session.
+
 **14 novembre — analyse de Microsoft TokenEconomizer** : demande d'analyse
 du dépôt public `microsoft/TokenEconomizer`. Lecture préalable de la passation,
 des consignes et des artefacts Graphify ; tête initiale `4483813`, arbre propre.
@@ -564,11 +620,12 @@ effectué pendant cette intervention.
 Artefacts : [graph.html](graphify-out/graph.html), `graph.json`, `GRAPH_REPORT.md`
 et `manifest.json`. Le **14 novembre**, `graphify update .` **0.9.108** a
 actualisé JSON, HTML, rapport, manifeste, cache et sauvegarde du jour après
-l'analyse de Microsoft TokenEconomizer : **181 empreintes de code conformes**,
-**3 011 nœuds**, **6 093 liens**, **192 communautés**, aucun identifiant en
+l'analyse et l'installation de Microsoft TokenEconomizer : **181 empreintes de code conformes**,
+**3 018 nœuds**, **6 100 liens**, **188 communautés**, aucun identifiant en
 double ni lien orphelin ; identifiants HTML identiques au JSON et mêmes extrémités
-de liens. Métadonnée de départ **`4483813`**. Le rapport TokenEconomizer et ses
-sections sont indexés, ainsi que les sources de recette et composants déjà livrés.
+de liens. Métadonnée de départ **`3b167e8`** après l'installation dans Codex.
+Le rapport et le guide d'installation TokenEconomizer ainsi que leurs sections
+sont indexés, avec les sources de recette et composants déjà livrés.
 Limites : CSS non indexé, 15 SQL sans parseur, extraction sémantique documentaire
 et renommage LLM non relancés ; le graphe ne prouve pas
 le câblage runtime. Le CLI a aussi actualisé sa compétence Claude locale.
