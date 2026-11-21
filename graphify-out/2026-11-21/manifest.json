@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1795273356.209402,
-    "seen": 1795275275.9795501,
-    "ast_hash": "4369e7d1efff5f11d7b9d4daefdb425f",
+    "mtime": 1795287295.3309896,
+    "seen": 1795287907.6506734,
+    "ast_hash": "b97ad0c76e48a24a2fad7a13303a8543",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -480,9 +480,9 @@
     "semantic_hash": ""
   },
   "server/db/schema.ts": {
-    "mtime": 1795259906.997108,
-    "seen": 1795261301.425146,
-    "ast_hash": "3cee30d36034d5cced84a5016eaf78a8",
+    "mtime": 1795287747.251554,
+    "seen": 1795287907.6597266,
+    "ast_hash": "1413537f91479f49df6e1ac6c162776e",
     "semantic_hash": ""
   },
   "server/db/schema_step2.ts": {
@@ -492,9 +492,9 @@
     "semantic_hash": ""
   },
   "server/index.ts": {
-    "mtime": 1795259423.4654684,
-    "seen": 1795261301.4252703,
-    "ast_hash": "280496395b32d717b1031e1d8f48706d",
+    "mtime": 1795287223.3992953,
+    "seen": 1795287907.6599574,
+    "ast_hash": "3d2b3cdbb132c59db0195309d6d8d4c6",
     "semantic_hash": ""
   },
   "server/middleware/auth.ts": {
@@ -618,9 +618,9 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1795259507.462161,
-    "seen": 1795261301.431903,
-    "ast_hash": "05b37668008e3a8267a7de4d8e45a759",
+    "mtime": 1795287375.804037,
+    "seen": 1795287907.672906,
+    "ast_hash": "30183ac70fd9c9b3f559a13d51014ffd",
     "semantic_hash": ""
   },
   "src/components/AuthProvider.tsx": {
@@ -762,9 +762,9 @@
     "semantic_hash": ""
   },
   "src/services/api.ts": {
-    "mtime": 1795259279.3610866,
-    "seen": 1795261301.4363546,
-    "ast_hash": "95480da7d2a87cc44d30b07966405948",
+    "mtime": 1795287747.250553,
+    "seen": 1795287907.6806562,
+    "ast_hash": "2eecd626f759e36a9188126736984e2a",
     "semantic_hash": ""
   },
   "src/services/contracts.ts": {
@@ -822,9 +822,9 @@
     "semantic_hash": ""
   },
   "src/views/LoginView.tsx": {
-    "mtime": 1793906501.2304556,
-    "seen": 1793908006.2733433,
-    "ast_hash": "0424408f23b8e9b073d5b7fa055fa586",
+    "mtime": 1795287375.8050442,
+    "seen": 1795287907.684038,
+    "ast_hash": "6add9ee6d2f2ecb6d17f2faa4a89e8c2",
     "semantic_hash": ""
   },
   "src/views/ReceptionsView.tsx": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1795259990.163004,
-    "seen": 1795261301.451113,
-    "ast_hash": "1f51f9bc41a214fba17aab77503d12f4",
+    "mtime": 1795287295.3335001,
+    "seen": 1795287907.7055776,
+    "ast_hash": "54acc8d5a2e4c2056349fc1c16129684",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1350,21 +1350,21 @@
     "semantic_hash": ""
   },
   "design-system/autostrass/MASTER.md": {
-    "mtime": 1794341645.6076941,
-    "seen": 1794341802.940672,
-    "ast_hash": "55cdfcfa74b91775365c63970749ed17",
+    "mtime": 1795287295.3360102,
+    "seen": 1795287907.7061,
+    "ast_hash": "d964a44bcb349075d04583f40808c458",
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794126930.5753555,
-    "seen": 1794127073.5396137,
-    "ast_hash": "7035d625225c9d4076de55ea88f22774",
+    "mtime": 1795287375.8065426,
+    "seen": 1795287907.7073164,
+    "ast_hash": "cce99adbe74d3975b69c63a78b97755a",
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795276653.2020726,
-    "seen": 1795276654.5169652,
-    "ast_hash": "142b2b7402acbb10419ffd5b66c2aae2",
+    "mtime": 1795288882.098727,
+    "seen": 1795288883.4214647,
+    "ast_hash": "1a530b52920b7f5797acd2e17e8bbb7b",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1374,10 +1374,10 @@
     "semantic_hash": ""
   },
   "public/favicon.svg": {
-    "mtime": 1789851433.0,
-    "seen": 1791573312.3212225,
-    "ast_hash": "7e840862161341271697daa99a40d76b",
-    "semantic_hash": "7e840862161341271697daa99a40d76b"
+    "mtime": 1795287376.6124606,
+    "seen": 1795287907.7113013,
+    "ast_hash": "d1a05f817da002259fd844ea67ecdcb1",
+    "semantic_hash": ""
   },
   "scripts/migrate.ts": {
     "mtime": 1791576283.3018856,
@@ -1446,9 +1446,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfInvoice.ts": {
-    "mtime": 1795273100.9000304,
-    "seen": 1795275275.996077,
-    "ast_hash": "6553f24e5e864207b251cc8ee1096e30",
+    "mtime": 1795287223.398293,
+    "seen": 1795287907.6661336,
+    "ast_hash": "eca714056418e41fedf02e6e59adc94b",
     "semantic_hash": ""
   },
   "server/types/pdfmake.d.ts": {
@@ -1464,9 +1464,9 @@
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1792922185.9769065,
-    "seen": 1792931406.9845555,
-    "ast_hash": "25c2e5b82ddd2b07a38743453cc5d425",
+    "mtime": 1795287295.335011,
+    "seen": 1795287907.705576,
+    "ast_hash": "aac76ef4a5e70e129461346165eb015b",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20261010_094231_2be91c77_why_does_zod_connect_authenticated_resource_routes.md": {
@@ -1476,9 +1476,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793566211.83746,
-    "seen": 1793818743.6735015,
-    "ast_hash": "da793cc1f510bf412b02a7dd8b2293c6",
+    "mtime": 1795287295.3345058,
+    "seen": 1795287907.7055721,
+    "ast_hash": "b23c8125cea131f9a93bd0fd85bef38d",
     "semantic_hash": ""
   },
   "scripts/lib/test-environment.ts": {
@@ -1674,9 +1674,9 @@
     "semantic_hash": ""
   },
   "server/middleware/settingsRoutes.ts": {
-    "mtime": 1794339403.6524844,
-    "seen": 1794340150.658758,
-    "ast_hash": "9f375f5912fd72c28794bf8882bef5ea",
+    "mtime": 1795287223.400808,
+    "seen": 1795287907.663507,
+    "ast_hash": "32c2bf65f6bbb026498256606ed95531",
     "semantic_hash": ""
   },
   "server/repositories/parametreRepository.ts": {
@@ -2232,9 +2232,9 @@
     "semantic_hash": ""
   },
   "scripts/test-pdf-invoice.ts": {
-    "mtime": 1795272816.9243114,
-    "seen": 1795275275.9864116,
-    "ast_hash": "a535097796ec09e5b93c03f002ea85f3",
+    "mtime": 1795287276.3932006,
+    "seen": 1795287907.657586,
+    "ast_hash": "c5481543c2ff0875dd0c242dbbe80631",
     "semantic_hash": ""
   },
   "scripts/test-french-validation-ui.mjs": {
@@ -2298,9 +2298,9 @@
     "semantic_hash": ""
   },
   "specs/caisse-cloture.md": {
-    "mtime": 1794683673.5848613,
-    "seen": 1794683827.6231213,
-    "ast_hash": "75ed4bbe1162701916d8a1683f94fb5b",
+    "mtime": 1795284336.223926,
+    "seen": 1795287907.7076278,
+    "ast_hash": "c5098d66680c2a80af6901b833e79e23",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-cloture/cloture-desktop-dark.png": {
@@ -2346,9 +2346,9 @@
     "semantic_hash": ""
   },
   "specs/caisse-ouverture.md": {
-    "mtime": 1794341645.605193,
-    "seen": 1794341802.9419382,
-    "ast_hash": "6ee2713f0533df8673e5ea2d5f050ead",
+    "mtime": 1795287073.7660165,
+    "seen": 1795287907.707631,
+    "ast_hash": "d77776284d6a8a0b30a3583e102da8df",
     "semantic_hash": ""
   },
   "specs/screenshots/caisse-ouverture/ouverture-desktop-dark.png": {
@@ -3060,9 +3060,9 @@
     "semantic_hash": ""
   },
   "scripts/test-devis-pdf.ts": {
-    "mtime": 1795272816.9243114,
-    "seen": 1795275275.9835062,
-    "ast_hash": "1560790095485b5cbbad78c36536e80f",
+    "mtime": 1795287314.916311,
+    "seen": 1795287907.6550417,
+    "ast_hash": "7fd1e941de4740ae01c2866a2a10c32e",
     "semantic_hash": ""
   },
   "scripts/test-devis-ui.mjs": {
@@ -3102,9 +3102,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfDevis.ts": {
-    "mtime": 1795273100.9010346,
-    "seen": 1795275275.9960742,
-    "ast_hash": "4ab4d984a4657a862620984373a20054",
+    "mtime": 1795287223.3987935,
+    "seen": 1795287907.66613,
+    "ast_hash": "dff044f3ec7cc35229121e2c231af637",
     "semantic_hash": ""
   },
   "specs/captures/devis/resultats.json": {
@@ -3228,9 +3228,9 @@
     "semantic_hash": ""
   },
   "specs/bon-livraison-modele.md": {
-    "mtime": 1795273356.2078922,
-    "seen": 1795275276.0377333,
-    "ast_hash": "ca4da04b96e2d30a1a21c20db0b378cb",
+    "mtime": 1795287135.7081993,
+    "seen": 1795287907.707624,
+    "ast_hash": "798d9d8bd417e3e236d51cceff647e77",
     "semantic_hash": ""
   },
   "scripts/lib/pdf-assertions.ts": {
@@ -3246,369 +3246,375 @@
     "semantic_hash": ""
   },
   "scripts/test-pdf-commercial.ts": {
-    "mtime": 1795274632.2612095,
-    "seen": 1795275275.9864078,
-    "ast_hash": "010262d759ba813dc38410e2b2f1c015",
+    "mtime": 1795287314.9173148,
+    "seen": 1795287907.657583,
+    "ast_hash": "18b8bf797f17602bf0d2fba8e2a1c7c3",
     "semantic_hash": ""
   },
   "server/services/pdfCommercial.ts": {
-    "mtime": 1795273873.079996,
-    "seen": 1795275275.9960706,
-    "ast_hash": "35fd1b7508a2761c637e80faf7687e47",
+    "mtime": 1795287223.397293,
+    "seen": 1795287907.6661265,
+    "ast_hash": "425f0480b99bd20997929fce095fb0f9",
     "semantic_hash": ""
   },
   "specs/captures/documents/rendus.json": {
-    "mtime": 1795274638.8109596,
-    "seen": 1795275275.9974039,
+    "mtime": 1795287376.8545785,
+    "seen": 1795287907.6672497,
     "ast_hash": "c66ce8650c8f8f05b6c768c0174cabda",
     "semantic_hash": ""
   },
   "specs/captures/documents/resultats.json": {
-    "mtime": 1795274634.3681352,
-    "seen": 1795275275.997407,
-    "ast_hash": "e23f7444e0f43a4976c7d4becbc67f27",
+    "mtime": 1795287372.7779398,
+    "seen": 1795287907.6672542,
+    "ast_hash": "f360a83442e1a0dcb0638181c50b1ab0",
     "semantic_hash": ""
   },
   "specs/captures/documents/RAPPORT.md": {
-    "mtime": 1795274634.3686411,
-    "seen": 1795275276.0382006,
-    "ast_hash": "b93b165befa99b3d9a1840b2c43a3b58",
+    "mtime": 1795287372.779448,
+    "seen": 1795287907.7076342,
+    "ast_hash": "115de97ff5c74a713b3db8ad2bcff384",
     "semantic_hash": ""
   },
   "specs/captures/documents/README.md": {
-    "mtime": 1795274634.3686411,
-    "seen": 1795275276.0382032,
-    "ast_hash": "0356977fee0e847d96c2ed428e4c3f91",
+    "mtime": 1795287372.7784448,
+    "seen": 1795287907.7076375,
+    "ast_hash": "1e67207b1fb5e7c5dbb3cff103c0a772",
     "semantic_hash": ""
   },
   "specs/documents-commerciaux.md": {
-    "mtime": 1795273356.2058706,
-    "seen": 1795275276.0387003,
-    "ast_hash": "e6b3b17646bcb8dbae6f6f69ba7906b4",
+    "mtime": 1795287295.3365114,
+    "seen": 1795287907.7087102,
+    "ast_hash": "089b33b00661e50fce7dad5b887ecbab",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long.pdf": {
-    "mtime": 1795274633.9690092,
-    "seen": 1795275276.0407944,
-    "ast_hash": "a00f6bd25a174a431d5cd847b5db8470",
+    "mtime": 1795287372.4902027,
+    "seen": 1795287907.711273,
+    "ast_hash": "532fa49cccd7dc68e793e6ee44e3485c",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-normal.pdf": {
-    "mtime": 1795274633.7098968,
-    "seen": 1795275276.0407984,
-    "ast_hash": "4e39a4bf0ef7b0eeb656db25495bd8ab",
+    "mtime": 1795287372.2430363,
+    "seen": 1795287907.7112777,
+    "ast_hash": "0e16e3015c1ab4ec9f375f40f15b095a",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues.pdf": {
-    "mtime": 1795274634.0100136,
-    "seen": 1795275276.040801,
-    "ast_hash": "43d2a51ff3df33ffabb41cfffc700510",
+    "mtime": 1795287372.5253,
+    "seen": 1795287907.7112803,
+    "ast_hash": "3dcfbf059787d5e3ad50a61264edc80f",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-date-seule.pdf": {
-    "mtime": 1795274633.5897894,
-    "seen": 1795275276.0408034,
-    "ast_hash": "5651ea1e8fbde0f151a7f188fb5bc9e5",
+    "mtime": 1795287372.1374528,
+    "seen": 1795287907.7112837,
+    "ast_hash": "ff8d83c479d0f7d72c52c8675adaba52",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-historique.pdf": {
-    "mtime": 1795274633.6309333,
-    "seen": 1795275276.0408058,
-    "ast_hash": "02ffb182b79a93ec70ee6ead7faafe37",
+    "mtime": 1795287372.1740303,
+    "seen": 1795287907.7112865,
+    "ast_hash": "15e5afb1e41b62789dcef922258ef145",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue.pdf": {
-    "mtime": 1795274633.8434834,
-    "seen": 1795275276.040808,
-    "ast_hash": "5cd3b20a9b367e53b3f7bbc51c51d9b4",
+    "mtime": 1795287372.3683698,
+    "seen": 1795287907.7112892,
+    "ast_hash": "b7cdb806f40dd14d9018e1126d5516e9",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-normale.pdf": {
-    "mtime": 1795274633.5419366,
-    "seen": 1795275276.0408096,
-    "ast_hash": "8c049f1d7fce3db31a78fc054efd8bae",
+    "mtime": 1795287372.0988088,
+    "seen": 1795287907.7112913,
+    "ast_hash": "ce4c639262c1cfdb83f7a41cd8f60052",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-taux-mixtes.pdf": {
-    "mtime": 1795274633.6751962,
-    "seen": 1795275276.0408118,
-    "ast_hash": "9b879f2b90feb365c8a38e0946576e87",
+    "mtime": 1795287372.2106233,
+    "seen": 1795287907.7112937,
+    "ast_hash": "7264488fda0bc32f78e6299d0caad7c1",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-bl-fictif.pdf": {
-    "mtime": 1795274634.1375945,
-    "seen": 1795275276.040814,
-    "ast_hash": "4a594b7881320137fba4951f6e7ee903",
+    "mtime": 1795287372.610503,
+    "seen": 1795287907.7112958,
+    "ast_hash": "54fdc2d93123cb95def1cf7066d4aedd",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples.pdf": {
-    "mtime": 1795274634.3530157,
-    "seen": 1795275276.040816,
-    "ast_hash": "95dc9b91f4db529f79f3e57d8d6e697b",
+    "mtime": 1795287372.767909,
+    "seen": 1795287907.7112987,
+    "ast_hash": "0ea1ad86f376bef3288adb866d6765c6",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-001.png": {
-    "mtime": 1795274635.9268477,
-    "seen": 1795275276.0430236,
-    "ast_hash": "5453aa7014e07b6c9aaa21501a095e61",
+    "mtime": 1795287374.2146237,
+    "seen": 1795287907.7133377,
+    "ast_hash": "0e02e719fd66937a58a8e4262815cc7e",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-002.png": {
-    "mtime": 1795274636.0072284,
-    "seen": 1795275276.043026,
-    "ast_hash": "711ffbfb6c0a2d24022b8e49d0fc4d7e",
+    "mtime": 1795287374.2882006,
+    "seen": 1795287907.71334,
+    "ast_hash": "e63958e2410e79288bd081086fbd1e54",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-003.png": {
-    "mtime": 1795274636.0775304,
-    "seen": 1795275276.0430274,
-    "ast_hash": "e6d62efa57b0d46bacc7c08ecee14975",
+    "mtime": 1795287374.3578496,
+    "seen": 1795287907.7133417,
+    "ast_hash": "91a836508be688f18bfee4db7f9aadd4",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-004.png": {
-    "mtime": 1795274636.1490707,
-    "seen": 1795275276.0430286,
-    "ast_hash": "8f048d4894b22200f490b562fbaae007",
+    "mtime": 1795287374.4231346,
+    "seen": 1795287907.7133434,
+    "ast_hash": "e702f466afb924f88393287137009de2",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-005.png": {
-    "mtime": 1795274636.220759,
-    "seen": 1795275276.04303,
-    "ast_hash": "09af05ca2d268b2c70732d2051e91ce0",
+    "mtime": 1795287374.4893267,
+    "seen": 1795287907.7133453,
+    "ast_hash": "71998b8959e4e772932687dbb945333a",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-006.png": {
-    "mtime": 1795274636.297043,
-    "seen": 1795275276.0430312,
-    "ast_hash": "5b552a20df287445bc728b90cc16b280",
+    "mtime": 1795287374.5561287,
+    "seen": 1795287907.7133474,
+    "ast_hash": "a14f00c076cbfb35d9fd72d396a1c438",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-007.png": {
-    "mtime": 1795274636.3707602,
-    "seen": 1795275276.0430326,
-    "ast_hash": "41f01e4f4cca9eb113020116072d6cc9",
+    "mtime": 1795287374.6227791,
+    "seen": 1795287907.713349,
+    "ast_hash": "9ce516a767bdf889cf293a33c227557f",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long-page-008.png": {
-    "mtime": 1795274636.4426003,
-    "seen": 1795275276.0430336,
-    "ast_hash": "374983dc49e343863ff0c44f4a251d3b",
+    "mtime": 1795287374.686261,
+    "seen": 1795287907.7133515,
+    "ast_hash": "ebc21d15601b36ab5a9197c705ae14b5",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-normal-page-001.png": {
-    "mtime": 1795274636.5112658,
-    "seen": 1795275276.0430348,
-    "ast_hash": "f3fdc528031a10c1f34d375cf74c5298",
+    "mtime": 1795287374.7450607,
+    "seen": 1795287907.7133534,
+    "ast_hash": "de1b5994231c550e5ae6b06da198f830",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-001.png": {
-    "mtime": 1795274636.5727363,
-    "seen": 1795275276.0430362,
-    "ast_hash": "06ad93e69a2cbf58511072260a91c478",
+    "mtime": 1795287374.8027217,
+    "seen": 1795287907.7133558,
+    "ast_hash": "9424d90ac26974e05b6f2484a352e093",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-002.png": {
-    "mtime": 1795274636.6220982,
-    "seen": 1795275276.0430377,
-    "ast_hash": "830846f472b98b443f96040be67ef84f",
+    "mtime": 1795287374.8483264,
+    "seen": 1795287907.7133582,
+    "ast_hash": "6ee767beb997e01c0b09e4309e3de15e",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-003.png": {
-    "mtime": 1795274636.6708984,
-    "seen": 1795275276.043039,
-    "ast_hash": "af77cb9cee459c6c856231a96ee56acd",
+    "mtime": 1795287374.8954206,
+    "seen": 1795287907.7133608,
+    "ast_hash": "5e156af2f0bb7079667f99c7e327833d",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-004.png": {
-    "mtime": 1795274636.721537,
-    "seen": 1795275276.0430403,
-    "ast_hash": "4048b1058e4f5e8abc604786a400acc8",
+    "mtime": 1795287374.9425485,
+    "seen": 1795287907.7133636,
+    "ast_hash": "27fa3e54d2df714e1c6f42a820074e52",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-005.png": {
-    "mtime": 1795274636.7734132,
-    "seen": 1795275276.0430417,
-    "ast_hash": "28fe203d0ede4017bbcd68f84e32746a",
+    "mtime": 1795287374.989665,
+    "seen": 1795287907.7133656,
+    "ast_hash": "32ddfdaee4a14ac97f5920da9bdf62f3",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-notes-longues-page-006.png": {
-    "mtime": 1795274636.831812,
-    "seen": 1795275276.043043,
-    "ast_hash": "562bc91da272712e55f981b89d644fde",
+    "mtime": 1795287375.037435,
+    "seen": 1795287907.7133672,
+    "ast_hash": "71156d63414bfffcc358750b648b1948",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-date-seule-page-001.png": {
-    "mtime": 1795274636.9004629,
-    "seen": 1795275276.0430443,
-    "ast_hash": "8edc0f69246747e275d9ce0b9b6fee3a",
+    "mtime": 1795287375.093087,
+    "seen": 1795287907.713369,
+    "ast_hash": "fd997e266fc5b6f6a7027c0d38e92d0b",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-historique-page-001.png": {
-    "mtime": 1795274636.9643786,
-    "seen": 1795275276.0430455,
-    "ast_hash": "e13fc6b329d7d642851ba50615b510f6",
+    "mtime": 1795287375.1497297,
+    "seen": 1795287907.7133708,
+    "ast_hash": "8c36980149c10a9aa4b2d46f578f856b",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-001.png": {
-    "mtime": 1795274637.0391219,
-    "seen": 1795275276.043047,
-    "ast_hash": "3f8a95a44e80049231dc719daa740bc7",
+    "mtime": 1795287375.2188804,
+    "seen": 1795287907.7133725,
+    "ast_hash": "280e8799e67427b8b6fd3a4e4edbe449",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-002.png": {
-    "mtime": 1795274637.1083817,
-    "seen": 1795275276.043048,
-    "ast_hash": "08468a9802300313bed9c5ca3b8906b6",
+    "mtime": 1795287375.2840304,
+    "seen": 1795287907.7133741,
+    "ast_hash": "419cc8af9c5ebb1c5703da766f5f944e",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-003.png": {
-    "mtime": 1795274637.1791766,
-    "seen": 1795275276.043049,
-    "ast_hash": "31fae75ee6681ccaf559eb8ed6ab0dc1",
+    "mtime": 1795287375.3488588,
+    "seen": 1795287907.7133756,
+    "ast_hash": "a92753eceef5453a47f2d087624818f0",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-004.png": {
-    "mtime": 1795274637.248686,
-    "seen": 1795275276.0430505,
-    "ast_hash": "f869fba5a7a1cc9374dc06713f2a5a92",
+    "mtime": 1795287375.4130528,
+    "seen": 1795287907.713377,
+    "ast_hash": "05b15b4b452c20c8901c8703a81894c9",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-005.png": {
-    "mtime": 1795274637.321833,
-    "seen": 1795275276.0430517,
-    "ast_hash": "29ef3e1b14c10de8e36bdb08d63e3cba",
+    "mtime": 1795287375.4822264,
+    "seen": 1795287907.713378,
+    "ast_hash": "634decdef6f77f80eb8f4c9ae3ffe4fa",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-006.png": {
-    "mtime": 1795274637.3960826,
-    "seen": 1795275276.0430532,
-    "ast_hash": "010392db1d128e5b07b109fd2e9626fb",
+    "mtime": 1795287375.5478785,
+    "seen": 1795287907.7133796,
+    "ast_hash": "5fccd4dc7c2ee330cd30efa8157a1c2b",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-007.png": {
-    "mtime": 1795274637.4628513,
-    "seen": 1795275276.0430543,
-    "ast_hash": "fa3f88c05e8446baea1d15a3799aacbb",
+    "mtime": 1795287375.6116533,
+    "seen": 1795287907.7133808,
+    "ast_hash": "a1db7aa5c3d9b4debfcb88a81a4b224a",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-longue-page-008.png": {
-    "mtime": 1795274637.5234048,
-    "seen": 1795275276.0430555,
-    "ast_hash": "23292247e911a0d9c17c1206ac9c6825",
+    "mtime": 1795287375.66323,
+    "seen": 1795287907.7133825,
+    "ast_hash": "b67e9771e0a69347dec029c78374fd91",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-normale-page-001.png": {
-    "mtime": 1795274637.591142,
-    "seen": 1795275276.0430567,
-    "ast_hash": "98c0408fa40f7ff39ac0f3d13d566cb5",
+    "mtime": 1795287375.7208545,
+    "seen": 1795287907.7133834,
+    "ast_hash": "c8e1432f63b3ce8b8e7169a0c4556658",
     "semantic_hash": ""
   },
   "specs/captures/documents/facture-taux-mixtes-page-001.png": {
-    "mtime": 1795274637.6666706,
-    "seen": 1795275276.043058,
-    "ast_hash": "3854b70f8a891bc14c20addb2e59a6e0",
+    "mtime": 1795287375.781995,
+    "seen": 1795287907.7133846,
+    "ast_hash": "6bb3a8a217454e3cd2df644ebdc3902d",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-bl-fictif-page-001.png": {
-    "mtime": 1795274637.7321866,
-    "seen": 1795275276.0430589,
-    "ast_hash": "c172a99733a09e1e253984107d9f6b73",
+    "mtime": 1795287375.8426318,
+    "seen": 1795287907.713386,
+    "ast_hash": "2a737a6e3180b2f41d34a9e4b6a4bbe1",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-001.png": {
-    "mtime": 1795274637.8099146,
-    "seen": 1795275276.0430608,
-    "ast_hash": "79b88b2a097c8ad516fb001e4908cc27",
+    "mtime": 1795287375.9203672,
+    "seen": 1795287907.7133877,
+    "ast_hash": "7fe6fc6da98bd56e1b7a3cedd9572050",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-002.png": {
-    "mtime": 1795274637.8848526,
-    "seen": 1795275276.0430634,
-    "ast_hash": "7ba075fd85852cf56d6a92581fff9858",
+    "mtime": 1795287375.9927413,
+    "seen": 1795287907.7133887,
+    "ast_hash": "2269470ac28cf668f8dc701070f0c279",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-003.png": {
-    "mtime": 1795274637.958155,
-    "seen": 1795275276.043065,
-    "ast_hash": "2a6c390cd3a98c6f665f01f2cfaa0685",
+    "mtime": 1795287376.0594213,
+    "seen": 1795287907.7133899,
+    "ast_hash": "ba2cb108904d397e505df1e3ba68afbf",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-004.png": {
-    "mtime": 1795274638.0335267,
-    "seen": 1795275276.043067,
-    "ast_hash": "db56a50760d32201137c44675ffde659",
+    "mtime": 1795287376.1331348,
+    "seen": 1795287907.7133915,
+    "ast_hash": "44d926449bbee1c93a68557ceb4de8e1",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-005.png": {
-    "mtime": 1795274638.1078854,
-    "seen": 1795275276.0430715,
-    "ast_hash": "87a2f8f61d9d742a0d53cb80ac87f033",
+    "mtime": 1795287376.204508,
+    "seen": 1795287907.713393,
+    "ast_hash": "b94c162f96ef7f0248224ce43c1c7070",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-006.png": {
-    "mtime": 1795274638.1803823,
-    "seen": 1795275276.0430748,
-    "ast_hash": "c7b75b71508cc1ec974ef00e2644c6a5",
+    "mtime": 1795287376.2743745,
+    "seen": 1795287907.7133942,
+    "ast_hash": "c49de17198b3e070b59e1faf9c35962b",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-007.png": {
-    "mtime": 1795274638.2522354,
-    "seen": 1795275276.0430768,
-    "ast_hash": "e26c41aeff89c32f834a089d9d8c7b85",
+    "mtime": 1795287376.343024,
+    "seen": 1795287907.7133956,
+    "ast_hash": "39e36a2d9794c5a40e6db86fac8a7d42",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-008.png": {
-    "mtime": 1795274638.3278508,
-    "seen": 1795275276.0430791,
-    "ast_hash": "da592e05ac10d8aaec50fe62afb6c92e",
+    "mtime": 1795287376.4147224,
+    "seen": 1795287907.7133968,
+    "ast_hash": "54cd7e778d4150e3460584af4007d92a",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-009.png": {
-    "mtime": 1795274638.4055312,
-    "seen": 1795275276.0430813,
-    "ast_hash": "08a624e8d1ad0274678fa342688194f4",
+    "mtime": 1795287376.484021,
+    "seen": 1795287907.713398,
+    "ast_hash": "0d0875170e14f548969da717f353ab3a",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-010.png": {
-    "mtime": 1795274638.4699378,
-    "seen": 1795275276.0430834,
-    "ast_hash": "4cfcf5bf4d83f94da526e807219a4986",
+    "mtime": 1795287376.544208,
+    "seen": 1795287907.713399,
+    "ast_hash": "7f9fdc0c032293f67148980ab0d2eceb",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-011.png": {
-    "mtime": 1795274638.5370014,
-    "seen": 1795275276.0430858,
-    "ast_hash": "169b77acdabbf445474259270cc8874e",
+    "mtime": 1795287376.6059504,
+    "seen": 1795287907.7134006,
+    "ast_hash": "e7f180fbe81090928ada9cac4ec1a197",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-012.png": {
-    "mtime": 1795274638.6031947,
-    "seen": 1795275276.0430882,
-    "ast_hash": "df7af35841d81d940140ea7840c9f5c2",
+    "mtime": 1795287376.6643622,
+    "seen": 1795287907.7134023,
+    "ast_hash": "befc299732489a2c1218ddf4dc9a5089",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-013.png": {
-    "mtime": 1795274638.6675289,
-    "seen": 1795275276.04309,
-    "ast_hash": "e4e9ebb7627c5ebb71fed000ee210b6c",
+    "mtime": 1795287376.7229853,
+    "seen": 1795287907.713404,
+    "ast_hash": "606574ccf2d3a9bb2a607adf7e628eea",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-014.png": {
-    "mtime": 1795274638.7286184,
-    "seen": 1795275276.0430923,
-    "ast_hash": "8ff32b9b5837e006127ec5d8eef15c7d",
+    "mtime": 1795287376.777902,
+    "seen": 1795287907.7134051,
+    "ast_hash": "508e6216d879f60e7e52701ce81e416c",
     "semantic_hash": ""
   },
   "specs/captures/documents/gabarit-tva-multiples-page-015.png": {
-    "mtime": 1795274638.7817805,
-    "seen": 1795275276.0430946,
-    "ast_hash": "59213aaa73502576eeb917c5fbe409fd",
+    "mtime": 1795287376.8275087,
+    "seen": 1795287907.7134063,
+    "ast_hash": "61f0feb7f26ab460343a25306d0c1fb4",
+    "semantic_hash": ""
+  },
+  "src/branding.ts": {
+    "mtime": 1795287225.0261953,
+    "seen": 1795287907.6729093,
+    "ast_hash": "38d1b7ef61b418c10be0502674ecbb01",
     "semantic_hash": ""
   },
   "package-lock.json": {
-    "mtime": 1794337671.7528777,
-    "seen": 1794337854.7392957,
-    "ast_hash": "f15e91b6700c679e10ac9aa12fb7014e",
+    "mtime": 1795287295.3325026,
+    "seen": 1795287907.7434516,
+    "ast_hash": "fe046ae5db1dc1ada18b19e5093b64f6",
     "semantic_hash": ""
   }
 }

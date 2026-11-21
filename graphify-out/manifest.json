@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1795287295.3309896,
-    "seen": 1795287907.6506734,
-    "ast_hash": "b97ad0c76e48a24a2fad7a13303a8543",
+    "mtime": 1795292322.9197097,
+    "seen": 1795292932.5837088,
+    "ast_hash": "34d638f9d6a6266308c6754fb6685683",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -540,9 +540,9 @@
     "semantic_hash": ""
   },
   "server/middleware/resourceRoutes.ts": {
-    "mtime": 1794660059.9867291,
-    "seen": 1794660684.003177,
-    "ast_hash": "6fbb36039664be653dbb3a9402aa75bb",
+    "mtime": 1795290434.67762,
+    "seen": 1795292932.595839,
+    "ast_hash": "706270d8411211ce764604f5b86546f3",
     "semantic_hash": ""
   },
   "server/middleware/sanitize.ts": {
@@ -618,9 +618,9 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1795287375.804037,
-    "seen": 1795287907.672906,
-    "ast_hash": "30183ac70fd9c9b3f559a13d51014ffd",
+    "mtime": 1795290319.4982142,
+    "seen": 1795292932.6060913,
+    "ast_hash": "8f2e5f03d47f5020edfcd5270e795c82",
     "semantic_hash": ""
   },
   "src/components/AuthProvider.tsx": {
@@ -762,15 +762,15 @@
     "semantic_hash": ""
   },
   "src/services/api.ts": {
-    "mtime": 1795287747.250553,
-    "seen": 1795287907.6806562,
-    "ast_hash": "2eecd626f759e36a9188126736984e2a",
+    "mtime": 1795290122.036209,
+    "seen": 1795292932.6138666,
+    "ast_hash": "1223a11f5172c4c13f645b79b04b4f53",
     "semantic_hash": ""
   },
   "src/services/contracts.ts": {
-    "mtime": 1795259279.3620899,
-    "seen": 1795261301.4363565,
-    "ast_hash": "1d71cbb600d9d675dbbfd16a9fc5272e",
+    "mtime": 1795290122.0372088,
+    "seen": 1795292932.6138678,
+    "ast_hash": "4dd7e2f17776225875650298c5fdc7c3",
     "semantic_hash": ""
   },
   "src/services/resilience.ts": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1795287295.3335001,
-    "seen": 1795287907.7055776,
-    "ast_hash": "54acc8d5a2e4c2056349fc1c16129684",
+    "mtime": 1795291863.1182516,
+    "seen": 1795292932.6408384,
+    "ast_hash": "fa29cdcca8e874d423d71d22cdf219af",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795288882.098727,
-    "seen": 1795288883.4214647,
-    "ast_hash": "1a530b52920b7f5797acd2e17e8bbb7b",
+    "mtime": 1795293382.1977446,
+    "seen": 1795293383.5778105,
+    "ast_hash": "c1a36d9a78d3b05739be2f7f6909aee3",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1446,9 +1446,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfInvoice.ts": {
-    "mtime": 1795287223.398293,
-    "seen": 1795287907.6661336,
-    "ast_hash": "eca714056418e41fedf02e6e59adc94b",
+    "mtime": 1795290362.4201567,
+    "seen": 1795292932.599118,
+    "ast_hash": "4e2c7550f3f0530650955d5f5c7ab51e",
     "semantic_hash": ""
   },
   "server/types/pdfmake.d.ts": {
@@ -1482,9 +1482,9 @@
     "semantic_hash": ""
   },
   "scripts/lib/test-environment.ts": {
-    "mtime": 1793907540.6521146,
-    "seen": 1793908006.2562258,
-    "ast_hash": "ec690aea934afe2d7124715dabd31407",
+    "mtime": 1795290081.3748672,
+    "seen": 1795292932.5846195,
+    "ast_hash": "ac3d554c9a9dd64b7aca392e0274fdd3",
     "semantic_hash": ""
   },
   "scripts/test-stock-transfer-validation.ts": {
@@ -1674,9 +1674,9 @@
     "semantic_hash": ""
   },
   "server/middleware/settingsRoutes.ts": {
-    "mtime": 1795287223.400808,
-    "seen": 1795287907.663507,
-    "ast_hash": "32c2bf65f6bbb026498256606ed95531",
+    "mtime": 1795290434.6771166,
+    "seen": 1795292932.5964007,
+    "ast_hash": "c3d83697ca693b1912c442f4600bbfd0",
     "semantic_hash": ""
   },
   "server/repositories/parametreRepository.ts": {
@@ -1692,9 +1692,9 @@
     "semantic_hash": ""
   },
   "server/services/settingsStore.ts": {
-    "mtime": 1794339403.6514797,
-    "seen": 1794340150.6605039,
-    "ast_hash": "bda6abb1d2e67721d75d527502f58feb",
+    "mtime": 1795290434.6761172,
+    "seen": 1795292932.5991228,
+    "ast_hash": "0c61380ca2970018a0305ce8d170f219",
     "semantic_hash": ""
   },
   "server/services/turnstile.ts": {
@@ -1734,15 +1734,15 @@
     "semantic_hash": ""
   },
   "src/parametres.ts": {
-    "mtime": 1794339403.6539884,
-    "seen": 1794340150.6659718,
-    "ast_hash": "9db7de102e313fb706a1311cbeec099e",
+    "mtime": 1795290122.0382087,
+    "seen": 1795292932.6132927,
+    "ast_hash": "03e4369e250a842790f5a8cd5348908d",
     "semantic_hash": ""
   },
   "src/schemas/parametres.ts": {
-    "mtime": 1794339453.7576096,
-    "seen": 1794340150.6660974,
-    "ast_hash": "d259b81107e5606b7bd7b89413308adb",
+    "mtime": 1795289639.03412,
+    "seen": 1795292932.6138642,
+    "ast_hash": "865b31f091f0b8eb000083019c536f37",
     "semantic_hash": ""
   },
   "src/views/parametres/BaseDonneesView.tsx": {
@@ -1836,9 +1836,9 @@
     "semantic_hash": ""
   },
   "specs/parametres.md": {
-    "mtime": 1794341645.6061928,
-    "seen": 1794341802.94243,
-    "ast_hash": "1a245a00e3cd2833828bbc837ee917ff",
+    "mtime": 1795290072.4106665,
+    "seen": 1795292932.645188,
+    "ast_hash": "7091602258d788b015aa3890a84a87f7",
     "semantic_hash": ""
   },
   "specs/screenshots/parametres/accueil-dark-1440.png": {
@@ -3078,9 +3078,9 @@
     "semantic_hash": ""
   },
   "server/middleware/devisRoutes.ts": {
-    "mtime": 1795259889.3343673,
-    "seen": 1795261301.4259841,
-    "ast_hash": "aeedf83c33ddb4148c7ce753b256429e",
+    "mtime": 1795290434.6791296,
+    "seen": 1795292932.5949159,
+    "ast_hash": "5790fe8fc2dd74982260c7200d12a956",
     "semantic_hash": ""
   },
   "server/middleware/devisSchemas.ts": {
@@ -3102,9 +3102,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfDevis.ts": {
-    "mtime": 1795287223.3987935,
-    "seen": 1795287907.66613,
-    "ast_hash": "dff044f3ec7cc35229121e2c231af637",
+    "mtime": 1795290362.4211571,
+    "seen": 1795292932.5991163,
+    "ast_hash": "4df95f2f71279bc01cd7d75ad9894d0f",
     "semantic_hash": ""
   },
   "specs/captures/devis/resultats.json": {
@@ -3234,15 +3234,15 @@
     "semantic_hash": ""
   },
   "scripts/lib/pdf-assertions.ts": {
-    "mtime": 1795272706.969689,
-    "seen": 1795275275.9805408,
-    "ast_hash": "6ee2082b71a866e6c430398bb265d31b",
+    "mtime": 1795290945.9617915,
+    "seen": 1795292932.5844166,
+    "ast_hash": "ac0699f4ce2794c94f2bbcde010a7df3",
     "semantic_hash": ""
   },
   "scripts/render-pdf-examples.ps1": {
-    "mtime": 1795273247.966129,
-    "seen": 1795275275.9811075,
-    "ast_hash": "61241e66f8bba9611e56854f0505052c",
+    "mtime": 1795292231.786047,
+    "seen": 1795292932.584822,
+    "ast_hash": "9c284be3115856cf9acf0738b67001f4",
     "semantic_hash": ""
   },
   "scripts/test-pdf-commercial.ts": {
@@ -3252,9 +3252,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfCommercial.ts": {
-    "mtime": 1795287223.397293,
-    "seen": 1795287907.6661265,
-    "ast_hash": "425f0480b99bd20997929fce095fb0f9",
+    "mtime": 1795290950.1672268,
+    "seen": 1795292932.5991137,
+    "ast_hash": "7bd8b5b7fa50d9c17fa38303026b7e84",
     "semantic_hash": ""
   },
   "specs/captures/documents/rendus.json": {
@@ -3282,9 +3282,9 @@
     "semantic_hash": ""
   },
   "specs/documents-commerciaux.md": {
-    "mtime": 1795287295.3365114,
-    "seen": 1795287907.7087102,
-    "ast_hash": "089b33b00661e50fce7dad5b887ecbab",
+    "mtime": 1795290072.41264,
+    "seen": 1795292932.6443055,
+    "ast_hash": "c9a8cb038b91eb9eb9c0287bee4c5138",
     "semantic_hash": ""
   },
   "specs/captures/documents/devis-long.pdf": {
@@ -3611,10 +3611,208 @@
     "ast_hash": "38d1b7ef61b418c10be0502674ecbb01",
     "semantic_hash": ""
   },
+  "scripts/generate-documents-pdf-examples.ts": {
+    "mtime": 1795292398.1652253,
+    "seen": 1795292932.584253,
+    "ast_hash": "eeb819a171534970685501e15b9b4ce6",
+    "semantic_hash": ""
+  },
+  "scripts/lib/image-fixtures.ts": {
+    "mtime": 1795291560.0878048,
+    "seen": 1795292932.5844133,
+    "ast_hash": "ee15ee8806928d60b5a1ab5ce731b748",
+    "semantic_hash": ""
+  },
+  "scripts/lib/pdf-buffer-images.ts": {
+    "mtime": 1795291560.0883071,
+    "seen": 1795292932.5844185,
+    "ast_hash": "42cdb8350a75cace2e11c710889a6206",
+    "semantic_hash": ""
+  },
+  "scripts/lib/pdf-buffer-text.ts": {
+    "mtime": 1795291177.2548862,
+    "seen": 1795292932.5844202,
+    "ast_hash": "91001cbb778eab5bab4fb615c8f3c5ed",
+    "semantic_hash": ""
+  },
+  "scripts/test-documents-pdf-api.ts": {
+    "mtime": 1795291914.3794343,
+    "seen": 1795292932.587942,
+    "ast_hash": "f14cc98d8f74b2aca3c70934deac3861",
+    "semantic_hash": ""
+  },
+  "scripts/test-documents-pdf-ui.mjs": {
+    "mtime": 1795292398.1662257,
+    "seen": 1795292932.5879443,
+    "ast_hash": "b910f0a641b3c17ed1b39d294a2dd4bb",
+    "semantic_hash": ""
+  },
+  "scripts/test-documents-pdf-unit.ts": {
+    "mtime": 1795291560.0893056,
+    "seen": 1795292932.587946,
+    "ast_hash": "0b73be9a0264fe9553624874073a3c3f",
+    "semantic_hash": ""
+  },
+  "server/services/documentsPdfSettings.ts": {
+    "mtime": 1795291518.1074026,
+    "seen": 1795292932.598908,
+    "ast_hash": "dc318261dd7b851e4a15439db4167371",
+    "semantic_hash": ""
+  },
+  "server/services/pdfPreview.ts": {
+    "mtime": 1795290434.675116,
+    "seen": 1795292932.5991197,
+    "ast_hash": "76a0f68a10b7fb4768e6f4327e12211c",
+    "semantic_hash": ""
+  },
+  "server/services/pdfTextLayout.ts": {
+    "mtime": 1795289994.1578457,
+    "seen": 1795292932.599121,
+    "ast_hash": "47e3a833de83ef6db0952061a86f5396",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/exemples.json": {
+    "mtime": 1795292413.126556,
+    "seen": 1795292932.6001625,
+    "ast_hash": "aed0160ebdf06d86ba2d453deb828960",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/observations-ui.json": {
+    "mtime": 1795292437.2633872,
+    "seen": 1795292932.6001656,
+    "ast_hash": "219c13515af4a085896c27ed54c95fb0",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/rendus.json": {
+    "mtime": 1795292422.4140499,
+    "seen": 1795292932.6001682,
+    "ast_hash": "cc67f746e3c6be63cace97de2a7a7043",
+    "semantic_hash": ""
+  },
+  "src/services/parametres.ts": {
+    "mtime": 1795290482.8115275,
+    "seen": 1795292932.6140165,
+    "ast_hash": "44c2ba263f649006bcfab0e10d10fedf",
+    "semantic_hash": ""
+  },
+  "src/utils/pdfLogo.ts": {
+    "mtime": 1795290122.039711,
+    "seen": 1795292932.6152065,
+    "ast_hash": "ac96aa30f10a56b081db256f1253bb8d",
+    "semantic_hash": ""
+  },
+  "src/views/parametres/DocumentsPdfForm.tsx": {
+    "mtime": 1795290482.8125322,
+    "seen": 1795292932.6210546,
+    "ast_hash": "b99c72ac1a773d89152a78cd1d46951d",
+    "semantic_hash": ""
+  },
+  "src/views/parametres/DocumentsPdfPreview.tsx": {
+    "mtime": 1795290319.4892132,
+    "seen": 1795292932.6210577,
+    "ast_hash": "724b50ed47c77bfe8a7fc0e69ec5954b",
+    "semantic_hash": ""
+  },
+  "src/views/parametres/DocumentsPdfView.tsx": {
+    "mtime": 1795290319.4972143,
+    "seen": 1795292932.6210608,
+    "ast_hash": "85f64f4dcedc042804f80cb1e1e008c9",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/README.md": {
+    "mtime": 1795292530.9828694,
+    "seen": 1795292932.6432226,
+    "ast_hash": "f0cd650af37d597956252095662e8e1b",
+    "semantic_hash": ""
+  },
+  "specs/documents-pdf-personnalisation.md": {
+    "mtime": 1795291745.7005255,
+    "seen": 1795292932.6443093,
+    "ast_hash": "85094be787d1619208a6e4ef81b0cc39",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/devis-personnalise.pdf": {
+    "mtime": 1795292413.1240559,
+    "seen": 1795292932.6461148,
+    "ast_hash": "9c0207c47a2a6355d41f2b6c6378d68c",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/facture-personnalisee.pdf": {
+    "mtime": 1795292413.0404212,
+    "seen": 1795292932.6461174,
+    "ast_hash": "2fa7e9cc1e162093551d05fecd18fb38",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/apercu-desktop.png": {
+    "mtime": 1795292434.1366527,
+    "seen": 1795292932.650338,
+    "ast_hash": "1a5fbc7764dec83c79e14d73e8afefc0",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/apercu-mobile-dark.png": {
+    "mtime": 1795292436.5801256,
+    "seen": 1795292932.6503413,
+    "ast_hash": "1dace0eabc512017a597ee78faea250a",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/apercu-mobile-light.png": {
+    "mtime": 1795292436.2659426,
+    "seen": 1795292932.6503434,
+    "ast_hash": "d6e71745aa341e96300efa4fda408d0a",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/devis-personnalise-page-001.png": {
+    "mtime": 1795292422.2798126,
+    "seen": 1795292932.6503453,
+    "ast_hash": "099c959c7cd78e179fb55094e16cc4da",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/devis-personnalise-page-002.png": {
+    "mtime": 1795292422.329396,
+    "seen": 1795292932.6503468,
+    "ast_hash": "792665fb5782a818ccf6e6a34b8db619",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/edition-mobile-dark.png": {
+    "mtime": 1795292436.3783865,
+    "seen": 1795292932.650349,
+    "ast_hash": "1cae1bade181a55e1892e9451cf3baec",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/edition-mobile-light.png": {
+    "mtime": 1795292436.0425491,
+    "seen": 1795292932.6503503,
+    "ast_hash": "297a6ca35891c4ba1f04d500c0cc4f90",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/facture-personnalisee-page-001.png": {
+    "mtime": 1795292422.3879938,
+    "seen": 1795292932.6503527,
+    "ast_hash": "f08773070271b3a6916ad342c66f17ae",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/logo-palette-prepare.png": {
+    "mtime": 1795292413.125553,
+    "seen": 1795292932.6503541,
+    "ast_hash": "9ebefcdaa14cb9e9e043e4e40e43ea7a",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/logo-palette-source.png": {
+    "mtime": 1795292413.1245532,
+    "seen": 1795292932.6503558,
+    "ast_hash": "3b6827028fc4f53d2f124d960f256ae8",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/presentation-enregistree-desktop.png": {
+    "mtime": 1795292437.0472887,
+    "seen": 1795292932.6503572,
+    "ast_hash": "593d6b656b92d4d8b7620f3131170497",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
-    "mtime": 1795287295.3325026,
-    "seen": 1795287907.7434516,
-    "ast_hash": "fe046ae5db1dc1ada18b19e5093b64f6",
+    "mtime": 1795289961.4157948,
+    "seen": 1795292932.697447,
+    "ast_hash": "88bc787b987d3be0434627906a4126a8",
     "semantic_hash": ""
   }
 }

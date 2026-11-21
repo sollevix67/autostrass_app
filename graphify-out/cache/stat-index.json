@@ -1131,10 +1131,10 @@
     }
   },
   "README.md": {
-    "size": 8098,
-    "mtime_ns": 1795287295333500100,
-    "indexed_at_ns": 1795287899219025300,
-    "word_count": 1020
+    "size": 8759,
+    "mtime_ns": 1795291863118251600,
+    "indexed_at_ns": 1795292922610527200,
+    "word_count": 1101
   },
   "TODO.md": {
     "size": 4834,
@@ -1299,19 +1299,19 @@
     "word_count": 39
   },
   "package.json": {
-    "size": 3433,
-    "mtime_ns": 1795287295330989500,
-    "indexed_at_ns": 1795287900128910800,
-    "word_count": 242,
+    "size": 3696,
+    "mtime_ns": 1795292322919709800,
+    "indexed_at_ns": 1795292924017251600,
+    "word_count": 258,
     "hashes": {
-      "package.json": "36508a0e4ffe148b5b0032fefc70ba92912872c21fdf8cac8d3834320141e1a9"
+      "package.json": "1415a53aaf5c4bb60bc29370bb8fd48417e9a38b5484c405df146137fed83f08"
     }
   },
   "passation.md": {
-    "size": 51829,
-    "mtime_ns": 1795288882098727000,
-    "indexed_at_ns": 1795288883421635900,
-    "word_count": 6764
+    "size": 58474,
+    "mtime_ns": 1795293382197744500,
+    "indexed_at_ns": 1795293383578034600,
+    "word_count": 7653
   },
   "public/favicon.svg": {
     "size": 294,
@@ -1512,13 +1512,10 @@
     }
   },
   "server/middleware/resourceRoutes.ts": {
-    "size": 28536,
-    "mtime_ns": 1794660059986729100,
-    "indexed_at_ns": 1795262433581598700,
-    "word_count": 2885,
-    "hashes": {
-      "server/middleware/resourceRoutes.ts": "67c6548a535c0fbe0da0d56b6d0b437dc9380cc26383a95b8fbb1edcee55c8a2"
-    }
+    "size": 28621,
+    "mtime_ns": 1795290434677619900,
+    "indexed_at_ns": 1795292922749815400,
+    "word_count": 2888
   },
   "server/middleware/sanitize.ts": {
     "size": 9684,
@@ -1629,10 +1626,10 @@
     }
   },
   "src/App.tsx": {
-    "size": 15393,
-    "mtime_ns": 1795287375804037000,
-    "indexed_at_ns": 1795287899496620800,
-    "word_count": 1299
+    "size": 15540,
+    "mtime_ns": 1795290319498214200,
+    "indexed_at_ns": 1795292923082122200,
+    "word_count": 1308
   },
   "src/components/AuthProvider.tsx": {
     "size": 3791,
@@ -1842,19 +1839,16 @@
     }
   },
   "src/services/api.ts": {
-    "size": 7842,
-    "mtime_ns": 1795287747250552900,
-    "indexed_at_ns": 1795287899525859100,
-    "word_count": 978
+    "size": 8034,
+    "mtime_ns": 1795290122036209000,
+    "indexed_at_ns": 1795292923114639500,
+    "word_count": 1000
   },
   "src/services/contracts.ts": {
-    "size": 10332,
-    "mtime_ns": 1795259279362089900,
-    "indexed_at_ns": 1795262433502362700,
-    "word_count": 1284,
-    "hashes": {
-      "src/services/contracts.ts": "2bb42d9c9e69ad489f164fdf624b9d59a36151f207a866cf49dd9c835d7ec9d0"
-    }
+    "size": 10392,
+    "mtime_ns": 1795290122037208700,
+    "indexed_at_ns": 1795292923115613100,
+    "word_count": 1287
   },
   "src/services/resilience.ts": {
     "size": 795,
@@ -2148,10 +2142,10 @@
     }
   },
   "server/services/pdfInvoice.ts": {
-    "size": 2742,
-    "mtime_ns": 1795287223398293100,
-    "indexed_at_ns": 1795287899323554600,
-    "word_count": 276
+    "size": 2925,
+    "mtime_ns": 1795290362420156800,
+    "indexed_at_ns": 1795292922767816500,
+    "word_count": 289
   },
   "server/types/pdfmake.d.ts": {
     "size": 471,
@@ -2181,13 +2175,10 @@
     }
   },
   "scripts/lib/test-environment.ts": {
-    "size": 9614,
-    "mtime_ns": 1793907540652114600,
-    "indexed_at_ns": 1795262433404951200,
-    "word_count": 999,
-    "hashes": {
-      "scripts/lib/test-environment.ts": "5e3df90e97c5d85461d180b16c39e95f441c8ed0575a7a39a73fc840c9c5e9d0"
-    }
+    "size": 9741,
+    "mtime_ns": 1795290081374867100,
+    "indexed_at_ns": 1795292922701068200,
+    "word_count": 1013
   },
   "scripts/test-stock-transfer-validation.ts": {
     "size": 2988,
@@ -2307,10 +2298,10 @@
     }
   },
   "server/middleware/settingsRoutes.ts": {
-    "size": 4999,
-    "mtime_ns": 1795287223400808000,
-    "indexed_at_ns": 1795287899309608500,
-    "word_count": 469
+    "size": 6269,
+    "mtime_ns": 1795290434677116700,
+    "indexed_at_ns": 1795292922753292000,
+    "word_count": 562
   },
   "server/repositories/parametreRepository.ts": {
     "size": 4121,
@@ -2331,13 +2322,10 @@
     }
   },
   "server/services/settingsStore.ts": {
-    "size": 4478,
-    "mtime_ns": 1794339403651479700,
-    "indexed_at_ns": 1795262433359841900,
-    "word_count": 438,
-    "hashes": {
-      "server/services/settingsStore.ts": "09e828062add414682c3f9340226c394e8d172bfbaf7f4af3e6b33b828e1a103"
-    }
+    "size": 4884,
+    "mtime_ns": 1795290434676117100,
+    "indexed_at_ns": 1795292922770554300,
+    "word_count": 456
   },
   "server/services/turnstile.ts": {
     "size": 1317,
@@ -2349,12 +2337,12 @@
     }
   },
   "specs/parametres.md": {
-    "size": 14001,
-    "mtime_ns": 1794341645606192800,
-    "indexed_at_ns": 1794341797422364000,
-    "word_count": 1950,
+    "size": 14291,
+    "mtime_ns": 1795290072410666400,
+    "indexed_at_ns": 1795292924335468500,
+    "word_count": 1989,
     "hashes": {
-      "specs/parametres.md": "9b2a098db2ca99f665cd06ae4e5bece23a4f1711b24fab40fd90204b7dbbaec3"
+      "specs/parametres.md": "608cfc976328618f76fc94abdbf0ef23a45caacd9fa838579805e91526324030"
     }
   },
   "specs/screenshots/parametres/verification.json": {
@@ -2403,22 +2391,16 @@
     }
   },
   "src/parametres.ts": {
-    "size": 2577,
-    "mtime_ns": 1794339403653988400,
-    "indexed_at_ns": 1795262433500316800,
-    "word_count": 302,
-    "hashes": {
-      "src/parametres.ts": "9a3aa75d06e6b6022974073bb8b6d643281f22fdc1bd190c2bd6b355f8253a31"
-    }
+    "size": 2775,
+    "mtime_ns": 1795290122038208700,
+    "indexed_at_ns": 1795292923109732600,
+    "word_count": 327
   },
   "src/schemas/parametres.ts": {
-    "size": 4385,
-    "mtime_ns": 1794339453757609700,
-    "indexed_at_ns": 1795262433155319900,
-    "word_count": 479,
-    "hashes": {
-      "src/schemas/parametres.ts": "169e604c1e8497199cf421c9b5d80e66abd26efbb502eb301f7223f59298a6ad"
-    }
+    "size": 7517,
+    "mtime_ns": 1795289639034120100,
+    "indexed_at_ns": 1795292923113514700,
+    "word_count": 781
   },
   "src/views/parametres/BaseDonneesView.tsx": {
     "size": 264,
@@ -3342,13 +3324,10 @@
     }
   },
   "server/middleware/devisRoutes.ts": {
-    "size": 4035,
-    "mtime_ns": 1795259889334367200,
-    "indexed_at_ns": 1795262433357008200,
-    "word_count": 394,
-    "hashes": {
-      "server/middleware/devisRoutes.ts": "36e61e28e41b694db7694e2fe19db51f1ca492935b8977cf17557be26b0ec3cb"
-    }
+    "size": 4122,
+    "mtime_ns": 1795290434679129600,
+    "indexed_at_ns": 1795292922744965200,
+    "word_count": 401
   },
   "server/middleware/devisSchemas.ts": {
     "size": 3359,
@@ -3378,10 +3357,10 @@
     }
   },
   "server/services/pdfDevis.ts": {
-    "size": 1590,
-    "mtime_ns": 1795287223398793400,
-    "indexed_at_ns": 1795287899322632400,
-    "word_count": 133
+    "size": 1773,
+    "mtime_ns": 1795290362421157100,
+    "indexed_at_ns": 1795292922766901600,
+    "word_count": 146
   },
   "specs/captures/devis/resultats.json": {
     "size": 3771,
@@ -3483,18 +3462,18 @@
     }
   },
   "scripts/lib/pdf-assertions.ts": {
-    "size": 6654,
-    "mtime_ns": 1795272706969688900,
-    "indexed_at_ns": 1795275267259854000,
-    "word_count": 777
+    "size": 7739,
+    "mtime_ns": 1795290945961791400,
+    "indexed_at_ns": 1795292922696952100,
+    "word_count": 926
   },
   "scripts/render-pdf-examples.ps1": {
-    "size": 4386,
-    "mtime_ns": 1795273247966129100,
-    "indexed_at_ns": 1795275268247569300,
-    "word_count": 364,
+    "size": 4620,
+    "mtime_ns": 1795292231786047000,
+    "indexed_at_ns": 1795292924018299700,
+    "word_count": 378,
     "hashes": {
-      "scripts/render-pdf-examples.ps1": "8bb521b3ae5359e94f1ab6f91576f5824cb359fe7f155c893db8148d4f320def"
+      "scripts/render-pdf-examples.ps1": "4ff7fc469206e3c5564f00938330feaa51af08e494fed5d10713e4f4e472bee9"
     }
   },
   "scripts/test-pdf-commercial.ts": {
@@ -3504,10 +3483,10 @@
     "word_count": 2102
   },
   "server/services/pdfCommercial.ts": {
-    "size": 11280,
-    "mtime_ns": 1795287223397293100,
-    "indexed_at_ns": 1795287899321587400,
-    "word_count": 1326
+    "size": 13720,
+    "mtime_ns": 1795290950167226900,
+    "indexed_at_ns": 1795292922765962700,
+    "word_count": 1621
   },
   "specs/captures/documents/RAPPORT.md": {
     "size": 1869,
@@ -3606,12 +3585,12 @@
     }
   },
   "specs/documents-commerciaux.md": {
-    "size": 5348,
-    "mtime_ns": 1795287295336511400,
-    "indexed_at_ns": 1795287900247356200,
-    "word_count": 781,
+    "size": 5433,
+    "mtime_ns": 1795290072412640200,
+    "indexed_at_ns": 1795292924289909100,
+    "word_count": 791,
     "hashes": {
-      "specs/documents-commerciaux.md": "3a8e8b9496c836863e5b22fcb4b4f4d3ef0cc140db181e0279db59ccc986f00f"
+      "specs/documents-commerciaux.md": "63f347d20cb97ccbc41b31cdd2a2e1f2c5723f16acb877e0feed4465b8598a76"
     }
   },
   "src/branding.ts": {
@@ -3619,5 +3598,152 @@
     "mtime_ns": 1795287225026195400,
     "indexed_at_ns": 1795287899498029200,
     "word_count": 32
+  },
+  "scripts/generate-documents-pdf-examples.ts": {
+    "size": 4703,
+    "mtime_ns": 1795292398165225300,
+    "indexed_at_ns": 1795292922694245000,
+    "word_count": 493
+  },
+  "scripts/lib/image-fixtures.ts": {
+    "size": 4504,
+    "mtime_ns": 1795291560087804900,
+    "indexed_at_ns": 1795292922695909100,
+    "word_count": 696
+  },
+  "scripts/lib/pdf-buffer-images.ts": {
+    "size": 4213,
+    "mtime_ns": 1795291560088307200,
+    "indexed_at_ns": 1795292922698170400,
+    "word_count": 555
+  },
+  "scripts/lib/pdf-buffer-text.ts": {
+    "size": 5076,
+    "mtime_ns": 1795291177254886100,
+    "indexed_at_ns": 1795292922699230700,
+    "word_count": 490
+  },
+  "scripts/test-documents-pdf-api.ts": {
+    "size": 16995,
+    "mtime_ns": 1795291914379434400,
+    "indexed_at_ns": 1795292922715234300,
+    "word_count": 1558
+  },
+  "scripts/test-documents-pdf-ui.mjs": {
+    "size": 23864,
+    "mtime_ns": 1795292398166225600,
+    "indexed_at_ns": 1795292922716350600,
+    "word_count": 2278
+  },
+  "scripts/test-documents-pdf-unit.ts": {
+    "size": 15932,
+    "mtime_ns": 1795291560089305600,
+    "indexed_at_ns": 1795292922717362900,
+    "word_count": 1501
+  },
+  "server/services/documentsPdfSettings.ts": {
+    "size": 13966,
+    "mtime_ns": 1795291518107402500,
+    "indexed_at_ns": 1795292922764221800,
+    "word_count": 1969
+  },
+  "server/services/pdfPreview.ts": {
+    "size": 1630,
+    "mtime_ns": 1795290434675116000,
+    "indexed_at_ns": 1795292922768734100,
+    "word_count": 163
+  },
+  "server/services/pdfTextLayout.ts": {
+    "size": 2245,
+    "mtime_ns": 1795289994157845700,
+    "indexed_at_ns": 1795292922769672600,
+    "word_count": 265
+  },
+  "specs/captures/documents-pdf/README.md": {
+    "size": 2657,
+    "mtime_ns": 1795292530982869500,
+    "indexed_at_ns": 1795292924236496200,
+    "word_count": 322,
+    "hashes": {
+      "specs/captures/documents-pdf/README.md": "4a9fb4eaed45c272b71bb5ebeeb56884972435bfc51a79595d66c814339f5d9f"
+    }
+  },
+  "specs/captures/documents-pdf/devis-personnalise.pdf": {
+    "size": 31583,
+    "mtime_ns": 1795292413124055800,
+    "indexed_at_ns": 1795292922811194900,
+    "word_count": 0
+  },
+  "specs/captures/documents-pdf/exemples.json": {
+    "size": 1167,
+    "mtime_ns": 1795292413126555900,
+    "indexed_at_ns": 1795292924025434900,
+    "word_count": 88,
+    "hashes": {
+      "specs/captures/documents-pdf/exemples.json": "ca196daa16de09634f82df8e65ad67007e85de7bca71537f49dd80aeb11d487e"
+    }
+  },
+  "specs/captures/documents-pdf/facture-personnalisee.pdf": {
+    "size": 25043,
+    "mtime_ns": 1795292413040421300,
+    "indexed_at_ns": 1795292922814753400,
+    "word_count": 0
+  },
+  "specs/captures/documents-pdf/observations-ui.json": {
+    "size": 4728,
+    "mtime_ns": 1795292437263387100,
+    "indexed_at_ns": 1795292924026709100,
+    "word_count": 543,
+    "hashes": {
+      "specs/captures/documents-pdf/observations-ui.json": "50e2f4cac680ceea1e6ef3521761de06687102fd90e16941176c7c0ccd65e0e1"
+    }
+  },
+  "specs/captures/documents-pdf/rendus.json": {
+    "size": 454,
+    "mtime_ns": 1795292422414049800,
+    "indexed_at_ns": 1795292924027955800,
+    "word_count": 23,
+    "hashes": {
+      "specs/captures/documents-pdf/rendus.json": "04f2afcced4ac58e02acd07db7092767d46fdde7db8fb514d37b82e2d3490b4e"
+    }
+  },
+  "specs/documents-pdf-personnalisation.md": {
+    "size": 5650,
+    "mtime_ns": 1795291745700525500,
+    "indexed_at_ns": 1795292924291569700,
+    "word_count": 805,
+    "hashes": {
+      "specs/documents-pdf-personnalisation.md": "6e8a7763ba9455d861e64f6575f99c34d3c8ae5e32554092341dfd0677162ad7"
+    }
+  },
+  "src/services/parametres.ts": {
+    "size": 2084,
+    "mtime_ns": 1795290482811527400,
+    "indexed_at_ns": 1795292923117341800,
+    "word_count": 212
+  },
+  "src/utils/pdfLogo.ts": {
+    "size": 4109,
+    "mtime_ns": 1795290122039711100,
+    "indexed_at_ns": 1795292923122549500,
+    "word_count": 541
+  },
+  "src/views/parametres/DocumentsPdfForm.tsx": {
+    "size": 10830,
+    "mtime_ns": 1795290482812532200,
+    "indexed_at_ns": 1795292923143306200,
+    "word_count": 944
+  },
+  "src/views/parametres/DocumentsPdfPreview.tsx": {
+    "size": 1991,
+    "mtime_ns": 1795290319489213300,
+    "indexed_at_ns": 1795292923144419000,
+    "word_count": 191
+  },
+  "src/views/parametres/DocumentsPdfView.tsx": {
+    "size": 2292,
+    "mtime_ns": 1795290319497214200,
+    "indexed_at_ns": 1795292923145970500,
+    "word_count": 189
   }
 }

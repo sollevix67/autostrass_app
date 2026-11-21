@@ -763,3 +763,20 @@ Inspection du conducteur : formulaire mobile et résumé conformes, logo/en-têt
 pied des trois pages natifs lisibles ; deux SHA-256 d'exemples vérifiés.
 Diff et origine conformes, sans migration ni changement concurrent. Fonctionnalité,
 documentation et preuves prêtes pour commit ; Graphify actualisé depuis cette base.
+Personnalisation, documentation et preuves committées dans `66c6058`.
+Graphify 0.9.114 actualisé sans appel LLM ni rafraîchissement de compétence :
+**3 584 nœuds, 7 765 liens, 204 communautés**, 636 entrées du manifeste et quatre
+hyperedges. Guide de personnalisation, preuves et code nouveaux présents ;
+recalage final des repères, citations et exports avant livraison.
+Contrôle de provenance : référence `jpeg-js` identifiée comme paquet externe
+et import du sous-processus eval recadré sur `server/services/settingsStore.ts` ;
+aucun changement de topologie. Localisations et caches corrigés avant vérification
+des sources, empreintes et concordance HTML/JSON avec multiplicité.
+Audit final Graphify : **241 sources de code**, **625 empreintes AST** sur
+**636 entrées du manifeste**, vingt localisations de passation et **72 liens
+locaux des guides courants** vérifiés. Aucun fichier source manquant, doublon
+d'identifiant ou lien orphelin ; quatre hyperedges valides, HTML/JSON concordants
+avec multiplicité. Les nouveaux paramètres, codecs, générateurs, tests et guides
+sont présents. Limites SQL/CSS/PDF et absence d'appel LLM conservées.
+Livraison de `66c6058` et du commit Graphify/passation sur `origin/main` ;
+application locale relancée et disponible, paramètres réels conservés.
