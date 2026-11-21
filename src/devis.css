@@ -1,0 +1,45 @@
+.devis-toolbar, .devis-section-heading, .devis-line-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.devis-toolbar { margin-block-end: 16px; }
+.devis-toolbar .filter-bar { margin: 0; flex: 1; }
+.devis-secondary { display: block; margin-block-start: 3px; color: var(--text-muted); font-size: 12px; }
+.devis-number, .devis-amount { font-family: var(--font-mono); }
+.devis-number { text-align: start; overflow-wrap: anywhere; }
+.devis-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.devis-row-actions .action-btn { min-width: 34px; min-height: 34px; }
+.devis-convert-button { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+.devis-status { display: inline-block; padding: 5px 8px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; background: var(--color-surface-sunken); }
+.devis-status-envoye { color: var(--status-info); background: var(--status-info-bg); }
+.devis-status-converti { color: var(--status-success); background: var(--status-success-bg); }
+.devis-status-annule { color: var(--status-danger); background: var(--status-danger-bg); }
+.devis-besoins { margin-block-start: 24px; padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.devis-section-heading { margin-block-end: 8px; }
+.devis-section-heading h2, .devis-detail-header h3, .devis-notes h3 { margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.devis-besoins > .form-hint { margin-block-end: 16px; }
+.devis-line-heading { margin-block-end: 12px; }
+.devis-lines > .form-hint { margin-block-end: 14px; }
+.devis-line-description { margin-block-start: 10px; }
+.devis-totals { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 18px 28px; margin-block: 20px; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--status-info-bg); }
+.devis-totals > span, .devis-totals > strong { display: grid; gap: 5px; text-align: end; }
+.devis-totals b { color: var(--text-strong); font-family: var(--font-mono); font-size: 18px; }
+.devis-totals > strong b { font-size: 21px; }
+.devis-detail-header { display: grid; grid-template-columns: 1fr auto; gap: 24px; margin-block-end: 20px; }
+.devis-detail-header p { line-height: 1.7; overflow-wrap: anywhere; }
+.devis-detail-header dl { margin: 0; }
+.devis-detail-header dt { color: var(--text-muted); font-size: 12px; }
+.devis-detail-header dd { margin: 3px 0 12px; color: var(--text-strong); }
+.devis-notes p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.devis-share-recipient { line-height: 1.7; overflow-wrap: anywhere; }
+.devis-share-actions { justify-content: flex-start; }
+.devis-shortage-list { padding-inline-start: 20px; line-height: 1.8; overflow-wrap: anywhere; }
+
+@media (max-width: 768px) {
+  .devis-toolbar .filter-bar { flex-basis: 100%; }
+  .devis-toolbar > button { width: 100%; }
+  .devis-besoins { padding: 16px; }
+  .devis-row-actions .action-btn, .devis-convert-button { min-height: 44px; min-width: 44px; }
+  .devis-detail-header { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .devis-totals { justify-content: space-between; gap: 16px; padding: 14px; }
+  .devis-totals b { font-size: 16px; }
+  .devis-totals > strong b { font-size: 18px; }
+  .devis-share-actions > a { flex-grow: 1; text-align: center; }
+}

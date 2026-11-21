@@ -69,6 +69,16 @@ Dans **Administration → Utilisateurs et droits**, le crayon ouvre la
 [modification du compte](specs/utilisateurs.md). Un nouveau mot de passe est
 facultatif ; le laisser vide conserve le mot de passe actuel.
 
+## Devis
+
+Le module **Devis**, réservé aux administrateurs et caissiers, permet la création,
+la modification, le PDF et le partage email/WhatsApp, ainsi que la conversion
+en une commande client numérotée avec suivi des articles manquants.
+Appliquer la migration `0012`, puis redémarrer l'API avant utilisation.
+Voir le [guide Devis](specs/devis.md) pour les garanties, le partage de fichier
+et la liste d'approvisionnement. `npm run test:devis` utilise des bases jetables ;
+`npm run test:devis:ui` vérifie l'interface avec une API simulée après le build.
+
 ## Tests sur une base jetable
 
 ```bash

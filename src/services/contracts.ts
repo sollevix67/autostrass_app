@@ -204,6 +204,7 @@ export type ApiCashMovement = {
 /** Commande renvoyee par `GET /api/commandes`. */
 export type ApiCommande = {
   id: number
+  numero?: string | null
   clientId: number
   dateCommande: string
   articles: ApiLine[]
@@ -211,6 +212,82 @@ export type ApiCommande = {
   dateLivraisonPrevue: string | null
   createdAt: string
   updatedAt: string
+}
+
+/** Coordonnées figées à la création ou à la modification explicite du client du devis. */
+export type ApiDevisClientSnapshot = {
+  nom: string
+  prenom: string
+  email: string
+  telephone: string
+  adresse: string
+  ville: string
+  codePostal: string
+  numeroClient: string
+  siret: string | null
+  typeClient?: ApiClient['type']
+}
+
+export type ApiDevisLine = {
+  ligne: number
+  reference: string
+  designation: string
+  quantite: number
+  prixUnitaire: number
+  tauxTva: number
+  montant: number
+  montantTVA: number
+  montantTTC: number
+}
+
+export type ApiDevis = {
+  id: number
+  numero: string
+  clientId: number
+  clientSnapshot: ApiDevisClientSnapshot
+  dateDevis: string
+  dateValidite: string | null
+  notes: string | null
+  statut: 'brouillon' | 'envoyé' | 'converti' | 'annulé'
+  version: number
+  commandeId: number | null
+  articles: ApiDevisLine[]
+  totalHT: number
+  totalTVA: number
+  totalTTC: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type DevisInput = {
+  clientId: number
+  dateDevis: string
+  dateValidite?: string | null
+  notes?: string | null
+  articles: Array<{ reference: string; quantite: number; prixUnitaire: number }>
+}
+
+export type DevisUpdateInput = DevisInput & {
+  version: number
+  statut?: Exclude<ApiDevis['statut'], 'converti'>
+}
+
+export type ApiArticleACommander = {
+  id: number
+  commandeId: number
+  commandeNumero: string | null
+  clientId: number
+  reference: string
+  designation: string
+  quantite: number
+  fournisseurId: number | null
+  modeLivraison: string
+}
+
+export type ApiDevisConversion = {
+  devis: ApiDevis
+  commande: ApiCommande & { numero: string | null }
+  articlesACommander: ApiArticleACommander[]
 }
 
 /** Livraison renvoyee par `GET /api/livraisons`. */

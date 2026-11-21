@@ -31,6 +31,7 @@ import InventaireView from './views/InventaireView'
 import ReceptionsView from './views/ReceptionsView'
 import VentesComptoirView from './views/VentesComptoirView'
 import CaisseView from './views/CaisseView'
+import DevisView from './views/DevisView'
 import CommandesClientsView from './views/CommandesClientsView'
 import LivraisonsView from './views/LivraisonsView'
 import RetoursView from './views/RetoursView'
@@ -58,6 +59,7 @@ const navigation = [
   { label: 'Receptions', path: '/receptions', icon: 'download' },
   { label: 'Ventes comptoir', path: '/ventes-comptoir', icon: 'cart' },
   { label: 'Caisse', path: '/caisse', icon: 'clipboard' },
+  { label: 'Devis', path: '/devis', icon: 'clipboard' },
   { label: 'Commandes clients', path: '/commandes-clients', icon: 'layers' },
   { label: 'Livraisons', path: '/livraisons', icon: 'truck' },
   { label: 'Retours', path: '/retours', icon: 'rotate-ccw' },
@@ -152,7 +154,7 @@ function AppContent() {
         <div className="workspace-switcher"><span className="workspace-dot"></span><span><b>Depot principal</b><small>Ouvert aujourd hui</small></span><span className="chevron">⌄</span></div>
         <nav aria-label="Navigation principale">
           <p className="nav-label">ESPACE DE TRAVAIL</p>
-          {navigation.map((item) => (
+          {navigation.filter((item) => item.path !== '/devis' || user.role === 'admin' || user.role === 'caissier').map((item) => (
             <NavLink
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               to={item.path}
@@ -223,6 +225,7 @@ function AppContent() {
             <Route path="/receptions" element={<ReceptionsView />} />
             <Route path="/ventes-comptoir" element={<VentesComptoirView />} />
             <Route path="/caisse" element={<CaisseView />} />
+            <Route path="/devis" element={<DevisView />} />
             <Route path="/commandes-clients" element={<CommandesClientsView />} />
             <Route path="/livraisons" element={<LivraisonsView />} />
             <Route path="/retours" element={<RetoursView />} />

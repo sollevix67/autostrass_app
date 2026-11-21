@@ -129,6 +129,13 @@ export default function CommandesClientsView() {
 
   const columns: ColumnDef<ApiCommande>[] = [
     {
+      key: 'numero',
+      header: 'COMMANDE',
+      sortable: true,
+      sortValue: (row) => row.numero ?? '',
+      render: (row) => <b>{row.numero ?? `#${row.id}`}</b>,
+    },
+    {
       key: 'dateCommande',
       header: 'DATE',
       sortable: true,

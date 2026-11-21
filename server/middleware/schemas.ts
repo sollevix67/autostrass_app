@@ -84,6 +84,13 @@ const dateTimeISO = (label: string) =>
     .min(1, `${label} est requise.`)
     .refine((value) => !Number.isNaN(Date.parse(value)), `${label} invalide.`)
 
+const calendarDateISO = (label: string) => dateISO(label)
+  .regex(/^[1-9]\d{3}-\d{2}-\d{2}$/, `${label} doit être au format AAAA-MM-JJ.`)
+  .refine((value) => {
+    const parsed = new Date(`${value}T00:00:00Z`)
+    return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+  }, `${label} est invalide.`)
+
 /**
  * Reference de piece : jeu de caracteres strict, meme grammaire que le
  * formulaire de catalogue.
@@ -402,18 +409,18 @@ export const venteHeadPatchSchema = z.object({
 
 export const commandeBodySchema = z.object({
   clientId: z.number({ message: 'Le client est requis.' }).int().positive(),
-  dateCommande: dateISO('La date de commande'),
+  dateCommande: calendarDateISO('La date de commande'),
   statut: z.enum(ORDER_STATUSES, { message: 'Statut invalide.' }).optional(),
-  dateLivraisonPrevue: dateISO('La date de livraison prevue').optional().or(z.literal('')),
+  dateLivraisonPrevue: calendarDateISO('La date de livraison prevue').optional().or(z.literal('')),
   articles: documentLines,
 })
 
 export const commandeHeadPatchSchema = z.object({
   clientId: z.number().int().positive().optional(),
-  dateCommande: dateISO('La date de commande').optional(),
+  dateCommande: calendarDateISO('La date de commande').optional(),
   statut: z.enum(ORDER_STATUSES, { message: 'Statut invalide.' }).optional(),
-  dateLivraisonPrevue: dateISO('La date de livraison prevue').optional().or(z.literal('')),
-})
+  dateLivraisonPrevue: calendarDateISO('La date de livraison prevue').optional().or(z.literal('')),
+}).strict().refine((value) => Object.keys(value).length > 0, 'Renseignez au moins un champ de la commande.')
 
 // ---------------------------------------------------------------------------
 // Livraisons

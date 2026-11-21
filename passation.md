@@ -1,8 +1,10 @@
 # Passation — Autostrass
 
-État consolidé le **14 novembre 2026**, après correction des 16 constats de la
-revue initiale sur `397ddee` et reprise depuis `402e283` (`main`). Les preuves et
-procédures détaillées sont dans les guides liés. L'ancien journal reste disponible
+État consolidé le **21 novembre 2026**, après livraison du module Devis,
+conversion en commande et besoins d'approvisionnement courants. Migration 0012
+appliquée à la base locale après sauvegarde et comparaison des données.
+Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
+détaillées sont dans les guides liés. L'ancien journal reste disponible
 avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
 
 ## Prochaines priorités
@@ -11,11 +13,13 @@ Les **16 constats R01–R16** sont corrigés et testés ; détail, migration et 
 dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inventaire
 SHA-256 documentent l'ancien état et restent conservés.
 
-1. Migration **0011** appliquée et API redémarrée sur `autostrass_test` le 14
-   novembre après sauvegarde ; vérifier les autres installations. Rapprocher les anciennes ventes
+1. Migration **0012** appliquée et développement redémarré sur `autostrass_test`
+   le 21 novembre après sauvegarde ; vérifier les autres installations, dont 0011.
+   Rapprocher les anciennes ventes
    HT encaissées de leurs justificatifs, sans réécriture ni reset d'empreintes.
-2. Développer les **devis**, puis les **commandes fournisseurs** : numérotation,
-   conversion, attribution des réceptions et PDF manquants. [TODO.md](TODO.md)
+2. Développer les **commandes fournisseurs** : sélection fournisseur/mode,
+   horaires, commande et attribution des réceptions ; compléter les bons PDF.
+   Les Devis sont livrés : [guide](specs/devis.md). [TODO.md](TODO.md)
    reste le cahier des charges ; un CRUD ne couvre pas toutes ses exigences.
 3. Vérifier les migrations et le redémarrage API sur chaque installation ;
    réaliser les recettes certificat, Cloudflare Turnstile et PDA Zebra TC22.
@@ -52,9 +56,9 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 | Stock | Emplacements hiérarchiques, allocations, transferts, inventaire par référence et historique | Recette Zebra ; campagnes multi-articles et brouillons partagés |
 | Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
 | Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF ; migration 0011 locale appliquée | Autres installations ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
-| Devis | Non commencé | CRUD, numéro `yyyymmdd-D-xxxxxx`, PDF, email/WhatsApp, conversion |
+| Devis | Numéro D, création/édition, PDF, partage volontaire email/WhatsApp, conversion C atomique et besoins courants | Recette messageries/PDA sur appareils ciblés |
 | Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
-| Commandes clients | Création, lignes et statuts | Numérotation métier, bon PDF |
+| Commandes clients | Création, lignes, statuts, numéros C et TVA/client figés ; commandes issues d'un devis protégées | Bon PDF et approvisionnement des commandes directes |
 | Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut | Bons automatiques, numérotation, tournées et secteurs |
 | Retours | Création et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock, motifs et bons de refus |
 | Clients | CRUD, numéro personnalisable, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, documents/paiements, limites et tournées |
@@ -116,9 +120,21 @@ maximum lié au `DECIMAL(12,2)`, zéro autorisé. Lecture indisponible → ouver
 bloquée ; actualiser ne perd pas la saisie. Changement appliqué aux ouvertures
 suivantes, sans modifier les sessions existantes ni la clôture.
 Guides : [ouverture](specs/caisse-ouverture.md), [clôture](specs/caisse-cloture.md).
-Seule la facture `GET /api/ventes/:id/facture` existe. `pdfInvoice.ts` refuse les
-URL et limite les fichiers locaux aux quatre polices Roboto de pdfmake.
-Devis, bons de commande/livraison et avoirs PDF restent à créer.
+La facture `GET /api/ventes/:id/facture` et le devis `GET /api/devis/:id/pdf`
+existent. Les PDF refusent les URL et limitent les fichiers locaux aux quatre
+polices Roboto de pdfmake. Bons de commande/livraison et avoirs PDF restent à créer.
+
+**Devis et commandes.** Numéros D/C uniques, six lettres aléatoires `a-zA-Z`,
+collation binaire, numéro/date immuables. Client, désignation et TVA figés, prix
+HT explicitement éditables avant conversion ; nouvelle référence → catalogue.
+Validation complète et version optimiste ; devis annulé/expiré non convertible,
+converti figé. Conversion transactionnelle/idempotente, commande liée immuable
+hors statut/date de livraison ; audit et lignes atomiques. Aucun mouvement de
+stock ni fiscal. Besoins actuels des devis convertis calculés en lecture seule,
+demande des commandes actives par ordre id/ligne ; annulation/stock pris en compte.
+PDF téléchargé/partagé contrôlé par version ; partage natif de fichier ou repli
+téléchargement + email/WhatsApp, sans envoi automatique ni statut fictif.
+[Guide](specs/devis.md), [recette](specs/captures/devis/resultats.json).
 
 **Formulaires et utilisateurs.** Les formulaires métier et Administration sont
 migrés en dialogues natifs : focus contenu/restitué, Annuler/croix/Échap,
@@ -143,8 +159,12 @@ Turnstile vérifie jeton, hostname et action via Siteverify.
 
 ## Base et déploiement
 
-Journal Drizzle versionné **0000 à 0011** : `0007` référentiels, `0008` inventaire,
-`0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2.
+Journal Drizzle versionné **0000 à 0012** : `0007` référentiels, `0008` inventaire,
+`0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2,
+`0012` Devis/suivi approvisionnement et numéros/client/TVA commandes.
+`0012` appliquée le 21 novembre à `autostrass_test` MariaDB 10.11.14 : trois
+tables ajoutées, anciennes colonnes et 805 lignes des 36 tables historiques
+inchangées, treize migrations vérifiées ; données Devis de recette absentes.
 `0011` appliquée le 14 novembre à la base configurée **autostrass_test** (MariaDB
 10.11.14) après sauvegarde locale ; quatre colonnes et journal contrôlés, 55 ventes
 et lignes conservées, SHA-256 des 36 tables anciennes inchangés. Les douze
@@ -167,7 +187,8 @@ magasinier : dépôt ; caissier : caisse/documents. Ne jamais versionner secrets
 ## Vérifications et outils
 
 Commandes courantes : `npm ci`, `npm run dev`/`dev:api`, `build`, `lint`, `preview`,
-`test:errors`, `test:pdf`, `test:ventes`. `test:stock`, `test:inventaire`, `test:integration`,
+`test:errors`, `test:pdf`, `test:ventes`, `test:devis`, `test:devis:ui`.
+`test:stock`, `test:inventaire`, `test:integration`,
 `test:parametres` et `test:utilisateurs:ui` créent une base/API jetable via
 `TEST_DB_*` (compte pouvant créer/supprimer une base). Les appels directs
 `test:api`/`test:security` écrivent dans la base ciblée : uniquement sur base jetable.
@@ -415,3 +436,105 @@ aucune source manquante, aucun doublon ni lien orphelin. Localisations passation
 et README recalées, HTML régénéré ; limites CSS/16 SQL et absence d'appel LLM
 conservées. Passation et Graphify livrés dans un second commit avec la fonctionnalité
 sur `origin/main`.
+
+## Reprise du travail — 21 novembre 2026
+
+Passation et fichiers Graphify relus avant toute intervention. La dernière
+livraison documentée termine la relance automatique du développement ; le graphe
+courant comporte 3 221 nœuds et 6 633 liens. Contrôle de l'état Git et du cahier
+des charges vérifiés : `main` sur `3c0b6c5`, dernières livraisons terminées.
+Deux suppressions locales préexistantes (`.claude/CLAUDE.md` et
+`.omc/template-version.json`) sont conservées. Reprise du module **Devis** du
+TODO, répartie entre persistance/conversion, interface et PDF/tests ; le
+conducteur intègre les routes, prépare la recette isolée et livre le tout.
+Contrat fixé : numéro D immuable, client/désignation/TVA figés, prix HT éditables,
+version optimiste, statut brouillon/envoyé/annulé/converti, conversion atomique
+et idempotente en commande C. Le stock reste inchangé ; les pénuries alimentent
+une liste d'approvisionnement liée aux commandes actives. PDF et partage de
+fichier à l'initiative de l'utilisateur, avec repli explicite email/WhatsApp.
+Routes dédiées et validation API ajoutées : dates calendaires strictes, quantités
+entières, prix au centime, 200 lignes maximum et champs non autorisés refusés.
+Devis/PDF/conversion réservés aux admins et caissiers ; liste d'approvisionnement
+également consultable par les magasiniers. Premier PDF réel réussi par l'agent :
+instantané client, taux mixtes, pagination et accès aux ressources restreint.
+Contrats/service/hook/formulaire frontend en cours ; numérotation et protection
+des commandes directes intégrées à la persistance pour sérialiser les conversions.
+MariaDB portable 11.4.5 disponible pour une recette entièrement isolée.
+Instance de recette initialisée dans un nouveau dossier temporaire, port local
+33327, identifiants aléatoires hors dépôt. Le harnais créera des bases neuves et
+les supprimera après les tests ; aucune opération sur la base applicative.
+Persistance/migration 0012, PDF et scripts de recette métier implémentés par les
+agents. Routes adaptées au repository SQL et premières vérifications lancées
+sur l'instance jetable. Commandes `test:devis` et `test:devis:ui` ajoutées ; le
+conducteur relit immutabilité, concurrence, pénuries et instantanés avant livraison.
+Première recette SQL : droits/CSRF, création/relecture, taxes mixtes, historique
+NULL et validation atomique réussis. Le test de casse des numéros révèle la
+collation SQL par défaut ; correction explicite binaire D/C en cours. PDF réel
+et erreurs SQL réussis. Interface/contrats/service/hook livrés, compilation et
+lint ciblés conformes ; recette navigateur et revue indépendante métier en cours.
+Collation binaire D/C corrigée dans le schéma, la migration et son snapshot ;
+Drizzle ne détecte aucun écart supplémentaire. Build complet et lint global
+réussis (avertissement de bundle Vite préexistant). Nouvelle recette SQL lancée.
+Neuf groupes SQL passent, dont six conversions simultanées vers une seule
+commande. Une URL de test de modification des lignes est corrigée ; les patches
+d'entête de commande vides/inconnus sont désormais refusés proprement en 422.
+Revue indépendante : normalisation des anciennes références pour l'ordre des
+verrous, projection des besoins actualisée après stock/statuts, et contrôle de
+version au téléchargement/partage PDF ajoutés. Ce dernier évite de joindre un
+PDF récent à un message destiné à l'ancien client. Recettes ciblées en cours.
+Guide Devis et README rédigés : contrats, partage volontaire, migration additive,
+tests, protection des commandes et suite du chantier fournisseurs explicités.
+Correction métier terminée : la liste d'approvisionnement projette les besoins
+courants, y compris ceux initialement couverts, et reste en lecture seule.
+Anciennes références normalisées avant verrouillage, PDF contrôlé par version
+et type réel, doublons/casse du formulaire corrigés. Compilation serveur/frontend
+et lint ciblés conformes ; recettes complémentaires de concurrence préparées.
+Recettes existantes Stock/Inventaire/API/Sécurité et Ventes/Caisse lancées sur
+l'instance isolée, avec nouveau build et PDF facture. Les attentes de comptage
+des tests Devis sont adaptées au suivi interne des lignes initialement couvertes.
+Régressions existantes réussies : **13 transferts**, **128 API**, **59 sécurité**,
+**14 inventaires**, **neuf groupes fiscaux** et **11 groupes SQL Ventes/Caisse**.
+PDF facture et nouveau build conformes. Suite Devis complète relancée après
+corrections des fixtures et ajout des scénarios de besoins dynamiques.
+PDF Devis et **15 groupes métier Devis** réussis. Dernières attentes SQL de suivi
+interne en cours d'alignement dans la suite de concurrence ; recette Chromium
+lancée. Dates des commandes directes validées strictement pour éviter une erreur
+SQL avec un numéro construit sur une date impossible. Le périmètre de la liste
+est explicité : devis convertis, avec demande des commandes directes déduite.
+Recette Chromium réussie : **68 contrôles**, API simulée, thèmes et mobile,
+saisie/focus conservés, doubles envois bloqués, PDF périmé/invalide refusé,
+partage natif simulé et repli email/WhatsApp sans envoi réel. Captures et rapport
+dans `specs/captures/devis/`. Un locator Actualiser ambigu de recette a été
+corrigé ; aucun défaut applicatif associé. La base locale vérifiée en lecture
+reste `autostrass_test` MariaDB 10.11.14, migration 0011 à sa dernière entrée ;
+API et Vite actuels repérés pour préparer la migration 0012 après sauvegarde.
+Les **11 groupes de concurrence/audit** sont réussis. Captures finales françaises
+et état mobile normal actualisés ; contrôle complémentaire des dates directes
+préparé. Procédure locale de sauvegarde/migration/empreintes rédigée hors Git,
+cible bornée à `autostrass_test` et journal historique vérifié avant application.
+Développement local arrêté par `predev`. Premier dump interrompu par le client
+MariaDB 11.4 qui exige TLS par défaut alors que cette connexion locale utilise
+le transport de l'API sans TLS ; aucune migration appliquée. Dump aligné sur la
+connexion existante avant reprise de la procédure, identifiants temporaires effacés.
+Validation finale : **12 groupes de concurrence/audit**, **15 groupes Devis**,
+PDF réel, **74 contrôles Chromium**, dix captures, build/lint conformes.
+Migration 0012 appliquée à `autostrass_test` après dump SQL vérifié par SHA-256 ;
+anciennes colonnes et données comparées avant/après, aucune réécriture historique.
+Trois tables ajoutées, colonnes anciennes commandes toujours NULL, numéros D/C
+en collation binaire et nouvelle entrée Drizzle vérifiés. Relance API/Vite en cours.
+**36 tables historiques et 805 lignes conservées**, treize migrations dans le
+journal. Dump restaurable hors Git :
+`%LOCALAPPDATA%/Autostrass/backups/migrations/0012-2026-11-21T11-31-32.311Z-ecf554bc/` ;
+SHA-256 `16e2110c1cc1cb83f6c45a8e32dbd3de8fa25e3c00cc05dbe41970753c6ab76a`.
+Développement relancé en fenêtre masquée ; health API et proxy Vite connectés,
+route Devis anonyme refusée en 401. Aucune donnée de devis ou de recette créée
+sur la base locale. Contrôle final HTTPS, nettoyage de l'instance jetable et
+actualisation Graphify avant commit/push.
+Contrôle HTTPS repris après correction du script de recette (socket lu avant
+la fin de réponse) ; aucun défaut applicatif ni modification de réglage TLS.
+HTTPS health connecté, certificat vérifié (TLS 1.3). Toutes les bases jetables
+supprimées ; MariaDB portable arrêtée proprement et identifiants temporaires
+effacés. Développement local conservé sur API HTTP 3001/HTTPS 3443 et Vite 5173.
+Suppressions locales préexistantes commitées séparément dans `f1b7ace`.
+Fonctionnalité, documentation et preuves prêtes pour le commit Devis ; Graphify
+sera actualisé depuis cette base applicative.

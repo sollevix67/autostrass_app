@@ -18,6 +18,7 @@
  */
 
 import { relations, sql } from 'drizzle-orm'
+import { fournisseurs, DELIVERY_MODES } from './schema_step2.js'
 import {
   mysqlTable,
   varchar,
@@ -32,6 +33,7 @@ import {
   index,
   uniqueIndex,
   json,
+  customType,
 } from 'drizzle-orm/mysql-core'
 
 /**
@@ -56,6 +58,11 @@ const updatedAt = (name = 'updated_at') =>
   timestamp(name, { mode: 'date' })
     .default(sql`CURRENT_TIMESTAMP`)
     .onUpdateNow()
+
+/** Drizzle n'expose pas COLLATE sur varchar ; les 52 lettres restent distinctes. */
+const documentNumber = customType<{ data: string; driverData: string }>({
+  dataType: () => 'varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin',
+})
 
 // ---------------------------------------------------------------------------
 // Utilisateurs
@@ -504,6 +511,9 @@ export const commandes = mysqlTable(
   'commandes',
   {
     id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+    /** NULL sur l'historique : les anciens identifiants ne sont pas réécrits. */
+    numero: documentNumber('numero'),
+    client_snapshot: json('client_snapshot'),
     client_id: int('client_id', { unsigned: true })
       .notNull()
       .references(() => clients.id, { onDelete: 'restrict' }),
@@ -514,6 +524,7 @@ export const commandes = mysqlTable(
     updatedAt: updatedAt(),
   },
   (table) => [
+    uniqueIndex('uq_commandes_numero').on(table.numero),
     index('idx_commandes_client').on(table.client_id),
     index('idx_commandes_statut').on(table.statut),
   ],
@@ -530,9 +541,71 @@ export const commandeLines = mysqlTable(
     designation: varchar('designation', { length: 255 }).notNull(),
     quantite: int('quantite').notNull(),
     prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull().default('0.00'),
+    /** Taux figé pour les commandes issues d'un devis, NULL sur l'historique. */
+    taux_tva: decimal('taux_tva', { precision: 5, scale: 2 }),
   },
   (table) => [primaryKey({ columns: [table.commande_id, table.ligne] })],
 )
+
+// ---------------------------------------------------------------------------
+// Devis et besoins d'approvisionnement
+// ---------------------------------------------------------------------------
+
+export const DEVIS_STATUSES = ['brouillon', 'envoyé', 'converti', 'annulé'] as const
+export type DevisStatus = (typeof DEVIS_STATUSES)[number]
+
+export const devis = mysqlTable('devis', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  numero: documentNumber('numero').notNull(),
+  client_id: int('client_id', { unsigned: true }).notNull().references(() => clients.id, { onDelete: 'restrict' }),
+  client_snapshot: json('client_snapshot').notNull(),
+  utilisateur_id: int('utilisateur_id', { unsigned: true }).notNull().references(() => users.id, { onDelete: 'restrict' }),
+  date_devis: date('date_devis', { mode: 'string' }).notNull(),
+  date_validite: date('date_validite', { mode: 'string' }),
+  notes: text('notes'),
+  statut: varchar('statut', { length: 16, enum: DEVIS_STATUSES }).notNull().default('brouillon'),
+  version: int('version', { unsigned: true }).notNull().default(1),
+  commande_id: int('commande_id', { unsigned: true }).references(() => commandes.id, { onDelete: 'restrict' }),
+  total_ht: decimal('total_ht', { precision: 12, scale: 2 }).notNull(),
+  total_tva: decimal('total_tva', { precision: 12, scale: 2 }).notNull(),
+  total_ttc: decimal('total_ttc', { precision: 12, scale: 2 }).notNull(),
+  createdAt: createdAt().notNull(),
+  updatedAt: updatedAt().notNull(),
+}, (table) => [
+  uniqueIndex('uq_devis_numero').on(table.numero),
+  uniqueIndex('uq_devis_commande').on(table.commande_id),
+  index('idx_devis_client').on(table.client_id),
+  index('idx_devis_statut').on(table.statut),
+])
+
+export const devisLines = mysqlTable('devis_lines', {
+  devis_id: int('devis_id', { unsigned: true }).notNull().references(() => devis.id, { onDelete: 'cascade' }),
+  ligne: int('ligne').notNull(),
+  reference: varchar('reference', { length: 64 }).notNull(),
+  designation: varchar('designation', { length: 255 }).notNull(),
+  quantite: int('quantite').notNull(),
+  prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull(),
+  taux_tva: decimal('taux_tva', { precision: 5, scale: 2 }).notNull(),
+  montant: decimal('montant', { precision: 12, scale: 2 }).notNull(),
+  montant_tva: decimal('montant_tva', { precision: 12, scale: 2 }).notNull(),
+  montant_ttc: decimal('montant_ttc', { precision: 12, scale: 2 }).notNull(),
+}, (table) => [primaryKey({ columns: [table.devis_id, table.ligne] })])
+
+/** Suivi de toutes les lignes converties ; la quantité stockée est le manque initial. */
+export const articlesACommander = mysqlTable('articles_a_commander', {
+  id: int('id', { unsigned: true }).primaryKey().autoincrement(),
+  commande_id: int('commande_id', { unsigned: true }).notNull().references(() => commandes.id, { onDelete: 'restrict' }),
+  ligne: int('ligne').notNull(),
+  reference: varchar('reference', { length: 64 }).notNull(),
+  designation: varchar('designation', { length: 255 }).notNull(),
+  quantite: int('quantite').notNull(),
+  fournisseur_id: int('fournisseur_id', { unsigned: true }).references(() => fournisseurs.id, { onDelete: 'restrict' }),
+  mode_livraison: varchar('mode_livraison', { length: 16, enum: DELIVERY_MODES }).notNull().default('livraison'),
+  createdAt: createdAt().notNull(),
+}, (table) => [
+  uniqueIndex('uq_articles_a_commander_ligne').on(table.commande_id, table.ligne),
+  index('idx_articles_a_commander_reference').on(table.reference),
+])
 
 // ---------------------------------------------------------------------------
 // Livraisons

@@ -140,7 +140,7 @@ async function parseBody(response: Response): Promise<unknown> {
   }
 }
 
-async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
+async function request<T>(method: string, path: string, options: RequestOptions = {}, responseKind: 'json' | 'blob' = 'json'): Promise<T> {
   const { signal, query, headers, ...rest } = options
   let response: Response
 
@@ -163,7 +163,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     if (error instanceof DOMException && error.name === 'AbortError') throw error
     throw new ApiError(0, 'NETWORK_ERROR', "Impossible de joindre le serveur.")
   }
-  const body = await parseBody(response)
+  const body = response.ok && responseKind === 'blob' ? await response.blob() : await parseBody(response)
 
   if (!response.ok) {
     const payload = (body ?? {}) as { error?: string; message?: string; details?: unknown }
@@ -180,6 +180,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 
 export const api = {
   get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
+  getBlob: (path: string, options?: RequestOptions) => request<Blob>('GET', path, options, 'blob'),
   post: <T>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>('POST', path, { ...options, body: body === undefined ? undefined : JSON.stringify(body) }),
   put: <T>(path: string, body?: unknown, options?: RequestOptions) =>

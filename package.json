@@ -21,6 +21,8 @@
     "test:errors": "tsx scripts/test-error-mapping.ts",
     "test:dev": "node scripts/test-dev-processes.mjs",
     "test:pdf": "tsx scripts/test-pdf-invoice.ts",
+    "test:devis": "tsx scripts/test-devis-pdf.ts && tsx scripts/test-devis.ts && tsx scripts/test-devis-concurrence.ts",
+    "test:devis:ui": "node scripts/test-devis-ui.mjs",
     "test:ventes": "tsx scripts/test-vente-validation.ts && tsx scripts/test-fiscal-integrity.ts && tsx scripts/test-ventes-caisse.ts",
     "test:parametres": "tsx scripts/test-parametres-unit.ts && tsx scripts/test-parametres.ts --all",
     "test:stock": "tsx scripts/test-stock-transfers.ts",

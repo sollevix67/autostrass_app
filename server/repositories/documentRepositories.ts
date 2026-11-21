@@ -12,12 +12,16 @@
  * des lignes, ce qui empeche un total incoherent avec le detail.
  */
 
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { MySql2Database } from 'drizzle-orm/mysql2'
 import type { AnyMySqlColumn, AnyMySqlTable } from 'drizzle-orm/mysql-core'
 import * as schema from '../db/schema.js'
 import { toNumber, toDateString, toIsoString } from './mapping.js'
 import { toRepositoryError, type RepositoryError } from './simpleRepositories.js'
+import { RepositoryError as BusinessError } from './simpleRepositories.js'
+import { generateDocumentNumber } from '../services/documentNumbers.js'
+import { venteTotals } from '../../src/utils/venteTotals.js'
+import type { DevisClientSnapshot } from './devisRepository.js'
 
 type Tables = typeof schema
 
@@ -101,10 +105,10 @@ function toLine(input: LineInput, index: number): DocumentLine {
 
 export class DocumentRepository<TRow extends { id: number }> {
   constructor(
-    private readonly db: MySql2Database<Tables>,
+    protected readonly db: MySql2Database<Tables>,
     private readonly headTable: AnyMySqlTable,
     private readonly headId: AnyMySqlColumn,
-    private readonly mapping: DocumentMapping<TRow>,
+    protected readonly mapping: DocumentMapping<TRow>,
   ) {}
 
   async list(): Promise<TRow[]> {
@@ -339,33 +343,48 @@ export function createVenteRepository(db: MySql2Database<Tables>): DocumentRepos
 
 export type CommandeRow = {
   id: number
+  numero: string | null
   clientId: number
+  clientSnapshot: DevisClientSnapshot | null
   dateCommande: string
   articles: DocumentLine[]
   statut: schema.OrderStatus
   dateLivraisonPrevue: string | null
+  totalHT: number
+  totalTVA: number | null
+  totalTTC: number | null
   createdAt: string
   updatedAt: string
 }
 
 export function createCommandeRepository(db: MySql2Database<Tables>): DocumentRepository<CommandeRow> {
-  return new DocumentRepository<CommandeRow>(db, schema.commandes, schema.commandes.id, {
+  return new CommandeRepository(db, schema.commandes, schema.commandes.id, {
     linesTable: schema.commandeLines,
     lineFk: schema.commandeLines.commande_id,
     mapLine: baseLine,
-    mapRow: (raw, lines) => ({
-      id: Number(raw.id),
-      clientId: Number(raw.client_id ?? 0),
-      dateCommande: toDateString(raw.date_commande as Date | null),
-      articles: lines,
-      statut: (raw.statut as schema.OrderStatus) ?? 'en attente',
-      dateLivraisonPrevue:
-        raw.date_livraison_prevue === null || raw.date_livraison_prevue === undefined
-          ? null
-          : toDateString(raw.date_livraison_prevue as Date | null),
-      createdAt: toIsoString(raw.created_at as Date | null),
-      updatedAt: toIsoString(raw.updated_at as Date | null),
-    }),
+    mapRow: (raw, lines) => {
+      const taxes = lines.every((line) => typeof line.tauxTva === 'number')
+        ? venteTotals(lines as Array<DocumentLine & { tauxTva: number }>) : null
+      return {
+        id: Number(raw.id),
+        numero: raw.numero == null ? null : String(raw.numero),
+        clientId: Number(raw.client_id ?? 0),
+        clientSnapshot: raw.client_snapshot == null ? null
+          : (typeof raw.client_snapshot === 'string' ? JSON.parse(raw.client_snapshot) : raw.client_snapshot) as DevisClientSnapshot,
+        dateCommande: toDateString(raw.date_commande as Date | null),
+        articles: lines,
+        statut: (raw.statut as schema.OrderStatus) ?? 'en attente',
+        dateLivraisonPrevue:
+          raw.date_livraison_prevue === null || raw.date_livraison_prevue === undefined
+            ? null
+            : toDateString(raw.date_livraison_prevue as Date | null),
+        totalHT: taxes?.totalHT ?? totalOf(lines),
+        totalTVA: taxes?.totalTVA ?? null,
+        totalTTC: taxes?.totalTTC ?? null,
+        createdAt: toIsoString(raw.created_at as Date | null),
+        updatedAt: toIsoString(raw.updated_at as Date | null),
+      }
+    },
     insertLines: async (tx, lines, enteteId) => {
       if (lines.length === 0) return
       await tx.insert(schema.commandeLines).values(
@@ -376,10 +395,154 @@ export function createCommandeRepository(db: MySql2Database<Tables>): DocumentRe
           designation: line.designation,
           quantite: line.quantite,
           prix_unitaire: line.prixUnitaire.toFixed(2),
+          taux_tva: line.tauxTva?.toFixed(2) ?? null,
         })),
       )
     },
   })
+}
+
+/** Les commandes et les conversions sérialisent la demande sur chaque article. */
+class CommandeRepository extends DocumentRepository<CommandeRow> {
+  override async create(
+    head: Record<string, unknown>,
+    lines: LineInput[],
+    hooks?: {
+      before?: (tx: Tx) => Promise<Record<string, unknown>>
+      after?: (tx: Tx, headId: number) => Promise<void>
+    },
+  ): Promise<CommandeRow> {
+    try {
+      return await this.db.transaction(async (tx) => {
+        const resolved = await this.lockReferences(tx, lines)
+        const extra = hooks?.before ? await hooks.before(tx) : {}
+        const snapshot = await this.clientSnapshot(tx, Number(head.client_id))
+        let id = 0
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          try {
+            const [result] = await tx.insert(schema.commandes).values({
+              ...head, ...extra, numero: generateDocumentNumber('C', String(head.date_commande)),
+              client_snapshot: snapshot,
+            } as typeof schema.commandes.$inferInsert)
+            id = result.insertId
+            break
+          } catch (error) {
+            let cause = error as { code?: string; cause?: unknown }
+            for (let depth = 0; depth < 5 && cause.cause; depth += 1) cause = cause.cause as typeof cause
+            if (cause.code !== 'ER_DUP_ENTRY') throw error
+          }
+        }
+        if (!id) throw new BusinessError(503, 'DOCUMENT_NUMBER_UNAVAILABLE', 'Impossible de générer un numéro unique. Réessayez.')
+        await this.mapping.insertLines(tx, resolved, id)
+        if (hooks?.after) await hooks.after(tx, id)
+        const [created] = await tx.select().from(schema.commandes).where(eq(schema.commandes.id, id))
+        return this.mapping.mapRow(created, resolved.map(toLine))
+      }, { isolationLevel: 'read committed' })
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
+  }
+
+  override async replaceLines(id: number, lines: LineInput[]): Promise<CommandeRow | null> {
+    try {
+      return await this.db.transaction(async (tx) => {
+        const [head] = await tx.select().from(schema.commandes).where(eq(schema.commandes.id, id)).for('update')
+        if (!head) return null
+        await this.requireMutable(tx, id)
+        const old = await tx.select().from(schema.commandeLines).where(eq(schema.commandeLines.commande_id, id))
+        const resolved = await this.lockReferences(tx, lines, old.map((line) => line.reference))
+        await tx.delete(schema.commandeLines).where(eq(schema.commandeLines.commande_id, id))
+        await this.mapping.insertLines(tx, resolved, id)
+        return this.mapping.mapRow(head, resolved.map(toLine))
+      }, { isolationLevel: 'read committed' })
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
+  }
+
+  override async updateHead(id: number, patch: Record<string, unknown>): Promise<CommandeRow | null> {
+    try {
+      return await this.db.transaction(async (tx) => {
+        const [head] = await tx.select().from(schema.commandes).where(eq(schema.commandes.id, id)).for('update')
+        if (!head) return null
+        const [quote] = await tx.select({ id: schema.devis.id }).from(schema.devis).where(eq(schema.devis.commande_id, id))
+        if (quote && ['client_id', 'date_commande', 'numero'].some((key) => patch[key] !== undefined && patch[key] !== (head as Record<string, unknown>)[key])) {
+          throw new BusinessError(409, 'COMMANDE_FROM_DEVIS', 'Cette commande provient d’un devis : client, date et lignes sont figés.')
+        }
+        if (head.numero && (patch.numero !== undefined && patch.numero !== head.numero
+          || patch.date_commande !== undefined && String(patch.date_commande) !== head.date_commande)) {
+          throw new BusinessError(409, 'DOCUMENT_NUMBER_FROZEN', 'La date et le numéro de cette commande ne peuvent pas être modifiés.')
+        }
+        const lines = await tx.select().from(schema.commandeLines).where(eq(schema.commandeLines.commande_id, id))
+        await this.lockReferences(tx, [], lines.map((line) => line.reference))
+        const values: Record<string, unknown> = { ...patch }
+        if (patch.client_id !== undefined && Number(patch.client_id) !== head.client_id) {
+          values.client_snapshot = await this.clientSnapshot(tx, Number(patch.client_id))
+        }
+        await tx.update(schema.commandes).set(values).where(eq(schema.commandes.id, id))
+        const [updated] = await tx.select().from(schema.commandes).where(eq(schema.commandes.id, id))
+        return this.mapping.mapRow(updated, lines.map(baseLine))
+      }, { isolationLevel: 'read committed' })
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
+  }
+
+  override async remove(id: number): Promise<boolean> {
+    try {
+      return await this.db.transaction(async (tx) => {
+        const [head] = await tx.select().from(schema.commandes).where(eq(schema.commandes.id, id)).for('update')
+        if (!head) return false
+        await this.requireMutable(tx, id)
+        const lines = await tx.select().from(schema.commandeLines).where(eq(schema.commandeLines.commande_id, id))
+        await this.lockReferences(tx, [], lines.map((line) => line.reference))
+        const [result] = await tx.delete(schema.commandes).where(eq(schema.commandes.id, id))
+        return result.affectedRows > 0
+      }, { isolationLevel: 'read committed' })
+    } catch (error) {
+      throw toRepositoryError(error)
+    }
+  }
+
+  private async requireMutable(tx: Tx, id: number) {
+    const [quote] = await tx.select({ id: schema.devis.id }).from(schema.devis).where(eq(schema.devis.commande_id, id))
+    if (quote) throw new BusinessError(409, 'COMMANDE_FROM_DEVIS', 'Cette commande provient d’un devis : ses lignes et son existence sont figées.')
+  }
+
+  private async lockReferences(tx: Tx, inputs: LineInput[], old: string[] = []): Promise<LineInput[]> {
+    const references = [...new Set([...old.map((reference) => reference.toUpperCase()), ...inputs.map((line) => line.reference.toUpperCase())])].sort()
+    const catalogue = new Map<string, { designation: string; tauxTva: number }>()
+    for (const reference of references) {
+      const [rows] = await tx.execute(sql`SELECT id, designation, tva_id FROM articles WHERE reference = ${reference} FOR UPDATE`)
+      const row = (rows as unknown as Array<{ id: number; designation: string; tva_id: number }>)[0]
+      if (!row) {
+        if (inputs.some((line) => line.reference.toUpperCase() === reference)) {
+          throw new BusinessError(422, 'UNKNOWN_REFERENCE', `Référence inconnue : ${reference}.`)
+        }
+        continue
+      }
+      await tx.execute(sql`SELECT id FROM stock_balances WHERE reference_id = ${row.id} FOR UPDATE`)
+      const [taxes] = await tx.execute(sql`SELECT taux FROM tva WHERE id = ${row.tva_id}`)
+      const tax = (taxes as unknown as Array<{ taux: string }>)[0]
+      if (!tax) throw new BusinessError(422, 'UNKNOWN_REFERENCE', `TVA inconnue pour la référence ${reference}.`)
+      catalogue.set(reference, { designation: row.designation, tauxTva: Number(tax.taux) })
+    }
+    const resolved = inputs.map((input) => ({ ...input, reference: input.reference.toUpperCase(), ...catalogue.get(input.reference.toUpperCase())! }))
+    try { venteTotals(resolved) } catch {
+      throw new BusinessError(422, 'INVALID_AMOUNT', 'Quantité, prix ou montant de la commande invalide.')
+    }
+    return resolved
+  }
+
+  private async clientSnapshot(tx: Tx, clientId: number): Promise<DevisClientSnapshot> {
+    const [client] = await tx.select().from(schema.clients).where(eq(schema.clients.id, clientId))
+    if (!client) throw new BusinessError(422, 'UNKNOWN_REFERENCE', 'Client inconnu.')
+    return {
+      nom: client.nom, prenom: client.prenom, email: client.email, telephone: client.telephone,
+      adresse: client.adresse, ville: client.ville, codePostal: client.code_postal,
+      numeroClient: client.numero_client, siret: client.siret, typeClient: client.type,
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
