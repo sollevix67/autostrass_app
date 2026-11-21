@@ -622,3 +622,12 @@ Liens/documentation et diff conformes, code et preuves prêts pour commit/push.
 Dernière fixture visuelle de notes complétée par des lignes entières et un
 marqueur final, afin d'éviter une fin de mot artificiellement tronquée dans
 l'exemple ; les régressions de pagination exactes restent distinctes et vertes.
+Gabarit partagé, adaptateurs, tests et exemples committés dans `faea3f2`
+(70 fichiers). Actualisation Graphify depuis ce code et ses guides, contrôle
+des empreintes/citations/export et livraison sur `origin/main`.
+Graphify actualisé depuis `faea3f2` : **3 433 nœuds, 7 290 liens,
+203 communautés**, quatre hyperedges. **226 sources de code et 602 entrées
+du manifeste** vérifiées ; aucune source manquante, doublon ou extrémité orpheline.
+Les dix PDF liés au rapport existent ; HTML/JSON concordent avec multiplicité.
+Guides et localisations recalés, sans appel API LLM ; extraction PDF indisponible,
+17 SQL sans parseur et huit CSS non indexés. Livraison complète sur `origin/main`.
