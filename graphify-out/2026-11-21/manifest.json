@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1795259627.9034011,
-    "seen": 1795261301.4201148,
-    "ast_hash": "0f0418208fd4990ce208944b5d36b7fb",
+    "mtime": 1795273356.209402,
+    "seen": 1795275275.9795501,
+    "ast_hash": "4369e7d1efff5f11d7b9d4daefdb425f",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795269997.666314,
-    "seen": 1795270371.7863545,
-    "ast_hash": "10d40793387fb405f3ab287e1f6b2a82",
+    "mtime": 1795276653.2020726,
+    "seen": 1795276654.5169652,
+    "ast_hash": "142b2b7402acbb10419ffd5b66c2aae2",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -1446,9 +1446,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfInvoice.ts": {
-    "mtime": 1794658884.5425923,
-    "seen": 1794660684.005557,
-    "ast_hash": "52d06e8f265340424dbe055d7e38d87f",
+    "mtime": 1795273100.9000304,
+    "seen": 1795275275.996077,
+    "ast_hash": "6553f24e5e864207b251cc8ee1096e30",
     "semantic_hash": ""
   },
   "server/types/pdfmake.d.ts": {
@@ -2232,9 +2232,9 @@
     "semantic_hash": ""
   },
   "scripts/test-pdf-invoice.ts": {
-    "mtime": 1794660059.9857266,
-    "seen": 1794660683.999977,
-    "ast_hash": "67ae94b70043d66f21498db11e014db6",
+    "mtime": 1795272816.9243114,
+    "seen": 1795275275.9864116,
+    "ast_hash": "a535097796ec09e5b93c03f002ea85f3",
     "semantic_hash": ""
   },
   "scripts/test-french-validation-ui.mjs": {
@@ -3060,9 +3060,9 @@
     "semantic_hash": ""
   },
   "scripts/test-devis-pdf.ts": {
-    "mtime": 1795259234.2539015,
-    "seen": 1795261301.4220932,
-    "ast_hash": "7c7ec3dda5e6995a8c01b5fd19b958e1",
+    "mtime": 1795272816.9243114,
+    "seen": 1795275275.9835062,
+    "ast_hash": "1560790095485b5cbbad78c36536e80f",
     "semantic_hash": ""
   },
   "scripts/test-devis-ui.mjs": {
@@ -3102,9 +3102,9 @@
     "semantic_hash": ""
   },
   "server/services/pdfDevis.ts": {
-    "mtime": 1795259256.7433286,
-    "seen": 1795261301.428316,
-    "ast_hash": "6d541c4ef52075993d0176abb6fc6e61",
+    "mtime": 1795273100.9010346,
+    "seen": 1795275275.9960742,
+    "ast_hash": "4ab4d984a4657a862620984373a20054",
     "semantic_hash": ""
   },
   "specs/captures/devis/resultats.json": {
@@ -3162,9 +3162,9 @@
     "semantic_hash": ""
   },
   "specs/devis.md": {
-    "mtime": 1795261983.4287186,
-    "seen": 1795262365.870685,
-    "ast_hash": "7766270b1fd375df97e0d9cde1b56668",
+    "mtime": 1795273356.208896,
+    "seen": 1795275276.0386984,
+    "ast_hash": "40ef76374f479472cf600643c2be42fc",
     "semantic_hash": ""
   },
   "specs/captures/devis/conversion-desktop.png": {
@@ -3227,16 +3227,388 @@
     "ast_hash": "9b503679d7327fe954b80a0f4f500ea1",
     "semantic_hash": ""
   },
+  "specs/bon-livraison-modele.md": {
+    "mtime": 1795273356.2078922,
+    "seen": 1795275276.0377333,
+    "ast_hash": "ca4da04b96e2d30a1a21c20db0b378cb",
+    "semantic_hash": ""
+  },
+  "scripts/lib/pdf-assertions.ts": {
+    "mtime": 1795272706.969689,
+    "seen": 1795275275.9805408,
+    "ast_hash": "6ee2082b71a866e6c430398bb265d31b",
+    "semantic_hash": ""
+  },
+  "scripts/render-pdf-examples.ps1": {
+    "mtime": 1795273247.966129,
+    "seen": 1795275275.9811075,
+    "ast_hash": "61241e66f8bba9611e56854f0505052c",
+    "semantic_hash": ""
+  },
+  "scripts/test-pdf-commercial.ts": {
+    "mtime": 1795274632.2612095,
+    "seen": 1795275275.9864078,
+    "ast_hash": "010262d759ba813dc38410e2b2f1c015",
+    "semantic_hash": ""
+  },
+  "server/services/pdfCommercial.ts": {
+    "mtime": 1795273873.079996,
+    "seen": 1795275275.9960706,
+    "ast_hash": "35fd1b7508a2761c637e80faf7687e47",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/rendus.json": {
+    "mtime": 1795274638.8109596,
+    "seen": 1795275275.9974039,
+    "ast_hash": "c66ce8650c8f8f05b6c768c0174cabda",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/resultats.json": {
+    "mtime": 1795274634.3681352,
+    "seen": 1795275275.997407,
+    "ast_hash": "e23f7444e0f43a4976c7d4becbc67f27",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/RAPPORT.md": {
+    "mtime": 1795274634.3686411,
+    "seen": 1795275276.0382006,
+    "ast_hash": "b93b165befa99b3d9a1840b2c43a3b58",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/README.md": {
+    "mtime": 1795274634.3686411,
+    "seen": 1795275276.0382032,
+    "ast_hash": "0356977fee0e847d96c2ed428e4c3f91",
+    "semantic_hash": ""
+  },
+  "specs/documents-commerciaux.md": {
+    "mtime": 1795273356.2058706,
+    "seen": 1795275276.0387003,
+    "ast_hash": "e6b3b17646bcb8dbae6f6f69ba7906b4",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long.pdf": {
+    "mtime": 1795274633.9690092,
+    "seen": 1795275276.0407944,
+    "ast_hash": "a00f6bd25a174a431d5cd847b5db8470",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-normal.pdf": {
+    "mtime": 1795274633.7098968,
+    "seen": 1795275276.0407984,
+    "ast_hash": "4e39a4bf0ef7b0eeb656db25495bd8ab",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues.pdf": {
+    "mtime": 1795274634.0100136,
+    "seen": 1795275276.040801,
+    "ast_hash": "43d2a51ff3df33ffabb41cfffc700510",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-date-seule.pdf": {
+    "mtime": 1795274633.5897894,
+    "seen": 1795275276.0408034,
+    "ast_hash": "5651ea1e8fbde0f151a7f188fb5bc9e5",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-historique.pdf": {
+    "mtime": 1795274633.6309333,
+    "seen": 1795275276.0408058,
+    "ast_hash": "02ffb182b79a93ec70ee6ead7faafe37",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue.pdf": {
+    "mtime": 1795274633.8434834,
+    "seen": 1795275276.040808,
+    "ast_hash": "5cd3b20a9b367e53b3f7bbc51c51d9b4",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-normale.pdf": {
+    "mtime": 1795274633.5419366,
+    "seen": 1795275276.0408096,
+    "ast_hash": "8c049f1d7fce3db31a78fc054efd8bae",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-taux-mixtes.pdf": {
+    "mtime": 1795274633.6751962,
+    "seen": 1795275276.0408118,
+    "ast_hash": "9b879f2b90feb365c8a38e0946576e87",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-bl-fictif.pdf": {
+    "mtime": 1795274634.1375945,
+    "seen": 1795275276.040814,
+    "ast_hash": "4a594b7881320137fba4951f6e7ee903",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples.pdf": {
+    "mtime": 1795274634.3530157,
+    "seen": 1795275276.040816,
+    "ast_hash": "95dc9b91f4db529f79f3e57d8d6e697b",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-001.png": {
+    "mtime": 1795274635.9268477,
+    "seen": 1795275276.0430236,
+    "ast_hash": "5453aa7014e07b6c9aaa21501a095e61",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-002.png": {
+    "mtime": 1795274636.0072284,
+    "seen": 1795275276.043026,
+    "ast_hash": "711ffbfb6c0a2d24022b8e49d0fc4d7e",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-003.png": {
+    "mtime": 1795274636.0775304,
+    "seen": 1795275276.0430274,
+    "ast_hash": "e6d62efa57b0d46bacc7c08ecee14975",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-004.png": {
+    "mtime": 1795274636.1490707,
+    "seen": 1795275276.0430286,
+    "ast_hash": "8f048d4894b22200f490b562fbaae007",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-005.png": {
+    "mtime": 1795274636.220759,
+    "seen": 1795275276.04303,
+    "ast_hash": "09af05ca2d268b2c70732d2051e91ce0",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-006.png": {
+    "mtime": 1795274636.297043,
+    "seen": 1795275276.0430312,
+    "ast_hash": "5b552a20df287445bc728b90cc16b280",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-007.png": {
+    "mtime": 1795274636.3707602,
+    "seen": 1795275276.0430326,
+    "ast_hash": "41f01e4f4cca9eb113020116072d6cc9",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-long-page-008.png": {
+    "mtime": 1795274636.4426003,
+    "seen": 1795275276.0430336,
+    "ast_hash": "374983dc49e343863ff0c44f4a251d3b",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-normal-page-001.png": {
+    "mtime": 1795274636.5112658,
+    "seen": 1795275276.0430348,
+    "ast_hash": "f3fdc528031a10c1f34d375cf74c5298",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-001.png": {
+    "mtime": 1795274636.5727363,
+    "seen": 1795275276.0430362,
+    "ast_hash": "06ad93e69a2cbf58511072260a91c478",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-002.png": {
+    "mtime": 1795274636.6220982,
+    "seen": 1795275276.0430377,
+    "ast_hash": "830846f472b98b443f96040be67ef84f",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-003.png": {
+    "mtime": 1795274636.6708984,
+    "seen": 1795275276.043039,
+    "ast_hash": "af77cb9cee459c6c856231a96ee56acd",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-004.png": {
+    "mtime": 1795274636.721537,
+    "seen": 1795275276.0430403,
+    "ast_hash": "4048b1058e4f5e8abc604786a400acc8",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-005.png": {
+    "mtime": 1795274636.7734132,
+    "seen": 1795275276.0430417,
+    "ast_hash": "28fe203d0ede4017bbcd68f84e32746a",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/devis-notes-longues-page-006.png": {
+    "mtime": 1795274636.831812,
+    "seen": 1795275276.043043,
+    "ast_hash": "562bc91da272712e55f981b89d644fde",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-date-seule-page-001.png": {
+    "mtime": 1795274636.9004629,
+    "seen": 1795275276.0430443,
+    "ast_hash": "8edc0f69246747e275d9ce0b9b6fee3a",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-historique-page-001.png": {
+    "mtime": 1795274636.9643786,
+    "seen": 1795275276.0430455,
+    "ast_hash": "e13fc6b329d7d642851ba50615b510f6",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-001.png": {
+    "mtime": 1795274637.0391219,
+    "seen": 1795275276.043047,
+    "ast_hash": "3f8a95a44e80049231dc719daa740bc7",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-002.png": {
+    "mtime": 1795274637.1083817,
+    "seen": 1795275276.043048,
+    "ast_hash": "08468a9802300313bed9c5ca3b8906b6",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-003.png": {
+    "mtime": 1795274637.1791766,
+    "seen": 1795275276.043049,
+    "ast_hash": "31fae75ee6681ccaf559eb8ed6ab0dc1",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-004.png": {
+    "mtime": 1795274637.248686,
+    "seen": 1795275276.0430505,
+    "ast_hash": "f869fba5a7a1cc9374dc06713f2a5a92",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-005.png": {
+    "mtime": 1795274637.321833,
+    "seen": 1795275276.0430517,
+    "ast_hash": "29ef3e1b14c10de8e36bdb08d63e3cba",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-006.png": {
+    "mtime": 1795274637.3960826,
+    "seen": 1795275276.0430532,
+    "ast_hash": "010392db1d128e5b07b109fd2e9626fb",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-007.png": {
+    "mtime": 1795274637.4628513,
+    "seen": 1795275276.0430543,
+    "ast_hash": "fa3f88c05e8446baea1d15a3799aacbb",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-longue-page-008.png": {
+    "mtime": 1795274637.5234048,
+    "seen": 1795275276.0430555,
+    "ast_hash": "23292247e911a0d9c17c1206ac9c6825",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-normale-page-001.png": {
+    "mtime": 1795274637.591142,
+    "seen": 1795275276.0430567,
+    "ast_hash": "98c0408fa40f7ff39ac0f3d13d566cb5",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/facture-taux-mixtes-page-001.png": {
+    "mtime": 1795274637.6666706,
+    "seen": 1795275276.043058,
+    "ast_hash": "3854b70f8a891bc14c20addb2e59a6e0",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-bl-fictif-page-001.png": {
+    "mtime": 1795274637.7321866,
+    "seen": 1795275276.0430589,
+    "ast_hash": "c172a99733a09e1e253984107d9f6b73",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-001.png": {
+    "mtime": 1795274637.8099146,
+    "seen": 1795275276.0430608,
+    "ast_hash": "79b88b2a097c8ad516fb001e4908cc27",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-002.png": {
+    "mtime": 1795274637.8848526,
+    "seen": 1795275276.0430634,
+    "ast_hash": "7ba075fd85852cf56d6a92581fff9858",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-003.png": {
+    "mtime": 1795274637.958155,
+    "seen": 1795275276.043065,
+    "ast_hash": "2a6c390cd3a98c6f665f01f2cfaa0685",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-004.png": {
+    "mtime": 1795274638.0335267,
+    "seen": 1795275276.043067,
+    "ast_hash": "db56a50760d32201137c44675ffde659",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-005.png": {
+    "mtime": 1795274638.1078854,
+    "seen": 1795275276.0430715,
+    "ast_hash": "87a2f8f61d9d742a0d53cb80ac87f033",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-006.png": {
+    "mtime": 1795274638.1803823,
+    "seen": 1795275276.0430748,
+    "ast_hash": "c7b75b71508cc1ec974ef00e2644c6a5",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-007.png": {
+    "mtime": 1795274638.2522354,
+    "seen": 1795275276.0430768,
+    "ast_hash": "e26c41aeff89c32f834a089d9d8c7b85",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-008.png": {
+    "mtime": 1795274638.3278508,
+    "seen": 1795275276.0430791,
+    "ast_hash": "da592e05ac10d8aaec50fe62afb6c92e",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-009.png": {
+    "mtime": 1795274638.4055312,
+    "seen": 1795275276.0430813,
+    "ast_hash": "08a624e8d1ad0274678fa342688194f4",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-010.png": {
+    "mtime": 1795274638.4699378,
+    "seen": 1795275276.0430834,
+    "ast_hash": "4cfcf5bf4d83f94da526e807219a4986",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-011.png": {
+    "mtime": 1795274638.5370014,
+    "seen": 1795275276.0430858,
+    "ast_hash": "169b77acdabbf445474259270cc8874e",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-012.png": {
+    "mtime": 1795274638.6031947,
+    "seen": 1795275276.0430882,
+    "ast_hash": "df7af35841d81d940140ea7840c9f5c2",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-013.png": {
+    "mtime": 1795274638.6675289,
+    "seen": 1795275276.04309,
+    "ast_hash": "e4e9ebb7627c5ebb71fed000ee210b6c",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-014.png": {
+    "mtime": 1795274638.7286184,
+    "seen": 1795275276.0430923,
+    "ast_hash": "8ff32b9b5837e006127ec5d8eef15c7d",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents/gabarit-tva-multiples-page-015.png": {
+    "mtime": 1795274638.7817805,
+    "seen": 1795275276.0430946,
+    "ast_hash": "59213aaa73502576eeb917c5fbe409fd",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
     "mtime": 1794337671.7528777,
     "seen": 1794337854.7392957,
     "ast_hash": "f15e91b6700c679e10ac9aa12fb7014e",
-    "semantic_hash": ""
-  },
-  "specs/bon-livraison-modele.md": {
-    "mtime": 1795269844.42658,
-    "seen": 1795270371.7863593,
-    "ast_hash": "ce591c0ab99b73cbb948c5be7265ae05",
     "semantic_hash": ""
   }
 }

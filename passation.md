@@ -675,3 +675,24 @@ Contrôle du conducteur : rendus Facture/Devis lisibles, SHA-256 des dix PDF et
 Ajustements utilisateur des trois guides committés séparément dans `6cd4381`.
 Renommage, documentation et exemples prêts pour le commit applicatif après
 build/lint, PDF et recette Chromium ; Graphify sera actualisé depuis cette base.
+Renommage applicatif et preuves committés dans `abc703b` ; inspection visuelle
+du conducteur conforme sur le bureau et la connexion mobile. Actualisation
+Graphify 0.9.114 depuis cette base, puis audit et livraison sur `origin/main`.
+Graphify actualisé sans appel LLM ni rafraîchissement automatique de compétence :
+**3 438 nœuds, 7 316 liens, 205 communautés**, quatre hyperedges et 603 entrées
+de manifeste. Nouvelle identité partagée et références UI/PDF présentes ;
+recalage des libellés documentaires OpenStrass et localisations avant audit.
+Libellés de marque, vingt localisations de passation et racines README/design
+recalés ; IDs documentaires historiques et relations sémantiques conservés.
+Contrôle de concordance adapté aux champs natifs HTML `from/to/label` ;
+export MultiGraph à clés uniques pour conserver les relations parallèles.
+Audit indépendant conforme : **226 sources de code**, **592 empreintes AST**
+sur **603 entrées du manifeste**, **491 clés documentaires anciennes** et
+**79 liens locaux** vérifiés ; aucune source manquante, clé dupliquée ou
+extrémité orpheline. HTML/JSON concordent avec multiplicité, quatre hyperedges
+valides et libellés OpenStrass conformes. Les onze empreintes AST vides sont
+des SQL sans parseur ; limites des huit CSS et de l'extraction PDF conservées.
+Format JSON maintenu, derniers repères et empreintes de passation recalés.
+`origin/main` vérifié après fetch, sans changement concurrent. Livraison des
+commits `6cd4381`, `abc703b` et de Graphify/passation par commit puis push sur
+`origin/main` ; développement local conservé sur HTTP 3001/HTTPS 3443/Vite 5173.
