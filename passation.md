@@ -538,3 +538,17 @@ effacés. Développement local conservé sur API HTTP 3001/HTTPS 3443 et Vite 51
 Suppressions locales préexistantes commitées séparément dans `f1b7ace`.
 Fonctionnalité, documentation et preuves prêtes pour le commit Devis ; Graphify
 sera actualisé depuis cette base applicative.
+Fonctionnalité et preuves commitées dans `c3b75cb` (45 fichiers). Actualisation
+Graphify depuis cette base, puis vérification indépendante et livraison finale.
+Graphify **0.9.114** actualisé et audité : **3 383 nœuds, 7 156 liens,
+206 communautés**, quatre hyperedges. **221 empreintes de code et 539 entrées
+du manifeste conformes** ; aucune source manquante, aucun doublon ni lien
+orphelin, HTML/JSON identiques avec multiplicité. Les 20 localisations de
+passation sont recalées ; guide Devis présent avec huit nœuds et 13 citations
+locales explicites. Structure documentaire mise à jour, anciens concepts et
+relations conservés, sans appel API LLM. Limites : huit CSS non indexés,
+17 SQL sans parseur ; l'extraction sémantique historique n'a pas été relancée.
+Le CLI a aussi rafraîchi automatiquement sa compétence Claude globale avec
+sauvegarde de l'ancienne copie ; cache AST migré vers la version courante.
+Livraison regroupant les commits `f1b7ace`, `c3b75cb` et l'actualisation de
+Graphify/passation sur `origin/main`. Prochaine priorité : commandes fournisseurs.

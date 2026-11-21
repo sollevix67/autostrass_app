@@ -114,3 +114,18 @@ Configurer `TEST_DB_*` avec un compte capable de créer et supprimer ces bases.
 `npm run build` puis `npm run test:devis:ui` exécutent la recette Chromium avec
 API simulée, sans base applicative ni envoi de message. Les résultats et
 captures sont conservés dans `specs/captures/devis/`.
+
+## Repères dans le dépôt
+
+- [Persistance et conversion](../server/repositories/devisRepository.ts),
+  [commandes clients](../server/repositories/documentRepositories.ts).
+- [Routes Devis](../server/middleware/devisRoutes.ts),
+  [validation des requêtes](../server/middleware/devisSchemas.ts).
+- [Numérotation](../server/services/documentNumbers.ts),
+  [génération du PDF](../server/services/pdfDevis.ts).
+- [Interface Devis](../src/views/DevisView.tsx),
+  [dialogue de partage](../src/views/devis/DevisShareDialog.tsx).
+- [Recette métier](../scripts/test-devis.ts),
+  [concurrence et audit](../scripts/test-devis-concurrence.ts),
+  [PDF réel](../scripts/test-devis-pdf.ts),
+  [recette navigateur](../scripts/test-devis-ui.mjs).
