@@ -1,5 +1,5 @@
 import type { DevisRow } from '../repositories/devisRepository.js'
-import { AUTOSTRASS_PDF_COMPANY, formatCommercialDate, generateCommercialPdf } from './pdfCommercial.js'
+import { OPENSTRASS_PDF_COMPANY, formatCommercialDate, generateCommercialPdf } from './pdfCommercial.js'
 
 const statusLabels = {
   brouillon: 'Brouillon',
@@ -17,7 +17,7 @@ export async function generateDevisPdf(devis: DevisRow): Promise<Buffer> {
     date: devis.dateDevis,
     validite: devis.dateValidite ? `Valable jusqu'au ${formatCommercialDate(devis.dateValidite)}` : 'Non précisée',
     statut: statusLabels[devis.statut],
-    company: AUTOSTRASS_PDF_COMPANY,
+    company: OPENSTRASS_PDF_COMPANY,
     client: {
       numero: client.numeroClient,
       lines: [

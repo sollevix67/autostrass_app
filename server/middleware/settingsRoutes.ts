@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { APP_NAME } from '../../src/branding.js'
 import mysql from 'mysql2/promise'
 import { requireAuth, requireRole, type AuthenticatedRequest } from './auth.js'
 import { requireCsrf } from './csrf.js'
@@ -19,7 +20,7 @@ async function testDatabase(settings: DatabaseSettings) {
     for (const table of ['categories_articles', 'sous_categories_articles', 'secteurs_livraison']) {
       await connection.query({ sql: `SELECT id, code, libelle, actif FROM ${table} LIMIT 1`, timeout: 5000 })
     }
-  } catch { throw settingsError('Connexion impossible ou schéma Autostrass absent. Vérifiez les réglages et les migrations.', 422, 'DATABASE_TEST_FAILED') }
+  } catch { throw settingsError(`Connexion impossible ou schéma ${APP_NAME} absent. Vérifiez les réglages et les migrations.`, 422, 'DATABASE_TEST_FAILED') }
   finally { await connection?.end().catch(() => {}) }
 }
 

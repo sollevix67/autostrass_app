@@ -1,4 +1,6 @@
 {
+  "application": "OpenStrass",
+  "signature": "OpenStrass - Gestion commerciale et logistique open source",
   "groupes": 12,
   "checks": [
     "Facture A4 : identité/client/date Paris, reçu 40/rendu 10/TTC 30 distincts, informations absentes non inventées",
@@ -18,7 +20,7 @@
     {
       "fichier": "facture-normale.pdf",
       "pages": 1,
-      "sha256": "5165c60d6d6a5fad43952ea689855a1ddac7d3c9d95b0183bbf865552b1c37ae",
+      "sha256": "f2dbfc3fbe941cf59ee57a3ef7f2bdadb8fec639bb4000a3405d801ad9111319",
       "lignesTexte": [
         55
       ]
@@ -26,7 +28,7 @@
     {
       "fichier": "facture-date-seule.pdf",
       "pages": 1,
-      "sha256": "45506e0ecef95972ffcca6b8792474422b16432ab6641148bfa73a4763aff036",
+      "sha256": "4e24e79add32556d3f30fc77395b36293909ac5d9a488aaff576119733abda10",
       "lignesTexte": [
         49
       ]
@@ -34,7 +36,7 @@
     {
       "fichier": "facture-historique.pdf",
       "pages": 1,
-      "sha256": "9d9c6f5b5be957eded92a5d3afb5f9200a718176935909d2b70a77b7e75e169b",
+      "sha256": "4ff0f14b5f2b0bd66bac658c080e06b461a7c1ed53e98e31f4eae7136c3d46cf",
       "lignesTexte": [
         55
       ]
@@ -42,7 +44,7 @@
     {
       "fichier": "facture-taux-mixtes.pdf",
       "pages": 1,
-      "sha256": "a876d0208685c808c16982ac32b73cf5cb0ff377ee0a9ee34141afe161fd7953",
+      "sha256": "ce18ff103b09acb960f8a6389d4d135ad1e4647eeb8c36d861bab3dcea84fdb6",
       "lignesTexte": [
         93
       ]
@@ -50,7 +52,7 @@
     {
       "fichier": "devis-normal.pdf",
       "pages": 1,
-      "sha256": "feae0ff73a82ffdfaa3fa95125dab77a8ef80394ae906f2ed4ad144a9a3b8a41",
+      "sha256": "de1bd6db50f137b3a5574434827f5039b44ac45c5940d6c908ceba1de6ee646b",
       "lignesTexte": [
         54
       ]
@@ -58,7 +60,7 @@
     {
       "fichier": "facture-longue.pdf",
       "pages": 8,
-      "sha256": "cea63e847bc89817d0cd404c9e780986ed47016746c77fe9ecb92ca5197d060e",
+      "sha256": "f6bd02a3ec64f1640bd98cbabd5bc582c9bdd4504620896dc4337b37b04ff5e4",
       "lignesTexte": [
         146,
         180,
@@ -73,7 +75,7 @@
     {
       "fichier": "devis-long.pdf",
       "pages": 8,
-      "sha256": "42369349829a84437f0d7f25dc36b8822d77a7712b892dea18dcac64028ec714",
+      "sha256": "6f9b2fa099915a602945de9b8d7621d3a19f5dabf2da6e9d0e701605b84c2bd1",
       "lignesTexte": [
         146,
         179,
@@ -88,7 +90,7 @@
     {
       "fichier": "devis-notes-longues.pdf",
       "pages": 6,
-      "sha256": "5814e271116a8c85daaa74a51345fde94d1615de742ce73fa6c3acf0f565661e",
+      "sha256": "c3d7fdfda7fe96dbfc3ba1a79ef05ec7c8c05549391537579d8eb3c3ea8f8611",
       "lignesTexte": [
         90,
         79,
@@ -101,7 +103,7 @@
     {
       "fichier": "gabarit-bl-fictif.pdf",
       "pages": 1,
-      "sha256": "4ee5a17b67094c56720f9aeb5f6d536e02175333a923de2a816d8a4a9b2a553b",
+      "sha256": "0a0ce90380b849af3809c0fc7c382af0904dfdfa6ff937566a16dd8811aec53d",
       "lignesTexte": [
         56
       ]
@@ -109,7 +111,7 @@
     {
       "fichier": "gabarit-tva-multiples.pdf",
       "pages": 15,
-      "sha256": "84e6b869ac097b1b022e5d3b9ac41f7d05bc7630a909917362594897f0a5cdad",
+      "sha256": "949aa98f9625103938cab57e1f3fb32ebdccd0c3b86c4cc5716a75028e9747c0",
       "lignesTexte": [
         228,
         249,

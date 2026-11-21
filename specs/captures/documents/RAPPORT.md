@@ -1,4 +1,6 @@
-# Validation des documents commerciaux
+# Validation des documents commerciaux — OpenStrass
+
+OpenStrass - Gestion commerciale et logistique open source
 
 **12 groupes réussis**, **10 exemples PDF fictifs**, **43 pages d’exemples** composées et contrôlées, plus **2 PDF vérifiés en mémoire** pour les lignes très hautes. Facture et devis utilisent le même modèle A4 noir/gris. Les suites facture et devis conservent leurs contrôles de ressources URL/fichiers, de polices et de montants figés.
 

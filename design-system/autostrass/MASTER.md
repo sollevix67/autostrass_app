@@ -6,7 +6,8 @@
 
 ---
 
-**Project:** Autostrass
+**Project:** OpenStrass
+**Signature:** OpenStrass - Gestion commerciale et logistique open source
 **Generated:** 2026-09-25 22:03:42
 **Implementation reviewed:** 2026-11-04 — refonte bleu et ambre validée.
 **Category:** Analytics Dashboard

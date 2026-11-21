@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
+import { APP_MONOGRAM, APP_NAME, APP_SIGNATURE } from './branding'
 
 type ThemeMode = 'light' | 'dark' | 'auto'
 
@@ -150,7 +151,10 @@ function AppContent() {
     <div className="app-shell">
       {mobileNav && <button className="sidebar-backdrop" aria-label="Fermer le menu" onClick={() => setMobileNav(false)} />}
       <aside id="main-navigation" className={`sidebar ${mobileNav ? 'sidebar-open' : ''}`}>
-        <div className="brand"><span className="brand-mark">A</span><span>AUTOSTRASS</span></div>
+        <div className="brand">
+          <span className="brand-mark" aria-hidden="true">{APP_MONOGRAM}</span>
+          <div className="brand-copy"><span className="brand-name">{APP_NAME}</span><span className="brand-signature">{APP_SIGNATURE}</span></div>
+        </div>
         <div className="workspace-switcher"><span className="workspace-dot"></span><span><b>Depot principal</b><small>Ouvert aujourd hui</small></span><span className="chevron">⌄</span></div>
         <nav aria-label="Navigation principale">
           <p className="nav-label">ESPACE DE TRAVAIL</p>
@@ -272,7 +276,8 @@ function AppContent() {
             )}
           </div>
           <div className="footer-version">
-            <small>Autostrass Depot v0.1.0</small>
+            <small className="footer-signature">{APP_SIGNATURE}</small>
+            <small>Version 0.1.0</small>
           </div>
         </footer>
       </main>

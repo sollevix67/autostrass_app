@@ -1,4 +1,4 @@
-# PRODUCT.md — Module Stock (autostrass)
+# PRODUCT.md — Module Stock (OpenStrass)
 
 ## Surface visuelle
 Tous les composants Stock : table de données, formulaires, modals, emplacements, transferts.

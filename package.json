@@ -1,5 +1,6 @@
 {
-  "name": "autostrass_app",
+  "name": "openstrass",
+  "description": "OpenStrass - Gestion commerciale et logistique open source",
   "private": true,
   "version": "0.0.0",
   "type": "module",

@@ -1,6 +1,6 @@
 import { venteTotals } from '../../src/utils/venteTotals.js'
 import {
-  AUTOSTRASS_PDF_COMPANY,
+  OPENSTRASS_PDF_COMPANY,
   formatCommercialMoney,
   formatCommercialTime,
   generateCommercialPdf,
@@ -62,7 +62,7 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
     date: vente.dateVente,
     heure: formatCommercialTime(vente.dateVente),
     auteur: vente.caissier,
-    company: AUTOSTRASS_PDF_COMPANY,
+    company: OPENSTRASS_PDF_COMPANY,
     client: {
       numero: client?.numeroClient ?? null,
       lines: client ? [

@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express, { type Request, type Response } from 'express'
+import { APP_NAME } from '../src/branding.js'
 import type { RowDataPacket, ResultSetHeader } from 'mysql2'
 import { existsSync } from 'fs'
 import { join } from 'path'
@@ -840,19 +841,19 @@ if (tls.enabled) {
     cert: tls.certificatePem,
     minVersion: 'TLSv1.2',
   }, app).listen(httpsPort, () => {
-    console.log(`Autostrass API listening on https://localhost:${httpsPort}`)
+    console.log(`${APP_NAME} API listening on https://localhost:${httpsPort}`)
   })
   // Keep HTTP redirect/listener on the configured port
   createHttpServer(tls.httpMode === 'redirect' ? (request, response) => {
     response.writeHead(308, { Location: `${tls.publicOrigin.replace(/\/$/, '')}${request.url?.startsWith('/') ? request.url : '/'}` })
     response.end()
   } : app).listen(port, () => {
-    console.log(`Autostrass API (HTTP) listening on http://localhost:${port}`)
+    console.log(`${APP_NAME} API (HTTP) listening on http://localhost:${port}`)
   })
   if (!pool) console.warn('Warning: DB_* non configurees, /api/dashboard et /api/articles repondront 503.')
 } else {
   app.listen(port, () => {
-    console.log(`Autostrass API listening on http://localhost:${port}`)
+    console.log(`${APP_NAME} API listening on http://localhost:${port}`)
     if (!pool) console.warn('Warning: DB_* non configurees, /api/dashboard et /api/articles repondront 503.')
     console.warn('Warning: No SSL certificates found in config/ssl/. HTTPS is disabled.')
   })

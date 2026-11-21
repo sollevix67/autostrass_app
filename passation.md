@@ -1,4 +1,4 @@
-# Passation — Autostrass
+# Passation — OpenStrass
 
 État consolidé le **21 novembre 2026**, après livraison du module Devis,
 conversion en commande et besoins d'approvisionnement courants. Migration 0012
@@ -631,3 +631,47 @@ du manifeste** vérifiées ; aucune source manquante, doublon ou extrémité orp
 Les dix PDF liés au rapport existent ; HTML/JSON concordent avec multiplicité.
 Guides et localisations recalés, sans appel API LLM ; extraction PDF indisponible,
 17 SQL sans parseur et huit CSS non indexés. Livraison complète sur `origin/main`.
+
+## Renommage OpenStrass — 21 novembre 2026
+
+Demande utilisateur : nom d'application **OpenStrass**, signature exacte
+**OpenStrass - Gestion commerciale et logistique open source**. Passation et
+Graphify relus avant travail. Inventaire des noms visibles de l'interface,
+des PDF et de la documentation ; préparation d'une identité partagée.
+Les identifiants de données, d'authentification et les preuves historiques
+seront examinés séparément du texte de marque pour préserver les contrats.
+Identité partagée créée par l'agent frontend ; adaptations UI/PDF en cours.
+Métadonnées npm renommées `openstrass`, README, consignes, produit et design
+actualisés avec le nom/signature demandés. Les clés techniques existantes
+(sessions, CSRF, JWT, préférences, bases et archives) sont conservées.
+Deux modifications documentaires Caisse préexistantes ont été constatées et
+conservées ; aucune suppression ni réécriture de ces changements utilisateur.
+Nom/signature partagés appliqués au serveur, aux PDF et aux assertions de
+présentation. Douze groupes PDF commerciaux conformes, identité/signature
+exactes sur chaque page et montants/historique préservés ; validation JWT/montants
+conforme avec les identifiants historiques. Rendus fictifs régénérés, interface
+et affichage mobile en vérification ; aucune migration requise.
+Reprise du conducteur après passation : journal et Graphify relus, état courant
+de 3 433 nœuds/7 290 liens confirmé. Frontend et backend/PDF figés ; dix PDF
+et 43 PNG régénérés avec la nouvelle marque. Audit des occurrences restantes,
+build/lint global, recette mobile et relance locale avant commit/push.
+Compilation frontend/backend et production, puis lint global réussis ; seul
+l'avertissement Vite de bundle supérieur à 500 kB préexistant demeure. Relecture
+du diff : constantes, métadonnées, favicon et documents conformes ; cookies,
+CSRF, JWT, préférences, configurations et données historiques conservés.
+Développement relancé en fenêtre masquée : API HTTP 3001, HTTPS 3443 et proxy
+Vite 5173 connectés en 200 ; certificat vérifié en TLS 1.3, titre/signature HTML
+conformes et route Devis anonyme toujours refusée en 401. Aucune écriture métier,
+modification de configuration ou migration. Deux commentaires de source actuels
+renommés ; les anciennes occurrences restantes correspondent aux contrats
+techniques, comptes de démonstration, chemins réels et rapports historiques.
+Recette indépendante Chromium réussie : **sept états** desktop/mobile 375 px,
+menus et thèmes clair/sombre, API simulée ; nom/signature/monogramme conformes,
+aucun astérisque littéral, débordement, erreur JS ni écriture API. Sept captures
+et observations conservées dans `%TEMP%/openstrass-brand-review-PhY1v8/`.
+Contrôle du conducteur : rendus Facture/Devis lisibles, SHA-256 des dix PDF et
+43 captures conformes au rapport. Trois ajustements documentaires préexistants
+(guides ouverture/clôture Caisse et modèle BL) conservés et relus avant commit.
+Ajustements utilisateur des trois guides committés séparément dans `6cd4381`.
+Renommage, documentation et exemples prêts pour le commit applicatif après
+build/lint, PDF et recette Chromium ; Graphify sera actualisé depuis cette base.

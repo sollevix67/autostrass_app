@@ -1,5 +1,6 @@
 import * as pdfmakeModule from 'pdfmake'
 import { createRequire } from 'node:module'
+import { APP_NAME, APP_SIGNATURE } from '../../src/branding.js'
 
 const pdfmake = (pdfmakeModule as any).default ?? pdfmakeModule
 const require_ = createRequire(import.meta.url)
@@ -9,9 +10,9 @@ pdfmake.setUrlAccessPolicy(() => false)
 pdfmake.setLocalAccessPolicy((filePath: string) => allowedFontFiles.has(filePath))
 pdfmake.setFonts(fonts)
 
-export const AUTOSTRASS_PDF_COMPANY = Object.freeze({
-  nom: 'AUTOSTRASS',
-  activite: 'ÉQUIPEMENT ET PIÈCES AUTO',
+export const OPENSTRASS_PDF_COMPANY = Object.freeze({
+  nom: APP_NAME,
+  activite: APP_SIGNATURE,
 })
 
 export type CommercialPdfLine = {

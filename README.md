@@ -1,4 +1,6 @@
-# Autostrass
+# OpenStrass
+
+**OpenStrass - Gestion commerciale et logistique open source**
 
 Application React + Express + MariaDB pour la gestion commerciale et logistique.
 

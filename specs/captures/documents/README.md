@@ -1,4 +1,6 @@
-# Exemples PDF commerciaux
+# Exemples PDF commerciaux — OpenStrass
+
+OpenStrass - Gestion commerciale et logistique open source
 
 Ces documents utilisent des données entièrement fictives. Ils vérifient le gabarit commun de la facture et du devis, ses taux de TVA, son historique et sa pagination. `gabarit-bl-fictif.pdf` montre les champs facultatifs du modèle de bon de livraison ; il ne constitue pas une émission métier de BL.
 

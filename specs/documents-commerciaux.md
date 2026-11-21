@@ -10,7 +10,8 @@ le même socle lors de l'implémentation de leurs modules PDF.
 
 A4 portrait, noir/gris, police Roboto embarquée et tableaux encadrés.
 
-- Marque AUTOSTRASS centrée, activité « ÉQUIPEMENT ET PIÈCES AUTO » et trait
+- Marque OpenStrass centrée, signature « OpenStrass - Gestion commerciale et
+  logistique open source » et trait
   horizontal ; l'identification du document est répétée sur les pages suivantes.
 - Émetteur à gauche, client à droite. Le nom connu de l'émetteur est toujours
   présent ; les coordonnées supplémentaires ne sont imprimées que si fournies.
@@ -72,7 +73,8 @@ Le [gabarit partagé](../server/services/pdfCommercial.ts) expose une constructi
 de définition pure et la génération PDF. Les adaptateurs
 [Facture](../server/services/pdfInvoice.ts) et
 [Devis](../server/services/pdfDevis.ts) gardent leurs signatures et routes.
-L'identité commune est centralisée dans `AUTOSTRASS_PDF_COMPANY`.
+L'identité commune est centralisée dans `OPENSTRASS_PDF_COMPANY`, depuis
+[les constantes de marque](../src/branding.ts).
 
 Les ressources restent limitées aux quatre polices Roboto fournies par pdfmake ;
 les URL et autres fichiers locaux sont refusés avant téléchargement/lecture.

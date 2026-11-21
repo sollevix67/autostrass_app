@@ -1,6 +1,8 @@
 # Repository Guidelines
 
-Autostrass manages commercial and logistics workflows using React 19, TypeScript, Express 5, and MariaDB.
+OpenStrass manages commercial and logistics workflows using React 19, TypeScript, Express 5, and MariaDB.
+
+Application name: **OpenStrass**. Signature: **OpenStrass - Gestion commerciale et logistique open source**.
 
 ## Langue des réponses
 

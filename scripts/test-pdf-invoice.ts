@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import { resolve } from 'node:path'
+import { APP_NAME, APP_SIGNATURE } from '../src/branding.js'
 import pdfmake from 'pdfmake'
 import { generateVentePdf, type VenteForPdf } from '../server/services/pdfInvoice.js'
 import { assertCommercialPages, assertLabeledPdfValue, capturePdfDefinitions, renderedPdfPages, visiblePdfDefinition } from './lib/pdf-assertions.js'
@@ -41,6 +42,7 @@ try {
   verifyPdf(await generateVentePdf(vente, null))
   const baseDefinition = capture.latest().definition
   const baseText = visiblePdfDefinition(baseDefinition)
+  assert.ok(baseText.includes(APP_NAME) && baseText.includes(APP_SIGNATURE), 'La facture utilise la marque et la signature communes')
   for (const value of ['FACTURE', '000042', 'Client de passage', '07/11/2026', vente.caissier, 'Mode de paiement : carte', 'Montant reçu : 30,00 EUR', 'Monnaie rendue : 0,00 EUR']) assert.ok(baseText.includes(value), `La facture doit conserver ${value}`)
   assertLabeledPdfValue(baseDefinition, 'Total HT', '25,00 EUR')
   assertLabeledPdfValue(baseDefinition, 'TVA', '5,00 EUR')

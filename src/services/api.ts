@@ -1,5 +1,5 @@
 /**
- * Client HTTP centralise pour l'API Autostrass.
+ * Client HTTP centralise pour l'API OpenStrass.
  *
  * Objectifs :
  * - une seule source de verite pour les URLs (`/api/...`) ;

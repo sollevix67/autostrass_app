@@ -1,5 +1,5 @@
 /**
- * Schema Drizzle — Autostrass (version 2).
+ * Schema Drizzle — OpenStrass (version 2).
  *
  * Couvre les 8 métiers restants après la v1 (articles / stock / mouvements) :
  * clients, vehicules, utilisateurs, receptions, ventes, commandes, livraisons

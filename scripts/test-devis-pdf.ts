@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
 import { resolve } from 'node:path'
+import { APP_NAME, APP_SIGNATURE } from '../src/branding.js'
 import pdfmake from 'pdfmake'
 import type { DevisRow } from '../server/repositories/devisRepository.js'
 import { generateDevisPdf } from '../server/services/pdfDevis.js'
@@ -53,6 +54,7 @@ try {
   const definition = capture.latest().definition
   const contents = visiblePdfDefinition(definition)
   for (const expected of [
+    APP_NAME, APP_SIGNATURE,
     devis.numero, 'Atelier du Test', '000001', '12345678900011', 'devis@example.test',
     '21/11/2026', '21/12/2026', 'Brouillon', '0,13 EUR', '0,02 EUR', '0,15 EUR',
     '0,03 EUR', '0,12 EUR', '5,5', '<script>',

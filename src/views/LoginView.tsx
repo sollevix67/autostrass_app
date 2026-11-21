@@ -16,6 +16,7 @@ import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { z } from 'zod'
 import { TurnstileWidget } from '../components/TurnstileWidget'
 import { useRemoteValue } from '../hooks/useRemoteValue'
+import { APP_MONOGRAM, APP_NAME, APP_SIGNATURE } from '../branding'
 
 /** Validation locale, en miroir de `loginBodySchema` cote serveur. */
 const loginSchema = z.object({
@@ -69,8 +70,8 @@ export function LoginView() {
     <main className="login-screen">
       <section className="login-card">
         <div className="login-brand">
-          <span className="brand-mark">A</span>
-          <span>AUTOSTRASS</span>
+          <span className="brand-mark" aria-hidden="true">{APP_MONOGRAM}</span>
+          <div className="brand-copy"><span className="brand-name">{APP_NAME}</span><span className="brand-signature">{APP_SIGNATURE}</span></div>
         </div>
 
         <h1>Connexion au depot</h1>
