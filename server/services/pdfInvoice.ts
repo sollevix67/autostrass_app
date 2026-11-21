@@ -1,4 +1,5 @@
 import { venteTotals } from '../../src/utils/venteTotals.js'
+import { DEFAULT_DOCUMENTS_PDF_SETTINGS, type DocumentsPdfSettings } from '../../src/schemas/parametres.js'
 import {
   OPENSTRASS_PDF_COMPANY,
   formatCommercialMoney,
@@ -40,7 +41,7 @@ export type ClientForPdf = {
 }
 
 /** Conserve l'identité, les montants fiscaux et les encaissements de la vente. */
-export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf | null): Promise<Buffer> {
+export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf | null, settings: DocumentsPdfSettings = DEFAULT_DOCUMENTS_PDF_SETTINGS): Promise<Buffer> {
   const taxesFigees = vente.totalTVA != null && vente.totalTTC != null
   const lines: CommercialPdfLine[] = vente.articles.map((line) => {
     const amounts = !taxesFigees || line.tauxTva == null ? null : venteTotals([{ ...line, tauxTva: line.tauxTva }])
@@ -82,5 +83,5 @@ export async function generateVentePdf(vente: VenteForPdf, client: ClientForPdf 
       `Monnaie rendue : ${formatCommercialMoney(vente.monnaie)}`,
     ],
     footerLines: [`Vente n° ${vente.id} · ${vente.modePaiement}`],
-  })
+  }, settings)
 }

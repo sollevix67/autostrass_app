@@ -4,12 +4,14 @@ import { mkdir, rename, writeFile, unlink } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
-import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, DEFAULT_CAISSE_SETTINGS, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema } from '../../src/schemas/parametres.js'
+import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, DEFAULT_CAISSE_SETTINGS, documentsPdfSettingsSchema, DEFAULT_DOCUMENTS_PDF_SETTINGS, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema } from '../../src/schemas/parametres.js'
+import { validateDocumentsPdfSettings } from './documentsPdfSettings.js'
 
 const storageSchema = z.object({
   api: apiLimitsSchema.default({ maxRequests: 100, windowSeconds: 900 }),
   login: loginLimitsSchema.default({ maxAttempts: 10, windowSeconds: 900, blockSeconds: 900 }),
   caisse: caisseSettingsSchema.default(DEFAULT_CAISSE_SETTINGS),
+  documentsPdf: documentsPdfSettingsSchema.default(DEFAULT_DOCUMENTS_PDF_SETTINGS),
   database: databaseSettingsSchema.optional(),
   turnstile: turnstileSettingsSchema.default({ enabled: false, siteKey: '', hostnames: [] }),
   https: httpsSettingsSchema.default({ enabled: false, port: 3443, httpMode: 'serve', publicOrigin: '' }),
@@ -24,7 +26,11 @@ export function settingsError(message: string, status = 422, code = 'VALIDATION_
 
 function readSettings(): Settings {
   if (existsSync(settingsFile)) {
-    try { return storageSchema.parse(JSON.parse(readFileSync(settingsFile, 'utf8'))) }
+    try {
+      const settings = storageSchema.parse(JSON.parse(readFileSync(settingsFile, 'utf8')))
+      validateDocumentsPdfSettings(settings.documentsPdf)
+      return settings
+    }
     catch { throw new Error('Le fichier des paramètres est illisible ou invalide. Restaurez sa dernière version valide.') }
   }
   const settings = storageSchema.parse({})
@@ -46,6 +52,7 @@ let writes: Promise<unknown> = Promise.resolve()
 export function updateSettings(change: (previous: Settings) => Settings | Promise<Settings>, userId: number): Promise<Settings> {
   const operation = writes.then(async () => {
     const next = storageSchema.parse(await change(getSettings()))
+    validateDocumentsPdfSettings(next.documentsPdf)
     next.updatedAt = new Date().toISOString()
     next.updatedBy = userId
     const temporary = `${settingsFile}.${randomUUID()}.tmp`
@@ -77,7 +84,7 @@ export function publicSettings() {
   const activeDatabase = effectiveDatabaseSettings()
   const { password: _password, ...databasePublic } = database
   return {
-    api: settings.api, login: settings.login, caisse: settings.caisse,
+    api: settings.api, login: settings.login, caisse: settings.caisse, documentsPdf: settings.documentsPdf,
     database: { ...databasePublic, passwordConfigured: Boolean(database.password), restartRequired: JSON.stringify(database) !== JSON.stringify(activeDatabase) },
     turnstile: { enabled: settings.turnstile.enabled, siteKey: settings.turnstile.siteKey, hostnames: settings.turnstile.hostnames, secretConfigured: Boolean(settings.turnstile.secretKey) },
     updatedAt: settings.updatedAt,

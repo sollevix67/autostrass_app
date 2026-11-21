@@ -9,11 +9,13 @@ Add-Type -AssemblyName System.Runtime.WindowsRuntime
 
 $workspace = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $expected = [IO.Path]::GetFullPath((Join-Path $workspace 'specs/captures/documents'))
+$customExamples = [IO.Path]::GetFullPath((Join-Path $workspace 'specs/captures/documents-pdf'))
 if (-not $Directory) { $Directory = $expected }
 $resolved = [IO.Path]::GetFullPath($Directory)
-if (-not $resolved.Equals($expected, [StringComparison]::OrdinalIgnoreCase)) {
-  throw 'Rendering is restricted to specs/captures/documents.'
+if (-not $resolved.Equals($expected, [StringComparison]::OrdinalIgnoreCase) -and -not $resolved.Equals($customExamples, [StringComparison]::OrdinalIgnoreCase)) {
+  throw 'Rendering is restricted to specs/captures/documents and specs/captures/documents-pdf.'
 }
+$expected = $resolved
 $folder = Get-Item -LiteralPath $resolved
 if (-not $folder.PSIsContainer) { throw 'The examples directory does not exist.' }
 

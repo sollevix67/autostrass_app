@@ -1,7 +1,7 @@
 # Administration des paramètres
 
 Le menu **Administration → Paramètres** ouvre `/parametres`. L'administrateur
-dispose de neuf rubriques. Le magasinier accède uniquement aux emplacements,
+dispose de dix rubriques. Le magasinier accède uniquement aux emplacements,
 également disponibles dans Stock. Le caissier n'accède pas au module.
 Ces droits sont vérifiés dans les routes frontend et dans les API.
 
@@ -35,7 +35,8 @@ dans les paramètres, ou `DB_*` en l'absence de connexion enregistrée.
 ## Stockage et sauvegarde
 
 Les référentiels et affectations résident dans MariaDB. Les paramètres
-techniques et le plafond de Caisse résident dans `config/runtime/settings.json`, créé à la première
+techniques, le plafond de Caisse et la présentation des PDF résident dans
+`config/runtime/settings.json`, créé à la première
 sauvegarde. `AUTOSTRASS_SETTINGS_FILE` permet de choisir un autre emplacement
 absolu, notamment pour une instance isolée ou un volume persistant.
 
@@ -61,6 +62,7 @@ vide dans l'interface conserve sa valeur enregistrée.
 | `limites-api` | Régler le quota global par IP et sa fenêtre en secondes. | Dès les requêtes suivantes. Changer la durée de fenêtre remet le quota de cette IP à zéro. |
 | `connexion` | Régler les échecs autorisés par compte, la fenêtre et la durée de blocage. | Dès les requêtes suivantes ; les blocages déjà actifs restent jusqu'à échéance. |
 | `caisse` | Régler le plafond du fond de caisse à l'ouverture, en euros avec au maximum deux décimales. | Dès l'ouverture suivante ; les sessions ouvertes et leur clôture conservent leurs montants. |
+| `documents-pdf` | Personnaliser l'émetteur, le sous-titre, les coordonnées, le logo et les mentions du pied de page ; [aperçu fictif](documents-pdf-personnalisation.md) avant sauvegarde. | Dès la génération suivante de facture ou devis. Aucune migration. |
 | `emplacements` | Créer, modifier ou supprimer allées, étagères et places ; choisir le parent et la capacité. | Immédiate ; même gestion que dans Stock. Suppression refusée en présence d'enfants ou de stock. |
 | `secteurs` | Administrer les secteurs et affecter les clients. | Immédiate ; suppression refusée si des clients l'utilisent. |
 | `categories` | Administrer catégories et sous-catégories proposées au catalogue. | Immédiate ; rattachement contrôlé et suppression des éléments utilisés refusée. |

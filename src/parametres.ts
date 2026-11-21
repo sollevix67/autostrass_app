@@ -5,6 +5,7 @@ export const PARAMETRES_SECTIONS = [
   { slug: 'limites-api', title: 'Limites de requêtes API', description: 'Définir les quotas d’accès aux services de l’application.', icon: 'settings', status: 'Disponible', adminOnly: true },
   { slug: 'connexion', title: 'Tentatives de connexion', description: 'Configurer les limites et les délais de blocage à la connexion.', icon: 'users', status: 'Disponible', adminOnly: true },
   { slug: 'caisse', title: 'Caisse', description: 'Régler le plafond du fond de caisse à l’ouverture.', icon: 'clipboard', status: 'Disponible', adminOnly: true },
+  { slug: 'documents-pdf', title: 'Documents PDF', description: 'Personnaliser l’en-tête, le logo et le pied de page des documents.', icon: 'clipboard', status: 'Disponible', adminOnly: true },
   { slug: 'emplacements', title: 'Emplacements de stockage', description: 'Gérer les allées, étagères et places du dépôt.', icon: 'box', status: 'Disponible', adminOnly: false },
   { slug: 'secteurs', title: 'Secteurs de livraison', description: 'Organiser les zones de livraison et leur attribution aux clients.', icon: 'truck', status: 'Disponible', adminOnly: true },
   { slug: 'categories', title: 'Catégories d’articles', description: 'Gérer les catégories et sous-catégories du catalogue.', icon: 'clipboard', status: 'Disponible', adminOnly: true },

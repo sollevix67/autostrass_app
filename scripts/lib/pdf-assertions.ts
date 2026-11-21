@@ -3,7 +3,12 @@ import pdfmake from 'pdfmake'
 
 export type PdfTable = { body: unknown[][]; headerRows?: number }
 export type RenderedPdfText = { text: string; x: number; y: number; width: number; height: number }
-export type RenderedPdfPage = { width: number; height: number; texts: RenderedPdfText[] }
+export type RenderedPdfPage = {
+  width: number
+  height: number
+  texts: RenderedPdfText[]
+  images: Array<{ x: number; y: number; width: number; height: number }>
+}
 type InspectablePdfOutput = {
   getBuffer(): Promise<Buffer>
   getStream(): Promise<{
@@ -73,6 +78,10 @@ export async function renderedPdfPages(output: InspectablePdfOutput): Promise<Re
       text: item.inlines.map((inline) => inline.text).join('').replace(/\s+/g, ' ').trim(),
       x: item.x, y: item.y, width: item.getWidth(), height: item.getHeight(),
     })).filter((item) => item.text.length > 0),
+    images: page.items.filter((item) => item.type === 'image').map(({ item }) => {
+      const image = item as unknown as { x: number; y: number; _width: number; _height: number }
+      return { x: image.x, y: image.y, width: image._width, height: image._height }
+    }),
   }))
 }
 
@@ -105,6 +114,15 @@ export function assertCommercialPages(pages: RenderedPdfPage[], numero: string) 
     for (const text of page.texts) {
       assert.ok(Number.isFinite(text.x + text.y + text.width + text.height), `Position PDF invalide : ${text.text}`)
       assert.ok(text.x >= -0.5 && text.y >= -0.5 && text.x + text.width <= page.width + 0.5 && text.y + text.height <= page.height + 0.5, `Texte hors de la page ${index + 1} : ${text.text}`)
+    }
+    for (const image of page.images) {
+      assert.ok(Number.isFinite(image.x + image.y + image.width + image.height) && image.width > 0 && image.height > 0, 'Dimensions d’image PDF invalides')
+      assert.ok(image.x >= -0.5 && image.y >= -0.5 && image.x + image.width <= page.width + 0.5 && image.y + image.height <= page.height + 0.5, 'Image hors de la page PDF')
+      for (const text of page.texts) {
+        const overlapX = Math.min(image.x + image.width, text.x + text.width) - Math.max(image.x, text.x)
+        const overlapY = Math.min(image.y + image.height, text.y + text.height) - Math.max(image.y, text.y)
+        assert.ok(overlapX <= 0.5 || overlapY <= 0.5, `Image et texte superposés : ${text.text}`)
+      }
     }
     for (let first = 0; first < page.texts.length; first += 1) {
       const a = page.texts[first]

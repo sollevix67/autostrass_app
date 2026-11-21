@@ -1,6 +1,9 @@
 import * as pdfmakeModule from 'pdfmake'
 import { createRequire } from 'node:module'
 import { APP_NAME, APP_SIGNATURE } from '../../src/branding.js'
+import type { DocumentsPdfSettings } from '../../src/schemas/parametres.js'
+import { prepareDocumentsPdfLogo, validateDocumentsPdfSettings } from './documentsPdfSettings.js'
+import { pdfLineHeight, wrapPdfText } from './pdfTextLayout.js'
 
 const pdfmake = (pdfmakeModule as any).default ?? pdfmakeModule
 const require_ = createRequire(import.meta.url)
@@ -93,7 +96,24 @@ const borderLayout = {
 }
 
 /** Présentation commune ; les montants et informations absentes restent inchangés. */
-export function buildCommercialDefinition(document: CommercialPdfDocument): Record<string, unknown> {
+export function buildCommercialDefinition(document: CommercialPdfDocument, settings?: DocumentsPdfSettings): Record<string, unknown> {
+  const values = settings ? validateDocumentsPdfSettings(settings) : null
+  const company = values ? {
+    nom: values.nomEmetteur, activite: values.activite,
+    lines: values.coordonnees ? values.coordonnees.split('\n') : [],
+  } : document.company
+  const logo = values?.logo ? prepareDocumentsPdfLogo(values.logo) : null
+  const pageWidth = 535.28
+  const nameLines = wrapPdfText(company.nom, pageWidth - 0.5, 21, true)
+  const activityLines = company.activite ? wrapPdfText(company.activite, pageWidth - 0.5, 9) : []
+  const continuedLines = wrapPdfText(`${document.title} n° ${document.numero} · ${formatCommercialDate(document.date)}`, pageWidth - 0.5, 8)
+  const footerSource = [...(document.footerLines ?? []), ...(values?.piedCommun ? values.piedCommun.split('\n') : [])]
+  const footerLines = footerSource.flatMap((line) => wrapPdfText(line, pageWidth - 0.5, 7))
+  const logoHeight = logo ? Math.min(120 / logo.width, 48 / logo.height) * logo.height : 0
+  const headerHeight = 14 + (logo ? logoHeight + 6 : 0) + nameLines.length * pdfLineHeight(21, true)
+    + (activityLines.length ? 9 + activityLines.length * pdfLineHeight(9) : 0)
+    + 0.7 + 5 + continuedLines.length * pdfLineHeight(8) + 8
+  const footerHeight = 8 + footerLines.length * pdfLineHeight(7) + 4 + pdfLineHeight(8) + 12
   const groups = taxGroups(document.lines)
   const field = (label: string, value: string) => ({
     text: [{ text: `${label} : `, bold: true }, { text: value }],
@@ -109,8 +129,10 @@ export function buildCommercialDefinition(document: CommercialPdfDocument): Reco
     ...(document.statut ? [field('Statut', document.statut)] : []),
     ...(document.reference ? [field('Référence', document.reference)] : []),
   ]
-  const clientLines = document.client.lines.filter(Boolean)
-  const companyLines = [document.company.nom, ...(document.company.lines?.filter(Boolean) ?? [])]
+  const clientLines = document.client.lines.filter(Boolean).flatMap((line) => wrapPdfText(line, 247.5, 10, true))
+  const companyWidth = pageWidth - 248 - 16
+  const companyNameLines = wrapPdfText(company.nom, companyWidth - 0.5, 9, true)
+  const companyLines = (company.lines ?? []).flatMap((line) => wrapPdfText(line, companyWidth - 0.5, 9))
   const tableBody = [
     [
       { text: 'Qté', style: 'articleHeader', alignment: 'right' },
@@ -199,28 +221,32 @@ export function buildCommercialDefinition(document: CommercialPdfDocument): Reco
 
   return {
     pageSize: 'A4',
-    pageMargins: [30, 82, 30, 52],
+    pageMargins: [30, Math.max(82, Math.ceil(headerHeight)), 30, Math.max(52, Math.ceil(footerHeight))],
     header: (page: number) => ({
       margin: [30, 14, 30, 0],
       stack: [
-        { text: document.company.nom, alignment: 'center', fontSize: 21, bold: true },
-        ...(document.company.activite ? [{ text: document.company.activite, alignment: 'center', fontSize: 9, margin: [0, 2, 0, 7] }] : []),
-        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 535.28, y2: 0, lineWidth: 0.7, lineColor: '#555555' }] },
-        ...(page > 1 ? [{ text: `${document.title} n° ${document.numero} · ${date}`, alignment: 'center', fontSize: 8, margin: [0, 5, 0, 0] }] : []),
+        ...(logo ? [{ image: logo.dataUri, fit: [120, 48], alignment: 'center', margin: [0, 0, 0, 6] }] : []),
+        ...nameLines.map((text) => ({ text: text || ' ', alignment: 'center', fontSize: 21, bold: true, noWrap: true, preserveLeadingSpaces: true })),
+        ...(activityLines.length ? [{ stack: activityLines.map((text) => ({ text: text || ' ', alignment: 'center', fontSize: 9, noWrap: true, preserveLeadingSpaces: true })), margin: [0, 2, 0, 7] }] : []),
+        { canvas: [{ type: 'line', x1: 0, y1: 0, x2: pageWidth, y2: 0, lineWidth: 0.7, lineColor: '#555555' }] },
+        ...(page > 1 ? [{ stack: continuedLines.map((text) => ({ text: text || ' ', alignment: 'center', fontSize: 8, noWrap: true, preserveLeadingSpaces: true })), margin: [0, 5, 0, 0] }] : []),
       ],
     }),
     footer: (page: number, pages: number) => ({
       margin: [30, 8, 30, 0],
       stack: [
-        ...(document.footerLines?.map((text) => ({ text, fontSize: 7, alignment: 'center', color: '#555555' })) ?? []),
+        ...footerLines.map((text) => ({ text: text || ' ', fontSize: 7, alignment: 'center', color: '#555555', noWrap: true, preserveLeadingSpaces: true })),
         { text: `Page n° ${page}/${pages}`, alignment: 'right', fontSize: 8, margin: [0, 4, 0, 0] },
       ],
     }),
     content: [
       {
         columns: [
-          { width: '*', stack: companyLines.map((text, index) => ({ text, bold: index === 0 })), fontSize: 9 },
-          { width: 248, stack: clientLines.map((text) => ({ text })), fontSize: 10, bold: true },
+          { width: '*', stack: [
+            ...companyNameLines.map((text) => ({ text: text || ' ', bold: true, noWrap: true, preserveLeadingSpaces: true })),
+            ...companyLines.map((text) => ({ text: text || ' ', noWrap: true, preserveLeadingSpaces: true })),
+          ], fontSize: 9 },
+          { width: 248, stack: clientLines.map((text) => ({ text: text || ' ', noWrap: true, preserveLeadingSpaces: true })), fontSize: 10, bold: true },
         ],
         columnGap: 16,
         margin: [0, 0, 0, 14],
@@ -289,6 +315,6 @@ export function buildCommercialDefinition(document: CommercialPdfDocument): Reco
   }
 }
 
-export async function generateCommercialPdf(document: CommercialPdfDocument): Promise<Buffer> {
-  return pdfmake.createPdf(buildCommercialDefinition(document)).getBuffer()
+export async function generateCommercialPdf(document: CommercialPdfDocument, settings?: DocumentsPdfSettings): Promise<Buffer> {
+  return pdfmake.createPdf(buildCommercialDefinition(document, settings)).getBuffer()
 }

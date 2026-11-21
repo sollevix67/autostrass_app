@@ -46,6 +46,7 @@ import BaseDonneesView from './views/parametres/BaseDonneesView'
 import LimitesApiView from './views/parametres/LimitesApiView'
 import ConnexionView from './views/parametres/ConnexionView'
 import CaisseSettingsView from './views/parametres/CaisseSettingsView'
+import DocumentsPdfView from './views/parametres/DocumentsPdfView'
 import EmplacementsView from './views/parametres/EmplacementsView'
 import SecteursView from './views/parametres/SecteursView'
 import CategoriesView from './views/parametres/CategoriesView'
@@ -245,6 +246,7 @@ function AppContent() {
                 <Route path="limites-api" element={<LimitesApiView />} />
                 <Route path="connexion" element={<ConnexionView />} />
                 <Route path="caisse" element={<CaisseSettingsView />} />
+                <Route path="documents-pdf" element={<DocumentsPdfView />} />
                 <Route path="secteurs" element={<SecteursView />} />
                 <Route path="categories" element={<CategoriesView />} />
                 <Route path="https" element={<HttpsView />} />

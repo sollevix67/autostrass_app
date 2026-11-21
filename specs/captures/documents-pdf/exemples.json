@@ -1,0 +1,33 @@
+{
+  "donnees": "entièrement fictives, sans accès SQL",
+  "configuration": {
+    "nomEmetteur": "Atelier de démonstration",
+    "activite": "Pièces et services — Exemple fictif",
+    "coordonnees": "10 rue de l’Exemple\n67000 Strasbourg\ncontact@example.test\nIdentité et coordonnées fictives",
+    "piedCommun": "Présentation personnalisée de démonstration\nDocument fictif, sans valeur commerciale",
+    "logo": {
+      "mimeType": "image/png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAABAQMAAADZzn0AAAAABlBMVEXwCgoeQK81UCcVAAAAAnRSTlMA/1uRIrUAAAAKSURBVHicY/gPAAEBAQCxOPYUAAAAAElFTkSuQmCC"
+    }
+  },
+  "logoRegression": {
+    "formatSource": "PNG palette 1 bit + tRNS",
+    "largeur": 8,
+    "hauteur": 1,
+    "pixelsOpaques": 8,
+    "normalisation": "RGBA8 non entrelacé",
+    "pixelsPdfVerifies": true
+  },
+  "exemples": [
+    {
+      "fichier": "facture-personnalisee.pdf",
+      "pages": 1,
+      "sha256": "2c71f4bca021dfbab6c03c4c2f5a5709c6bd6a21b39a94cbb117762e5ef6ae7e"
+    },
+    {
+      "fichier": "devis-personnalise.pdf",
+      "pages": 2,
+      "sha256": "9eb4ebde6aa1ea05656847f4e10a1567d233d2264d62968830018dca8e43b9e1"
+    }
+  ]
+}

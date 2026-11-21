@@ -30,6 +30,16 @@
 .parametre-facts dd { margin: 0; overflow-wrap: anywhere; }
 .parametre-categories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; margin: 0; padding: 0; list-style: none; }
 .parametre-categories li { padding: 12px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; }
+.documents-pdf-summary { width: 100%; }
+.documents-pdf-multiline { white-space: pre-wrap; }
+.documents-pdf-saved-logo, .documents-pdf-logo-sample img { display: block; max-width: 160px; max-height: 80px; object-fit: contain; padding: 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: #ffffff; }
+.documents-pdf-logo { display: grid; gap: 12px; margin-block-start: 24px; padding-block-start: 18px; border-block-start: 1px solid var(--color-border); }
+.documents-pdf-logo h3 { margin: 0; font-size: 15px; }
+.documents-pdf-logo > button { justify-self: start; }
+.documents-pdf-logo-sample { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 12px; }
+.documents-pdf-logo-sample span { min-width: 0; overflow-wrap: anywhere; }
+.documents-pdf-preview-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-block-end: 16px; }
+.documents-pdf-preview-frame { display: block; width: 100%; height: min(62vh, 680px); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: #ffffff; }
 
 @media (max-width: 1100px) {
   .parametres-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }

@@ -46,7 +46,7 @@ sur des processus factices, sans accès à MariaDB.
 
 Le module `/parametres` administre la connexion MariaDB, les quotas API et
 de connexion, les emplacements, les secteurs clients, les catégories et
-sous-catégories, HTTPS et Turnstile. Appliquer la migration `0007` avec
+sous-catégories, la présentation des PDF, HTTPS et Turnstile. Appliquer la migration `0007` avec
 `npm run db:migrate` avant utilisation. Les paramètres techniques sont
 enregistrés hors Git dans `config/runtime/settings.json` ; MariaDB et HTTPS
 nécessitent un redémarrage pour appliquer leurs modifications.
@@ -80,6 +80,17 @@ Appliquer la migration `0012`, puis redémarrer l'API avant utilisation.
 Voir le [guide Devis](specs/devis.md) pour les garanties, le partage de fichier
 et la liste d'approvisionnement. `npm run test:devis` utilise des bases jetables ;
 `npm run test:devis:ui` vérifie l'interface avec une API simulée après le build.
+
+## Documents PDF
+
+Les [documents PDF](specs/documents-pdf-personnalisation.md) disposent d'une
+rubrique **Paramètres → Documents PDF**, réservée aux administrateurs :
+émetteur, sous-titre, coordonnées, logo PNG/JPEG et pied commun personnalisables,
+avec aperçu fictif du brouillon avant sauvegarde. Les nouveaux PDF générés
+utilisent ces réglages sans redémarrage ni migration supplémentaire.
+`npm run test:pdf` inclut leurs tests purs ; `npm run test:documents-pdf`
+complète la recette API sur une base jetable, et `npm run test:documents-pdf:ui`
+vérifie l'interface après le build avec une API simulée.
 
 ## Tests sur une base jetable
 

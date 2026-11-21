@@ -1,0 +1,17 @@
+[
+    {
+        "fichier":  "devis-personnalise.pdf",
+        "pages":  2,
+        "captures":  [
+                         "devis-personnalise-page-001.png",
+                         "devis-personnalise-page-002.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-personnalisee.pdf",
+        "pages":  1,
+        "captures":  [
+                         "facture-personnalisee-page-001.png"
+                     ]
+    }
+]

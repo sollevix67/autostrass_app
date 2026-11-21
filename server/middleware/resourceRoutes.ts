@@ -685,9 +685,10 @@ export function createApiRouter(): Router {
           clientInfo = await new ClientRepository(client).findById(vente.clientId)
         }
 
-        const pdfBuffer = await generateVentePdf(vente, clientInfo)
+        const pdfBuffer = await generateVentePdf(vente, clientInfo, getSettings().documentsPdf)
         response.setHeader('Content-Type', 'application/pdf')
         response.setHeader('Content-Disposition', `attachment; filename="facture-${vente.id}.pdf"`)
+        response.setHeader('Cache-Control', 'no-store')
         response.send(pdfBuffer)
       }),
     )

@@ -7,6 +7,7 @@ import { DevisRepository } from '../repositories/devisRepository.js'
 import { generateDevisPdf } from '../services/pdfDevis.js'
 import { pool } from '../db/client.js'
 import { RepositoryError } from '../repositories/simpleRepositories.js'
+import { getSettings } from '../services/settingsStore.js'
 
 export function createDevisRouter(): Router {
   const router = Router()
@@ -85,7 +86,7 @@ export function createDevisRouter(): Router {
     if (query.version !== undefined && query.version !== found.version) {
       throw new RepositoryError(409, 'DEVIS_CONFLICT', 'Ce devis a changé. Actualisez la liste avant de télécharger ou partager son PDF.')
     }
-    const buffer = await generateDevisPdf(found)
+    const buffer = await generateDevisPdf(found, getSettings().documentsPdf)
     response.setHeader('Content-Type', 'application/pdf')
     response.setHeader('Content-Disposition', `attachment; filename="devis-${found.numero}.pdf"`)
     response.setHeader('Cache-Control', 'no-store')

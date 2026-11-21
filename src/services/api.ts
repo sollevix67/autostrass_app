@@ -181,6 +181,8 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 export const api = {
   get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
   getBlob: (path: string, options?: RequestOptions) => request<Blob>('GET', path, options, 'blob'),
+  postBlob: (path: string, body?: unknown, options?: RequestOptions) =>
+    request<Blob>('POST', path, { ...options, body: body === undefined ? undefined : JSON.stringify(body) }, 'blob'),
   post: <T>(path: string, body?: unknown, options?: RequestOptions) =>
     request<T>('POST', path, { ...options, body: body === undefined ? undefined : JSON.stringify(body) }),
   put: <T>(path: string, body?: unknown, options?: RequestOptions) =>

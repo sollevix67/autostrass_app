@@ -3,11 +3,22 @@ import { APP_NAME } from '../../src/branding.js'
 import mysql from 'mysql2/promise'
 import { requireAuth, requireRole, type AuthenticatedRequest } from './auth.js'
 import { requireCsrf } from './csrf.js'
-import { handler, parseBody } from './crud.js'
-import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema, type DatabaseSettings } from '../../src/schemas/parametres.js'
+import { handler, parseBody, ValidationError } from './crud.js'
+import { apiLimitsSchema, loginLimitsSchema, caisseSettingsSchema, documentsPdfSettingsSchema, databaseSettingsSchema, turnstileSettingsSchema, httpsSettingsSchema, type DatabaseSettings } from '../../src/schemas/parametres.js'
 import { effectiveDatabaseSettings, getSettings, publicSettings, settingsError, updateSettings } from '../services/settingsStore.js'
 import { publicHttpsSettings, validateCertificate } from '../services/httpsSettings.js'
 import { verifyTurnstile } from '../services/turnstile.js'
+import { DocumentsPdfLogoError, validateDocumentsPdfSettings } from '../services/documentsPdfSettings.js'
+import { generateDocumentsPdfPreview } from '../services/pdfPreview.js'
+
+function parseDocumentsPdfSettings(body: unknown) {
+  const values = parseBody(documentsPdfSettingsSchema, body)
+  try { return validateDocumentsPdfSettings(values) }
+  catch (error) {
+    if (error instanceof DocumentsPdfLogoError) throw new ValidationError({ logo: error.message })
+    throw error
+  }
+}
 
 async function testDatabase(settings: DatabaseSettings) {
   let connection: Awaited<ReturnType<typeof mysql.createConnection>> | undefined
@@ -44,6 +55,19 @@ export function createSettingsRouter() {
     const values = parseBody(caisseSettingsSchema, request.body)
     await updateSettings((previous) => ({ ...previous, caisse: values }), (request as AuthenticatedRequest).user!.id)
     response.json(output())
+  }))
+  router.put('/documents-pdf', handler(async (request, response) => {
+    const values = parseDocumentsPdfSettings(request.body)
+    await updateSettings((previous) => ({ ...previous, documentsPdf: values }), (request as AuthenticatedRequest).user!.id)
+    response.json(output())
+  }))
+  router.post('/documents-pdf/apercu', handler(async (request, response) => {
+    const values = parseDocumentsPdfSettings(request.body)
+    const buffer = await generateDocumentsPdfPreview(values)
+    response.setHeader('Content-Type', 'application/pdf')
+    response.setHeader('Content-Disposition', 'inline; filename="apercu-documents.pdf"')
+    response.setHeader('Cache-Control', 'no-store')
+    response.send(buffer)
   }))
   router.post('/base-de-donnees/test', handler(async (request, response) => {
     const values = parseBody(databaseSettingsSchema, request.body)

@@ -1,4 +1,5 @@
 import type { DevisRow } from '../repositories/devisRepository.js'
+import { DEFAULT_DOCUMENTS_PDF_SETTINGS, type DocumentsPdfSettings } from '../../src/schemas/parametres.js'
 import { OPENSTRASS_PDF_COMPANY, formatCommercialDate, generateCommercialPdf } from './pdfCommercial.js'
 
 const statusLabels = {
@@ -9,7 +10,7 @@ const statusLabels = {
 }
 
 /** Rend exclusivement les coordonnées, prix et montants figés dans le devis. */
-export async function generateDevisPdf(devis: DevisRow): Promise<Buffer> {
+export async function generateDevisPdf(devis: DevisRow, settings: DocumentsPdfSettings = DEFAULT_DOCUMENTS_PDF_SETTINGS): Promise<Buffer> {
   const client = devis.clientSnapshot
   return generateCommercialPdf({
     title: 'DEVIS',
@@ -41,5 +42,5 @@ export async function generateDevisPdf(devis: DevisRow): Promise<Buffer> {
     })),
     totals: { totalHT: devis.totalHT, totalTVA: devis.totalTVA, totalTTC: devis.totalTTC },
     notes: devis.notes,
-  })
+  }, settings)
 }

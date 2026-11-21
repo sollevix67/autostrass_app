@@ -17,6 +17,8 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 export type TestEnvironment = {
   connection: Connection
   baseUrl: string
+  /** Fichier de configuration appartenant exclusivement à cet environnement jetable. */
+  settingsPath: string
   restartApi(options?: { expectHttpRedirect?: boolean }): Promise<void>
   runScript(path: string): Promise<void>
   close(): Promise<void>
@@ -244,7 +246,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
     }
 
     await restartApi()
-    return { connection, baseUrl, restartApi, runScript, close }
+    return { connection, baseUrl, settingsPath, restartApi, runScript, close }
   } catch (error) {
     let cleanupError = ''
     try {

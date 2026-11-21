@@ -64,7 +64,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 | Clients | CRUD, numéro personnalisable, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, documents/paiements, limites et tournées |
 | Véhicules | CRUD et statut | Kilométrage, entretien, carburant et coût/km |
 | Utilisateurs | Création/édition, rôles, activation et protections contre l'auto-verrouillage | Plannings, horaires, accès métier détaillés |
-| Paramètres | Neuf rubriques, référentiels, plafond Caisse, DB, quotas, HTTPS et Turnstile | Recette de déploiement réelle |
+| Paramètres | Dix rubriques, référentiels, plafond Caisse, présentation des PDF, DB, quotas, HTTPS et Turnstile | Recette de déploiement réelle |
 
 ## Contrats métier à préserver
 
@@ -123,6 +123,9 @@ Guides : [ouverture](specs/caisse-ouverture.md), [clôture](specs/caisse-cloture
 La facture `GET /api/ventes/:id/facture` et le devis `GET /api/devis/:id/pdf`
 existent. Les PDF refusent les URL et limitent les fichiers locaux aux quatre
 polices Roboto de pdfmake. Bons de commande/livraison et avoirs PDF restent à créer.
+En-tête, logo, coordonnées et pied commun configurables par l'admin ; les routes
+injectent les paramètres à chaque génération, sans réécriture métier. Les logos
+validés sont embarqués ; [guide](specs/documents-pdf-personnalisation.md).
 
 **Devis et commandes.** Numéros D/C uniques, six lettres aléatoires `a-zA-Z`,
 collation binaire, numéro/date immuables. Client, désignation et TVA figés, prix
@@ -696,3 +699,67 @@ Format JSON maintenu, derniers repères et empreintes de passation recalés.
 `origin/main` vérifié après fetch, sans changement concurrent. Livraison des
 commits `6cd4381`, `abc703b` et de Graphify/passation par commit puis push sur
 `origin/main` ; développement local conservé sur HTTP 3001/HTTPS 3443/Vite 5173.
+
+## Personnalisation des documents PDF — 21 novembre 2026
+
+Demande utilisateur : pouvoir personnaliser l'en-tête et le pied de page des
+documents PDF. Passation et Graphify relus avant intervention ; étude du
+gabarit partagé et des paramètres existants pour une configuration commune
+aux factures et devis, conservant la présentation et les données métier.
+Logo confirmé par l'utilisateur. Contrat partagé : émetteur 80 caractères,
+activité 180, coordonnées huit lignes de 120, pied commun six lignes de 100 ;
+PNG/JPEG embarqué facultatif, 256 Ko et 1 024 px maximum. Ancienne configuration
+compatible via les valeurs OpenStrass par défaut, sauvegarde admin atomique,
+aperçu fictif sans persistance ni accès métier, réglages lus à chaque génération.
+Schéma Zod partagé ajouté ; backend/PDF, interface et tests répartis entre les
+trois agents, documentation et recette isolée conduites par le conducteur.
+Décodeur JPEG `jpeg-js` 0.4.4 ajouté et verrouillé pour valider réellement les
+images, avec limites explicites ; aucun paquet natif ni dépendance transitive.
+Guide de personnalisation rédigé et relié aux paramètres et au gabarit partagé.
+Recherche des binaires MariaDB portables existants pour une recette indépendante
+de la base applicative et des réglages réels.
+Premier bootstrap portable interrompu par une mauvaise construction du tableau
+d'arguments PowerShell ; aucun service ni accès applicatif. La commande combinée
+de nettoyage a été refusée par la politique automatique avant exécution ; reprise
+non destructive avec des arguments séparés et vérifiés. MariaDB portable 11.4.5
+initialisée dans le dossier de recette, port 50930, connexion validée ; identifiants
+aléatoires dans un fichier privé hors dépôt. Bases et réglages jetables pour les tests.
+Backend/configuration/routes et interface implémentés ; compilation complète et
+lint global réussis, revue et recettes finales en cours. Précomposition mesurée
+des zones PDF ; première recette aux maxima révèle que `noWrap` ne respecte pas
+les LF d'un même nœud dans pdfmake. Passage à des nœuds distincts pour chaque
+ligne, puis revalidation ; émetteur/destinataire et données source conservés.
+Sept groupes Paramètres existants et mapping des erreurs SQL réussis. Les douze
+groupes commerciaux passent ; vérification aux maxima avec logo/textes complets,
+pied répété, lignes vides et totaux sur la dernière page conforme. Revue
+indépendante : PNG indexés 1/2/4 bits transparents peuvent perdre leur masque dans
+PDFKit malgré leur validité. Normalisation RGBA huit bits avant composition et
+régression sur une image opaque huit pixels en cours ; aucune donnée réelle touchée.
+PNG normalisés en RGBA huit bits non entrelacé, transparence et Adam7 conservés.
+Douze groupes unitaires Documents PDF réussis ; pixels et masques des vrais PDF
+contrôlés indépendamment, ainsi que 28 variantes par le backend. Code backend
+figé et compilé ; recettes API/UI et exemples personnalisés en cours. Commandes
+`test:pdf`, `test:documents-pdf` et `test:documents-pdf:ui` raccordées et documentées.
+Recette API réussie : **neuf groupes**, droits/CSRF, vingt refus de validation,
+aperçu sans persistance, sauvegardes concurrentes, application à chaud des vrais
+PDF Facture/Devis et redémarrage, avec tables/migrations conservées. Base/config
+de recette supprimées. **74 contrôles Chromium** réussis, vrais PDF fictifs/API
+simulée, saisie/annulation/timeout, erreur/sauvegarde exclusive, logos et mobile
+clair/sombre ; six captures. Raccord npm UI complété avec le chargeur `tsx`.
+Build/lint globaux finaux conformes ; commande npm UI exécutée avec succès,
+74 contrôles et six captures. Deux PDF personnalisés (une et deux pages), trois
+rendus natifs, logos source/préparé et rapport dans `specs/captures/documents-pdf/`.
+Les anciens dix PDF/43 PNG sont inchangés. Aperçu téléchargé vérifié ; iframe
+non visible dans les captures Chromium, rendu PDF contrôlé séparément sous Windows.
+Instance MariaDB portable arrêtée par SHUTDOWN après vérification de sa cible ;
+aucune base jetable restante. Suppression du dossier temporaire refusée par la
+politique automatique (« blocked by policy »), même avec chemin littéral vérifié.
+Dossier fictif hors dépôt conservé, fichier privé d'identifiants vidé ; aucun
+service de recette actif. Relance locale pour charger la nouvelle configuration.
+Relance vérifiée : API HTTP 3001, HTTPS 3443 et proxy Vite 5173 connectés en 200,
+certificat TLS 1.3 valide ; paramètres/aperçu anonymes refusés en 401. Ancien
+fichier de configuration chargé avec les valeurs PDF par défaut, sans sauvegarde.
+Inspection du conducteur : formulaire mobile et résumé conformes, logo/en-tête/
+pied des trois pages natifs lisibles ; deux SHA-256 d'exemples vérifiés.
+Diff et origine conformes, sans migration ni changement concurrent. Fonctionnalité,
+documentation et preuves prêtes pour commit ; Graphify actualisé depuis cette base.

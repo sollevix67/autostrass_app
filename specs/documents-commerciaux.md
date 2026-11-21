@@ -10,8 +10,8 @@ le même socle lors de l'implémentation de leurs modules PDF.
 
 A4 portrait, noir/gris, police Roboto embarquée et tableaux encadrés.
 
-- Marque OpenStrass centrée, signature « OpenStrass - Gestion commerciale et
-  logistique open source » et trait
+- Nom et sous-titre de l'émetteur personnalisables, avec OpenStrass et sa
+  signature par défaut, logo facultatif et trait
   horizontal ; l'identification du document est répétée sur les pages suivantes.
 - Émetteur à gauche, client à droite. Le nom connu de l'émetteur est toujours
   présent ; les coordonnées supplémentaires ne sont imprimées que si fournies.
@@ -27,9 +27,10 @@ A4 portrait, noir/gris, police Roboto embarquée et tableaux encadrés.
   propres au document. Aucun texte légal, horaire ou condition de retour n'est
   déduit automatiquement de la photo.
 
-L'identité actuelle utilise une marque typographique, commune aux adaptateurs.
-Les coordonnées complètes, mentions légales, logo propre et éventuels visuels
-de marques nécessitent des valeurs et assets confirmés. L'ancienne adresse et
+L'identité, les coordonnées, le logo et les mentions du pied de page sont
+[personnalisables dans les paramètres](documents-pdf-personnalisation.md),
+avec un aperçu fictif avant sauvegarde. Aucune valeur supplémentaire n'est
+fournie automatiquement. L'ancienne adresse et
 le téléphone de démonstration de la facture, ainsi que son délai de paiement
 « 30 jours fin de mois » sans donnée source, ont été retirés.
 
@@ -73,8 +74,8 @@ Le [gabarit partagé](../server/services/pdfCommercial.ts) expose une constructi
 de définition pure et la génération PDF. Les adaptateurs
 [Facture](../server/services/pdfInvoice.ts) et
 [Devis](../server/services/pdfDevis.ts) gardent leurs signatures et routes.
-L'identité commune est centralisée dans `OPENSTRASS_PDF_COMPANY`, depuis
-[les constantes de marque](../src/branding.ts).
+L'identité par défaut utilise [les constantes de marque](../src/branding.ts) ;
+les routes transmettent la configuration courante `documentsPdf` aux générateurs.
 
 Les ressources restent limitées aux quatre polices Roboto fournies par pdfmake ;
 les URL et autres fichiers locaux sont refusés avant téléchargement/lecture.
