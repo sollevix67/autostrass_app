@@ -570,3 +570,7 @@ Le bon automatique dépend de l'attribution des réceptions, encore à développ
 Numérotation du TODO conservée ; aucune règle de retour ou de départ déduite de
 la photo. Livraison documentaire uniquement, sans modification applicative ni
 base ; contrôles des liens et actualisation Graphify avant commit/push.
+Spécification et journal committés dans `a7c539d`. Mise à jour du graphe limitée
+à cette documentation et aux localisations de passation, sans appel API LLM.
+Vérification des liens locaux, empreintes et concordance HTML/JSON, puis
+livraison de cette référence sur `origin/main` ; le PDF BL reste à implémenter.
