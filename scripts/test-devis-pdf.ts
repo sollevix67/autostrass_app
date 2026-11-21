@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import pdfmake from 'pdfmake'
 import type { DevisRow } from '../server/repositories/devisRepository.js'
 import { generateDevisPdf } from '../server/services/pdfDevis.js'
+import { assertCommercialPages, assertLabeledPdfValue, capturePdfDefinitions, evaluatePdfCallback, pdfText, renderedPdfPages, tableByHeaders, visiblePdfDefinition } from './lib/pdf-assertions.js'
 
 const devis: DevisRow = {
   id: 7,
@@ -39,8 +40,7 @@ function verifyPdf(buffer: Buffer) {
   assert.match(buffer.toString('latin1'), /\/BaseFont \/[A-Z]+\+Roboto/)
 }
 
-const originalCreatePdf = pdfmake.createPdf
-const definitions: Record<string, unknown>[] = []
+const capture = capturePdfDefinitions()
 let downloads = 0
 const server = createServer((_request, response) => {
   downloads += 1
@@ -48,28 +48,35 @@ const server = createServer((_request, response) => {
 })
 
 try {
-  pdfmake.createPdf = (definition) => {
-    definitions.push(definition)
-    return originalCreatePdf.call(pdfmake, definition)
-  }
+  const source = structuredClone(devis)
   verifyPdf(await generateDevisPdf(devis))
-  const definition = definitions.at(-1)!
-  const contents = JSON.stringify(definition)
+  const definition = capture.latest().definition
+  const contents = visiblePdfDefinition(definition)
   for (const expected of [
     devis.numero, 'Atelier du Test', '000001', '12345678900011', 'devis@example.test',
     '21/11/2026', '21/12/2026', 'Brouillon', '0,13 EUR', '0,02 EUR', '0,15 EUR',
     '0,03 EUR', '0,12 EUR', '5,5', '<script>',
   ]) assert.ok(contents.includes(expected), `Le PDF doit conserver ${expected}`)
   assert.equal(typeof definition.footer, 'function')
-  assert.equal((definition.footer as (page: number, pages: number) => { text: string })(2, 4).text, 'Page 2 sur 4')
-  assert.ok(!contents.includes('Facture') && !contents.includes('NF525'), 'Un devis doit rester présenté comme un devis')
+  assert.ok(pdfText(evaluatePdfCallback(definition.footer, 2, 4)).includes('Page n° 2/4'))
+  assert.ok(!/\bfacture\b/i.test(contents) && !contents.includes('NF525'), 'Un devis doit rester présenté comme un devis')
+  assertLabeledPdfValue(definition, 'Total HT', '0,13 EUR')
+  assertLabeledPdfValue(definition, 'TVA', '0,02 EUR')
+  assertLabeledPdfValue(definition, 'Total TTC', '0,15 EUR')
+  const table = tableByHeaders(definition, ['Qté', 'Référence', 'Prix brut HT', 'Remise', 'Prix net HT', 'Montant HT / TTC', 'TVA Code / taux'])
+  const headers = table.body[0].map(pdfText)
+  const first = table.body.find((row) => row.some((cell) => pdfText(cell) === 'TVA-055'))!
+  assert.equal(pdfText(first[headers.indexOf('Prix brut HT')]), '—', 'Aucun prix brut reconstruit depuis le prix net')
+  assert.equal(pdfText(first[headers.indexOf('Remise')]), '—', 'Aucune remise inventée')
+  assert.deepEqual(devis, source, 'L’instantané du devis reste intact')
 
   for (const [statut, label] of [['envoyé', 'Envoyé'], ['converti', 'Converti en commande'], ['annulé', 'Annulé']] as const) {
     verifyPdf(await generateDevisPdf({ ...devis, statut }))
-    assert.ok(JSON.stringify(definitions.at(-1)).includes(label))
+    assert.ok(visiblePdfDefinition(capture.latest().definition).includes(label))
   }
   verifyPdf(await generateDevisPdf({ ...devis, notes: null, dateValidite: null }))
-  assert.ok(JSON.stringify(definitions.at(-1)).includes('Validité : non précisée'))
+  const noValidity = visiblePdfDefinition(capture.latest().definition)
+  assert.ok(noValidity.includes('Validité : Non précisée') && !noValidity.includes('21/12/2026'))
 
   const manyLines = Array.from({ length: 80 }, (_, index) => ({
     ligne: index + 1, reference: `REF-${index}`, designation: `Article de recette ${index + 1}`,
@@ -78,6 +85,7 @@ try {
   const multipage = await generateDevisPdf({ ...devis, articles: manyLines, totalHT: 2000, totalTVA: 400, totalTTC: 2400 })
   verifyPdf(multipage)
   assert.ok(Number(multipage.toString('latin1').match(/\/Count (\d+)/)?.[1]) > 1)
+  assertCommercialPages(await renderedPdfPages(capture.latest().output), devis.numero)
 
   await new Promise<void>((resolveListen, reject) => {
     server.once('error', reject)
@@ -95,7 +103,7 @@ try {
   await assert.rejects(pdfmake.createPdf({ content: [{ image: resolve('package.json') }] }).getBuffer(), /Access to local file denied by resource access policy/)
   verifyPdf(await generateDevisPdf(devis))
 } finally {
-  pdfmake.createPdf = originalCreatePdf
+  capture.restore()
   if (server.listening) await new Promise<void>((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose()))
 }
 

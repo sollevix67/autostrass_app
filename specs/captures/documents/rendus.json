@@ -1,0 +1,105 @@
+[
+    {
+        "fichier":  "devis-long.pdf",
+        "pages":  8,
+        "captures":  [
+                         "devis-long-page-001.png",
+                         "devis-long-page-002.png",
+                         "devis-long-page-003.png",
+                         "devis-long-page-004.png",
+                         "devis-long-page-005.png",
+                         "devis-long-page-006.png",
+                         "devis-long-page-007.png",
+                         "devis-long-page-008.png"
+                     ]
+    },
+    {
+        "fichier":  "devis-normal.pdf",
+        "pages":  1,
+        "captures":  [
+                         "devis-normal-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "devis-notes-longues.pdf",
+        "pages":  6,
+        "captures":  [
+                         "devis-notes-longues-page-001.png",
+                         "devis-notes-longues-page-002.png",
+                         "devis-notes-longues-page-003.png",
+                         "devis-notes-longues-page-004.png",
+                         "devis-notes-longues-page-005.png",
+                         "devis-notes-longues-page-006.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-date-seule.pdf",
+        "pages":  1,
+        "captures":  [
+                         "facture-date-seule-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-historique.pdf",
+        "pages":  1,
+        "captures":  [
+                         "facture-historique-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-longue.pdf",
+        "pages":  8,
+        "captures":  [
+                         "facture-longue-page-001.png",
+                         "facture-longue-page-002.png",
+                         "facture-longue-page-003.png",
+                         "facture-longue-page-004.png",
+                         "facture-longue-page-005.png",
+                         "facture-longue-page-006.png",
+                         "facture-longue-page-007.png",
+                         "facture-longue-page-008.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-normale.pdf",
+        "pages":  1,
+        "captures":  [
+                         "facture-normale-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "facture-taux-mixtes.pdf",
+        "pages":  1,
+        "captures":  [
+                         "facture-taux-mixtes-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "gabarit-bl-fictif.pdf",
+        "pages":  1,
+        "captures":  [
+                         "gabarit-bl-fictif-page-001.png"
+                     ]
+    },
+    {
+        "fichier":  "gabarit-tva-multiples.pdf",
+        "pages":  15,
+        "captures":  [
+                         "gabarit-tva-multiples-page-001.png",
+                         "gabarit-tva-multiples-page-002.png",
+                         "gabarit-tva-multiples-page-003.png",
+                         "gabarit-tva-multiples-page-004.png",
+                         "gabarit-tva-multiples-page-005.png",
+                         "gabarit-tva-multiples-page-006.png",
+                         "gabarit-tva-multiples-page-007.png",
+                         "gabarit-tva-multiples-page-008.png",
+                         "gabarit-tva-multiples-page-009.png",
+                         "gabarit-tva-multiples-page-010.png",
+                         "gabarit-tva-multiples-page-011.png",
+                         "gabarit-tva-multiples-page-012.png",
+                         "gabarit-tva-multiples-page-013.png",
+                         "gabarit-tva-multiples-page-014.png",
+                         "gabarit-tva-multiples-page-015.png"
+                     ]
+    }
+]

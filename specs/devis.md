@@ -36,6 +36,9 @@ et de conversion suivent la journée en Europe/Paris.
 Le PDF comprend le numéro, les dates, le statut, le client, les lignes et les
 totaux figés. Les téléchargements et le partage contrôlent la version affichée :
 un document modifié dans un autre onglet doit être actualisé avant son partage.
+Sa [présentation A4 commune](documents-commerciaux.md) reprend celle du modèle
+de bon de livraison, avec le même en-tête, bandeau, tableau, récapitulatif et pied
+de page que la facture ; la validité et le statut restent propres au devis.
 
 **Partager** prépare le PDF puis permet le partage de fichier natif lorsque le
 navigateur et l'appareil le proposent. En repli, télécharger le PDF, ouvrir

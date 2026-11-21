@@ -5,6 +5,9 @@ Référence fournie par l'utilisateur le 21 novembre 2026 :
 futur PDF de bon de livraison. La photo originale et ses coordonnées client ou
 bancaires ne sont pas versionnées ; les zones décrites ci-dessous sont génériques.
 
+La [présentation commune](documents-commerciaux.md) est aussi appliquée aux
+factures et devis existants ; les futurs bons et avoirs partageront ce gabarit.
+
 ## Présentation retenue
 
 Format **A4 portrait**, sobre et imprimable en noir et gris.
@@ -36,7 +39,7 @@ les totaux globaux apparaissent sur la dernière page, sans chevaucher le pied.
 
 | Zone | Donnée disponible | Complément nécessaire pour le BL |
 |---|---|---|
-| Société/logo | Marque dans les PDF existants | Identité d'entreprise et assets validés ; les coordonnées d'exemple de la facture ne constituent pas une configuration |
+| Société/logo | Marque et activité communes dans les PDF existants | Identité d'entreprise et assets confirmés ; anciennes coordonnées de démonstration retirées |
 | Client | `commandes.client_snapshot` sur les commandes récentes ; sinon fiche client | Instantané à l'émission, destinataire et adresse de livraison distincts |
 | Numéro | Identifiants internes et numéro C de commande | Numéro métier L propre au bon |
 | Date/heure/servi par | Dates d'expédition/prévision et timestamps techniques de livraison | Horodatage d'émission et identité authentifiée figés |

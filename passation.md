@@ -574,3 +574,51 @@ Spécification et journal committés dans `a7c539d`. Mise à jour du graphe limi
 à cette documentation et aux localisations de passation, sans appel API LLM.
 Vérification des liens locaux, empreintes et concordance HTML/JSON, puis
 livraison de cette référence sur `origin/main` ; le PDF BL reste à implémenter.
+
+## Présentation commune des documents — 21 novembre 2026
+
+Demande utilisateur : reprendre la présentation du modèle BL pour les autres
+documents. Passation, Graphify et modèle relus ; harmonisation des PDF Facture
+et Devis existants via un gabarit commercial A4 partagé. Répartition entre
+implémentation du gabarit/adaptateurs, tests/rendus PDF et revue indépendante.
+Les futurs commandes/BL/avoirs utiliseront ce socle à leur implémentation.
+Prix, TVA, historique, paiements, auteur et instantanés métier à conserver ;
+champs absents non inventés, ressources PDF locales restreintes.
+Gabarit partagé et adaptateurs Facture/Devis implémentés. Identité connue
+AUTOSTRASS/activité commune, coordonnées et échéance fictives anciennes retirées,
+mention de scellement non démontrée remplacée par l'identité neutre de vente.
+Valeurs reçues/rendues distinctes, dates Europe/Paris et sommes TVA par ligne
+préservées. Revue indépendante : notes longues pouvaient finir après les totaux ;
+correction par flux de notes puis ventilation et bloc final indivisible appliquée.
+Recettes PDF étendues et rendus fictifs en cours, sans accès à la base applicative.
+Rendus Facture/Devis inspectés : présentation commune conforme. Bloc émetteur
+gauche complété avec le nom connu et identité centralisée ; aucune coordonnée
+supplémentaire inventée. [Guide commun](specs/documents-commerciaux.md) rédigé,
+modèle BL et guide Devis reliés. Commande `test:pdf` élargie aux trois suites PDF.
+Build complet et lint global réussis ; suites finales/régénération des exemples
+après ce dernier ajustement en cours. Les anciens prix, taux, montants, auteur,
+paiements et numéros restent les données source ; aucune migration nécessaire.
+Les trois suites PDF et 11 groupes commerciaux sont réussis ; contrôle
+supplémentaire du conducteur : une désignation catalogue multiligne admissible
+de 249 caractères perdait sa fin dans une ligne indivisible. Pagination de
+tableau reprise pour conserver ce contenu, sans troncature ni changement métier ;
+régression permanente ajoutée avant livraison.
+Ligne multiligne corrigée : en-têtes répétés, 120 lignes et marqueur final
+conservés, totaux sur la dernière page. Bloc émetteur/identité commune et
+présentation définitive vérifiés ; validations PDF et compilation finales
+réexécutées après ces corrections. Répertoires données/repos/frontend inchangés.
+Validation finale : suites Facture/Devis/ressources, **12 groupes commerciaux**
+et **12 PDF réels** conformes (dix exemples fictifs conservés). Notes et
+désignations multilignes intégrales, taux mixtes/200 taux, répétitions et
+totaux de dernière page contrôlés ; build et lint réussis. API/Vite relancés
+en fenêtre masquée pour charger le nouveau gabarit ; contrôle health en cours.
+Relance vérifiée : API HTTP et HTTPS, proxy Vite connectés en 200, certificat
+HTTPS contrôlé. Aucune donnée ni configuration métier modifiée. Rendus finaux
+et rapport des documents à jour ; livraison du gabarit partagé puis Graphify.
+Exemples définitifs : dix PDF fictifs, 43 pages/PNG contrôlées, deux PDF
+supplémentaires de ligne haute vérifiés en mémoire. Gabarit retenu pour les
+factures, devis et futurs documents ; titres et champs propres restent adaptés.
+Liens/documentation et diff conformes, code et preuves prêts pour commit/push.
+Dernière fixture visuelle de notes complétée par des lignes entières et un
+marqueur final, afin d'éviter une fin de mot artificiellement tronquée dans
+l'exemple ; les régressions de pagination exactes restent distinctes et vertes.

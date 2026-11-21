@@ -1,0 +1,147 @@
+{
+  "groupes": 12,
+  "checks": [
+    "Facture A4 : identité/client/date Paris, reçu 40/rendu 10/TTC 30 distincts, informations absentes non inventées",
+    "Date seule et client de passage : aucune heure ni coordonnée déduite",
+    "Historique : TVA/TTC inconnus conservés même avec un taux fourni et un règlement de 137 EUR",
+    "Ventilation des taux mixtes : deux lignes de 0,05 EUR à 10 % conservent 0,02 EUR de TVA",
+    "Devis : instantané client, numéro sensible à la casse, validité et HT/TVA/TTC de ligne conservés",
+    "Facture longue et adresse multiligne : tableau/identification répétés, aucun texte superposé ou hors page, totaux uniquement à la fin",
+    "Devis long et notes : mêmes invariants de présentation, chiffres figés et récapitulatif final",
+    "Régression notes de 1 998 caractères : 397 lignes intactes, marqueur final et trois totaux globaux sur la dernière page",
+    "Désignation admissible de 249 caractères : 120 lignes et FIN_LIGNE conservés dans facture/devis, continuations paginées et totaux à la fin",
+    "Gabarit BL fictif : colonnes brut/remise/net/code, emplacement, référence et identité entreprise sont uniquement les valeurs fournies",
+    "Deux cents taux fictifs : chaque ligne et groupe reste lisible, ventilation paginée sans perte et totaux sur la dernière page",
+    "Génération et builder purs : aucune mutation des entrées ou des invariants métier"
+  ],
+  "exemples": [
+    {
+      "fichier": "facture-normale.pdf",
+      "pages": 1,
+      "sha256": "5165c60d6d6a5fad43952ea689855a1ddac7d3c9d95b0183bbf865552b1c37ae",
+      "lignesTexte": [
+        55
+      ]
+    },
+    {
+      "fichier": "facture-date-seule.pdf",
+      "pages": 1,
+      "sha256": "45506e0ecef95972ffcca6b8792474422b16432ab6641148bfa73a4763aff036",
+      "lignesTexte": [
+        49
+      ]
+    },
+    {
+      "fichier": "facture-historique.pdf",
+      "pages": 1,
+      "sha256": "9d9c6f5b5be957eded92a5d3afb5f9200a718176935909d2b70a77b7e75e169b",
+      "lignesTexte": [
+        55
+      ]
+    },
+    {
+      "fichier": "facture-taux-mixtes.pdf",
+      "pages": 1,
+      "sha256": "a876d0208685c808c16982ac32b73cf5cb0ff377ee0a9ee34141afe161fd7953",
+      "lignesTexte": [
+        93
+      ]
+    },
+    {
+      "fichier": "devis-normal.pdf",
+      "pages": 1,
+      "sha256": "feae0ff73a82ffdfaa3fa95125dab77a8ef80394ae906f2ed4ad144a9a3b8a41",
+      "lignesTexte": [
+        54
+      ]
+    },
+    {
+      "fichier": "facture-longue.pdf",
+      "pages": 8,
+      "sha256": "cea63e847bc89817d0cd404c9e780986ed47016746c77fe9ecb92ca5197d060e",
+      "lignesTexte": [
+        146,
+        180,
+        176,
+        180,
+        176,
+        180,
+        176,
+        77
+      ]
+    },
+    {
+      "fichier": "devis-long.pdf",
+      "pages": 8,
+      "sha256": "42369349829a84437f0d7f25dc36b8822d77a7712b892dea18dcac64028ec714",
+      "lignesTexte": [
+        146,
+        179,
+        175,
+        179,
+        175,
+        179,
+        175,
+        99
+      ]
+    },
+    {
+      "fichier": "devis-notes-longues.pdf",
+      "pages": 6,
+      "sha256": "5814e271116a8c85daaa74a51345fde94d1615de742ce73fa6c3acf0f565661e",
+      "lignesTexte": [
+        90,
+        79,
+        79,
+        79,
+        79,
+        65
+      ]
+    },
+    {
+      "fichier": "gabarit-bl-fictif.pdf",
+      "pages": 1,
+      "sha256": "4ee5a17b67094c56720f9aeb5f6d536e02175333a923de2a816d8a4a9b2a553b",
+      "lignesTexte": [
+        56
+      ]
+    },
+    {
+      "fichier": "gabarit-tva-multiples.pdf",
+      "pages": 15,
+      "sha256": "84e6b869ac097b1b022e5d3b9ac41f7d05bc7630a909917362594897f0a5cdad",
+      "lignesTexte": [
+        228,
+        249,
+        257,
+        257,
+        257,
+        257,
+        257,
+        257,
+        207,
+        149,
+        149,
+        149,
+        149,
+        149,
+        59
+      ]
+    }
+  ],
+  "casEnMemoire": [
+    {
+      "cas": "facture-ligne-haute",
+      "pages": 3,
+      "lignes": 120,
+      "marqueur": "FIN_LIGNE"
+    },
+    {
+      "cas": "devis-ligne-haute",
+      "pages": 3,
+      "lignes": 120,
+      "marqueur": "FIN_LIGNE"
+    }
+  ],
+  "donnees": "entièrement fictives"
+}
