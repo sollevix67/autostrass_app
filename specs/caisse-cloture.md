@@ -59,7 +59,8 @@ Les tests API réels restent réservés à une base jetable.
 - Focus, clavier, fermeture, réouverture et lecture seule.
 - Fenêtre sans débordement à 375, 768, 1 024 et 1 440 px, en clair et en sombre.
 
-Preuves : [rapport de vérification](screenshots/caisse-cloture/verification.json),
+Preuves :
+[rapport de vérification](screenshots/caisse-cloture/verification.json),
 [bureau clair](screenshots/caisse-cloture/cloture-desktop-light.png),
 [bureau sombre](screenshots/caisse-cloture/cloture-desktop-dark.png),
 [mobile clair](screenshots/caisse-cloture/cloture-mobile-light.png) et

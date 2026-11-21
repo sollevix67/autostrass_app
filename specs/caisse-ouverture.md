@@ -63,7 +63,8 @@ en cours de saisie et les erreurs de lecture/sauvegarde. Les tests API réels
 `npm run test:parametres` vérifient aussi la persistance après redémarrage,
 le plafond nul et les droits admin/CSRF sur une base jetable.
 
-Preuves : [rapport](screenshots/caisse-ouverture/verification.json),
+Preuves :
+[rapport](screenshots/caisse-ouverture/verification.json),
 [bureau clair](screenshots/caisse-ouverture/ouverture-desktop-light.png),
 [bureau sombre](screenshots/caisse-ouverture/ouverture-desktop-dark.png),
 [mobile clair](screenshots/caisse-ouverture/ouverture-mobile-light.png) et
