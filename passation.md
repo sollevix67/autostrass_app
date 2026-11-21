@@ -59,7 +59,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 | Devis | Numéro D, création/édition, PDF, partage volontaire email/WhatsApp, conversion C atomique et besoins courants | Recette messageries/PDA sur appareils ciblés |
 | Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
 | Commandes clients | Création, lignes, statuts, numéros C et TVA/client figés ; commandes issues d'un devis protégées | Bon PDF et approvisionnement des commandes directes |
-| Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut | Bons automatiques, numérotation, tournées et secteurs |
+| Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut ; modèle PDF documenté | Bons automatiques, numérotation, tournées et secteurs ; [modèle BL](specs/bon-livraison-modele.md) |
 | Retours | Création et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock, motifs et bons de refus |
 | Clients | CRUD, numéro personnalisable, SIRET professionnel, secteur facultatif | Autocomplétion adresse/SIREN/SIRET, documents/paiements, limites et tournées |
 | Véhicules | CRUD et statut | Kilométrage, entretien, carburant et coût/km |
@@ -552,3 +552,21 @@ Le CLI a aussi rafraîchi automatiquement sa compétence Claude globale avec
 sauvegarde de l'ancienne copie ; cache AST migré vers la version courante.
 Livraison regroupant les commits `f1b7ace`, `c3b75cb` et l'actualisation de
 Graphify/passation sur `origin/main`. Prochaine priorité : commandes fournisseurs.
+
+## Modèle de bon de livraison — 21 novembre 2026
+
+Exemple photographique fourni par l'utilisateur. Passation et Graphify relus ;
+analyse de la mise en page et comparaison avec les contrats Livraisons/Commandes.
+La photo sert de référence documentaire, sans déduire de nouvelles règles de
+retour, d'horaires ou de numérotation depuis son contenu. Préparation d'une
+spécification anonymisée ; les coordonnées client et bancaires du document ne
+sont pas copiées dans le dépôt. Revue du modèle de données confiée à un agent.
+Photo examinée et revue indépendante terminée : format A4, société/client,
+bandeau numéro/date/heure/auteur/référence, articles avec emplacement et prix,
+TVA/TTC et pied de page. [Spécification](specs/bon-livraison-modele.md) ajoutée.
+Champs manquants identifiés : identité entreprise, numéro L, lignes livrées,
+prix brut/remise, référence client/véhicule, auteur/heure d'émission et règlement.
+Le bon automatique dépend de l'attribution des réceptions, encore à développer.
+Numérotation du TODO conservée ; aucune règle de retour ou de départ déduite de
+la photo. Livraison documentaire uniquement, sans modification applicative ni
+base ; contrôles des liens et actualisation Graphify avant commit/push.
