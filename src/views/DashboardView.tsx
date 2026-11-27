@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { ApiMode, DashboardData } from '../types'
 import { Icon, type IconName } from '../components/Icon'
+import { formatEuros } from '../options'
 
 /** Iconographie du journal d'activite, indexee par type de mouvement. */
 const ACTIVITY_ICONS: Record<string, IconName> = {
@@ -16,20 +17,38 @@ type DashboardViewProps = {
 }
 
 export default function DashboardView({ dashboard, apiMode }: DashboardViewProps) {
+  const connected = apiMode === 'connected'
 
   return (
     <>
-      <section className="metric-grid" aria-label="Indicateurs du depot">
-        <article className="metric-card accent-coral"><div className="metric-icon">€</div><p>Valeur du stock</p><strong>{dashboard.stockValue.toLocaleString('fr-FR')} €</strong><span className="metric-trend positive">↗ 8,4% <em>vs mois dernier</em></span></article>
-        <article className="metric-card accent-blue"><div className="metric-icon">#</div><p>References actives</p><strong>{dashboard.references.toLocaleString('fr-FR')}</strong><span className="metric-trend positive">↗ 3,2% <em>vs mois dernier</em></span></article>
-        <article className="metric-card accent-yellow"><div className="metric-icon">!</div><p>Stock a surveiller</p><strong>{dashboard.lowStock}</strong><span className="metric-trend warning">Action requise <em>seuil minimum atteint</em></span></article>
-        <article className="metric-card accent-green"><div className="metric-icon">↗</div><p>Commandes en cours</p><strong>{dashboard.pendingOrders}</strong><span className="metric-trend neutral">3 a preparer <em>aujourd hui</em></span></article>
+      <section className="metric-grid" aria-label="Indicateurs du dépôt" aria-busy={apiMode === 'loading'}>
+        <article className="metric-card accent-coral">
+          <div className="metric-icon" aria-hidden="true">€</div>
+          <p>Valeur du stock</p>
+          <strong>{connected ? formatEuros(dashboard.stockValue) : '—'}</strong>
+        </article>
+        <article className="metric-card accent-blue">
+          <div className="metric-icon" aria-hidden="true">#</div>
+          <p>Références actives</p>
+          <strong>{connected ? dashboard.references.toLocaleString('fr-FR') : '—'}</strong>
+        </article>
+        <article className="metric-card accent-yellow">
+          <div className="metric-icon" aria-hidden="true">!</div>
+          <p>Stock à surveiller</p>
+          <strong>{connected ? dashboard.lowStock.toLocaleString('fr-FR') : '—'}</strong>
+          {connected && dashboard.lowStock > 0 && <span className="metric-trend warning">Seuil minimum atteint</span>}
+        </article>
+        <article className="metric-card accent-green">
+          <div className="metric-icon" aria-hidden="true">↗</div>
+          <p>Commandes en cours</p>
+          <strong>{connected ? dashboard.pendingOrders.toLocaleString('fr-FR') : '—'}</strong>
+        </article>
       </section>
 
       <div className="dashboard-grid">
         <section className="panel stock-panel">
           <div className="panel-heading">
-            <div><p className="panel-kicker">A surveiller</p><h2>Stock a reapprovisionner</h2></div>
+            <div><p className="panel-kicker">À surveiller</p><h2>Stock à réapprovisionner</h2></div>
             <Link className="text-button" to="/stock">Voir tout <span>→</span></Link>
           </div>
           <div className="table-wrap">
@@ -54,12 +73,12 @@ export default function DashboardView({ dashboard, apiMode }: DashboardViewProps
                   <tr key={item.reference}>
                     <td><b className="reference">{item.reference}</b></td>
                     <td><span className="item-name">{item.label}</span></td>
-                    <td><span className="location-tag">{item.location}</span></td>
+                    <td><span className="location-tag">{item.location || '—'}</span></td>
                     <td>
-                      <span className="stock-level"><i style={{ width: `${Math.min(100, item.quantity / item.minimum * 100)}%` }}></i></span>
+                      <span className="stock-level"><i style={{ width: `${item.minimum > 0 ? Math.min(100, item.quantity / item.minimum * 100) : 0}%` }}></i></span>
                       <b className="quantity">{item.quantity} <small>/ {item.minimum}</small></b>
                     </td>
-                    <td><Link className="row-action" to={`/catalogue?edit=${item.reference}`} aria-label={`Commander ${item.label}`}>•••</Link></td>
+                    <td><Link className="row-action" to={`/catalogue?edit=${encodeURIComponent(item.reference)}`} aria-label={`Modifier ${item.label}`}>•••</Link></td>
                   </tr>
                 ))}
               </tbody>

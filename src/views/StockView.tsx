@@ -281,7 +281,7 @@ export default function StockView() {
       width: '150px',
       render: (row) => (
         <div className="actions-cell">
-          <button className="action-btn" onClick={() => void adjustQuantity(row.reference, 1)} title="Ajouter 1" aria-label={`Ajouter 1 a ${row.reference}`} disabled={saving}>
+          <button className="action-btn" onClick={() => void adjustQuantity(row.reference, 1)} title="Ajouter 1" aria-label={`Ajouter 1 a ${row.reference}`} disabled={!canTransfer || offline || saving}>
             <Icon name="chevron-down" size="sm" />{" "}
             <span className="visually-hidden">Ajouter 1</span>
           </button>
@@ -290,19 +290,19 @@ export default function StockView() {
             onClick={() => void adjustQuantity(row.reference, -1)}
             title="Retirer 1"
             aria-label={`Retirer 1 a ${row.reference}`}
-            disabled={saving || row.quantite === 0}
+            disabled={!canTransfer || offline || saving || row.quantite === 0}
           >
             <Icon name="chevron-right" size="sm" />{" "}
             <span className="visually-hidden">Retirer 1</span>
           </button>
-          <button className="action-btn edit" disabled={!canTransfer || savingEdit} aria-haspopup="dialog" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
+          <button className="action-btn edit" disabled={!canTransfer || offline || saving} aria-haspopup="dialog" onClick={() => startEditing(row)} title="Modifier" aria-label={`Modifier ${row.reference}`}>
             <Icon name="edit" size="sm" />
           </button>
           {canTransfer && !offline && <Link className="action-btn" to={`/stock/inventaire?reference=${encodeURIComponent(row.reference)}`} title="Compter" aria-label={`Compter ${row.reference}`}><Icon name="clipboard" size="sm" /></Link>}
           <button className="action-btn transfert" onClick={() => openTransfert(row)} title="Transférer" aria-label={`Transférer ${row.reference}`} disabled={!canTransfer || offline || savingTransfert}>
             <Icon name="truck" size="sm" />
           </button>
-          <button className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={saving}>
+          <button className="action-btn delete" onClick={() => handleDelete(row)} title="Supprimer" aria-label={`Supprimer ${row.reference}`} disabled={!canTransfer || offline || saving}>
             <Icon name="trash" size="sm" />
           </button>
         </div>
@@ -317,7 +317,7 @@ export default function StockView() {
       title="Gestion du stock"
       description={
         offline
-          ? 'Mode hors ligne — les modifications seront synchronisees a la reconnexion'
+          ? 'La connexion au stock est interrompue. Rechargez les données pour reprendre les ajustements.'
           : 'Consultez, ajustez et organisez votre stock par emplacement'
       }
       actions={(
@@ -337,6 +337,7 @@ export default function StockView() {
         </>
       )}
     >
+      {error && !editing && <p className="error-banner" role="alert">{error} <button type="button" className="link-button" onClick={reload}>Recharger le stock</button></p>}
       {/* Metriques rapides */}
       <div className="stock-metrics">
         <div className="metric-card">

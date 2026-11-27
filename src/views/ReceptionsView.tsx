@@ -22,10 +22,11 @@ import { Icon } from '../components/Icon'
 import { ResourceBanners } from '../components/ResourceBanners'
 import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
 import { useResource } from '../hooks/useResource'
+import { useRemoteValue } from '../hooks/useRemoteValue'
 import { useAuth, canWrite } from '../components/useAuth'
 import { receptionSchema, type ReceptionFormValues, type DocumentLineFormValues } from '../schemas'
-import { SUPPLIER_OPTIONS, formatEuros, today } from '../options'
-import type { ApiReception } from '../services/contracts'
+import { formatEuros, today } from '../options'
+import type { ApiFournisseur, ApiReception } from '../services/contracts'
 
 /** Ligne vide : jamais de champ `undefined` dans un `useFieldArray`. */
 const EMPTY_LINE: DocumentLineFormValues = { reference: '', designation: '', quantite: 1, prixUnitaire: 0 }
@@ -49,12 +50,17 @@ export default function ReceptionsView() {
     path: '/receptions',
     sort: byDateDesc,
   })
+  const suppliers = useRemoteValue<ApiFournisseur[]>('/fournisseurs')
+  const supplierOptions = (suppliers.data ?? [])
+    .filter((supplier) => supplier.actif)
+    .map(({ nom }) => ({ value: nom, label: nom }))
 
   const {
     register,
     control,
     handleSubmit,
     reset,
+    setError,
     setFocus,
     watch,
     formState: { errors, isSubmitting },
@@ -133,7 +139,11 @@ export default function ReceptionsView() {
   }, [dialogOpen, closeReceptionDialog])
 
   const onSubmit = handleSubmit(async (values) => {
-    if (!canEdit || saving || pending.current) return
+    if (!canEdit || saving || pending.current || suppliers.loading) return
+    if (!supplierOptions.some((option) => option.value === values.fournisseur)) {
+      setError('fournisseur', { message: 'Sélectionnez un fournisseur actif dans l’annuaire.' }, { shouldFocus: true })
+      return
+    }
     pending.current = true
     setSubmitFailed(false)
     try {
@@ -229,7 +239,10 @@ export default function ReceptionsView() {
       description="Consultez l'historique et enregistrez les articles reçus de vos fournisseurs."
       actions={
         <>
-          <button type="button" className="secondary-button" onClick={reload} disabled={loading}>
+          <button type="button" className="secondary-button" onClick={() => {
+            reload()
+            suppliers.reload()
+          }} disabled={loading || suppliers.loading}>
             <Icon name="rotate-ccw" size="sm" /> Actualiser
           </button>
           {canEdit && (
@@ -302,7 +315,7 @@ export default function ReceptionsView() {
                 <FormSelect
                   label="Fournisseur"
                   name="fournisseur"
-                  options={SUPPLIER_OPTIONS}
+                  options={supplierOptions}
                   register={reg}
                   error={errors.fournisseur?.message}
                   required
@@ -316,6 +329,14 @@ export default function ReceptionsView() {
                   required
                 />
               </div>
+              {suppliers.loading ? <p role="status">Chargement de l’annuaire fournisseurs…</p> : supplierOptions.length === 0 && (
+                <div>
+                  {suppliers.error
+                    ? <p className="error-banner" role="alert">Annuaire fournisseurs indisponible. {suppliers.error}</p>
+                    : <p role="status">Aucun fournisseur actif. Ajoutez ou réactivez une fiche dans l’annuaire fournisseurs.</p>}
+                  <button type="button" className="secondary-button" onClick={suppliers.reload}>Actualiser les fournisseurs</button>
+                </div>
+              )}
 
               <h3 className="sub-heading">Articles recus</h3>
 
@@ -392,7 +413,7 @@ export default function ReceptionsView() {
                   Effacer
                 </button>
                 <button type="button" className="secondary-button" onClick={closeReceptionDialog}>Annuler</button>
-                <button type="submit" className="primary-button">
+                <button type="submit" className="primary-button" disabled={suppliers.loading || supplierOptions.length === 0}>
                   <Icon name="check" size="sm" /> {busy ? 'Enregistrement...' : 'Enregistrer la réception'}
                 </button>
               </div>

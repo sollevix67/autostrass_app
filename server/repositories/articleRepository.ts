@@ -1,5 +1,7 @@
-import type { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import type { Pool, PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import { MAX_STOCK } from '../../src/schemas/inventaire.js'
 import { settingsError } from '../services/settingsStore.js'
+import { RepositoryError } from './simpleRepositories.js'
 
 /**
  * Forme d'un article telle que renvoyee par l'API (camelCase),
@@ -104,10 +106,27 @@ function mapRow(row: ArticleRowPacket): ArticleRow {
   }
 }
 
+/** L'appelant détient déjà le verrou de l'article, comme pour un inventaire. */
+export async function lockArticleStock(connection: PoolConnection, articleId: number) {
+  const [balances] = await connection.query<RowDataPacket[]>(
+    'SELECT quantity FROM stock_balances WHERE reference_id = ? FOR UPDATE', [articleId],
+  )
+  if (!balances.length) throw new RepositoryError(409, 'INCONSISTENT_STOCK', 'Le solde de cet article est absent.')
+  const [stockRows] = await connection.query<RowDataPacket[]>(
+    'SELECT emplacement_id, quantite FROM stock_par_emplacements WHERE reference_id = ? ORDER BY emplacement_id FOR UPDATE', [articleId],
+  )
+  const totalQuantity = Number(balances[0].quantity)
+  const allocated = stockRows.reduce((sum, row) => sum + Number(row.quantite), 0)
+  const unallocatedQuantity = totalQuantity - allocated
+  const inconsistent = !Number.isInteger(totalQuantity) || totalQuantity < 0 || unallocatedQuantity < 0
+    || stockRows.some((row) => !Number.isInteger(Number(row.quantite)) || Number(row.quantite) < 0)
+  return { stockRows, totalQuantity, unallocatedQuantity, inconsistent }
+}
+
 export class ArticleRepository {
   constructor(private readonly pool: Pool) {}
 
-  private async validateCategory(connection: import('mysql2/promise').PoolConnection, input: ArticleInput, previous?: RowDataPacket) {
+  private async validateCategory(connection: PoolConnection, input: ArticleInput, previous?: RowDataPacket) {
     const [categories] = await connection.query<RowDataPacket[]>('SELECT id, code, actif FROM categories_articles WHERE code = ? FOR UPDATE', [input.category])
     if (!categories.length || (!categories[0].actif && previous?.category !== input.category)) throw settingsError('Choisissez une catégorie active.')
     const subId = input.sousCategorieId === undefined && previous?.category === input.category ? previous.sous_categorie_id : input.sousCategorieId ?? null
@@ -118,12 +137,38 @@ export class ArticleRepository {
     return subId ?? null
   }
 
-  private async saveCatalogueFields(connection: import('mysql2/promise').PoolConnection, reference: string, input: ArticleInput, previous?: RowDataPacket) {
+  private async saveCatalogueFields(connection: PoolConnection, reference: string, input: ArticleInput, previous?: RowDataPacket) {
     const tvaId = input.tvaId ?? previous?.tva_id ?? 1
     const [taxes] = await connection.query<RowDataPacket[]>('SELECT taux FROM tva WHERE id = ?', [tvaId])
     if (!taxes.length) throw settingsError('TVA inconnue.')
     const ttc = Math.round(input.prixUnitaireHT * (1 + Number(taxes[0].taux) / 100) * 100) / 100
     await connection.execute('UPDATE articles SET tva_id = ?, ean13 = ?, delai_disponibilite = ?, forcer_sur_commande = ?, prix_unitaire_ttc = ? WHERE reference = ?', [tvaId, input.ean13 === undefined ? previous?.ean13 ?? null : input.ean13, input.delaiDisponibilite ?? previous?.delai_disponibilite ?? 0, input.forcerSurCommande ?? previous?.forcer_sur_commande ?? false, ttc, reference])
+  }
+
+  private async writeStock(
+    connection: PoolConnection, articleId: number, change: Pick<ArticleInput, 'quantite' | 'minimum'> | { delta: number },
+  ) {
+    const { totalQuantity, unallocatedQuantity, inconsistent } = await lockArticleStock(connection, articleId)
+    const quantity = 'delta' in change ? totalQuantity + change.delta : change.quantite
+    const delta = quantity - totalQuantity
+    if (delta !== 0) {
+      if (inconsistent) {
+        throw new RepositoryError(409, 'INCONSISTENT_STOCK', 'La répartition du stock est incohérente. Effectuez un inventaire physique de cet article.')
+      }
+      if (-delta > unallocatedQuantity) {
+        throw new RepositoryError(409, 'INSUFFICIENT_STOCK',
+          `Le retrait dépasse le stock non affecté (${unallocatedQuantity}). Pour retirer des unités déjà affectées, transférez-les d’abord vers le stock non affecté.`)
+      }
+      if (quantity > MAX_STOCK) throw new RepositoryError(422, 'VALIDATION_ERROR', 'Le stock total dépasse la quantité maximale autorisée.')
+      await connection.execute(
+        "INSERT INTO stock_movements (reference_id, delta, reason) VALUES (?, ?, 'AJUSTEMENT_MANUEL')", [articleId, delta],
+      )
+    }
+    await connection.execute(
+      'UPDATE stock_balances SET quantity = ?, minimum_quantity = COALESCE(?, minimum_quantity) WHERE reference_id = ?',
+      [quantity, 'minimum' in change ? change.minimum : null, articleId],
+    )
+    return quantity
   }
 
   async list(): Promise<ArticleRow[]> {
@@ -205,13 +250,7 @@ export class ArticleRepository {
         return null
       }
 
-      await connection.execute(
-        `UPDATE stock_balances s
-            JOIN articles a ON a.id = s.reference_id
-            SET s.quantity = ?, s.minimum_quantity = ?
-          WHERE a.reference = ?`,
-        [input.quantite, input.minimum, reference],
-      )
+      await this.writeStock(connection, existing[0].id, input)
 
       await this.saveCatalogueFields(connection, reference, input, existing[0])
       await connection.commit()
@@ -225,7 +264,7 @@ export class ArticleRepository {
     return this.findByReference(reference)
   }
 
-  /** Ajuste la quantite d'un deltas borne a zero. Retourne la nouvelle quantite. */
+  /** Applique le delta exact au stock non affecté et renvoie le solde de l'opération. */
   async adjustQuantity(reference: string, delta: number): Promise<number | null> {
     const connection = await this.pool.getConnection()
     try {
@@ -242,23 +281,9 @@ export class ArticleRepository {
         return null
       }
 
-      await connection.execute(
-        `UPDATE stock_balances SET quantity = GREATEST(0, quantity + ?) WHERE reference_id = ?`,
-        [delta, articleId],
-      )
-
-      await connection.execute(
-        `INSERT INTO stock_movements (reference_id, delta, reason) VALUES (?, ?, 'AJUSTEMENT_MANUEL')`,
-        [articleId, delta],
-      )
-
+      const quantity = await this.writeStock(connection, articleId, { delta })
       await connection.commit()
-
-      const [updated] = await connection.query<Array<RowDataPacket & { quantity: number }>>(
-        `SELECT quantity FROM stock_balances WHERE reference_id = ?`,
-        [articleId],
-      )
-      return toNumber(updated[0]?.quantity)
+      return quantity
     } catch (error) {
       await connection.rollback()
       throw error

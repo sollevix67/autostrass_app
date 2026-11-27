@@ -56,6 +56,7 @@ export function useStock(): UseStockResult {
   const [editing, setEditing] = useState<Article | null>(null)
   const [nonce, setNonce] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
+  const adjusting = useRef(false)
 
   const reload = useCallback(() => {
     setLoading(true)
@@ -120,34 +121,26 @@ export function useStock(): UseStockResult {
     })
   }, [articles, filter, query])
 
-  /**
-   * Application optimiste : on affiche la nouvelle quantite immediatement,
-   * puis on confirme cote API. En cas d'erreur metier (hors API indisponible),
-   * on restaure la valeur precedente.
-   */
   const adjustQuantity = useCallback(
     async (reference: string, delta: number) => {
-      const current = articles.find((item) => item.reference === reference)
-      if (!current) return
-
-      const next: Article = { ...current, quantite: Math.max(0, current.quantite + delta) }
-      setArticles((prev) => prev.map((item) => (item.reference === reference ? next : item)))
-
+      if (adjusting.current) return
+      adjusting.current = true
+      setSaving(true)
       try {
-        await api.patch(`/articles/${encodeURIComponent(reference)}/quantite`, { delta })
+        const { quantite } = await api.patch<{ quantite: number }>(`/articles/${encodeURIComponent(reference)}/quantite`, { delta })
+        setArticles((prev) => prev.map((item) => item.reference === reference ? { ...item, quantite } : item))
         setError(null)
         setOffline(false)
       } catch (cause) {
         if (isAbortError(cause)) return
-        if (isApiUnavailable(cause)) {
-          setOffline(true)
-          return
-        }
-        setArticles((prev) => prev.map((item) => (item.reference === reference ? current : item)))
+        if (isApiUnavailable(cause)) setOffline(true)
         setError(toErrorMessage(cause))
+      } finally {
+        adjusting.current = false
+        setSaving(false)
       }
     },
-    [articles],
+    [],
   )
 
   const saveEditing = useCallback(async (): Promise<boolean> => {

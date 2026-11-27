@@ -1,8 +1,9 @@
 # Passation — OpenStrass
 
-État consolidé le **21 novembre 2026**, après livraison du module Devis,
-conversion en commande et besoins d'approvisionnement courants. Migration 0012
-appliquée à la base locale après sauvegarde et comparaison des données.
+État consolidé le **27 novembre 2026** après la correction des cinq constats
+sur le stock, le comptoir, l’installation, les réceptions et le tableau de bord.
+La migration 0012 des Devis a été appliquée à la base locale le 21 novembre
+après sauvegarde et comparaison des données.
 Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
 détaillées sont dans les guides liés. L'ancien journal reste disponible
 avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
@@ -11,7 +12,8 @@ avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
 
 Les **16 constats R01–R16** sont corrigés et testés ; détail, migration et preuves
 dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inventaire
-SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-depot-2026-11-27.md) recense cinq constats actuels.
+SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-depot-2026-11-27.md)
+et ses [correctifs](#reprise-des-cinq-correctifs-du-27-novembre-2026) couvrent cinq autres constats.
 
 1. Migration **0012** appliquée et développement redémarré sur `autostrass_test`
    le 21 novembre après sauvegarde ; vérifier les autres installations, dont 0011.
@@ -24,9 +26,7 @@ SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-de
 3. Vérifier les migrations et le redémarrage API sur chaque installation ;
    réaliser les recettes certificat, Cloudflare Turnstile et PDA Zebra TC22.
    L'authentification Android avec Turnstile reste à définir.
-4. Réconcilier le stock historique excédentaire par comptage explicite, sans
-   redistribution automatique ; recontrôler le proxy Vite après les anciens
-   `ECONNRESET` documentés lors de la recette transferts.
+4. Réconcilier le stock historique excédentaire par comptage physique.
 
 ## Architecture et repères
 
@@ -57,7 +57,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 | Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
 | Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF ; migration 0011 locale appliquée | Autres installations ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
 | Devis | Numéro D, création/édition, PDF, partage volontaire email/WhatsApp, conversion C atomique et besoins courants | Recette messageries/PDA sur appareils ciblés |
-| Fournisseurs/réceptions | Fournisseurs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
+| Fournisseurs/réceptions | Annuaire, sélection des fournisseurs actifs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
 | Commandes clients | Création, lignes, statuts, numéros C et TVA/client figés ; commandes issues d'un devis protégées | Bon PDF et approvisionnement des commandes directes |
 | Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut ; modèle PDF documenté | Bons automatiques, numérotation, tournées et secteurs ; [modèle BL](specs/bon-livraison-modele.md) |
 | Retours | Création et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock, motifs et bons de refus |
@@ -178,7 +178,10 @@ Ce statut ne remplace pas une vérification de chaque installation. Sauvegarder,
 comparer schéma/journal, lancer `npm run db:migrate` puis redémarrer l'API ; ne pas
 compléter artificiellement le journal. `database/schema.sql` est le socle catalogue
 v1 ; seeds réservés à la démonstration, allocations incohérentes signalées sans
-les redistribuer. Aucun accès à la base applicative pendant la revue ni les correctifs.
+les redistribuer. Une base vierge s’installe avec `npm run db:migrate`, puis
+`npm run db:admin -- "Prénom" "Nom" "email"` pour créer son premier
+administrateur. La démonstration se charge sur demande avec `npm run db:seed`.
+La [procédure](README.md#première-installation) précise le choix de la connexion.
 
 `.env.example` → `.env`, `DB_*`, `JWT_SECRET` ≥32 caractères. `/api/health` distingue
 `connected`, `unavailable`, `unconfigured` ; pannes SQL → `503 DATABASE_UNAVAILABLE`
@@ -190,7 +193,8 @@ magasinier : dépôt ; caissier : caisse/documents. Ne jamais versionner secrets
 ## Vérifications et outils
 
 Commandes courantes : `npm ci`, `npm run dev`/`dev:api`, `build`, `lint`, `preview`,
-`test:errors`, `test:pdf`, `test:ventes`, `test:devis`, `test:devis:ui`.
+`test:errors`, `test:pdf`, `test:ventes`, `test:devis`, `test:devis:ui` et
+`test:installation`.
 `test:stock`, `test:inventaire`, `test:integration`,
 `test:parametres` et `test:utilisateurs:ui` créent une base/API jetable via
 `TEST_DB_*` (compte pouvant créer/supprimer une base). Les appels directs
@@ -813,3 +817,56 @@ de base à l’actualisation de Graphify.
 Graphify 0.9.115 relie le rapport à la passation. Les exports HTML et JSON
 concordent sur 3 593 nœuds et 7 796 liens, répartis en 209 communautés.
 Les empreintes du manifeste ont été vérifiées. Le parseur SQL facultatif est absent.
+
+## Reprise des cinq correctifs du 27 novembre 2026
+
+Reprise sur `57301ac`, avec un arbre propre. La passation, le rapport de revue
+et les exports Graphify ont été relus. Les travaux portent sur le retrait de
+stock, les prix du comptoir, l’installation sur base vide, le choix du
+fournisseur à la réception et les indicateurs du tableau de bord.
+
+Une instance MariaDB 11.4.5 a été démarrée sur un port local distinct pour
+les recettes. Les réceptions chargent l’annuaire et gardent le nom dans le
+document. Le tableau de bord compte les commandes en attente, validées ou
+expédiées et lit directement les articles au seuil. Les cartes et le badge de
+stock utilisent les valeurs servies. Au comptoir, 65 contrôles Chromium avec
+API simulée couvrent notamment la panne du catalogue, la reprise au prix réel
+et la conservation du panier.
+
+Sur MariaDB jetable, le retrait et l’édition catalogue renvoient 409 si la
+quantité demandée entame le stock affecté. Les 19 scénarios stock et les
+14 scénarios inventaire passent, y compris l’annulation des écritures si le
+journal échoue. Chromium a vérifié un retrait refusé, un retrait accepté au
+solde renvoyé par le serveur et la conservation de la saisie catalogue.
+
+Les 136 contrôles API, 59 contrôles de sécurité, 27 groupes Devis et
+concurrence, 11 groupes ventes/caisse, 9 groupes fiscaux, les tests PDF,
+le mapping des erreurs, le build et Oxlint passent. Les 53 contrôles Chromium
+des réceptions, du tableau de bord et des écrans associés passent en
+développement et en production avec une API simulée. Un second parcours
+Chromium sur API et MariaDB réelles a créé un fournisseur depuis son annuaire,
+enregistré deux pièces à 15,50 € HT et relu la réception après désactivation
+du fournisseur. Les compteurs affichés concordent avec les requêtes SQL.
+
+La recette Windows a reproduit les coupures du proxy Vite sur le stock.
+Une connexion HTTP persistante entre Vite et Express a donné 24 réponses
+réussies sur 24 sur les lectures de santé, articles et stock, contre 9 sur
+24 avec l’ancienne configuration. Six navigations et rechargements Chromium
+ont réussi avec la configuration corrigée, puis les écritures autorisées et
+les refus de stock ont été vérifiés sur l’API jetable.
+
+L’installation sépare le socle catalogue et les exemples. Les sept groupes
+de `test:installation` vérifient notamment les treize empreintes Drizzle sur
+base vierge, la connexion du premier administrateur créé une seule fois, le
+rejeu d’une migration, la cible effective du seed et son rollback. Le seed
+conserve le stock non affecté et les répartitions existantes. Deux migrateurs
+concurrents ont aussi achevé une installation auparavant arrêtée à `0005`.
+
+Le commit `458edbe` contient l’installation. Après le dernier changement de
+seed et du proxy, les suites installation, intégration, ventes, devis et les
+30 contrôles des processus de développement passent. Le build produit
+643,36 kB de JavaScript minifié (185,13 kB gzip) et conserve l’avertissement
+Vite du seuil de 500 kB. Les bases de recette et le fichier d’identifiants ont
+été supprimés, puis l’arrêt de MariaDB a été vérifié. Les journaux, captures et
+fichiers de l’instance arrêtée restent dans `%TEMP%/openstrass-reprise-52d4bbd0ab`
+après le refus du nettoyage récursif par le contrôle automatique.

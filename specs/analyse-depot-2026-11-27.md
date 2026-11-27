@@ -2,6 +2,8 @@
 
 Révision examinée `cf7b952`. La revue suit les parcours du magasinier, du caissier et d’une personne qui installe l’application sur une base vide. Les essais SQL utilisent une instance MariaDB 11.4.5 créée pour la revue. Les essais d’interface utilisent Chrome et des réponses HTTP simulées.
 
+Les cinq constats ci-dessous décrivent cette révision. Les correctifs et les résultats de leurs recettes sont consignés dans la [passation du 27 novembre](../passation.md#reprise-des-cinq-correctifs-du-27-novembre-2026).
+
 ## Architecture et couverture métier
 
 OpenStrass réunit dans un dépôt l’interface React 19, l’API Express 5 et treize migrations MariaDB. React Router distribue les écrans, les hooks et le client HTTP chargent les données, puis les routes Express valident les écritures et appellent les dépôts de données. Les dépôts utilisent Drizzle et des requêtes SQL explicites pour les opérations qui exigent des verrous. [Routes de l’interface](../src/App.tsx#L226) · [Client HTTP](../src/services/api.ts#L148) · [API](../server/index.ts#L808) · [Journal des migrations](../database/drizzle/meta/_journal.json)

@@ -1,4 +1,5 @@
 import type { Response } from 'express'
+import { MAX_STOCK } from '../../src/schemas/inventaire.js'
 
 /** Resultat d'une validation de corps de requete. */
 type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> }
@@ -56,6 +57,19 @@ function readNumber(source: Record<string, unknown>, key: string, errors: Record
     return min
   }
   return Math.round(parsed * 100) / 100
+}
+
+function integerValue(raw: unknown): number {
+  if (typeof raw === 'number') return raw
+  return typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : NaN
+}
+
+function readStockQuantity(raw: unknown, key: string, errors: Record<string, string>): number {
+  const quantity = integerValue(raw)
+  if (!Number.isInteger(quantity) || quantity < 0 || quantity > MAX_STOCK) {
+    errors[key] = 'Saisissez une quantité entière entre 0 et 2 147 483 647.'
+  }
+  return quantity
 }
 
 /** Donnees attendues pour creer un emplacement. */
@@ -235,8 +249,8 @@ export function validateArticleBody(body: unknown, options: { partial?: boolean 
     category: readString(source, 'category', MAX_LENGTHS.category, required, errors),
     emplacement: readString(source, 'emplacement', MAX_LENGTHS.emplacement, false, errors),
     prixUnitaireHT: readNumber(source, 'prixUnitaireHT', errors),
-    quantite: readNumber(source, 'quantite', errors),
-    minimum: readNumber(source, 'minimum', errors),
+    quantite: readStockQuantity(source['quantite'], 'quantite', errors),
+    minimum: readStockQuantity(source['minimum'], 'minimum', errors),
   }
 
   const description = readString(source, 'description', 2000, false, errors)
@@ -265,13 +279,13 @@ export function validateArticleBody(body: unknown, options: { partial?: boolean 
   return Object.keys(errors).length > 0 ? { ok: false, errors } : { ok: true, value }
 }
 
-/** Valide un deltas d'ajustement de stock. */
+/** Valide un delta d'ajustement de stock. */
 export function validateDelta(body: unknown): ValidationResult<number> {
   if (typeof body !== 'object' || body === null) {
     return { ok: false, errors: { body: 'Un objet JSON est attendu.' } }
   }
   const raw = (body as Record<string, unknown>).delta
-  const parsed = typeof raw === 'number' ? raw : Number.parseInt(String(raw), 10)
+  const parsed = integerValue(raw)
   if (!Number.isInteger(parsed) || parsed === 0) {
     return { ok: false, errors: { delta: 'Un entier different de zero est attendu.' } }
   }

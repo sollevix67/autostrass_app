@@ -75,6 +75,15 @@ lorsque plusieurs sont disponibles.
 
 - La quantité non affectée vaut le total de `stock_balances` moins la somme
   des allocations de `stock_par_emplacements`.
+- Les boutons Ajouter et Retirer ainsi que le champ Quantité du catalogue
+  ajustent le stock non affecté. Pour retirer une pièce déjà rangée, le
+  magasinier la transfère d’abord vers « Aucun (stock non affecté) ».
+  Si le retrait dépasse ce stock, l’API répond `409 INSUFFICIENT_STOCK`.
+  Une variation validée inscrit son delta exact comme `AJUSTEMENT_MANUEL`
+  dans la transaction qui modifie le solde.
+- Une répartition historique incohérente exige un inventaire physique avant
+  de modifier le total. Le catalogue permet encore de modifier la désignation,
+  le prix ou le seuil si la quantité reste identique.
 - La source, le solde global et les allocations sont contrôlés dans une
   transaction avec verrouillage. Deux transferts concurrents ne peuvent pas
   consommer la même quantité disponible.
@@ -127,9 +136,10 @@ ses routes existantes.
 
 ## Vérification
 
-`npm run test:stock` crée une base et une API jetables et couvre 13 scénarios
-de transfert, dont les refus sans écriture, le stock non affecté, les deux
-alias de destination, la concurrence et le rollback après échec du journal.
+`npm run test:stock` crée une base et une API jetables. Ses 19 scénarios
+couvrent les transferts, les retraits et l’édition du catalogue, y compris les
+opérations concurrentes sur le stock non affecté et l’annulation des écritures
+en cas d’échec du journal.
 `npm run test:integration` ajoute les suites API et sécurité à ce même
 environnement isolé. Voir le README pour les paramètres `TEST_DB_*`.
 

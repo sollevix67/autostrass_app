@@ -76,22 +76,6 @@ export const RETURN_REASON_OPTIONS: SelectOption[] = [
 ]
 
 /**
- * Fournisseurs du jeu de demonstration.
- *
- * Le cahier des charges demande un carnet de fournisseurs (module non
- * commence) : le fournisseur est aujourd'hui une simple chaîne sur la
- * reception. Cette liste sert de repli tant que la table `fournisseurs` n'existe
- * pas, et sera remplacee par une lecture de l'API.
- */
-export const SUPPLIER_OPTIONS: SelectOption[] = [
-  { value: 'Auto Pieces Nord', label: 'Auto Pieces Nord' },
-  { value: 'Frein Plus', label: 'Frein Plus' },
-  { value: 'Filtre Pro', label: 'Filtre Pro' },
-  { value: 'Batterie Express', label: 'Batterie Express' },
-  { value: 'Huile Max', label: 'Huile Max' },
-]
-
-/**
  * Denominations du comptage de caisse, de la plus forte a la plus faible.
  *
  * Ce sont des **montants en euros**, pas des indices : `100` represente un

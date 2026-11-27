@@ -26,7 +26,7 @@ async function login(email: string): Promise<Session> {
 }
 
 async function call<T = { error?: string }>(
-  path: string, session?: Session, body?: unknown, includeCsrf = true,
+  path: string, session?: Session, body?: unknown, includeCsrf = true, method = body === undefined ? 'GET' : 'POST',
 ): Promise<{ status: number; body: T }> {
   const headers: Record<string, string> = {}
   if (session) headers.cookie = session.cookie
@@ -35,7 +35,7 @@ async function call<T = { error?: string }>(
     if (session && includeCsrf) headers['x-csrf-token'] = session.csrf
   }
   const response = await fetch(`${baseUrl}/api${path}`, {
-    method: body === undefined ? 'GET' : 'POST',
+    method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: AbortSignal.timeout(15000),
@@ -83,10 +83,10 @@ try {
 
   async function snapshot() {
     const [balance] = await connection.query<RowDataPacket[]>(
-      'SELECT quantity FROM stock_balances WHERE reference_id = ?', [articleId],
+      'SELECT quantity, minimum_quantity FROM stock_balances WHERE reference_id = ?', [articleId],
     )
     const [legacy] = await connection.query<RowDataPacket[]>(
-      'SELECT location, emplacement_id FROM articles WHERE id = ?', [articleId],
+      'SELECT designation, location, emplacement_id FROM articles WHERE id = ?', [articleId],
     )
     const [allocations] = await connection.query<RowDataPacket[]>(
       'SELECT emplacement_id, quantite FROM stock_par_emplacements WHERE reference_id = ? ORDER BY emplacement_id', [articleId],
@@ -97,7 +97,7 @@ try {
     const [audit] = await connection.query<RowDataPacket[]>(
       "SELECT utilisateur_id, action, details FROM journal_actions WHERE entite = 'article' AND entite_id = ? ORDER BY id", [reference],
     )
-    return { total: Number(balance[0].quantity), allocations, movements, audit, legacy }
+    return { total: Number(balance[0].quantity), minimum: Number(balance[0].minimum_quantity), allocations, movements, audit, legacy }
   }
 
   async function distribution(): Promise<ApiArticleEmplacements> {
@@ -207,6 +207,82 @@ try {
   equal(refused.body.error, 'INCONSISTENT_STOCK')
   deepEqual(await snapshot(), inconsistent)
   passed('Allocations historiques excédentaires signalées sans réécriture')
+
+  const catalogue = (await call<ArticleRow>(articlePath, magasinier)).body
+  function editQuantity(quantite: number, designation = 'Article modifié', minimum = 2) {
+    return call<ArticleRow & { error?: string }>(articlePath, magasinier, {
+      ...catalogue, category: 'freins', designation, minimum, quantite,
+    }, true, 'PUT')
+  }
+  function adjust(delta: number | string) {
+    return call<{ quantite?: number, error?: string }>(`${articlePath}/quantite`, magasinier, { delta }, true, 'PATCH')
+  }
+
+  equal((await adjust(1)).body.error, 'INCONSISTENT_STOCK')
+  equal((await editQuantity(12)).body.error, 'INCONSISTENT_STOCK')
+  deepEqual(await snapshot(), inconsistent)
+  equal((await editQuantity(inconsistent.total, 'Ancien article', 3)).status, 200)
+  const metadata = await snapshot()
+  equal(metadata.minimum, 3)
+  deepEqual(metadata.allocations, inconsistent.allocations)
+  deepEqual(metadata.movements, inconsistent.movements)
+  passed('Un stock historique excédentaire exige un inventaire pour modifier sa quantité')
+
+  await reset([[source, 3], [destination, 2]], 5)
+  const fullyAllocated = await snapshot()
+  for (const result of [await adjust(-1), await editQuantity(4)]) {
+    equal(result.status, 409)
+    equal(result.body.error, 'INSUFFICIENT_STOCK')
+  }
+  deepEqual(await snapshot(), fullyAllocated)
+  equal((await transfer({ source_emplacement_id: source, emplacement_id: null, quantite: 1 })).status, 200)
+  equal((await adjust(-1)).body.quantite, 4)
+  equal((await distribution()).quantiteNonAffectee, 0)
+  passed('Retrait et édition sous les allocations refusés, transfert puis retrait exact possibles')
+
+  await reset([[source, 5]], 10)
+  equal((await adjust(-5)).body.quantite, 5)
+  equal((await adjust(2)).body.quantite, 7)
+  equal((await editQuantity(6)).body.quantite, 6)
+  equal((await editQuantity(6)).body.quantite, 6)
+  const changed = await snapshot()
+  deepEqual(changed.allocations, [{ emplacement_id: source, quantite: 5 }])
+  deepEqual(changed.movements, [-5, 2, -1].map((delta) => ({ delta, reason: 'AJUSTEMENT_MANUEL' })))
+  passed('Stock non affecté ajusté et chaque variation réelle journalisée une fois, y compris en édition')
+
+  await reset([], 0)
+  equal((await adjust(-1)).body.error, 'INSUFFICIENT_STOCK')
+  equal((await adjust('1.5')).status, 422)
+  equal((await editQuantity(0.001)).status, 422)
+  deepEqual((await snapshot()).movements, [])
+  await reset([], 2_147_483_647)
+  equal((await adjust(1)).status, 422)
+  equal((await snapshot()).total, 2_147_483_647)
+  passed('Stock vide, quantités fractionnaires et dépassement de capacité refusés sans mouvement')
+
+  await reset()
+  const beforeAdjustmentFailure = await snapshot()
+  await connection.query(`CREATE TRIGGER test_refuse_adjustment BEFORE INSERT ON stock_movements
+    FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Echec mouvement simule'`)
+  try {
+    equal((await adjust(-1)).status, 500)
+    equal((await editQuantity(7, 'Changement annulé', 4)).status, 500)
+    deepEqual(await snapshot(), beforeAdjustmentFailure)
+  } finally {
+    await connection.query('DROP TRIGGER test_refuse_adjustment')
+  }
+  passed('Échec du journal de stock : ajustement et édition annulés')
+
+  for (const withdrawal of [() => adjust(-3), () => editQuantity(7)]) {
+    await reset([[source, 6]], 10)
+    const [removed, moved] = await Promise.all([
+      withdrawal(), transfer({ source_emplacement_id: null, emplacement_id: destination, quantite: 3 }),
+    ])
+    ok((removed.status === 200 && moved.status === 400) || (removed.status === 409 && moved.status === 200))
+    equal((await distribution()).quantiteNonAffectee, 1)
+    equal((await snapshot()).movements.length, 1)
+  }
+  passed('Ajustement ou édition en concurrence avec un transfert : le stock disponible ne sert qu’une fois')
 
   for (const origin of [source, null]) {
     await reset(origin === null ? [] : [[source, 10]])

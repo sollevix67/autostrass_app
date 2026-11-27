@@ -6,7 +6,7 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import { createServer as createHttpsServer } from 'https'
 import { createServer as createHttpServer } from 'http'
-import { ArticleRepository } from './repositories/articleRepository.js'
+import { ArticleRepository, lockArticleStock } from './repositories/articleRepository.js'
 import { notFound, sendValidationError, validateArticleBody, validateDelta, validateEmplacementBody, validateEmplacementPatch, validateTransfertBody } from './middleware/validation.js'
 import { errorHandler } from './middleware/crud.js'
 import { createAuthRouter } from './middleware/authRoutes.js'
@@ -28,17 +28,6 @@ const app = express()
 const port = Number(process.env.PORT ?? 3001)
 
 const articles = pool ? new ArticleRepository(pool) : null
-
-type LowStockItem = { reference: string; label: string; quantity: number; minimum: number; location: string }
-
-const emptyDashboard = {
-  stockValue: 0,
-  references: 0,
-  lowStock: 0,
-  pendingOrders: 0,
-  lowStockItems: [] as LowStockItem[],
-  activity: [] as Array<{ type: string; title: string; detail: string; time: string }>,
-}
 
 app.use(express.json({ limit: '1mb' }))
 
@@ -103,22 +92,20 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
   try {
     // `references` est un mot-clé réservé en MariaDB → on évite l'alias.
     // `unit_price_ht` est expose par la vue sous le nom `prix_unitaire_ht`.
-    const [rows] = await pool!.query<Array<RowDataPacket & { stock_value: number; total_references: number; low_stock: number; low_stock_items: string }>>(
+    const [[summary]] = await pool.query<RowDataPacket[]>(
       `SELECT
         COALESCE(SUM(quantity * prix_unitaire_ht), 0) AS stock_value,
-        COUNT(*)                                        AS total_references,
-        SUM(CASE WHEN quantity <= minimum THEN 1 ELSE 0 END) AS low_stock,
-        COALESCE(JSON_ARRAYAGG(JSON_OBJECT(
-          'reference', reference,
-          'label',     designation,
-          'quantity',  quantity,
-          'minimum',   minimum,
-          'location',  emplacement
-        )), JSON_ARRAY()) AS low_stock_items
+        COUNT(*) AS total_references,
+        COUNT(CASE WHEN quantity <= minimum THEN 1 END) AS low_stock,
+        (SELECT COUNT(*) FROM commandes WHERE statut IN ('en attente', 'validée', 'expédiée')) AS pending_orders
       FROM v_stock`,
     )
-
-    const [movements] = await pool!.query<Array<RowDataPacket & { type: string; title: string; detail: string; created_at: Date }>>(
+    const [lowStockItems] = await pool.query<RowDataPacket[]>(
+      `SELECT reference, designation AS label, quantity, minimum, emplacement AS location
+       FROM v_stock WHERE quantity <= minimum
+       ORDER BY quantity, minimum, reference LIMIT 8`,
+    )
+    const [movements] = await pool.query<Array<RowDataPacket & { type: string; title: string; detail: string; created_at: Date }>>(
       `SELECT
         CASE WHEN m.reason = 'TRANSFERT' THEN 'TRANSFERT' ELSE 'INVENTAIRE' END AS type,
         a.designation AS title,
@@ -131,29 +118,11 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
       LIMIT 8`,
     )
 
-    // JSON_ARRAYAGG ne supporte pas de filtre : on agrege tout puis on ne garde
-    // que les lignes sous le seuil, ce qui évite une sous-requête corrélée.
-    const parsed: unknown = rows[0]?.low_stock_items
-    const allItems: LowStockItem[] = Array.isArray(parsed)
-      ? (parsed as Array<Record<string, unknown>>).map((item) => ({
-          reference: String(item.reference ?? ''),
-          label: String(item.label ?? ''),
-          quantity: Number(item.quantity ?? 0),
-          minimum: Number(item.minimum ?? 0),
-          location: String(item.location ?? ''),
-        }))
-      : []
-
-    const lowStockItems = allItems
-      .filter((item) => item.quantity <= item.minimum)
-      .sort((a, b) => a.quantity - b.quantity || a.minimum - b.minimum)
-      .slice(0, 8)
-
     response.json({
-      ...emptyDashboard,
-      stockValue: Number(rows[0]?.stock_value ?? 0),
-      references: Number(rows[0]?.total_references ?? 0),
-      lowStock: Number(rows[0]?.low_stock ?? 0),
+      stockValue: Number(summary.stock_value),
+      references: Number(summary.total_references),
+      lowStock: Number(summary.low_stock),
+      pendingOrders: Number(summary.pending_orders),
       lowStockItems,
       activity: movements.map((movement) => ({
         type: movement.type,
@@ -551,20 +520,8 @@ app.post('/api/articles/:reference/transfert', requireAuth, requireCsrf, require
     }
     const articleId = Number(articleRows[0].id)
 
-    const [balanceRows] = await connection.query<RowDataPacket[]>(
-      'SELECT quantity FROM stock_balances WHERE reference_id = ? FOR UPDATE',
-      [articleId],
-    )
-    const [stockRows] = await connection.query<RowDataPacket[]>(
-      `SELECT emplacement_id, quantite FROM stock_par_emplacements
-       WHERE reference_id = ? ORDER BY emplacement_id FOR UPDATE`,
-      [articleId],
-    )
-    const totalQuantity = Number(balanceRows[0]?.quantity)
-    const allocatedQuantity = stockRows.reduce((total, row) => total + Number(row.quantite), 0)
-    const unallocatedQuantity = totalQuantity - allocatedQuantity
-    if (!Number.isInteger(totalQuantity) || totalQuantity < 0 || unallocatedQuantity < 0
-      || stockRows.some((row) => !Number.isInteger(Number(row.quantite)) || Number(row.quantite) < 0)) {
+    const { stockRows, unallocatedQuantity, inconsistent } = await lockArticleStock(connection, articleId)
+    if (inconsistent) {
       await connection.rollback()
       response.status(409).json({ error: 'INCONSISTENT_STOCK', message: 'La repartition du stock est incoherente. Verifiez les allocations avant de transferer.' })
       return
@@ -742,12 +699,11 @@ app.put('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magas
     }
     response.json(updated)
   } catch (error) {
-    if ((error as { status?: number }).status === 422) { response.status(422).json({ error: 'VALIDATION_ERROR', message: (error as Error).message }); return }
     if (isDuplicateKey(error)) {
       response.status(409).json({ error: 'ALREADY_EXISTS', message: 'Cette reference existe deja.' })
       return
     }
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: 'Echec de la mise a jour.' })
+    throw error
   }
 })
 
@@ -767,16 +723,12 @@ app.patch('/api/articles/:reference/quantite', requireAuth, requireCsrf, require
   const repository = repositoryOr503(response)
   if (!repository) return
 
-  try {
-    const quantity = await repository.adjustQuantity(reference, validation.value)
-    if (quantity === null) {
-      notFound(response, 'Article')
-      return
-    }
-    response.json({ reference, quantite: quantity })
-  } catch {
-    response.status(500).json({ error: 'INTERNAL_ERROR', message: "Echec de l'ajustement." })
+  const quantity = await repository.adjustQuantity(reference, validation.value)
+  if (quantity === null) {
+    notFound(response, 'Article')
+    return
   }
+  response.json({ reference, quantite: quantity })
 })
 
 app.delete('/api/articles/:reference', requireAuth, requireCsrf, requireRole('magasinier'), async (request: Request, response: Response) => {

@@ -1,4 +1,4 @@
-/** Régressions R07/R10/R11, Chromium et API simulée, sans accès MariaDB.
+/** Régressions des réceptions, du tableau de bord, du catalogue et de la caisse avec Chromium et API simulée.
  * npm run build puis node scripts/test-review-frontend-ui.mjs
  * --development teste seulement Vite/StrictMode ; --production teste le build.
  */
@@ -8,7 +8,7 @@ import { resolve } from 'node:path'
 import { createServer, preview } from 'vite'
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
-const output = resolve('specs/screenshots/revue-correctifs-frontend')
+const output = resolve(process.env.REVIEW_UI_OUTPUT ?? 'specs/screenshots/revue-correctifs-frontend')
 const checks = [], errors = []
 const modes = process.argv.includes('--development') ? ['development']
   : process.argv.includes('--production') ? ['production'] : ['development', 'production']
@@ -30,11 +30,16 @@ async function setup(path, overrides = {}) {
   const state = {
     article, receptions: [], writes: [], clientReads: 0, clientResponses: [], movementReads: 0,
     clientsGate: null, failClients: false, failMovements: false, failWrite: true,
+    fournisseurs: [], failSuppliers: false, failDashboard: false,
+    dashboard: { stockValue: 0, references: 1, lowStock: 0, pendingOrders: 0, lowStockItems: [], activity: [] },
     movements: [], session: { id: 17, utilisateurId: 7, caissier: 'Camille Test', statut: 'ouverte', fondsCaisse: 100, totalEspeces: 0, totalCartes: 0, totalCheques: 0, nombreVentes: 0, openedAt: '2026-11-14T08:00:00Z' }, ...overrides,
   }
   await context.route('**/api/**', async (route) => {
     const request = route.request(), url = new URL(request.url()), requestPath = url.pathname
     if (request.method() === 'GET') {
+      if ((requestPath === '/api/fournisseurs' && state.failSuppliers) || (requestPath === '/api/dashboard' && state.failDashboard)) {
+        return route.fulfill({ status: 503, json: { error: 'DATABASE_UNAVAILABLE', message: 'Base indisponible.' } })
+      }
       if (requestPath === '/api/clients') {
         state.clientReads++
         if (state.clientsGate) await state.clientsGate
@@ -45,7 +50,8 @@ async function setup(path, overrides = {}) {
         if (state.failMovements) return route.fulfill({ status: 503, json: { error: 'DATABASE_UNAVAILABLE' } })
       }
       const json = requestPath === '/api/auth/me' ? { user: { id: 7, prenom: 'Camille', nom: 'Test', role: 'admin', email: 'revue@example.test' }, csrfToken: 'revue-fixture' }
-        : requestPath === '/api/dashboard' ? { stockValue: 0, references: 1, lowStock: 0, pendingOrders: 0, lowStockItems: [], activity: [] }
+        : requestPath === '/api/dashboard' ? state.dashboard
+        : requestPath === '/api/fournisseurs' ? state.fournisseurs
         : requestPath === '/api/clients' ? [client]
         : requestPath === '/api/articles' ? [article]
         : requestPath === '/api/categories' ? [{ id: 1, code: 'freins', libelle: 'Freins', actif: true }]
@@ -89,10 +95,24 @@ try {
     base = `http://127.0.0.1:${server.httpServer.address().port}`
 
     {
-      const { context, page, state } = await setup('/receptions')
+      const supplier = 'Pièces du Rhin'
+      const { context, page, state } = await setup('/receptions', { failSuppliers: true })
       await page.getByRole('button', { name: 'Nouvelle réception', exact: true }).click()
       const dialog = page.locator('dialog.reception-modal')
-      await dialog.locator('[name="fournisseur"]').selectOption('Auto Pieces Nord')
+      const select = dialog.getByRole('combobox', { name: 'Fournisseur', exact: true })
+      const submit = dialog.getByRole('button', { name: 'Enregistrer la réception', exact: true })
+      const retry = dialog.getByRole('button', { name: 'Actualiser les fournisseurs' })
+      await dialog.getByRole('alert').filter({ hasText: 'Annuaire fournisseurs indisponible' }).waitFor()
+      check(await submit.isDisabled() && await select.locator('option').count() === 1, 'Réception : annuaire indisponible, aucun choix fictif')
+      state.failSuppliers = false
+      state.fournisseurs = [{ id: 17, nom: 'Fiche archivée', actif: false }]
+      await retry.click()
+      await dialog.getByText(/Aucun fournisseur actif/).waitFor()
+      check(await submit.isDisabled(), 'Réception : annuaire sans fournisseur actif signalé')
+      state.fournisseurs.push({ id: 18, nom: supplier, actif: true })
+      await retry.click()
+      await select.selectOption(supplier)
+      check(await select.locator('option').count() === 2, 'Réception : seul le nouveau fournisseur actif est proposé')
       await dialog.locator('[name="dateReception"]').fill('2026-11-14')
       await dialog.locator('[name="articles.0.reference"]').fill('REV-1')
       await dialog.locator('[name="articles.0.designation"]').fill('Réception conservée')
@@ -103,19 +123,43 @@ try {
       await dialog.getByRole('alert').waitFor()
       check(await dialog.isVisible(), 'R07 réception refusée : dialogue conservé')
       check(JSON.stringify(before) === JSON.stringify(await snapshot(dialog)), 'R07 réception refusée : toute la saisie conservée')
-      check(await page.locator('.toast-success').count() === 0 && await page.locator('tbody').getByText('Auto Pieces Nord').count() === 0, 'R07 réception refusée : aucun faux succès ni ligne locale')
+      check(await page.locator('.toast-success').count() === 0 && await page.locator('tbody').getByText(supplier).count() === 0, 'R07 réception refusée : aucun faux succès ni ligne locale')
       await page.screenshot({ path: resolve(output, `reception-refus-${mode}.png`) })
       state.failWrite = false
       await dialog.getByRole('button', { name: 'Enregistrer la réception', exact: true }).click()
       await dialog.waitFor({ state: 'hidden' })
       await page.locator('.toast-success').waitFor()
       check(state.writes.length === 2 && state.receptions.length === 1 && state.receptions[0].totalHT === 25, 'R07 réception : nouvelle tentative confirmée par API et total serveur')
+      check(state.receptions[0].fournisseur === supplier, 'Réception : le nom choisi dans l’annuaire figure dans le document')
       await page.locator('.toast-success .toast-close').click()
       state.failWrite = true
       await page.getByRole('button', { name: 'Supprimer la reception du 2026-11-14', exact: true }).click()
       await page.locator('dialog.confirm-modal').getByRole('button', { name: 'Supprimer', exact: true }).click()
       await page.getByRole('alert').waitFor()
-      check(await page.locator('tbody').getByText('Auto Pieces Nord').count() === 1 && await page.locator('.toast-success').count() === 0, 'R07 suppression réception refusée : historique conservé')
+      check(await page.locator('tbody').getByText(supplier).count() === 1 && await page.locator('.toast-success').count() === 0, 'R07 suppression réception refusée : historique conservé')
+      await context.close()
+    }
+
+    {
+      const { context, page, state } = await setup('/')
+      const cards = page.getByRole('region', { name: 'Indicateurs du dépôt' })
+      const orders = cards.locator('article').filter({ hasText: 'Commandes en cours' }).locator('strong')
+      const refresh = page.getByRole('button', { name: 'Actualiser', exact: true })
+      await orders.getByText('0', { exact: true }).waitFor()
+      check(!/mois dernier|préparer|preparer|Action requise/i.test(await cards.innerText()), 'Tableau de bord : aucune tendance ni tâche fictive')
+      check(await page.locator('.nav-badge').count() === 0, 'Tableau de bord : aucune alerte de stock à zéro')
+      Object.assign(state.dashboard, {
+        pendingOrders: 7, lowStock: 1,
+        lowStockItems: [{ reference: 'REV-1', label: 'Article au seuil', quantity: 0, minimum: 0, location: 'A01' }],
+      })
+      await refresh.click()
+      await orders.getByText('7', { exact: true }).waitFor()
+      await page.getByText('Article au seuil', { exact: true }).waitFor()
+      check(await page.locator('.nav-badge').innerText() === '1', 'Tableau de bord : le badge suit les alertes servies')
+      state.failDashboard = true
+      await refresh.click()
+      await page.getByRole('alert').waitFor()
+      check((await cards.locator('strong').allTextContents()).every((value) => value === '—'), 'Tableau de bord : une panne laisse les compteurs indéterminés')
       await context.close()
     }
 
@@ -223,8 +267,8 @@ try {
     server = null
   }
   check(errors.length === 0, 'aucune erreur JavaScript')
-  await writeFile(resolve(output, 'verification.json'), JSON.stringify({ date: '2026-11-14', api: 'simulated', modes, checks, errors }, null, 2) + '\n')
-  console.log(`${checks.length} contrôles frontend R07/R10/R11 réussis (${modes.join(', ')}).`)
+  await writeFile(resolve(output, 'verification.json'), JSON.stringify({ date: new Date().toISOString().slice(0, 10), api: 'simulated', modes, checks, errors }, null, 2) + '\n')
+  console.log(`${checks.length} contrôles frontend réussis (${modes.join(', ')}).`)
 } finally {
   if (browser) await browser.close()
   if (server) await server.close()

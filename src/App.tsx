@@ -169,7 +169,9 @@ function AppContent() {
             >
               <Icon name={item.icon} size="sm" />
               <span>{item.label}</span>
-              {item.label === 'Stock' && <span className="nav-badge">12</span>}
+              {item.path === '/stock' && apiMode === 'connected' && dashboard.lowStock > 0 && (
+                <span className="nav-badge" title="Références au seuil minimum">{dashboard.lowStock}</span>
+              )}
             </NavLink>
           ))}
           <p className="nav-label nav-label-bottom">ADMINISTRATION</p>

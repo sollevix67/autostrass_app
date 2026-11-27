@@ -821,6 +821,35 @@ for (const path of ['/api/dashboard', '/api/articles', '/api/stock']) {
   check(`GET ${path} reste accessible sans jeton (v1)`, status === 200, status)
 }
 
+const initialDashboard = (await call('/api/dashboard')).body
+const catalogue = (await call('/api/articles')).body as Array<{ reference: string; quantite: number; minimum: number }>
+const alerts = catalogue.filter((item) => item.quantite <= item.minimum)
+check('le tableau de bord dénombre les références au seuil réel', initialDashboard.lowStock === alerts.length)
+check('le tableau de bord affiche les articles à surveiller', initialDashboard.lowStockItems.length === Math.min(8, alerts.length)
+  && initialDashboard.lowStockItems.every((item: { reference: string }) => alerts.some((article) => article.reference === item.reference)))
+
+const order = await call('/api/commandes', {
+  method: 'POST', token: adminToken!,
+  body: {
+    clientId: clientPourAvoir, dateCommande: '2026-11-27',
+    articles: [{ reference: 'PLA-2841', designation: 'Plaquettes', quantite: 1, prixUnitaire: 15.5 }],
+  },
+})
+check('création de la commande témoin du tableau de bord', order.status === 201, order.body)
+if (order.status === 201) {
+  const path = `/api/commandes/${order.body.id}`
+  try {
+    for (const [statut, delta] of [['en attente', 1], ['validée', 1], ['expédiée', 1], ['livrée', 0], ['annulée', 0]] as const) {
+      const update = await call(path, { method: 'PUT', token: adminToken!, body: { statut } })
+      const dashboard = await call('/api/dashboard')
+      check(`le compteur des commandes en cours suit le statut « ${statut} »`,
+        update.status === 200 && dashboard.body?.pendingOrders === initialDashboard.pendingOrders + delta)
+    }
+  } finally {
+    await call(path, { method: 'DELETE', token: adminToken! })
+  }
+}
+
 // --- Bilan -----------------------------------------------------------------
 console.log(`\n${passed} reussis, ${failed} echecs`)
 process.exit(failed === 0 ? 0 : 1)
