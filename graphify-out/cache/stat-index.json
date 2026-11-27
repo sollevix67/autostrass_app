@@ -1131,10 +1131,10 @@
     }
   },
   "README.md": {
-    "size": 8759,
-    "mtime_ns": 1795291863118251600,
-    "indexed_at_ns": 1795292922610527200,
-    "word_count": 1101
+    "size": 10373,
+    "mtime_ns": 1795810786281527800,
+    "indexed_at_ns": 1795811411074972300,
+    "word_count": 1323
   },
   "TODO.md": {
     "size": 4834,
@@ -1251,30 +1251,30 @@
     }
   },
   "database/schema.sql": {
-    "size": 4071,
-    "mtime_ns": 1791575363738526600,
-    "indexed_at_ns": 1791623613870692600,
-    "word_count": 448,
+    "size": 2597,
+    "mtime_ns": 1795810423208706100,
+    "indexed_at_ns": 1795811412126784400,
+    "word_count": 274,
     "hashes": {
-      "database/schema.sql": "ca14d82acff86f75e4383f18f61423e26d4f3f068c52c3fb8a314402fcee4b82"
+      "database/schema.sql": "50ef8724ef70380e6d9e057a80f42827207d3ee3f43e8000cf3ecb53d556cd01"
     }
   },
   "database/seed_v2.sql": {
-    "size": 7903,
-    "mtime_ns": 1793999347024549800,
-    "indexed_at_ns": 1794131919738240700,
-    "word_count": 818,
+    "size": 7908,
+    "mtime_ns": 1795810423209706300,
+    "indexed_at_ns": 1795811412127751400,
+    "word_count": 822,
     "hashes": {
-      "database/seed_v2.sql": "9015ced8c6d16c1185638706e8093ba63ee1d17bae93e0859a6da6dba809cf61"
+      "database/seed_v2.sql": "f74158392eebaec8a23c0ad44a6c6640d5f4542c02eb29c5eb3ea3c0774030fd"
     }
   },
   "database/seed_v3.sql": {
-    "size": 7934,
-    "mtime_ns": 1791575288043113500,
-    "indexed_at_ns": 1791623613872141700,
-    "word_count": 1050,
+    "size": 8697,
+    "mtime_ns": 1795811073054726500,
+    "indexed_at_ns": 1795811412128661500,
+    "word_count": 1123,
     "hashes": {
-      "database/seed_v3.sql": "4aec055a892c339df5785582cb3a58bdb552b32fcfbab1431b9e6eeeabea2bd5"
+      "database/seed_v3.sql": "3626d8a6c871ab7c700ac933b479483039efb32c994d88a0a603c365083b2756"
     }
   },
   "design-system/autostrass/MASTER.md": {
@@ -1299,19 +1299,19 @@
     "word_count": 39
   },
   "package.json": {
-    "size": 3696,
-    "mtime_ns": 1795292322919709800,
-    "indexed_at_ns": 1795292924017251600,
-    "word_count": 258,
+    "size": 3812,
+    "mtime_ns": 1795810486720407200,
+    "indexed_at_ns": 1795811412129572300,
+    "word_count": 264,
     "hashes": {
-      "package.json": "1415a53aaf5c4bb60bc29370bb8fd48417e9a38b5484c405df146137fed83f08"
+      "package.json": "04ab6047a3b0acb4333cf1ff12b8ea6111ff539e6c5c14fc7675c0448c1fe47a"
     }
   },
   "passation.md": {
-    "size": 60612,
-    "mtime_ns": 1795809562075711100,
-    "indexed_at_ns": 1795809571776512300,
-    "word_count": 7970
+    "size": 64713,
+    "mtime_ns": 1795811605306372500,
+    "indexed_at_ns": 1795811725756715300,
+    "word_count": 8582
   },
   "public/favicon.svg": {
     "size": 294,
@@ -1365,22 +1365,16 @@
     }
   },
   "scripts/seed.ts": {
-    "size": 4044,
-    "mtime_ns": 1792323841064797700,
-    "indexed_at_ns": 1795262433644239000,
-    "word_count": 466,
-    "hashes": {
-      "scripts/seed.ts": "15cfedfd119e3fa60b4c338035e61fe537c264fcc405574515bd02cb7e638f34"
-    }
+    "size": 2398,
+    "mtime_ns": 1795811073055226300,
+    "indexed_at_ns": 1795811411139594900,
+    "word_count": 232
   },
   "scripts/test-api.ts": {
-    "size": 34580,
-    "mtime_ns": 1794659592713266900,
-    "indexed_at_ns": 1795262433220827200,
-    "word_count": 3933,
-    "hashes": {
-      "scripts/test-api.ts": "d92ccd4b344a234ad69579d22cb84cfcfbdd6f94a479b4377c326a4415c38190"
-    }
+    "size": 36226,
+    "mtime_ns": 1795810571417400500,
+    "indexed_at_ns": 1795811411141258800,
+    "word_count": 4125
   },
   "scripts/test-security.ts": {
     "size": 16945,
@@ -1443,10 +1437,10 @@
     }
   },
   "server/index.ts": {
-    "size": 34503,
-    "mtime_ns": 1795287223399295400,
-    "indexed_at_ns": 1795287899296454200,
-    "word_count": 3536
+    "size": 32289,
+    "mtime_ns": 1795810378428755700,
+    "indexed_at_ns": 1795811411187171600,
+    "word_count": 3305
   },
   "server/middleware/auth.ts": {
     "size": 8393,
@@ -1545,22 +1539,16 @@
     }
   },
   "server/middleware/validation.ts": {
-    "size": 10955,
-    "mtime_ns": 1793906706289687000,
-    "indexed_at_ns": 1795262433364394900,
-    "word_count": 1387,
-    "hashes": {
-      "server/middleware/validation.ts": "2a0bb99ba148d493fd94d17b8d3a46a267549408c0b58e967a0f05add79a9555"
-    }
+    "size": 11497,
+    "mtime_ns": 1795810380237164300,
+    "indexed_at_ns": 1795811411206974400,
+    "word_count": 1453
   },
   "server/repositories/articleRepository.ts": {
-    "size": 10793,
-    "mtime_ns": 1793906706290687000,
-    "indexed_at_ns": 1795262433605220200,
-    "word_count": 1069,
-    "hashes": {
-      "server/repositories/articleRepository.ts": "7f6a32919770d663d6569ef78d57ee13e6d1f8f2fc1a6b0eb2774893553f6a51"
-    }
+    "size": 12822,
+    "mtime_ns": 1795810591550329600,
+    "indexed_at_ns": 1795811411208447600,
+    "word_count": 1302
   },
   "server/repositories/cashRegisterRepository.ts": {
     "size": 19597,
@@ -1626,10 +1614,10 @@
     }
   },
   "src/App.tsx": {
-    "size": 15540,
-    "mtime_ns": 1795290319498214200,
-    "indexed_at_ns": 1795292923082122200,
-    "word_count": 1308
+    "size": 15685,
+    "mtime_ns": 1795810398154461900,
+    "indexed_at_ns": 1795811411453814000,
+    "word_count": 1322
   },
   "src/components/AuthProvider.tsx": {
     "size": 3791,
@@ -1803,13 +1791,10 @@
     }
   },
   "src/hooks/useStock.ts": {
-    "size": 7343,
-    "mtime_ns": 1794340904107729700,
-    "indexed_at_ns": 1795262433219942800,
-    "word_count": 742,
-    "hashes": {
-      "src/hooks/useStock.ts": "5e484c922e23d119b0ad1ad17c194e556644202962e85675ac90220462b02d10"
-    }
+    "size": 7046,
+    "mtime_ns": 1795810407751898800,
+    "indexed_at_ns": 1795811411477243300,
+    "word_count": 703
   },
   "src/main.tsx": {
     "size": 492,
@@ -1821,13 +1806,10 @@
     }
   },
   "src/options.ts": {
-    "size": 5310,
-    "mtime_ns": 1794337346270064600,
-    "indexed_at_ns": 1795262433434690200,
-    "word_count": 759,
-    "hashes": {
-      "src/options.ts": "cff692f97ee3076845955f8da7ec0924f5a52a52635de7cabdcd5d13e8d1e67d"
-    }
+    "size": 4650,
+    "mtime_ns": 1795810439133398700,
+    "indexed_at_ns": 1795811411479851600,
+    "word_count": 654
   },
   "src/schemas/index.ts": {
     "size": 18745,
@@ -1905,13 +1887,10 @@
     }
   },
   "src/views/DashboardView.tsx": {
-    "size": 6343,
-    "mtime_ns": 1792322366334438000,
-    "indexed_at_ns": 1795262433631590900,
-    "word_count": 394,
-    "hashes": {
-      "src/views/DashboardView.tsx": "c6a8282b94f7f543c6b89a64358bd74d675f43fc14d73a295c14476c0715722f"
-    }
+    "size": 6686,
+    "mtime_ns": 1795811164379339400,
+    "indexed_at_ns": 1795811411502592500,
+    "word_count": 439
   },
   "src/views/LivraisonsView.tsx": {
     "size": 12020,
@@ -1929,13 +1908,10 @@
     "word_count": 568
   },
   "src/views/ReceptionsView.tsx": {
-    "size": 15350,
-    "mtime_ns": 1794683588901021700,
-    "indexed_at_ns": 1795262433443618500,
-    "word_count": 1263,
-    "hashes": {
-      "src/views/ReceptionsView.tsx": "63ef2a256834ab8791dc04c275edc236064e39cfdd65cdd77e228c1e4f4cd9df"
-    }
+    "size": 16642,
+    "mtime_ns": 1795811115044269700,
+    "indexed_at_ns": 1795811411507311400,
+    "word_count": 1373
   },
   "src/views/RetoursView.tsx": {
     "size": 12585,
@@ -1947,13 +1923,10 @@
     }
   },
   "src/views/StockView.tsx": {
-    "size": 23639,
-    "mtime_ns": 1794340904106729600,
-    "indexed_at_ns": 1795262433661985400,
-    "word_count": 1840,
-    "hashes": {
-      "src/views/StockView.tsx": "4ea3def9aa3d6bb3b6a474ba709ef7c9f58f138a2ea4308709c8b815305b318c"
-    }
+    "size": 23919,
+    "mtime_ns": 1795810420356568600,
+    "indexed_at_ns": 1795811411509171900,
+    "word_count": 1869
   },
   "src/views/UtilisateursView.tsx": {
     "size": 12735,
@@ -1974,13 +1947,10 @@
     }
   },
   "src/views/VentesComptoirView.tsx": {
-    "size": 17657,
-    "mtime_ns": 1794659156043003100,
-    "indexed_at_ns": 1795262433645252200,
-    "word_count": 1575,
-    "hashes": {
-      "src/views/VentesComptoirView.tsx": "83d1729a738653e44177438932cc00e1c931953ec5693aadf823e5829aa00d9c"
-    }
+    "size": 18329,
+    "mtime_ns": 1795810464893209100,
+    "indexed_at_ns": 1795811411511852000,
+    "word_count": 1625
   },
   "tsconfig.app.json": {
     "size": 655,
@@ -2019,13 +1989,10 @@
     }
   },
   "vite.config.ts": {
-    "size": 237,
-    "mtime_ns": 1789854524000000000,
-    "indexed_at_ns": 1795262433674861100,
-    "word_count": 26,
-    "hashes": {
-      "vite.config.ts": "be81a532b44a7c5072417275c0a89068605867758460b8ed261dc6bbdfc23801"
-    }
+    "size": 373,
+    "mtime_ns": 1795810994038960700,
+    "indexed_at_ns": 1795811411539127900,
+    "word_count": 43
   },
   ".github/skills/ui-ux-pro-max/SKILL.md": {
     "size": 28078,
@@ -2064,10 +2031,10 @@
     }
   },
   "specs/stock-emplacements-design.md": {
-    "size": 7328,
-    "mtime_ns": 1793996101382923900,
-    "indexed_at_ns": 1794131918418124700,
-    "word_count": 988
+    "size": 8011,
+    "mtime_ns": 1795810762194576400,
+    "indexed_at_ns": 1795811411444647600,
+    "word_count": 1084
   },
   "graphify-out/memory/query_20261009_192139_177fea6f_why_does_zod_connect_api_authentication_middleware.md": {
     "size": 1558,
@@ -2079,13 +2046,10 @@
     }
   },
   "scripts/migrate.ts": {
-    "size": 765,
-    "mtime_ns": 1791576283301885600,
-    "indexed_at_ns": 1795262433396962300,
-    "word_count": 83,
-    "hashes": {
-      "scripts/migrate.ts": "1ff0cf015372982c8432746fcf076dadf6b9de38f20d12b0e68f5d840d162d08"
-    }
+    "size": 887,
+    "mtime_ns": 1795810486718407300,
+    "indexed_at_ns": 1795811411136437300,
+    "word_count": 90
   },
   "graphify-out/memory/query_20261010_092210_9b6d5ae0_why_does_zod_connect_protected_resource_roles_to_b.md": {
     "size": 1547,
@@ -2175,10 +2139,10 @@
     }
   },
   "scripts/lib/test-environment.ts": {
-    "size": 9741,
-    "mtime_ns": 1795290081374867100,
-    "indexed_at_ns": 1795292922701068200,
-    "word_count": 1013
+    "size": 9456,
+    "mtime_ns": 1795810509134072700,
+    "indexed_at_ns": 1795811411135309300,
+    "word_count": 1014
   },
   "scripts/test-stock-transfer-validation.ts": {
     "size": 2988,
@@ -2190,13 +2154,10 @@
     }
   },
   "scripts/test-stock-transfers.ts": {
-    "size": 13520,
-    "mtime_ns": 1793822645641593400,
-    "indexed_at_ns": 1793823232286050900,
-    "word_count": 1336,
-    "hashes": {
-      "scripts/test-stock-transfers.ts": "251dc9709962fd106a6c2d3782802d435fcfaea02d01006f6541a811bdb021a3"
-    }
+    "size": 17425,
+    "mtime_ns": 1795810620997504000,
+    "indexed_at_ns": 1795811411173088700,
+    "word_count": 1707
   },
   "specs/screenshots/css-review/verification.json": {
     "size": 34702,
@@ -3165,13 +3126,10 @@
     }
   },
   "scripts/test-review-frontend-ui.mjs": {
-    "size": 15419,
-    "mtime_ns": 1794658847521938000,
-    "indexed_at_ns": 1795262433566341100,
-    "word_count": 1546,
-    "hashes": {
-      "scripts/test-review-frontend-ui.mjs": "4448c1eeece1a1f812d1636e353b7eb79d5332685504e6ed0526f81a641e5a48"
-    }
+    "size": 18556,
+    "mtime_ns": 1795811020485576500,
+    "indexed_at_ns": 1795811411168246400,
+    "word_count": 1872
   },
   "scripts/test-utilisateurs-mapping.ts": {
     "size": 1645,
@@ -3183,13 +3141,10 @@
     }
   },
   "scripts/test-vente-totals-ui.mjs": {
-    "size": 13047,
-    "mtime_ns": 1794660263250549300,
-    "indexed_at_ns": 1795262433378912100,
-    "word_count": 1396,
-    "hashes": {
-      "scripts/test-vente-totals-ui.mjs": "ed33ac0e172a214c9066f396e17efa80b7c26ee86f39a5138801d910c7d1eea5"
-    }
+    "size": 15663,
+    "mtime_ns": 1795810464894213200,
+    "indexed_at_ns": 1795811411177272700,
+    "word_count": 1648
   },
   "scripts/test-vente-validation.ts": {
     "size": 3669,
@@ -3747,12 +3702,30 @@
     "word_count": 189
   },
   "specs/analyse-depot-2026-11-27.md": {
-    "size": 7404,
-    "mtime_ns": 1795809096156823700,
-    "indexed_at_ns": 1795809201362816000,
-    "word_count": 936,
+    "size": 7630,
+    "mtime_ns": 1795811020487081600,
+    "indexed_at_ns": 1795811412203730300,
+    "word_count": 959,
     "hashes": {
-      "specs/analyse-depot-2026-11-27.md": "a4648c4b2b5ed1f714a16cd38b3e53308730bcf5315c5cc373f6439cf9144f65"
+      "specs/analyse-depot-2026-11-27.md": "c401b20bda46cd6fa342d37d6516257281d66bf8e2ebe2f373c99b1eacdea269"
     }
+  },
+  "scripts/create-first-admin.ts": {
+    "size": 2691,
+    "mtime_ns": 1795810486719407600,
+    "indexed_at_ns": 1795811411125142000,
+    "word_count": 303
+  },
+  "scripts/lib/installation.ts": {
+    "size": 1034,
+    "mtime_ns": 1795810466213527100,
+    "indexed_at_ns": 1795811411129571400,
+    "word_count": 112
+  },
+  "scripts/test-installation.ts": {
+    "size": 7442,
+    "mtime_ns": 1795811089592566000,
+    "indexed_at_ns": 1795811411159934000,
+    "word_count": 783
   }
 }

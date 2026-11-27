@@ -866,7 +866,14 @@ Le commit `458edbe` contient l’installation. Après le dernier changement de
 seed et du proxy, les suites installation, intégration, ventes, devis et les
 30 contrôles des processus de développement passent. Le build produit
 643,36 kB de JavaScript minifié (185,13 kB gzip) et conserve l’avertissement
-Vite du seuil de 500 kB. Les bases de recette et le fichier d’identifiants ont
-été supprimés, puis l’arrêt de MariaDB a été vérifié. Les journaux, captures et
+Vite du seuil de 500 kB. Les bases de recette ont été supprimées, MariaDB a
+été arrêtée et le fichier d’identifiants a été retiré. Les journaux, captures et
 fichiers de l’instance arrêtée restent dans `%TEMP%/openstrass-reprise-52d4bbd0ab`
 après le refus du nettoyage récursif par le contrôle automatique.
+
+Le comptoir est livré dans `fb61a7d`, le proxy Vite dans `629b1dc` et les
+correctifs du dépôt dans `8039bd6`. Ce dernier commit sert de base au
+[graphe actualisé](graphify-out/graph.html).
+Graphify 0.9.115 a réindexé le code. Le parseur SQL facultatif reste absent.
+La mise à jour automatique du marqueur Graphify de Claude a été annulée après
+comparaison des neuf fichiers de la compétence avec le paquet 0.9.114.
