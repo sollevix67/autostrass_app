@@ -780,3 +780,31 @@ avec multiplicité. Les nouveaux paramètres, codecs, générateurs, tests et gu
 sont présents. Limites SQL/CSS/PDF et absence d'appel LLM conservées.
 Livraison de `66c6058` et du commit Graphify/passation sur `origin/main` ;
 application locale relancée et disponible, paramètres réels conservés.
+
+## Analyse du dépôt du 27 novembre 2026
+
+Lecture de la passation et des exports Graphify du 21 novembre. La revue part
+de `cf7b952` sur `main`, avec un arbre de travail propre. Les trois volets de
+lecture couvrent l’interface, les flux métier côté serveur et les outils de
+validation. Le conducteur vérifie les constats et exécute les contrôles.
+
+Le build TypeScript/Vite et Oxlint passent sous Node 22.23.4. Le JavaScript
+initial pèse 642,22 kB minifiés (184,83 kB gzip). Les tests d’erreurs SQL,
+de validation des transferts, de montants de vente, d’intégrité fiscale
+(9 groupes), de paramètres (7 groupes) et de PDF passent. Vérification en
+cours des écritures de stock, du repli du catalogue et de la procédure
+d’installation sur une base vierge.
+
+Sur MariaDB 11.4.5 jetable, le retrait de 1 a laissé 4 pièces au total pour
+5 affectées, puis le transfert a renvoyé `409 INCONSISTENT_STOCK`. Sur base
+vide, `db:migrate` s’est arrêté à `0005` faute de table `articles`. L’API du
+tableau de bord a compté zéro commande en cours malgré une commande validée.
+Les 13 scénarios de transfert, 14 d’inventaire et 27 groupes Devis/concurrence
+passent sur des bases jetables. Instance arrêtée et fichiers temporaires de
+cette recette supprimés. Les contrôles Chrome du comptoir, des réceptions et
+du tableau de bord ont utilisé des réponses HTTP simulées.
+
+Le [rapport d’analyse](specs/analyse-depot-2026-11-27.md) documente les
+cinq constats, les repères d’architecture, la couverture fonctionnelle et
+les limites du déploiement. Les priorités immédiates sont la cohérence du
+stock, la provenance des prix au comptoir et l’installation sur base vide.
