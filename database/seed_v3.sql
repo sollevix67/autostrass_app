@@ -25,6 +25,39 @@ INSERT INTO tva (taux, libelle, defaut, actif) VALUES
   (0.00,  'Exonere 0 %',          0, 1)
 ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
 
+-- Garder sur cette connexion les références à créer. La liste ne contient
+-- que les quatre codes de démonstration absents au début du chargement.
+SET @nouvelles_references_demo = (
+  SELECT GROUP_CONCAT(d.reference)
+  FROM (
+    SELECT 'PLA-2841' AS reference UNION ALL SELECT 'FIL-0920'
+    UNION ALL SELECT 'BAT-7710' UNION ALL SELECT 'HUI-5400'
+  ) d
+  WHERE NOT EXISTS (SELECT 1 FROM articles a WHERE a.reference = d.reference)
+);
+
+INSERT INTO articles (reference, designation, category, unit_price_ht, tva_id, prix_unitaire_ttc)
+SELECT d.reference, d.designation, d.category, d.prix_ht, t.id, ROUND(d.prix_ht * (1 + t.taux / 100), 2)
+FROM (
+  SELECT 'PLA-2841' AS reference, 'Plaquettes de frein avant' AS designation, 'freins' AS category, 15.50 AS prix_ht
+  UNION ALL SELECT 'FIL-0920', 'Filtre a huile - Renault', 'filtres', 8.20
+  UNION ALL SELECT 'BAT-7710', 'Batterie 12V 70Ah', 'batteries', 45.00
+  UNION ALL SELECT 'HUI-5400', 'Huile moteur 5W30 - 5L', 'huiles', 22.00
+) d
+JOIN tva t ON t.taux = 20.00
+WHERE FIND_IN_SET(d.reference, @nouvelles_references_demo);
+
+INSERT INTO stock_balances (reference_id, quantity, minimum_quantity)
+SELECT a.id, d.quantity, d.minimum
+FROM (
+  SELECT 'PLA-2841' AS reference, 12 AS quantity, 6 AS minimum
+  UNION ALL SELECT 'FIL-0920',  3,  8
+  UNION ALL SELECT 'BAT-7710',  6,  4
+  UNION ALL SELECT 'HUI-5400', 14, 10
+) d
+JOIN articles a ON a.reference = d.reference
+WHERE FIND_IN_SET(d.reference, @nouvelles_references_demo);
+
 -- ---------------------------------------------------------------------------
 -- Emplacements — 2 allees, leurs etageres et leurs places.
 --
@@ -71,20 +104,9 @@ JOIN emplacements a ON a.id = e.parent_id AND a.code = p.allee
 ON DUPLICATE KEY UPDATE libelle = VALUES(libelle), capacite = VALUES(capacite);
 
 -- ---------------------------------------------------------------------------
--- Stock reparti par emplacement.
---
--- Repartition **derivee de la base**, pas de references codees en dur : chaque
--- article sans affectation est affecte a une seule place deterministe. Les
--- affectations existantes sont conservees ; les codes courts (P-01, E-01) se
--- repetent sous plusieurs parents et ne sont pas des cles.
---
--- Deux raisons a cette ecriture. La premiere est la robustesse : un jeu de
--- demonstration qui nomme `PLA-2841` produit silencieusement zero ligne sur une
--- base dont le catalogue a evolue — c'est exactement ce qui est arrive, la
--- table restait vide sans lever la moindre erreur. La seconde est l'invariant :
--- chaque quantite est une *part* de `stock_balances.quantity`, donc la somme
--- des lignes vaut toujours le total, sans que l'operateur ait a reconcilier
--- deux nombres saisis a la main.
+-- Attribuer une place au stock initial des seuls articles créés par ce seed.
+-- Sur une référence existante, la quantité non affectée appartient au stock
+-- disponible et sa répartition reste celle choisie par le magasinier.
 -- ---------------------------------------------------------------------------
 INSERT INTO stock_par_emplacements (reference_id, emplacement_id, quantite)
 SELECT a.id, p.id, s.quantity
@@ -97,13 +119,7 @@ JOIN (
   ORDER BY id
   LIMIT 1
 ) p ON 1 = 1
-WHERE s.quantity > 0
-  AND NOT EXISTS (
-    SELECT 1
-    FROM stock_par_emplacements existing
-    WHERE existing.reference_id = a.id
-  )
-ON DUPLICATE KEY UPDATE quantite = VALUES(quantite);
+WHERE FIND_IN_SET(a.reference, @nouvelles_references_demo);
 
 -- ---------------------------------------------------------------------------
 -- Carnet fournisseurs

@@ -1,16 +1,13 @@
 import 'dotenv/config'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { readFile, unlink } from 'node:fs/promises'
+import { unlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { createServer } from 'node:net'
 import { dirname, resolve } from 'node:path'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
-import { drizzle } from 'drizzle-orm/mysql2'
-import { migrate } from 'drizzle-orm/mysql2/migrator'
 import mysql, { type Connection } from 'mysql2/promise'
-import { splitStatements } from './sql.js'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -20,9 +17,11 @@ export type TestEnvironment = {
   /** Fichier de configuration appartenant exclusivement à cet environnement jetable. */
   settingsPath: string
   restartApi(options?: { expectHttpRedirect?: boolean }): Promise<void>
-  runScript(path: string): Promise<void>
+  runScript(path: string, options?: ScriptOptions): Promise<void>
   close(): Promise<void>
 }
+
+type ScriptOptions = { args?: string[]; input?: string; echo?: boolean }
 
 type ManagedProcess = {
   child: ChildProcess
@@ -49,7 +48,7 @@ async function findAvailablePort(): Promise<number> {
 }
 
 /** Crée une base neuve et une API isolée, sans utiliser DB_NAME comme cible. */
-export async function createTestEnvironment(): Promise<TestEnvironment> {
+export async function createTestEnvironment(options: { seed?: boolean } = {}): Promise<TestEnvironment> {
   const host = process.env.TEST_DB_HOST ?? process.env.DB_HOST
   const user = process.env.TEST_DB_USER ?? process.env.DB_USER
   const password = process.env.TEST_DB_PASSWORD ?? process.env.DB_PASSWORD
@@ -84,12 +83,12 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
   let cleanup: Promise<void> | undefined
   const processes = new Set<ManagedProcess>()
 
-  function startProcess(args: string[], env: NodeJS.ProcessEnv, echo = false): ManagedProcess {
+  function startProcess(args: string[], env: NodeJS.ProcessEnv, echo = false, input?: string): ManagedProcess {
     const child = spawn(process.execPath, args, {
       cwd: projectRoot,
       env,
       windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
+      stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
     })
     const state: ManagedProcess = {
       child,
@@ -113,6 +112,7 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
     }
     child.stdout?.on('data', capture)
     child.stderr?.on('data', capture)
+    if (input !== undefined) child.stdin?.end(input)
     processes.add(state)
     return state
   }
@@ -176,19 +176,6 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
     databaseCreated = true
     connection = await mysql.createConnection({ ...credentials, database: databaseName })
 
-    async function applyFixture(path: string): Promise<void> {
-      const source = await readFile(resolve(projectRoot, path), 'utf8')
-      for (const statement of splitStatements(source)) {
-        if (/^(?:CREATE\s+DATABASE|USE\s)/i.test(statement)) continue
-        await connection!.query(statement)
-      }
-    }
-
-    await applyFixture('database/schema.sql')
-    await migrate(drizzle(connection), { migrationsFolder: resolve(projectRoot, 'database/drizzle') })
-    await applyFixture('database/seed_v2.sql')
-    await applyFixture('database/seed_v3.sql')
-
     const port = await findAvailablePort()
     const baseUrl = `http://127.0.0.1:${port}`
     const env: NodeJS.ProcessEnv = {
@@ -226,9 +213,9 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
       throw new Error(`L’API de test n’est pas disponible. ${api.error ? describeError(api.error) : ''}\n${api.output}`)
     }
 
-    async function runScript(path: string): Promise<void> {
+    async function runScript(path: string, { args = [], input, echo = true }: ScriptOptions = {}): Promise<void> {
       if (cleanup) throw new Error('L’environnement de test est déjà fermé.')
-      const script = startProcess(['--import', 'tsx', path], env, true)
+      const script = startProcess(['--import', 'tsx', path, ...args], env, echo, input)
       try {
         await Promise.race([
           script.finished,
@@ -241,10 +228,12 @@ export async function createTestEnvironment(): Promise<TestEnvironment> {
         throw error
       }
       if (script.error || script.child.exitCode !== 0) {
-        throw new Error(`Échec du script ${path} (${script.child.exitCode ?? 'arrêt'}). ${script.error ? describeError(script.error) : 'Voir la sortie ci-dessus.'}`)
+        throw new Error(`Échec du script ${path} (${script.child.exitCode ?? 'arrêt'}). ${script.error ? describeError(script.error) : script.output}`)
       }
     }
 
+    await runScript('scripts/migrate.ts', { echo: false })
+    if (options.seed !== false) await runScript('scripts/seed.ts', { echo: false })
     await restartApi()
     return { connection, baseUrl, settingsPath, restartApi, runScript, close }
   } catch (error) {

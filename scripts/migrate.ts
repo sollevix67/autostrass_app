@@ -1,24 +1,19 @@
-import { dirname, resolve } from 'node:path'
+import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import { drizzle } from 'drizzle-orm/mysql2'
 import { migrate } from 'drizzle-orm/mysql2/migrator'
-import { db, pool } from '../server/db/client.js'
+import { withInstallationConnection } from './lib/installation.js'
+import { splitStatements } from './lib/sql.js'
 
-if (!db || !pool) {
-  console.error('Configuration DB_* incomplète : impossible d’appliquer les migrations.')
+try {
+  await withInstallationConnection(async (connection) => {
+    const catalogue = await readFile(new URL('../database/schema.sql', import.meta.url), 'utf8')
+    for (const statement of splitStatements(catalogue)) await connection.query(statement)
+    const migrationsFolder = fileURLToPath(new URL('../database/drizzle', import.meta.url))
+    await migrate(drizzle(connection), { migrationsFolder })
+  })
+  console.log('Socle catalogue et migrations Drizzle appliqués.')
+} catch (error) {
+  console.error('Échec de l’application des migrations.', error)
   process.exitCode = 1
-} else {
-  try {
-    const migrationsFolder = resolve(
-      dirname(fileURLToPath(import.meta.url)),
-      '../database/drizzle',
-    )
-    await migrate(db, { migrationsFolder })
-    console.log('Migrations Drizzle appliquées.')
-  } catch (error) {
-    console.error('Échec de l’application des migrations Drizzle.')
-    console.error(error)
-    process.exitCode = 1
-  } finally {
-    await pool.end()
-  }
 }

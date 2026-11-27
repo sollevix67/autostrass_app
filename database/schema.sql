@@ -1,13 +1,5 @@
--- Schema catalogue v1 uniquement (articles, stock et mouvements).
--- Pour une installation complete : appliquer ensuite les migrations Drizzle
--- journalisees, puis reconciler les migrations legacy 0005/0006 avant seed.
--- Ne pas utiliser ce fichier seul comme schema complet de l'application.
-
-CREATE DATABASE IF NOT EXISTS autostrass
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE autostrass;
+-- Socle catalogue v1, requis par les migrations Drizzle.
+-- db:migrate l'applique sur la base sélectionnée par la connexion.
 
 -- ---------------------------------------------------------------------------
 -- Referentiels catalogue v1
@@ -55,7 +47,7 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     FOREIGN KEY (reference_id) REFERENCES articles (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE OR REPLACE VIEW v_stock AS
+CREATE VIEW IF NOT EXISTS v_stock AS
 SELECT
   a.reference,
   a.designation,
@@ -66,25 +58,3 @@ SELECT
   s.minimum_quantity AS minimum
 FROM articles a
 JOIN stock_balances s ON s.reference_id = a.id;
-
--- ---------------------------------------------------------------------------
--- Jeu de donnees de demonstration
--- ---------------------------------------------------------------------------
-INSERT INTO articles (reference, designation, category, unit_price_ht, location, description)
-VALUES
-  ('PLA-2841', 'Plaquettes de frein avant',  'freins',    15.50, 'A-03 / E-02 / P-14', NULL),
-  ('FIL-0920', "Filtre a huile - Renault",    'filtres',    8.20, 'B-01 / E-04 / P-02', NULL),
-  ('BAT-7710', 'Batterie 12V 70Ah',          'batteries', 45.00, 'C-02 / E-01 / P-08', NULL),
-  ('HUI-5400', 'Huile moteur 5W30 - 5L',     'huiles',    22.00, 'D-05 / E-03 / P-21', NULL)
-ON DUPLICATE KEY UPDATE designation = VALUES(designation);
-
-INSERT INTO stock_balances (reference_id, quantity, minimum_quantity)
-SELECT a.id, s.quantity, s.minimum
-FROM (
-  SELECT 'PLA-2841' AS reference, 12 AS quantity, 6 AS minimum
-  UNION ALL SELECT 'FIL-0920',  3,  8
-  UNION ALL SELECT 'BAT-7710',  6,  4
-  UNION ALL SELECT 'HUI-5400', 14, 10
-) s
-JOIN articles a ON a.reference = s.reference
-ON DUPLICATE KEY UPDATE quantity = VALUES(quantity), minimum_quantity = VALUES(minimum_quantity);

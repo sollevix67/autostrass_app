@@ -1,110 +1,55 @@
-/**
- * Applique les jeux de donnees de demonstration.
- *
- * Usage : `npm run db:seed`
- *
- * Deux fichiers, appliques dans l'ordre : `seed_v2.sql` couvre les 8 metiers
- * de la v2, `seed_v3.sql` les entites ajoutees a l'etape 2 (emplacements, TVA,
- * fournisseurs, stock par emplacement). L'ordre compte : le stock par
- * emplacement du v3 référence les articles du v2.
- *
- * Le SQL est replayee instruction par instruction plutot que d'un bloc, car
- * le mode multi-instructions de mysql2 ne renvoie que le dernier jeu de
- * resultats : une erreur sur la premiere instruction passerait silencieusement.
- * C'est exactement ce qui est arrive avec la variable de session `SET @pwd`,
- * qui laissait `password_hash` a NULL sans lever d'erreur visible.
- */
-
-import 'dotenv/config'
-import mysql from 'mysql2/promise'
-import { readFileSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
+import type { RowDataPacket } from 'mysql2/promise'
+import { withInstallationConnection } from './lib/installation.js'
 import { splitStatements } from './lib/sql.js'
 
-/** Fichiers appliques dans l'ordre ; le second depend du premier. */
-const SEED_FILES = ['database/seed_v2.sql', 'database/seed_v3.sql'] as const
-
-const hasDatabaseConfig = Boolean(process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER && process.env.DB_PASSWORD)
-
-if (!hasDatabaseConfig) {
-  console.error('Variables DB_* absentes : renseignez le fichier .env.')
-  process.exit(1)
-}
-
-const sql = SEED_FILES.map((file) => readFileSync(file, 'utf8')).join('\n').replace(/^USE .*?;\s*$/gm, '')
-
-const list = splitStatements(sql)
-
-const connection = await mysql.createConnection({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT ?? 3306),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-})
-
-let failures = 0
-
-for (const [index, statement] of list.entries()) {
-  const label = statement.replace(/\s+/g, ' ').slice(0, 70)
-  try {
-    await connection.query(statement)
-    console.log(`  ${String(index + 1).padStart(2)}/${list.length}  ${label}`)
-  } catch (error) {
-    failures += 1
-    const detail = error as { code?: string; sqlMessage?: string }
-    console.error(`  ${String(index + 1).padStart(2)}/${list.length}  ECHEC : ${label}`)
-    console.error(`         ${detail.code ?? ''} ${detail.sqlMessage ?? (error as Error).message}`)
-  }
-}
-
-const [stockMismatchRows] = await connection.query(`
-  SELECT sb.reference_id, sb.quantity, COALESCE(SUM(spe.quantite), 0) AS allocated
-  FROM stock_balances sb
-  LEFT JOIN stock_par_emplacements spe ON spe.reference_id = sb.reference_id
-  GROUP BY sb.reference_id, sb.quantity
-  HAVING allocated <> sb.quantity
-`)
-const stockMismatches = stockMismatchRows as Array<{ reference_id: number; quantity: number; allocated: number }>
-if (stockMismatches.length > 0) {
-  failures += 1
-  console.error('\nEcart entre le stock catalogue et les allocations par emplacement :')
-  for (const row of stockMismatches) {
-    console.error(`  article #${row.reference_id}: catalogue=${row.quantity}, emplacements=${row.allocated}`)
-  }
-}
-
-/** Tables peuplees par le seed, dans l'ordre d'affichage. */
+const SEED_FILES = ['seed_v2.sql', 'seed_v3.sql']
 const SEEDED_TABLES = [
-  'users',
-  'clients',
-  'vehicules',
-  'receptions',
-  'reception_lines',
-  'ventes',
-  'vente_lines',
-  'commandes',
-  'commande_lines',
-  'livraisons',
-  'retours',
-  'retour_lines',
-  'tva',
-  'emplacements',
-  'stock_par_emplacements',
-  'fournisseurs',
-  'commandes_fournisseurs',
-  'commande_four_lines',
-  'journal_actions',
-] as const
+  'articles', 'stock_balances', 'users', 'clients', 'vehicules', 'receptions', 'reception_lines',
+  'ventes', 'vente_lines', 'commandes', 'commande_lines', 'livraisons', 'retours', 'retour_lines',
+  'tva', 'emplacements', 'stock_par_emplacements', 'fournisseurs', 'commandes_fournisseurs',
+  'commande_four_lines', 'journal_actions',
+]
 
-// Comptage reel table par table : `information_schema.TABLE_ROWS` est une
-// estimation (InnoDB), elle peut afficher 0 pour une table pleine.
-console.log('\nContenu apres seed :')
-for (const table of SEEDED_TABLES) {
-  const [rows] = await connection.query(`SELECT COUNT(*) AS n FROM \`${table}\``)
-  const count = (rows as Array<{ n: number }>)[0].n
-  console.log(`  ${table.padEnd(18)} ${count}`)
+try {
+  await withInstallationConnection(async (connection) => {
+    await connection.beginTransaction()
+    try {
+      for (const file of SEED_FILES) {
+        const sql = await readFile(new URL(`../database/${file}`, import.meta.url), 'utf8')
+        const statements = splitStatements(sql)
+        for (const [index, statement] of statements.entries()) {
+          const label = statement.replace(/\s+/g, ' ').slice(0, 70)
+          console.log(`  ${file} ${index + 1}/${statements.length}  ${label}`)
+          await connection.query(statement)
+        }
+      }
+      const [mismatches] = await connection.query<RowDataPacket[]>(`
+        SELECT spe.reference_id, sb.quantity, SUM(spe.quantite) AS allocated
+        FROM stock_par_emplacements spe
+        LEFT JOIN stock_balances sb ON sb.reference_id = spe.reference_id
+        GROUP BY spe.reference_id, sb.quantity
+        HAVING sb.quantity IS NULL OR MIN(spe.quantite) < 0 OR allocated > sb.quantity
+      `)
+      if (mismatches.length) {
+        for (const row of mismatches) {
+          console.error(`  article #${row.reference_id} : stock ${row.quantity}, affecté ${row.allocated}`)
+        }
+        throw new Error('Répartition de stock invalide.')
+      }
+      await connection.commit()
+    } catch (error) {
+      await connection.rollback()
+      throw error
+    }
+
+    console.log('\nContenu après chargement de la démonstration')
+    for (const table of SEEDED_TABLES) {
+      const [rows] = await connection.query<RowDataPacket[]>(`SELECT COUNT(*) AS n FROM \`${table}\``)
+      console.log(`  ${table.padEnd(18)} ${rows[0].n}`)
+    }
+  })
+} catch (error) {
+  console.error(error instanceof Error ? error.message : 'Échec du chargement des données de démonstration.')
+  process.exitCode = 1
 }
-
-await connection.end()
-console.log(failures === 0 ? '\nSeed applique.' : `\n${failures} instruction(s) en echec.`)
-process.exit(failures === 0 ? 0 : 1)

@@ -1,13 +1,11 @@
 -- ============================================================================
 -- Jeu de donnees de demonstration — metiers v2
 -- ----------------------------------------------------------------------------
--- Complementaire a `database/schema.sql` (articles / stock v1).
+-- À appliquer après db:migrate, suivi de seed_v3.sql pour le catalogue et le stock.
 -- Idempotent : ON DUPLICATE KEY UPDATE ou INSERT IGNORE.
 --
 --   mysql -h HOST -u USER -p autostrass_test < database/seed_v2.sql
 -- ============================================================================
-
-USE autostrass;
 
 -- ---------------------------------------------------------------------------
 -- Utilisateurs (mots de passe de demonstration, hash bcrypt)

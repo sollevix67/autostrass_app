@@ -6,27 +6,48 @@ Application React + Express + MariaDB pour la gestion commerciale et logistique.
 
 ## MariaDB / Drizzle
 
-Le schéma principal est défini dans `server/db/schema.ts` et la configuration Drizzle dans `drizzle.config.ts`.
+### Première installation
 
-1. Copier `.env.example` vers `.env`.
-2. Renseigner les paramètres MariaDB (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
-3. Démarrer MariaDB avant la connexion ; `GET /api/health` indique si la base est `connected`, `unavailable` ou `unconfigured`.
-4. Générer ou appliquer les migrations lorsqu’un schéma change :
+1. Exécuter `npm ci` depuis la racine du dépôt.
+2. Démarrer MariaDB et y créer une base vide en `utf8mb4`, par exemple avec
+   `CREATE DATABASE openstrass CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`.
+   Donner au compte d’installation les droits de créer et modifier les tables, les vues et les données de cette base.
+3. Copier `.env.example` vers `.env`, renseigner `DB_HOST`, `DB_PORT`, `DB_NAME`,
+   `DB_USER`, `DB_PASSWORD` et choisir un `JWT_SECRET` aléatoire d’au moins 32 caractères.
+   Dans l’exemple précédent, `DB_NAME=openstrass`.
+4. Initialiser le catalogue et appliquer les migrations versionnées.
 
 ```bash
-npm run db:generate
 npm run db:migrate
 ```
 
-La version installée de `drizzle-kit` (0.31.x) utilise `drizzle-kit generate`.
-L'application des migrations passe par le migrateur MySQL de Drizzle ORM.
+Pour ouvrir une installation avec vos propres données, créer le premier compte sur la base encore dépourvue d’utilisateurs.
 
-Les migrations sont stockées dans `database/drizzle/` et le client Drizzle est initialisé via `server/db/client.ts`.
+```bash
+npm run db:admin -- "Camille" "Martin" "camille@example.fr"
+```
+
+La commande demande le mot de passe en saisie masquée et accepte également une ligne sur l’entrée standard.
+Après le démarrage, se connecter avec cet email et ce mot de passe. Les comptes suivants se créent dans **Administration → Utilisateurs et droits**.
+
+Pour préparer une base de démonstration, exécuter `npm run db:seed` après la migration.
+La commande charge le catalogue, le stock, les documents et les comptes d’exemple dans la même base que le migrateur.
+Le compte de démonstration `marie.laurent@autostrass.fr` utilise le mot de passe `demo1234`.
+
+### Mise à jour d’une installation existante
+
+Sauvegarder la base, exécuter `npm run db:migrate` et redémarrer l’API.
+Le migrateur crée les objets manquants du socle catalogue, puis Drizzle applique les migrations en attente.
+Les trois commandes `db:migrate`, `db:admin` et `db:seed` suivent la connexion de l’API. Les paramètres MariaDB enregistrés
+dans le fichier de configuration de l’instance ont priorité sur `DB_*`. Pour une installation indépendante,
+`AUTOSTRASS_SETTINGS_FILE` permet de désigner son propre fichier.
+
+Le schéma Drizzle est défini dans `server/db/schema.ts`. Lors d’une modification du modèle,
+`npm run db:generate` génère les migrations à versionner dans `database/drizzle/`.
 
 ## Démarrage
 
 ```bash
-npm install
 npm run dev
 ```
 
@@ -96,6 +117,7 @@ vérifie l'interface après le build avec une API simulée.
 
 ```bash
 npm run test:errors
+npm run test:installation
 npm run build
 npm run test:parametres
 npm run test:stock
@@ -104,6 +126,8 @@ npm run test:integration
 npm run test:utilisateurs:ui
 ```
 
+`test:installation` migre une base vide, vérifie la connexion du premier administrateur,
+le rejeu du migrateur et le chargement facultatif des exemples.
 `test:stock` vérifie la validation et les transferts réels (conservation,
 concurrence, audit et droits). `test:integration` enchaîne également les
 suites API et sécurité, puis les scénarios d’inventaire physique.
