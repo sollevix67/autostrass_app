@@ -8,16 +8,16 @@ import { resolve } from 'node:path'
 import { createServer, preview } from 'vite'
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
-const output = resolve('specs/screenshots/revue-correctifs-ventes')
+const output = resolve(process.env.VENTE_UI_OUTPUT ?? 'specs/screenshots/revue-correctifs-ventes')
 const checks = [], errors = [], writes = []
 const euro = (value) => `${new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} €`
 let server, browser, base, mode
 const check = (condition, label) => { assert.ok(condition, label); checks.push(`${mode} : ${label}`) }
 
-async function setup() {
+async function setup(catalogue = { normalReference: 'TVA-20', unavailable: false }) {
   const context = await browser.newContext({ locale: 'fr-FR', viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' })
   const articles = [
-    { reference: 'TVA-20', designation: 'Article à TVA normale', prixUnitaireHT: 31, prixUnitaireTTC: 37.2, tvaId: 1 },
+    { reference: catalogue.normalReference, designation: 'Article à TVA normale', prixUnitaireHT: 31, prixUnitaireTTC: 37.2, tvaId: 1 },
     { reference: 'TVA-55', designation: 'Article à TVA réduite', prixUnitaireHT: 10, prixUnitaireTTC: 10.55, tvaId: 2 },
     { reference: 'TVA-LIMITE', designation: 'Article au prix maximal', prixUnitaireHT: 1_000_000, prixUnitaireTTC: 1_200_000, tvaId: 1 },
   ].map((article) => ({ ...article, category: 'freins', quantite: 10, minimum: 0, sousCategorieId: null, emplacement: null, description: null, ean13: null, delaiDisponibilite: 0, forcerSurCommande: false }))
@@ -25,6 +25,9 @@ async function setup() {
   await context.route('**/api/**', async (route) => {
     const request = route.request(), path = new URL(request.url()).pathname
     if (request.method() === 'GET') {
+      if (path === '/api/articles' && catalogue.unavailable) {
+        return route.fulfill({ status: 503, json: { error: 'DATABASE_UNAVAILABLE' } })
+      }
       const json = path === '/api/auth/me' ? { user: { id: 7, prenom: 'Camille', nom: 'Test', role: 'caissier', email: 'ventes@example.test' }, csrfToken: 'ventes-fixture' }
         : path === '/api/dashboard' ? { stockValue: 0, references: 2, lowStock: 0, pendingOrders: 0, lowStockItems: [], activity: [] }
         : path === '/api/articles' ? articles
@@ -43,7 +46,7 @@ async function setup() {
     // Fixture indépendante du helper applicatif : montants connus pour ces
     // deux références, aucune reprise des totaux ou taux envoyés par le client.
     const lines = body.articles.map((line) => {
-      const normal = line.reference === 'TVA-20'
+      const normal = line.reference === catalogue.normalReference
       const ht = (normal ? 3100 : 1000) * line.quantite
       const tva = (normal ? 620 : 55) * line.quantite
       return { ...line, tauxTva: normal ? 20 : 5.5, montant: ht / 100, montantTva: tva / 100, montantTTC: (ht + tva) / 100 }
@@ -63,7 +66,6 @@ async function setup() {
   await page.evaluate(() => new Promise(requestAnimationFrame))
   await page.getByRole('button', { name: 'Nouvelle vente', exact: true }).click()
   const dialog = page.locator('dialog.form-dialog')
-  await dialog.locator('[name="catalogueSelection"] option[value="TVA-20"]').waitFor({ state: 'attached' })
   return { context, page, dialog, scenarioWrites }
 }
 
@@ -83,6 +85,41 @@ try {
       await server.listen()
     } else server = await preview({ preview: { host: '127.0.0.1', port: 0, open: false } })
     base = `http://127.0.0.1:${server.httpServer.address().port}`
+
+    {
+      const catalogue = { normalReference: 'PLA-2841', unavailable: true }
+      const { context, page, dialog, scenarioWrites } = await setup(catalogue)
+      const warning = dialog.getByRole('alert').filter({ hasText: 'Catalogue indisponible' })
+      const selector = dialog.getByRole('combobox', { name: 'Article', exact: true })
+      await warning.waitFor()
+      check(await selector.count() === 0 && await dialog.getByRole('button', { name: 'Valider la vente' }).isDisabled(),
+        'Un catalogue indisponible empêche la sélection de références de démonstration')
+      await page.screenshot({ path: resolve(output, `catalogue-indisponible-${mode}.png`) })
+      await dialog.locator('form').evaluate((form) => form.requestSubmit())
+      await page.evaluate(() => new Promise(requestAnimationFrame))
+      check(scenarioWrites.length === 0 && await dialog.isVisible(), 'Un panier vide ne déclenche aucune vente')
+
+      catalogue.unavailable = false
+      await dialog.getByRole('button', { name: 'Recharger le catalogue' }).click()
+      await selector.selectOption('PLA-2841')
+      await totals(dialog, 31, 6.2, 37.2, 'Le catalogue rétabli fournit le prix magasin pour une référence également présente en démonstration')
+      await dialog.locator('#montantPaye').fill('37.20')
+
+      await dialog.getByRole('button', { name: 'Fermer et garder le panier' }).click()
+      catalogue.unavailable = true
+      await page.locator('.page-actions').getByRole('button', { name: 'Actualiser', exact: true }).click()
+      await page.getByRole('button', { name: 'Reprendre la vente' }).click()
+      await warning.waitFor()
+      check(await selector.count() === 0 && Number(await dialog.locator('#montantPaye').inputValue()) === 37.2,
+        'Reprendre le panier pendant une panne préserve le paiement et signale l’indisponibilité du catalogue')
+      await dialog.getByRole('button', { name: 'Valider la vente' }).click()
+      await dialog.waitFor({ state: 'hidden' })
+      check(scenarioWrites.length === 1 && scenarioWrites[0].articles.length === 1
+        && scenarioWrites[0].articles[0].reference === 'PLA-2841' && scenarioWrites[0].articles[0].prixUnitaire === 31
+        && scenarioWrites[0].articles[0].tauxTva === 20 && scenarioWrites[0].montantPaye === 37.2,
+        'La vente est enregistrée une seule fois au prix catalogue affiché')
+      await context.close()
+    }
 
     {
       const { context, page, dialog, scenarioWrites } = await setup()
@@ -167,7 +204,7 @@ try {
     server = null
   }
   check(errors.length === 0, 'aucune erreur JavaScript')
-  await writeFile(resolve(output, 'verification.json'), JSON.stringify({ date: '2026-11-14', api: 'simulated', modes: ['development', 'production'], checks, errors, writes }, null, 2) + '\n')
+  await writeFile(resolve(output, 'verification.json'), JSON.stringify({ date: new Date().toISOString().slice(0, 10), api: 'simulated', modes: ['development', 'production'], checks, errors, writes }, null, 2) + '\n')
   console.log(`${checks.length} contrôles comptoir TTC réussis (development, production).`)
 } finally {
   if (browser) await browser.close()

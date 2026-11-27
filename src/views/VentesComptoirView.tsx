@@ -28,7 +28,6 @@ import { useToast } from '../components/useToast'
 import { ResourceBanners } from '../components/ResourceBanners'
 import { ErrorSummary } from '../components/forms/ErrorSummary'
 import { FormInput, FormSelect, type FieldRegister } from '../components/forms/FormFields'
-import { useCatalogue } from '../hooks/useCatalogue'
 import { useResource } from '../hooks/useResource'
 import { useClientOptions } from '../hooks/useReferentials'
 import { useCashSession } from '../hooks/useCashSession'
@@ -39,6 +38,7 @@ import { venteSchema, type DocumentLineFormValues } from '../schemas'
 import { PAYMENT_MODE_OPTIONS, formatEuros } from '../options'
 import type { ApiVente } from '../services/contracts'
 import { buildUrl } from '../services/api'
+import type { Article } from '../types'
 
 /** Ligne du panier local. `lineId` est la cle React stable de la ligne. */
 type CartLine = DocumentLineFormValues & TaxedLine & { lineId: string }
@@ -56,7 +56,8 @@ function formatLineTotal(line: CartLine): string {
 export default function VentesComptoirView() {
   const { user } = useAuth()
   const toast = useToast()
-  const { articles: catalogue } = useCatalogue()
+  const catalogue = useRemoteValue<Article[]>('/articles')
+  const articles = Array.isArray(catalogue.data) ? catalogue.data : []
   const taxes = useRemoteValue<Array<{ id: number; taux: number }>>('/tva')
   const clients = useClientOptions()
   const { session: cashSession } = useCashSession()
@@ -107,9 +108,15 @@ export default function VentesComptoirView() {
     montantPaye: 'Montant paye',
   } satisfies Record<string, string>
 
+  function reloadData() {
+    reload()
+    catalogue.reload()
+    taxes.reload()
+  }
+
   /** Ajoute une ligne au panier, ou incremente si la reference est presente. */
   function addToCart(reference: string) {
-    const article = catalogue.find((item) => item.reference === reference)
+    const article = articles.find((item) => item.reference === reference)
     if (!article) return
     const rate = taxes.data?.find((tax) => tax.id === article.tvaId)?.taux
     if (rate === undefined) {
@@ -154,7 +161,7 @@ export default function VentesComptoirView() {
   }
 
   const submit = form.handleSubmit(async (values) => {
-    if (!user || !canEdit || !cashSession || !totals || pending.current) return
+    if (!user || !canEdit || !cashSession || !cart.length || !totals || pending.current) return
     pending.current = true
     try {
       const created = await create({
@@ -243,7 +250,7 @@ export default function VentesComptoirView() {
       description="Enregistrez les ventes au comptoir."
       actions={
         <>
-        <button type="button" className="secondary-button" onClick={reload} disabled={loading || busy}>
+        <button type="button" className="secondary-button" onClick={reloadData} disabled={loading || catalogue.loading || taxes.loading || busy}>
           <Icon name="rotate-ccw" size="sm" /> Actualiser
         </button>
         {canEdit && <button type="button" className="primary-button" disabled={!cashSession || busy} aria-haspopup="dialog" onClick={() => setDialogOpen(true)}><Icon name="plus" size="sm" /> {cart.length ? 'Reprendre la vente' : 'Nouvelle vente'}</button>}
@@ -305,26 +312,35 @@ export default function VentesComptoirView() {
           </div>
 
           <h3 className="sub-heading">Ajouter un article du catalogue</h3>
-          <div className="filter-bar">
-            <FormSelect
-              label="Article"
-              name="catalogueSelection"
-              value={selection}
-              options={catalogue.map((article) => ({
-                value: article.reference,
-                label: `${article.reference} - ${article.designation}`,
-              }))}
-              onChange={(_name, value) => {
-                setSelection(value)
-                addToCart(value)
-              }}
-              placeholder="Rechercher une reference..."
-            />
-          </div>
+          {catalogue.loading ? (
+            <p role="status">Chargement du catalogue…</p>
+          ) : catalogue.error ? (
+            <p className="error-banner" role="alert">
+              Catalogue indisponible. {catalogue.error}{' '}
+              <button type="button" className="secondary-button small" onClick={catalogue.reload}>Recharger le catalogue</button>
+            </p>
+          ) : (
+            <div className="filter-bar">
+              <FormSelect
+                label="Article"
+                name="catalogueSelection"
+                value={selection}
+                options={articles.map((article) => ({
+                  value: article.reference,
+                  label: `${article.reference} - ${article.designation}`,
+                }))}
+                onChange={(_name, value) => {
+                  setSelection(value)
+                  addToCart(value)
+                }}
+                placeholder={articles.length ? 'Rechercher une référence…' : 'Catalogue vide'}
+              />
+            </div>
+          )}
 
           <h3 className="sub-heading">Articles vendus</h3>
           {cart.length === 0 && (
-            <p className="empty-state">Aucun article. Recherchez et ajoutez une reference du catalogue.</p>
+            <p className="empty-state">Le panier est vide.</p>
           )}
 
           {cart.map((line) => (
