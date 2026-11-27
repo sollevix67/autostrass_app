@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795293382.1977446,
-    "seen": 1795293383.5778105,
-    "ast_hash": "c1a36d9a78d3b05739be2f7f6909aee3",
+    "mtime": 1795809562.075711,
+    "seen": 1795809575.278295,
+    "ast_hash": "e25c1aec4a2e23b032fcc47f972f17c6",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -3807,6 +3807,12 @@
     "mtime": 1795292437.0472887,
     "seen": 1795292932.6503572,
     "ast_hash": "593d6b656b92d4d8b7620f3131170497",
+    "semantic_hash": ""
+  },
+  "specs/analyse-depot-2026-11-27.md": {
+    "mtime": 1795809096.1568236,
+    "seen": 1795809205.3977556,
+    "ast_hash": "da7cfbeccdd4e8c72bdb662319a6d446",
     "semantic_hash": ""
   },
   "package-lock.json": {

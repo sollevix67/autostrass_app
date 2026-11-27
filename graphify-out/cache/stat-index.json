@@ -1308,10 +1308,10 @@
     }
   },
   "passation.md": {
-    "size": 58474,
-    "mtime_ns": 1795293382197744500,
-    "indexed_at_ns": 1795293383578034600,
-    "word_count": 7653
+    "size": 60612,
+    "mtime_ns": 1795809562075711100,
+    "indexed_at_ns": 1795809571776512300,
+    "word_count": 7970
   },
   "public/favicon.svg": {
     "size": 294,
@@ -3745,5 +3745,14 @@
     "mtime_ns": 1795290319497214200,
     "indexed_at_ns": 1795292923145970500,
     "word_count": 189
+  },
+  "specs/analyse-depot-2026-11-27.md": {
+    "size": 7404,
+    "mtime_ns": 1795809096156823700,
+    "indexed_at_ns": 1795809201362816000,
+    "word_count": 936,
+    "hashes": {
+      "specs/analyse-depot-2026-11-27.md": "a4648c4b2b5ed1f714a16cd38b3e53308730bcf5315c5cc373f6439cf9144f65"
+    }
   }
 }

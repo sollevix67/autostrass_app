@@ -11,7 +11,7 @@ avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
 
 Les **16 constats R01–R16** sont corrigés et testés ; détail, migration et preuves
 dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inventaire
-SHA-256 documentent l'ancien état et restent conservés.
+SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-depot-2026-11-27.md) recense cinq constats actuels.
 
 1. Migration **0012** appliquée et développement redémarré sur `autostrass_test`
    le 21 novembre après sauvegarde ; vérifier les autres installations, dont 0011.
@@ -791,8 +791,8 @@ validation. Le conducteur vérifie les constats et exécute les contrôles.
 Le build TypeScript/Vite et Oxlint passent sous Node 22.23.4. Le JavaScript
 initial pèse 642,22 kB minifiés (184,83 kB gzip). Les tests d’erreurs SQL,
 de validation des transferts, de montants de vente, d’intégrité fiscale
-(9 groupes), de paramètres (7 groupes) et de PDF passent. Vérification en
-cours des écritures de stock, du repli du catalogue et de la procédure
+(9 groupes), de paramètres (7 groupes) et de PDF passent. La revue a aussi
+exercé les écritures de stock, le repli du catalogue et la procédure
 d’installation sur une base vierge.
 
 Sur MariaDB 11.4.5 jetable, le retrait de 1 a laissé 4 pièces au total pour
@@ -808,3 +808,8 @@ Le [rapport d’analyse](specs/analyse-depot-2026-11-27.md) documente les
 cinq constats, les repères d’architecture, la couverture fonctionnelle et
 les limites du déploiement. Les priorités immédiates sont la cohérence du
 stock, la provenance des prix au comptoir et l’installation sur base vide.
+Les 35 liens locaux du rapport ont été vérifiés. Le commit `b1139d5` sert
+de base à l’actualisation de Graphify.
+Graphify 0.9.115 relie le rapport à la passation. Les exports HTML et JSON
+concordent sur 3 593 nœuds et 7 796 liens, répartis en 209 communautés.
+Les empreintes du manifeste ont été vérifiées. Le parseur SQL facultatif est absent.
