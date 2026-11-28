@@ -21685,7 +21685,7 @@
       "file_type": "document",
       "norm_label": "openstrass project handoff",
       "source_file": "passation.md",
-      "source_location": "L1-L879",
+      "source_location": "L1-L899",
       "source_url": null
     },
     {
@@ -44784,6 +44784,18 @@
       "community": 166,
       "community_name": "Inventaire physique par référence",
       "norm_label": "verification"
+    },
+    {
+      "id": "passation_compétences_obsidian_et_find_skills_du_28_novembre_2026",
+      "label": "Compétences Obsidian et find-skills du 28 novembre 2026",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "passation.md",
+      "source_location": "L881",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Project Handoff Documentation",
+      "norm_label": "compétences obsidian et find-skills du 28 novembre 2026"
     }
   ],
   "links": [
@@ -136618,6 +136630,29 @@
       "source_location": "L859",
       "weight": 1.0,
       "context": "test:installation"
+    },
+    {
+      "source": "passation_autostrass_project_handoff",
+      "target": "passation_compétences_obsidian_et_find_skills_du_28_novembre_2026",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "passation.md",
+      "source_location": "L881",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "passation_compétences_obsidian_et_find_skills_du_28_novembre_2026",
+      "target": "server_types_pdfmake_d_pdfmake_pdfmakeoutput_getbuffer",
+      "relation": "references",
+      "context": "getBuffer()",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "passation.md",
+      "source_location": "L899",
+      "weight": 1.0,
+      "_origin": "ast"
     }
   ],
   "hyperedges": [
@@ -136678,5 +136713,5 @@
       "source_file": ".github/prompts/ui-styling/SKILL.md"
     }
   ],
-  "built_at_commit": "8039bd6a94d2ea3df7e79c309dae945893551db9"
+  "built_at_commit": "ac06c211fcd51be8019767a69a141ab616fecd27"
 }

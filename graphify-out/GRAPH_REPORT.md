@@ -1,17 +1,18 @@
-# Graph Report - OpenStrass  (2026-11-27)
+# Graph Report - OpenStrass  (2026-11-28)
 
 ## Corpus Check
-- 422 files · ~486,582 words
+- 422 files · ~486,737 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 66 file(s) not represented in the graph (top: .csv 53, .css 8, (none) 3)
 
 ## Summary
-- 3614 nodes · 7898 edges · 209 communities (164 shown, 45 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 249 edges (avg confidence: 0.86)
+- 3615 nodes · 7900 edges · 209 communities (164 shown, 45 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 250 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8039bd6a`
+- Built from commit: `ac06c211`
+- [Compétences Obsidian et find-skills du 28 novembre 2026](../passation.md#compétences-obsidian-et-find-skills-du-28-novembre-2026)
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -223,8 +224,8 @@
 3. `Icon()` - 56 edges
 4. `react` - 55 edges
 5. `PageLayout()` - 48 edges
-6. `FormInput()` - 45 edges
-7. `OpenStrass Project Handoff` - 45 edges
+6. `OpenStrass Project Handoff` - 46 edges
+7. `FormInput()` - 45 edges
 8. `FormDialog()` - 43 edges
 9. `useToast()` - 41 edges
 10. `AppContent()` - 40 edges
@@ -389,8 +390,8 @@ Cohesion: 0.05
 Nodes (38): scripts, build, caisse:diagnostic, db:admin, db:generate, db:migrate, db:seed, db:studio (+30 more)
 
 ### Community 35 - "Project Handoff Documentation"
-Cohesion: 0.09
-Nodes (36): OpenStrass Project Handoff, OpenStrass Initial Requirements, API and Security Test Suites, Authentication and Role-Based Access Control, OpenStrass Roadmap, Cash Session Management, Centralized HTTP Client, Customer and Supplier Address Books (+28 more)
+Cohesion: 0.08
+Nodes (37): OpenStrass Project Handoff, OpenStrass Initial Requirements, API and Security Test Suites, Authentication and Role-Based Access Control, OpenStrass Roadmap, Cash Session Management, Centralized HTTP Client, Customer and Supplier Address Books (+29 more)
 
 ### Community 36 - "Application TypeScript Configuration"
 Cohesion: 0.10
@@ -910,7 +911,7 @@ Nodes (8): Autres défauts confirmés, R08 — P2 — Le journal soustrait deux 
 
 ## Knowledge Gaps
 - **92 isolated node(s):** `RFC-5321`, `./server/services/settingsStore.ts`, `Banner Design Skill`, `Documentation Workflow and Formats`, `Code Documenter Skill` (+87 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1618 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1617 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **45 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
@@ -926,16 +927,16 @@ Nodes (8): Autres défauts confirmés, R08 — P2 — Le journal soustrait deux 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `TailwindConfigGenerator` connect `Tailwind Theme Validation` to `.write_config`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `.add_colors`, `.recommend_plugins`, `.generate_config_string`, `Tailwind Generator Defaults`, `json`, `Tailwind Font And Spacing Config`, `Tailwind Configuration Tests`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `OpenStrass Project Handoff` connect `Project Handoff Documentation` to `OpenStrass Design System Master`, `pdfCommercial.ts`, `toErrorMessage`, `Inventaire physique par référence`, `Création et modification des clients — 6 novembre 2026`, `formulaires-modaux.md`, `Application Architecture README`, `parametres.md`, `Clôture de caisse — 10 novembre 2026`, `Audit des fichiers inutiles — 13 novembre 2026`, `Création et modification des fournisseurs — 6 novembre 2026`, `Analyse de Microsoft TokenEconomizer`, `Correctifs de la revue intégrale — 14 novembre 2026`, `Comptage du fond de caisse à l'ouverture — 10 novembre 2026`, `Security Review Findings`, `review-accessibility-ui.mjs`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `RFC-5321`, `./server/services/settingsStore.ts`, `Banner Design Skill` to the rest of the system?**
   _92 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Shadcn Component Installer` be split into smaller, more focused modules?**
   _Cohesion score 0.053555750658472345 - nodes in this community are weakly interconnected._
-- **Why does `OpenStrass Project Handoff` connect `Project Handoff Documentation` to `OpenStrass Design System Master`, `pdfCommercial.ts`, `toErrorMessage`, `Inventaire physique par référence`, `Création et modification des clients — 6 novembre 2026`, `formulaires-modaux.md`, `Application Architecture README`, `parametres.md`, `Clôture de caisse — 10 novembre 2026`, `Audit des fichiers inutiles — 13 novembre 2026`, `Création et modification des fournisseurs — 6 novembre 2026`, `Analyse de Microsoft TokenEconomizer`, `Correctifs de la revue intégrale — 14 novembre 2026`, `Comptage du fond de caisse à l'ouverture — 10 novembre 2026`, `Security Review Findings`, `review-accessibility-ui.mjs`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `TailwindConfigGenerator` connect `Tailwind Theme Validation` to `.write_config`, `Tailwind Breakpoint Tests`, `Tailwind Plugin Configuration`, `.add_colors`, `.recommend_plugins`, `.generate_config_string`, `Tailwind Generator Defaults`, `json`, `Tailwind Font And Spacing Config`, `Tailwind Configuration Tests`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Should `scripts/core.py` be split into smaller, more focused modules?**
   _Cohesion score 0.05563093622795115 - nodes in this community are weakly interconnected._
 - **Why does `toErrorMessage()` connect `toErrorMessage` to `AuthProvider.tsx`, `InventaireView.tsx`, `CaisseView.tsx`, `useRemoteValue`, `react`, `DevisView.tsx`, `App.tsx`?**
