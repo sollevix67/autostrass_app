@@ -11,7 +11,7 @@ export type RenderedPdfPage = {
 }
 type InspectablePdfOutput = {
   getBuffer(): Promise<Buffer>
-  getStream(): Promise<{
+  readonly pdfDocumentPromise: Promise<{
     _pdfMakePages: Array<{
       pageSize: { width: number; height: number }
       items: Array<{ type: string; item: {
@@ -67,10 +67,10 @@ export function verifyPdf(buffer: Buffer) {
   assert.match(buffer.toString('latin1'), /\/BaseFont \/[A-Z]+\+Roboto/)
 }
 
-/** Les pages sont celles effectivement composées et transmises par pdfmake au moteur PDF. */
+/** pdfmake conserve les pages sur le document PDFKit, même après la consommation du flux par getBuffer(). */
 export async function renderedPdfPages(output: InspectablePdfOutput): Promise<RenderedPdfPage[]> {
-  const document = await output.getStream()
-  assert.ok(Array.isArray(document._pdfMakePages), 'Le moteur PDF doit exposer les pages réellement composées')
+  const document = await output.pdfDocumentPromise
+  assert.ok(Array.isArray(document?._pdfMakePages), 'Le moteur PDF doit exposer les pages réellement composées')
   return document._pdfMakePages.map((page) => ({
     width: page.pageSize.width,
     height: page.pageSize.height,

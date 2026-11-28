@@ -1,7 +1,7 @@
 # Passation — OpenStrass
 
-État consolidé le **27 novembre 2026** après la correction des cinq constats
-sur le stock, le comptoir, l’installation, les réceptions et le tableau de bord.
+État consolidé le **28 novembre 2026**. La suite PDF passe avec `pdfmake` 0.3.15 après
+les cinq correctifs du 27 novembre sur le stock, le comptoir, l’installation, les réceptions et le tableau de bord.
 La migration 0012 des Devis a été appliquée à la base locale le 21 novembre
 après sauvegarde et comparaison des données.
 Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
@@ -897,3 +897,33 @@ Le verrou npm avait aussi été modifié avant l’inventaire. Avec ces versions
 seconde lecture d’un flux déjà consommé avec `pdfmake` 0.3.15. Cet utilitaire
 sert aux tests et à la génération des exemples. Le générateur utilisé pour
 les factures, devis et aperçus appelle `getBuffer()` une seule fois.
+
+## Reprise des contrôles PDF du 28 novembre 2026
+
+Reprise sur `9d9408d`, avec un arbre Git propre. La lecture de la passation et
+la requête sur le graphe placent `capturePdfDefinitions` et `renderedPdfPages`
+dans le chemin des contrôles commerciaux. Le premier travail repris est la
+régression signalée avec `pdfmake` 0.3.15 dans les tests et les exemples.
+
+`npm run test:pdf` reproduit l’échec sur la première facture. `getBuffer()`
+termine le flux, puis l’utilitaire appelle `getStream()` et reçoit l’erreur
+`PDF stream has already been consumed.` Le service commercial effectue une
+seule lecture. Le correctif et la préparation de l’index Graphify sont répartis
+entre deux agents. Le conducteur vérifie les exemples à partir des PDF produits.
+
+`renderedPdfPages` utilise désormais le document PDFKit déjà composé par
+`pdfmake`. Les tests inspectent les pages du PDF dont le service a fourni les
+octets. `pdfDocumentPromise` et `_pdfMakePages` sont internes au moteur.
+La suite `test:pdf` passe pour les factures, les devis, les douze groupes
+commerciaux et les douze groupes de personnalisation. Oxlint, TypeScript
+strict sur l’utilitaire et `test:errors` passent aussi. Les dix exemples
+commerciaux et les deux exemples personnalisés ont été régénérés hors dépôt.
+
+Le build de production passe avec l’avertissement Vite déjà connu sur la taille
+du JavaScript initial (646,26 kB minifiés). Sur les douze exemples, Xpdf
+retrouve le même texte page par page et les 46 images produites par le moteur
+PDF de Windows sont identiques octet pour octet aux références du dépôt. La
+facture personnalisée et les deux pages du devis ont aussi été relues à l’écran.
+Les exemples fictifs de cette recette restent sous
+`%TEMP%/openstrass-pdf-fa367a98724f4d6f8a116f6aa26ee09a` après le refus
+du nettoyage par le contrôle automatique. Le dépôt conserve ses références.
