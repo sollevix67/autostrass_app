@@ -386,10 +386,11 @@
   ".github/prompts/design/references/cip-prompt-engineering.md": {
     "size": 2493,
     "mtime_ns": 1790366324236550000,
-    "indexed_at_ns": 1791062032371367600,
+    "indexed_at_ns": 1795881099246197200,
     "word_count": 329,
     "hashes": {
-      ".github/prompts/design/references/cip-prompt-engineering.md": "9c3b557d43bdaa978312586a485c72c4fb54db9bc78611eb1109f1d5f916b0cb"
+      ".github/prompts/design/references/cip-prompt-engineering.md": "9c3b557d43bdaa978312586a485c72c4fb54db9bc78611eb1109f1d5f916b0cb",
+      "ast-md\u0000.github/prompts/design/references/cip-prompt-engineering.md": "9c3b557d43bdaa978312586a485c72c4fb54db9bc78611eb1109f1d5f916b0cb"
     }
   },
   ".github/prompts/design/references/cip-style-guide.md": {
@@ -467,10 +468,11 @@
   ".github/prompts/design/references/slides-create.md": {
     "size": 153,
     "mtime_ns": 1790366324267581300,
-    "indexed_at_ns": 1791062032376783600,
+    "indexed_at_ns": 1795881099246999500,
     "word_count": 20,
     "hashes": {
-      ".github/prompts/design/references/slides-create.md": "9f7356d2a89f8721303f9338e17403c3f8619546d6161d65fb25503c1c507b9f"
+      ".github/prompts/design/references/slides-create.md": "9f7356d2a89f8721303f9338e17403c3f8619546d6161d65fb25503c1c507b9f",
+      "ast-md\u0000.github/prompts/design/references/slides-create.md": "9f7356d2a89f8721303f9338e17403c3f8619546d6161d65fb25503c1c507b9f"
     }
   },
   ".github/prompts/design/references/slides-html-template.md": {
@@ -1131,10 +1133,10 @@
     }
   },
   "README.md": {
-    "size": 10798,
-    "mtime_ns": 1795877246064208600,
-    "indexed_at_ns": 1795877468546019400,
-    "word_count": 1388
+    "size": 11376,
+    "mtime_ns": 1795880557889967800,
+    "indexed_at_ns": 1795881098598067300,
+    "word_count": 1460
   },
   "TODO.md": {
     "size": 4834,
@@ -1233,12 +1235,12 @@
     }
   },
   "database/drizzle/meta/_journal.json": {
-    "size": 1979,
-    "mtime_ns": 1795259208936575100,
-    "indexed_at_ns": 1795261293968089500,
-    "word_count": 165,
+    "size": 2130,
+    "mtime_ns": 1795879851794184500,
+    "indexed_at_ns": 1795881099197247300,
+    "word_count": 177,
     "hashes": {
-      "database/drizzle/meta/_journal.json": "f8e16abf2b24727a6f9ae7866a063da5552d31edc80360658308b844113f5cf5"
+      "database/drizzle/meta/_journal.json": "007fc160eab3df7b3be5974f3d4630ff937d992b10afe03fd8e3321f03847956"
     }
   },
   "database/migrate_v1.sql": {
@@ -1299,19 +1301,19 @@
     "word_count": 39
   },
   "package.json": {
-    "size": 3909,
-    "mtime_ns": 1795876905876741200,
-    "indexed_at_ns": 1795877469310287400,
-    "word_count": 269,
+    "size": 4127,
+    "mtime_ns": 1795879932039059000,
+    "indexed_at_ns": 1795881099201400600,
+    "word_count": 278,
     "hashes": {
-      "package.json": "76c2e83cb158bf2dac99f21e61db765e6772b0f795c9dc4b7191b89cabb85763"
+      "package.json": "36a2633d5c94878aa868944dfd2140430f084f4ddcecc9c6aaf7809d5b90a6c4"
     }
   },
   "passation.md": {
-    "size": 69984,
-    "mtime_ns": 1795877445071318900,
-    "indexed_at_ns": 1795877468580163700,
-    "word_count": 9326
+    "size": 73989,
+    "mtime_ns": 1795881241878762100,
+    "indexed_at_ns": 1795881293688889100,
+    "word_count": 9886
   },
   "public/favicon.svg": {
     "size": 294,
@@ -1422,25 +1424,22 @@
     }
   },
   "server/db/schema.ts": {
-    "size": 34700,
-    "mtime_ns": 1795287747251553900,
-    "indexed_at_ns": 1795287899294277800,
-    "word_count": 3576
+    "size": 35965,
+    "mtime_ns": 1795880202972672600,
+    "indexed_at_ns": 1795881098678688300,
+    "word_count": 3666
   },
   "server/db/schema_step2.ts": {
-    "size": 6570,
-    "mtime_ns": 1794001441557894900,
-    "indexed_at_ns": 1795262433403844200,
-    "word_count": 543,
-    "hashes": {
-      "server/db/schema_step2.ts": "b2e01e4e77e30002a1fb16a0dc1b96e127a4a7755723cd67f92a41f07f097add"
-    }
+    "size": 6324,
+    "mtime_ns": 1795879839030123600,
+    "indexed_at_ns": 1795881098679669900,
+    "word_count": 519
   },
   "server/index.ts": {
-    "size": 32289,
-    "mtime_ns": 1795810378428755700,
-    "indexed_at_ns": 1795811411187171600,
-    "word_count": 3305
+    "size": 32973,
+    "mtime_ns": 1795880012691754600,
+    "indexed_at_ns": 1795881098680441400,
+    "word_count": 3346
   },
   "server/middleware/auth.ts": {
     "size": 8393,
@@ -1560,13 +1559,10 @@
     }
   },
   "server/repositories/documentRepositories.ts": {
-    "size": 25652,
-    "mtime_ns": 1795259906996108500,
-    "indexed_at_ns": 1795262433444584900,
-    "word_count": 2601,
-    "hashes": {
-      "server/repositories/documentRepositories.ts": "b3d2cdf61bf38f2c3a0eb628eba0664dd383ec504997276d1a8701588c9dcb8e"
-    }
+    "size": 27103,
+    "mtime_ns": 1795879915992616000,
+    "indexed_at_ns": 1795881098701873500,
+    "word_count": 2729
   },
   "server/repositories/livraisonRepository.ts": {
     "size": 4495,
@@ -1587,13 +1583,10 @@
     }
   },
   "server/repositories/referentielRepositories.ts": {
-    "size": 16590,
-    "mtime_ns": 1794002841858510800,
-    "indexed_at_ns": 1795262433169684100,
-    "word_count": 1646,
-    "hashes": {
-      "server/repositories/referentielRepositories.ts": "a92982ac22555878939c1330736f34ea18bc3f4dcf32c75f10e4187a554ea17b"
-    }
+    "size": 18444,
+    "mtime_ns": 1795879902545838400,
+    "indexed_at_ns": 1795881098706114200,
+    "word_count": 1797
   },
   "server/repositories/simpleRepositories.ts": {
     "size": 4354,
@@ -1614,10 +1607,10 @@
     }
   },
   "src/App.tsx": {
-    "size": 15685,
-    "mtime_ns": 1795810398154461900,
-    "indexed_at_ns": 1795811411453814000,
-    "word_count": 1322
+    "size": 16177,
+    "mtime_ns": 1795880322715155400,
+    "indexed_at_ns": 1795881098873676100,
+    "word_count": 1353
   },
   "src/components/AuthProvider.tsx": {
     "size": 3791,
@@ -1806,10 +1799,10 @@
     }
   },
   "src/options.ts": {
-    "size": 4650,
-    "mtime_ns": 1795810439133398700,
-    "indexed_at_ns": 1795811411479851600,
-    "word_count": 654
+    "size": 4889,
+    "mtime_ns": 1795879768589412800,
+    "indexed_at_ns": 1795881098905524300,
+    "word_count": 686
   },
   "src/schemas/index.ts": {
     "size": 18745,
@@ -1827,10 +1820,10 @@
     "word_count": 1055
   },
   "src/services/contracts.ts": {
-    "size": 10392,
-    "mtime_ns": 1795290122037208700,
-    "indexed_at_ns": 1795292923115613100,
-    "word_count": 1287
+    "size": 11284,
+    "mtime_ns": 1795880170548061300,
+    "indexed_at_ns": 1795881098912066800,
+    "word_count": 1377
   },
   "src/services/resilience.ts": {
     "size": 795,
@@ -1908,10 +1901,10 @@
     "word_count": 568
   },
   "src/views/ReceptionsView.tsx": {
-    "size": 16642,
-    "mtime_ns": 1795811115044269700,
-    "indexed_at_ns": 1795811411507311400,
-    "word_count": 1373
+    "size": 17441,
+    "mtime_ns": 1795880322716569400,
+    "indexed_at_ns": 1795881098928939000,
+    "word_count": 1430
   },
   "src/views/RetoursView.tsx": {
     "size": 12585,
@@ -2072,19 +2065,21 @@
   "PRODUCT.md": {
     "size": 1170,
     "mtime_ns": 1795287295335011000,
-    "indexed_at_ns": 1795287900221589100,
+    "indexed_at_ns": 1795881099249477300,
     "word_count": 164,
     "hashes": {
-      "PRODUCT.md": "644b26ab2414831afeb340931d785f59df2058e0c59b673b78a03f5e18c93ba1"
+      "PRODUCT.md": "644b26ab2414831afeb340931d785f59df2058e0c59b673b78a03f5e18c93ba1",
+      "ast-md\u0000PRODUCT.md": "644b26ab2414831afeb340931d785f59df2058e0c59b673b78a03f5e18c93ba1"
     }
   },
   "graphify-out/memory/query_20261010_094231_2be91c77_why_does_zod_connect_authenticated_resource_routes.md": {
     "size": 1952,
     "mtime_ns": 1791625351516714200,
-    "indexed_at_ns": 1792931401365259000,
+    "indexed_at_ns": 1795881099250525800,
     "word_count": 243,
     "hashes": {
-      "graphify-out/memory/query_20261010_094231_2be91c77_why_does_zod_connect_authenticated_resource_routes.md": "0479586d48d7db154a1bc3de7921bb5ee164d14f1dbb684fdaeeaac9a39aede2"
+      "graphify-out/memory/query_20261010_094231_2be91c77_why_does_zod_connect_authenticated_resource_routes.md": "0479586d48d7db154a1bc3de7921bb5ee164d14f1dbb684fdaeeaac9a39aede2",
+      "ast-md\u0000graphify-out/memory/query_20261010_094231_2be91c77_why_does_zod_connect_authenticated_resource_routes.md": "c2c827669ad2f7ce64bbe9490a382e79b6915b8378f7989e414590518b76caaa"
     }
   },
   "scripts/test-error-mapping.ts": {
@@ -2121,21 +2116,19 @@
     }
   },
   "src/views/FournisseursView.tsx": {
-    "size": 15154,
-    "mtime_ns": 1794683588900522300,
-    "indexed_at_ns": 1795262433662843700,
-    "word_count": 1343,
-    "hashes": {
-      "src/views/FournisseursView.tsx": "605bf01abd4f4ca10b6e034c675a64c52962261ee96908d034082801f45999f8"
-    }
+    "size": 15281,
+    "mtime_ns": 1795879768589939400,
+    "indexed_at_ns": 1795881098925904600,
+    "word_count": 1339
   },
   "AGENTS.md": {
     "size": 3028,
     "mtime_ns": 1795287295334505800,
-    "indexed_at_ns": 1795287900220631900,
+    "indexed_at_ns": 1795881099248563200,
     "word_count": 400,
     "hashes": {
-      "AGENTS.md": "8754b7581e717850ed0568536534ed88bb8bde1f547e45b854edc15950b4684b"
+      "AGENTS.md": "8754b7581e717850ed0568536534ed88bb8bde1f547e45b854edc15950b4684b",
+      "ast-md\u0000AGENTS.md": "8754b7581e717850ed0568536534ed88bb8bde1f547e45b854edc15950b4684b"
     }
   },
   "scripts/lib/test-environment.ts": {
@@ -2171,19 +2164,21 @@
   "specs/css-review.md": {
     "size": 4812,
     "mtime_ns": 1793825294671722000,
-    "indexed_at_ns": 1793825297296494500,
+    "indexed_at_ns": 1795881099260759500,
     "word_count": 649,
     "hashes": {
-      "specs/css-review.md": "148cffda9deed2b4bc936d5811e21ad2adde5e03b1042fe27c08ebbce5b421fe"
+      "specs/css-review.md": "148cffda9deed2b4bc936d5811e21ad2adde5e03b1042fe27c08ebbce5b421fe",
+      "ast-md\u0000specs/css-review.md": "148cffda9deed2b4bc936d5811e21ad2adde5e03b1042fe27c08ebbce5b421fe"
     }
   },
   "specs/client-modal.md": {
     "size": 10561,
     "mtime_ns": 1794683641318672400,
-    "indexed_at_ns": 1794683821846796500,
+    "indexed_at_ns": 1795881099258291800,
     "word_count": 1413,
     "hashes": {
-      "specs/client-modal.md": "3ccde2b754f6f5a12a9f514a7b6f3197ffc1e52ea1fca462dcae53c001c41edd"
+      "specs/client-modal.md": "3ccde2b754f6f5a12a9f514a7b6f3197ffc1e52ea1fca462dcae53c001c41edd",
+      "ast-md\u0000specs/client-modal.md": "3ccde2b754f6f5a12a9f514a7b6f3197ffc1e52ea1fca462dcae53c001c41edd"
     }
   },
   "specs/screenshots/client-modal/verification.json": {
@@ -2207,10 +2202,11 @@
   "specs/parametres-roadmap.md": {
     "size": 5779,
     "mtime_ns": 1793908058924229300,
-    "indexed_at_ns": 1793994339693287300,
+    "indexed_at_ns": 1795881099267892100,
     "word_count": 823,
     "hashes": {
-      "specs/parametres-roadmap.md": "9ea75d5a9cfc080bfa9ef29f12b25bf467a8dfb0f5c61874eeccd0fd7032a04e"
+      "specs/parametres-roadmap.md": "9ea75d5a9cfc080bfa9ef29f12b25bf467a8dfb0f5c61874eeccd0fd7032a04e",
+      "ast-md\u0000specs/parametres-roadmap.md": "9ea75d5a9cfc080bfa9ef29f12b25bf467a8dfb0f5c61874eeccd0fd7032a04e"
     }
   },
   "database/drizzle/0007_parametres_referentiels.sql": {
@@ -2300,10 +2296,11 @@
   "specs/parametres.md": {
     "size": 14291,
     "mtime_ns": 1795290072410666400,
-    "indexed_at_ns": 1795292924335468500,
+    "indexed_at_ns": 1795881099268812600,
     "word_count": 1989,
     "hashes": {
-      "specs/parametres.md": "608cfc976328618f76fc94abdbf0ef23a45caacd9fa838579805e91526324030"
+      "specs/parametres.md": "608cfc976328618f76fc94abdbf0ef23a45caacd9fa838579805e91526324030",
+      "ast-md\u0000specs/parametres.md": "608cfc976328618f76fc94abdbf0ef23a45caacd9fa838579805e91526324030"
     }
   },
   "specs/screenshots/parametres/verification.json": {
@@ -2555,10 +2552,11 @@
   "specs/inventaire-physique.md": {
     "size": 8711,
     "mtime_ns": 1794341645607193200,
-    "indexed_at_ns": 1794341797413465900,
+    "indexed_at_ns": 1795881099266793900,
     "word_count": 1149,
     "hashes": {
-      "specs/inventaire-physique.md": "20e3cfec14ccbb08c0d9104aab9c1aaf4c32ca6367d678d63a35002e02358a14"
+      "specs/inventaire-physique.md": "20e3cfec14ccbb08c0d9104aab9c1aaf4c32ca6367d678d63a35002e02358a14",
+      "ast-md\u0000specs/inventaire-physique.md": "20e3cfec14ccbb08c0d9104aab9c1aaf4c32ca6367d678d63a35002e02358a14"
     }
   },
   "specs/screenshots/inventaire/verification.json": {
@@ -2645,10 +2643,11 @@
   "specs/fournisseurs.md": {
     "size": 6740,
     "mtime_ns": 1794683641319671200,
-    "indexed_at_ns": 1794683821857008600,
+    "indexed_at_ns": 1795881099265571300,
     "word_count": 906,
     "hashes": {
-      "specs/fournisseurs.md": "f8a57870a9c84e7c95cb9b732586ee0cac2a9f18ca340367b0fcfa4137c4c077"
+      "specs/fournisseurs.md": "f8a57870a9c84e7c95cb9b732586ee0cac2a9f18ca340367b0fcfa4137c4c077",
+      "ast-md\u0000specs/fournisseurs.md": "f8a57870a9c84e7c95cb9b732586ee0cac2a9f18ca340367b0fcfa4137c4c077"
     }
   },
   "specs/screenshots/fournisseurs/verification.json": {
@@ -2777,10 +2776,11 @@
   "specs/caisse-cloture.md": {
     "size": 3439,
     "mtime_ns": 1795284336223926100,
-    "indexed_at_ns": 1795287900229040400,
+    "indexed_at_ns": 1795881099254060700,
     "word_count": 476,
     "hashes": {
-      "specs/caisse-cloture.md": "cdb5e401183573eed684135038dc40b5fb56380391fffe146d47b24d0a788246"
+      "specs/caisse-cloture.md": "cdb5e401183573eed684135038dc40b5fb56380391fffe146d47b24d0a788246",
+      "ast-md\u0000specs/caisse-cloture.md": "cdb5e401183573eed684135038dc40b5fb56380391fffe146d47b24d0a788246"
     }
   },
   "specs/screenshots/caisse-cloture/verification.json": {
@@ -2795,10 +2795,11 @@
   "specs/caisse-ouverture.md": {
     "size": 3975,
     "mtime_ns": 1795287073766016400,
-    "indexed_at_ns": 1795287900229987800,
+    "indexed_at_ns": 1795881099254873700,
     "word_count": 550,
     "hashes": {
-      "specs/caisse-ouverture.md": "e68ab41e75551081f150de052698f5a2b7c552369b8af923ee648d53a9640fdc"
+      "specs/caisse-ouverture.md": "e68ab41e75551081f150de052698f5a2b7c552369b8af923ee648d53a9640fdc",
+      "ast-md\u0000specs/caisse-ouverture.md": "e68ab41e75551081f150de052698f5a2b7c552369b8af923ee648d53a9640fdc"
     }
   },
   "specs/screenshots/caisse-ouverture/verification.json": {
@@ -2858,10 +2859,11 @@
   "specs/formulaires-modaux.md": {
     "size": 4862,
     "mtime_ns": 1794683788952691400,
-    "indexed_at_ns": 1794683821855696400,
+    "indexed_at_ns": 1795881099264730400,
     "word_count": 700,
     "hashes": {
-      "specs/formulaires-modaux.md": "885362a46ef02dac653f9c7bfd0d1fc76d8ebd702f95f39ff34ee499ed2a5428"
+      "specs/formulaires-modaux.md": "885362a46ef02dac653f9c7bfd0d1fc76d8ebd702f95f39ff34ee499ed2a5428",
+      "ast-md\u0000specs/formulaires-modaux.md": "885362a46ef02dac653f9c7bfd0d1fc76d8ebd702f95f39ff34ee499ed2a5428"
     }
   },
   "specs/screenshots/formulaires-modaux/verification.json": {
@@ -2903,46 +2905,51 @@
   "specs/utilisateurs.md": {
     "size": 3112,
     "mtime_ns": 1794343167228209900,
-    "indexed_at_ns": 1794343169520935800,
+    "indexed_at_ns": 1795881099272233500,
     "word_count": 452,
     "hashes": {
-      "specs/utilisateurs.md": "ff4e7ea4286c8398de4b0eccc8175455b62300d30f47e9f626a0438f3ae417c8"
+      "specs/utilisateurs.md": "ff4e7ea4286c8398de4b0eccc8175455b62300d30f47e9f626a0438f3ae417c8",
+      "ast-md\u0000specs/utilisateurs.md": "ff4e7ea4286c8398de4b0eccc8175455b62300d30f47e9f626a0438f3ae417c8"
     }
   },
   "specs/fichiers-inutiles.md": {
     "size": 9170,
     "mtime_ns": 1794653159656794700,
-    "indexed_at_ns": 1794653714935677800,
+    "indexed_at_ns": 1795881099263920300,
     "word_count": 1247,
     "hashes": {
-      "specs/fichiers-inutiles.md": "46eb8b8e5d1745e7fd600e2c2f02c23d664de0dd42c1d955101d8e795d8d2bf7"
+      "specs/fichiers-inutiles.md": "46eb8b8e5d1745e7fd600e2c2f02c23d664de0dd42c1d955101d8e795d8d2bf7",
+      "ast-md\u0000specs/fichiers-inutiles.md": "46eb8b8e5d1745e7fd600e2c2f02c23d664de0dd42c1d955101d8e795d8d2bf7"
     }
   },
   ".agents/skills/accessibility/SKILL.md": {
     "size": 14822,
     "mtime_ns": 1794603062441083700,
-    "indexed_at_ns": 1794603135011521200,
+    "indexed_at_ns": 1795881099243672800,
     "word_count": 1883,
     "hashes": {
-      ".agents/skills/accessibility/SKILL.md": "fd2b9dbd150be8767c661fc2ae5e0ccf2eff2b868a2552266022a5a17f974ed8"
+      ".agents/skills/accessibility/SKILL.md": "fd2b9dbd150be8767c661fc2ae5e0ccf2eff2b868a2552266022a5a17f974ed8",
+      "ast-md\u0000.agents/skills/accessibility/SKILL.md": "cc93026358e694cc342bc52b84221323212dd38e053efc7f908160903c1a944d"
     }
   },
   ".agents/skills/accessibility/references/A11Y-PATTERNS.md": {
     "size": 6269,
     "mtime_ns": 1794603062441083700,
-    "indexed_at_ns": 1794603135012510900,
+    "indexed_at_ns": 1795881099244510900,
     "word_count": 697,
     "hashes": {
-      ".agents/skills/accessibility/references/A11Y-PATTERNS.md": "8fb39dcd8bcde644713ae03d8aa487cb89d6682fba84948f529f8e423b1f73df"
+      ".agents/skills/accessibility/references/A11Y-PATTERNS.md": "8fb39dcd8bcde644713ae03d8aa487cb89d6682fba84948f529f8e423b1f73df",
+      "ast-md\u0000.agents/skills/accessibility/references/A11Y-PATTERNS.md": "8fb39dcd8bcde644713ae03d8aa487cb89d6682fba84948f529f8e423b1f73df"
     }
   },
   ".agents/skills/accessibility/references/WCAG.md": {
     "size": 9270,
     "mtime_ns": 1794603062441083700,
-    "indexed_at_ns": 1794603135013440900,
+    "indexed_at_ns": 1795881099245381200,
     "word_count": 1344,
     "hashes": {
-      ".agents/skills/accessibility/references/WCAG.md": "525072967826c0d05ab9e65302daca34ef6f69ca52d02b28d7e1952e1d7ae343"
+      ".agents/skills/accessibility/references/WCAG.md": "525072967826c0d05ab9e65302daca34ef6f69ca52d02b28d7e1952e1d7ae343",
+      "ast-md\u0000.agents/skills/accessibility/references/WCAG.md": "525072967826c0d05ab9e65302daca34ef6f69ca52d02b28d7e1952e1d7ae343"
     }
   },
   "skills-lock.json": {
@@ -2966,10 +2973,11 @@
   "specs/accessibilite-wcag-review.md": {
     "size": 11809,
     "mtime_ns": 1794653159657792900,
-    "indexed_at_ns": 1794653714931759200,
+    "indexed_at_ns": 1795881099251547200,
     "word_count": 1674,
     "hashes": {
-      "specs/accessibilite-wcag-review.md": "8fe6340b566462147ce3be0c306cacaf7f23b8f0ec863f75012b9bef921c8bbb"
+      "specs/accessibilite-wcag-review.md": "8fe6340b566462147ce3be0c306cacaf7f23b8f0ec863f75012b9bef921c8bbb",
+      "ast-md\u0000specs/accessibilite-wcag-review.md": "8fe6340b566462147ce3be0c306cacaf7f23b8f0ec863f75012b9bef921c8bbb"
     }
   },
   "specs/screenshots/accessibility-review/verification.json": {
@@ -2984,10 +2992,11 @@
   "specs/tokeneconomizer-analyse.md": {
     "size": 15683,
     "mtime_ns": 1794653159658294100,
-    "indexed_at_ns": 1794653714940243200,
+    "indexed_at_ns": 1795881099270491200,
     "word_count": 2028,
     "hashes": {
-      "specs/tokeneconomizer-analyse.md": "4dc5eb0f6b4dfb2f8f924655b2156e3cdda15305d67b0661f563a84012871bd8"
+      "specs/tokeneconomizer-analyse.md": "4dc5eb0f6b4dfb2f8f924655b2156e3cdda15305d67b0661f563a84012871bd8",
+      "ast-md\u0000specs/tokeneconomizer-analyse.md": "4dc5eb0f6b4dfb2f8f924655b2156e3cdda15305d67b0661f563a84012871bd8"
     }
   },
   "specs/tokeneconomizer-validation.json": {
@@ -3011,10 +3020,11 @@
   "specs/tokeneconomizer-installation.md": {
     "size": 4686,
     "mtime_ns": 1794644350386318200,
-    "indexed_at_ns": 1794644353762981100,
+    "indexed_at_ns": 1795881099271292200,
     "word_count": 607,
     "hashes": {
-      "specs/tokeneconomizer-installation.md": "3e80c20d64b905c35630170be92d966e6ade404941c0390c4296c9efac35d42c"
+      "specs/tokeneconomizer-installation.md": "3e80c20d64b905c35630170be92d966e6ade404941c0390c4296c9efac35d42c",
+      "ast-md\u0000specs/tokeneconomizer-installation.md": "3e80c20d64b905c35630170be92d966e6ade404941c0390c4296c9efac35d42c"
     }
   },
   "specs/revue-code-2026-11-14.json": {
@@ -3029,10 +3039,11 @@
   "specs/revue-code-2026-11-14.md": {
     "size": 15073,
     "mtime_ns": 1794657008743972900,
-    "indexed_at_ns": 1794657053679944100,
+    "indexed_at_ns": 1795881099269634600,
     "word_count": 2054,
     "hashes": {
-      "specs/revue-code-2026-11-14.md": "f6a700524d4d8dd8caf464e5ad73cd7a6a3ffba735ab210e9c5d3aaef4452476"
+      "specs/revue-code-2026-11-14.md": "f6a700524d4d8dd8caf464e5ad73cd7a6a3ffba735ab210e9c5d3aaef4452476",
+      "ast-md\u0000specs/revue-code-2026-11-14.md": "f6a700524d4d8dd8caf464e5ad73cd7a6a3ffba735ab210e9c5d3aaef4452476"
     }
   },
   ".github/prompts/design-system/scripts/tests/test_embed_tokens.py": {
@@ -3047,10 +3058,11 @@
   ".github/prompts/ui-ux-pro-max/scripts/SOURCES.md": {
     "size": 2102,
     "mtime_ns": 1794658690747391100,
-    "indexed_at_ns": 1794660677994111500,
+    "indexed_at_ns": 1795881099247786200,
     "word_count": 238,
     "hashes": {
-      ".github/prompts/ui-ux-pro-max/scripts/SOURCES.md": "58941a38f25f46a4a6d12e21bd1576888486794405bd1e33f37d646f7135c716"
+      ".github/prompts/ui-ux-pro-max/scripts/SOURCES.md": "58941a38f25f46a4a6d12e21bd1576888486794405bd1e33f37d646f7135c716",
+      "ast-md\u0000.github/prompts/ui-ux-pro-max/scripts/SOURCES.md": "58941a38f25f46a4a6d12e21bd1576888486794405bd1e33f37d646f7135c716"
     }
   },
   ".github/prompts/ui-ux-pro-max/scripts/evaluate-relevance.py": {
@@ -3167,10 +3179,11 @@
   "specs/correctifs-revue-2026-11-14.md": {
     "size": 6750,
     "mtime_ns": 1794664147248162700,
-    "indexed_at_ns": 1794664150980375500,
+    "indexed_at_ns": 1795881099259903800,
     "word_count": 976,
     "hashes": {
-      "specs/correctifs-revue-2026-11-14.md": "3e1856251a78d24d7de087f725998c0c65c903928ae88ad30df55af24ac2b4d0"
+      "specs/correctifs-revue-2026-11-14.md": "3e1856251a78d24d7de087f725998c0c65c903928ae88ad30df55af24ac2b4d0",
+      "ast-md\u0000specs/correctifs-revue-2026-11-14.md": "3e1856251a78d24d7de087f725998c0c65c903928ae88ad30df55af24ac2b4d0"
     }
   },
   "specs/screenshots/revue-correctifs-frontend/verification.json": {
@@ -3291,13 +3304,10 @@
     }
   },
   "server/repositories/devisRepository.ts": {
-    "size": 22328,
-    "mtime_ns": 1795259933437561500,
-    "indexed_at_ns": 1795262433186949500,
-    "word_count": 2306,
-    "hashes": {
-      "server/repositories/devisRepository.ts": "a91fd7f00386278da575f78a2a4c59a1bb711eb2c3ebc80fbc03baf6da0ed921"
-    }
+    "size": 19710,
+    "mtime_ns": 1795879858802090700,
+    "indexed_at_ns": 1795881098700995900,
+    "word_count": 2008
   },
   "server/services/documentNumbers.ts": {
     "size": 967,
@@ -3324,12 +3334,12 @@
     }
   },
   "specs/devis.md": {
-    "size": 7844,
-    "mtime_ns": 1795876905878643300,
-    "indexed_at_ns": 1795877469360965100,
-    "word_count": 1070,
+    "size": 7923,
+    "mtime_ns": 1795880557891579600,
+    "indexed_at_ns": 1795881099261550100,
+    "word_count": 1076,
     "hashes": {
-      "specs/devis.md": "697dd40cc71fd775289b1ad4cd21de530161a3294a7c6049f162146bdabd2a25"
+      "ast-md\u0000specs/devis.md": "0b186b12edefa0d6627e75f9ae7a35db05c83752faee62e3a7280f9f021fbb43"
     }
   },
   "src/hooks/useDevis.ts": {
@@ -3366,10 +3376,10 @@
     }
   },
   "src/views/DevisView.tsx": {
-    "size": 15982,
-    "mtime_ns": 1795876854821895900,
-    "indexed_at_ns": 1795877468872882300,
-    "word_count": 1356
+    "size": 16167,
+    "mtime_ns": 1795879768591958400,
+    "indexed_at_ns": 1795881098924983100,
+    "word_count": 1373
   },
   "src/views/devis/DevisConversionDialog.tsx": {
     "size": 3527,
@@ -3401,10 +3411,11 @@
   "specs/bon-livraison-modele.md": {
     "size": 6821,
     "mtime_ns": 1795287135708199300,
-    "indexed_at_ns": 1795287900228016900,
+    "indexed_at_ns": 1795881099253263500,
     "word_count": 963,
     "hashes": {
-      "specs/bon-livraison-modele.md": "fc0067f40d199731f44bee4f9888517193146817e129e4d3115cabb52792b4ad"
+      "specs/bon-livraison-modele.md": "fc0067f40d199731f44bee4f9888517193146817e129e4d3115cabb52792b4ad",
+      "ast-md\u0000specs/bon-livraison-modele.md": "fc0067f40d199731f44bee4f9888517193146817e129e4d3115cabb52792b4ad"
     }
   },
   "scripts/lib/pdf-assertions.ts": {
@@ -3437,19 +3448,21 @@
   "specs/captures/documents/RAPPORT.md": {
     "size": 1869,
     "mtime_ns": 1795287372779448000,
-    "indexed_at_ns": 1795287900230966900,
+    "indexed_at_ns": 1795881099256575400,
     "word_count": 246,
     "hashes": {
-      "specs/captures/documents/RAPPORT.md": "2c6693586de7ec977ab19e24a196e382cf1ffc8a31ee136e8de2fcaebc3a6251"
+      "specs/captures/documents/RAPPORT.md": "2c6693586de7ec977ab19e24a196e382cf1ffc8a31ee136e8de2fcaebc3a6251",
+      "ast-md\u0000specs/captures/documents/RAPPORT.md": "2c6693586de7ec977ab19e24a196e382cf1ffc8a31ee136e8de2fcaebc3a6251"
     }
   },
   "specs/captures/documents/README.md": {
     "size": 850,
     "mtime_ns": 1795287372778444700,
-    "indexed_at_ns": 1795287900231876300,
+    "indexed_at_ns": 1795881099257490800,
     "word_count": 113,
     "hashes": {
-      "specs/captures/documents/README.md": "7d0d9fefd70afb696cbe912fac9d3f709b63048dd3aeb617a622d72171ead793"
+      "specs/captures/documents/README.md": "7d0d9fefd70afb696cbe912fac9d3f709b63048dd3aeb617a622d72171ead793",
+      "ast-md\u0000specs/captures/documents/README.md": "7d0d9fefd70afb696cbe912fac9d3f709b63048dd3aeb617a622d72171ead793"
     }
   },
   "specs/captures/documents/devis-long.pdf": {
@@ -3533,10 +3546,11 @@
   "specs/documents-commerciaux.md": {
     "size": 5433,
     "mtime_ns": 1795290072412640200,
-    "indexed_at_ns": 1795292924289909100,
+    "indexed_at_ns": 1795881099262381400,
     "word_count": 791,
     "hashes": {
-      "specs/documents-commerciaux.md": "63f347d20cb97ccbc41b31cdd2a2e1f2c5723f16acb877e0feed4465b8598a76"
+      "specs/documents-commerciaux.md": "63f347d20cb97ccbc41b31cdd2a2e1f2c5723f16acb877e0feed4465b8598a76",
+      "ast-md\u0000specs/documents-commerciaux.md": "63f347d20cb97ccbc41b31cdd2a2e1f2c5723f16acb877e0feed4465b8598a76"
     }
   },
   "src/branding.ts": {
@@ -3608,10 +3622,11 @@
   "specs/captures/documents-pdf/README.md": {
     "size": 3035,
     "mtime_ns": 1795877374084012900,
-    "indexed_at_ns": 1795877469355834300,
+    "indexed_at_ns": 1795881099255660700,
     "word_count": 372,
     "hashes": {
-      "specs/captures/documents-pdf/README.md": "784d31b339799af2c172633a0bee07d31040acf2e291938def67e10e93c114c4"
+      "specs/captures/documents-pdf/README.md": "784d31b339799af2c172633a0bee07d31040acf2e291938def67e10e93c114c4",
+      "ast-md\u0000specs/captures/documents-pdf/README.md": "784d31b339799af2c172633a0bee07d31040acf2e291938def67e10e93c114c4"
     }
   },
   "specs/captures/documents-pdf/devis-personnalise.pdf": {
@@ -3656,10 +3671,11 @@
   "specs/documents-pdf-personnalisation.md": {
     "size": 5800,
     "mtime_ns": 1795876905879649500,
-    "indexed_at_ns": 1795877469362799900,
+    "indexed_at_ns": 1795881099263156100,
     "word_count": 829,
     "hashes": {
-      "specs/documents-pdf-personnalisation.md": "064a90f6d20167f59e3e79c9d60fb3ec834ed81e71ca74ffa1fdc959e97a4daf"
+      "specs/documents-pdf-personnalisation.md": "064a90f6d20167f59e3e79c9d60fb3ec834ed81e71ca74ffa1fdc959e97a4daf",
+      "ast-md\u0000specs/documents-pdf-personnalisation.md": "064a90f6d20167f59e3e79c9d60fb3ec834ed81e71ca74ffa1fdc959e97a4daf"
     }
   },
   "src/services/parametres.ts": {
@@ -3689,10 +3705,11 @@
   "specs/analyse-depot-2026-11-27.md": {
     "size": 7630,
     "mtime_ns": 1795811020487081600,
-    "indexed_at_ns": 1795811412203730300,
+    "indexed_at_ns": 1795881099252408800,
     "word_count": 959,
     "hashes": {
-      "specs/analyse-depot-2026-11-27.md": "c401b20bda46cd6fa342d37d6516257281d66bf8e2ebe2f373c99b1eacdea269"
+      "specs/analyse-depot-2026-11-27.md": "c401b20bda46cd6fa342d37d6516257281d66bf8e2ebe2f373c99b1eacdea269",
+      "ast-md\u0000specs/analyse-depot-2026-11-27.md": "c401b20bda46cd6fa342d37d6516257281d66bf8e2ebe2f373c99b1eacdea269"
     }
   },
   "scripts/create-first-admin.ts": {
@@ -3730,5 +3747,209 @@
     "mtime_ns": 1795877035743435700,
     "indexed_at_ns": 1795877468834345000,
     "word_count": 532
+  },
+  "database/drizzle/0013_commandes_fournisseurs.sql": {
+    "size": 1970,
+    "mtime_ns": 1795880614396078800,
+    "indexed_at_ns": 1795881099185694000,
+    "word_count": 203,
+    "hashes": {
+      "database/drizzle/0013_commandes_fournisseurs.sql": "8fa0c0c85197787232181971e34ae8b8b65899e7f6e03cc1902ea5140c024b1e"
+    }
+  },
+  "database/drizzle/meta/0013_snapshot.json": {
+    "size": 84410,
+    "mtime_ns": 1795880202974348600,
+    "indexed_at_ns": 1795881099196224800,
+    "word_count": 5799,
+    "hashes": {
+      "database/drizzle/meta/0013_snapshot.json": "a5ff41c7af210e21da917c52c5b5d7aba5a8ba46c06d994f5706947bdccc837e"
+    }
+  },
+  "scripts/test-commandes-fournisseurs-ui.mjs": {
+    "size": 15432,
+    "mtime_ns": 1795880322719646400,
+    "indexed_at_ns": 1795881098652393300,
+    "word_count": 1453
+  },
+  "scripts/test-commandes-fournisseurs.ts": {
+    "size": 10146,
+    "mtime_ns": 1795880109374990100,
+    "indexed_at_ns": 1795881098653373900,
+    "word_count": 1074
+  },
+  "scripts/test-receptions-fournisseur.ts": {
+    "size": 12980,
+    "mtime_ns": 1795880193642412800,
+    "indexed_at_ns": 1795881098669630100,
+    "word_count": 1364
+  },
+  "server/middleware/commandeFournisseurRoutes.ts": {
+    "size": 3122,
+    "mtime_ns": 1795879947063576000,
+    "indexed_at_ns": 1795881098683081900,
+    "word_count": 302
+  },
+  "server/middleware/horairesFournisseurRoutes.ts": {
+    "size": 1848,
+    "mtime_ns": 1795880879794432900,
+    "indexed_at_ns": 1795881098689904700,
+    "word_count": 193
+  },
+  "server/middleware/receptionFournisseurRoutes.ts": {
+    "size": 1772,
+    "mtime_ns": 1795879868013388600,
+    "indexed_at_ns": 1795881098692413400,
+    "word_count": 176
+  },
+  "server/repositories/approvisionnement.ts": {
+    "size": 6249,
+    "mtime_ns": 1795880198559708500,
+    "indexed_at_ns": 1795881098697559900,
+    "word_count": 706
+  },
+  "server/repositories/commandeFournisseurRepository.ts": {
+    "size": 9952,
+    "mtime_ns": 1795880206554949000,
+    "indexed_at_ns": 1795881098700100000,
+    "word_count": 1003
+  },
+  "server/repositories/receptionFournisseurRepository.ts": {
+    "size": 9836,
+    "mtime_ns": 1795880182427319100,
+    "indexed_at_ns": 1795881098705316000,
+    "word_count": 1022
+  },
+  "server/services/horairesFournisseur.ts": {
+    "size": 1662,
+    "mtime_ns": 1795879902538299700,
+    "indexed_at_ns": 1795881098709601700,
+    "word_count": 217
+  },
+  "specs/commandes-fournisseurs.md": {
+    "size": 4421,
+    "mtime_ns": 1795880614398633400,
+    "indexed_at_ns": 1795881099259062200,
+    "word_count": 595,
+    "hashes": {
+      "ast-md\u0000specs/commandes-fournisseurs.md": "e0fdf16f16dc329b74ae48b61a90c3ae9aa0711014da328befa195e9089153cc"
+    }
+  },
+  "src/App.css": {
+    "size": 16537,
+    "mtime_ns": 1795287375805540700,
+    "indexed_at_ns": 1795881099230022200,
+    "word_count": 1808,
+    "hashes": {
+      "src/App.css": "aa17934cf3f1ec7c6bd6dfd5ab748fcbc7b8afbf9d0475088ddbaf8020813e04"
+    }
+  },
+  "src/auth.css": {
+    "size": 2463,
+    "mtime_ns": 1793823971069430300,
+    "indexed_at_ns": 1795881099230853600,
+    "word_count": 278,
+    "hashes": {
+      "src/auth.css": "8a995c9f1c8fc29162cbf85c3116d86a51d4580283c7baf50010cde906c7adc4"
+    }
+  },
+  "src/commandesFournisseurs.css": {
+    "size": 353,
+    "mtime_ns": 1795879928918728200,
+    "indexed_at_ns": 1795881099231628400,
+    "word_count": 38,
+    "hashes": {
+      "src/commandesFournisseurs.css": "c0c9de5ca6ffb5c8cd2eb80a19571c5246c4a547b78e17c5fa2ee369c59413c0"
+    }
+  },
+  "src/components.css": {
+    "size": 9268,
+    "mtime_ns": 1793996059448184700,
+    "indexed_at_ns": 1795881099232432300,
+    "word_count": 885,
+    "hashes": {
+      "src/components.css": "948839bb2c0bc82c1149e1706ae34b07ab7899afcbf974dd2bdf9a5243a4d57f"
+    }
+  },
+  "src/components/PdfReader.css": {
+    "size": 1294,
+    "mtime_ns": 1795877035744932400,
+    "indexed_at_ns": 1795881099233732000,
+    "word_count": 127,
+    "hashes": {
+      "src/components/PdfReader.css": "969543d991213349eef2b2a149693cb0597885d0cee2045b0685df1d6a915b01"
+    }
+  },
+  "src/devis.css": {
+    "size": 3452,
+    "mtime_ns": 1795876854823031600,
+    "indexed_at_ns": 1795881099234680500,
+    "word_count": 381,
+    "hashes": {
+      "src/devis.css": "38e0ac4c723b7f2c1edeb7c1117cc01608c6c5ea14c0eb87ea987eed583b7ebb"
+    }
+  },
+  "src/forms.css": {
+    "size": 8520,
+    "mtime_ns": 1795876841948070200,
+    "indexed_at_ns": 1795881099235562600,
+    "word_count": 906,
+    "hashes": {
+      "src/forms.css": "2d4d8670fc1e90a3da6e63a204863780ce7ed9bc44ee1bff34efb3a23d8374e4"
+    }
+  },
+  "src/index.css": {
+    "size": 1888,
+    "mtime_ns": 1793823804276236600,
+    "indexed_at_ns": 1795881099236429500,
+    "word_count": 207,
+    "hashes": {
+      "src/index.css": "c11378e19de9b1bed116ce98a0dc7c2783cc6e58bab72e37d1ff830faf14297d"
+    }
+  },
+  "src/inventaire.css": {
+    "size": 1398,
+    "mtime_ns": 1793994154369995400,
+    "indexed_at_ns": 1795881099237311800,
+    "word_count": 157,
+    "hashes": {
+      "src/inventaire.css": "335eb8967a4c03e05028c6e60d6c398498a08e881536491d13443444b15955ce"
+    }
+  },
+  "src/parametres.css": {
+    "size": 4950,
+    "mtime_ns": 1795876841947594300,
+    "indexed_at_ns": 1795881099238144400,
+    "word_count": 562,
+    "hashes": {
+      "src/parametres.css": "0eac00054cb078980fea4dcd4cec80eaf4ece51f7bbb340e5d93deeebb2e3e5d"
+    }
+  },
+  "src/services/commandesFournisseurs.ts": {
+    "size": 3323,
+    "mtime_ns": 1795880322718089000,
+    "indexed_at_ns": 1795881098911177000,
+    "word_count": 336
+  },
+  "src/tokens.css": {
+    "size": 3534,
+    "mtime_ns": 1793824387733805000,
+    "indexed_at_ns": 1795881099239029100,
+    "word_count": 298,
+    "hashes": {
+      "src/tokens.css": "4704fb1922dfb115cebd7f181a78860337f8cee91dc561cbf55f99d71cd36b95"
+    }
+  },
+  "src/views/CommandesFournisseursView.tsx": {
+    "size": 14620,
+    "mtime_ns": 1795880322717572400,
+    "indexed_at_ns": 1795881098923341000,
+    "word_count": 1383
+  },
+  "src/views/commandes-fournisseurs/CommandeDialogs.tsx": {
+    "size": 11365,
+    "mtime_ns": 1795880879794432900,
+    "indexed_at_ns": 1795881098933797700,
+    "word_count": 1001
   }
 }

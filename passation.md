@@ -1005,3 +1005,12 @@ avant et après migration puis rejeu. Le journal compte quatorze migrations.
 La base configurée `autostrass_test` a été contrôlée en lecture à la version 0012.
 La première requête Graphify avait actualisé le marqueur de la compétence Claude.
 Le marqueur 0.9.114 a été rétabli après comparaison des neuf fichiers au paquet Windows.
+
+Le commit applicatif `8176c8e` est poussé sur `origin/main`. Le build final, le
+parcours Chromium réel et les trois parcours simulés passent. Les bases jetables
+ont été supprimées, MariaDB arrêtée et son fichier d’identifiants retiré.
+Le contrôle automatique a refusé le nettoyage de quatre dossiers sous `%TEMP%` :
+`openstrass-achats-e604d1b9f58742548b33bd12803d8e50` (instance arrêtée),
+`openstrass-achats-devis-ce252beac14140e19b9f3bd87d7898a9` et
+`openstrass-achats-receptions-24ec06640245408ebe8b41766edf30e7` (captures de recette) et `openstrass-graphe-achats-gxzgqx07` (copies de travail de Graphify).
+Le [graphe Graphify](graphify-out/graph.html) indexe `8176c8e` avec 3 830 nœuds, 8 455 liens, 198 communautés et 674 sources au manifeste.
