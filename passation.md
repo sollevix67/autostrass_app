@@ -1,7 +1,7 @@
 # Passation — OpenStrass
 
-État consolidé le **28 novembre 2026**. La suite PDF passe avec `pdfmake` 0.3.15 après
-les cinq correctifs du 27 novembre sur le stock, le comptoir, l’installation, les réceptions et le tableau de bord.
+État consolidé le **28 novembre 2026**. Les factures et les devis sont consultables
+dans l’application. La suite de génération PDF passe avec `pdfmake` 0.3.15.
 La migration 0012 des Devis a été appliquée à la base locale le 21 novembre
 après sauvegarde et comparaison des données.
 Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
@@ -135,7 +135,7 @@ converti figé. Conversion transactionnelle/idempotente, commande liée immuable
 hors statut/date de livraison ; audit et lignes atomiques. Aucun mouvement de
 stock ni fiscal. Besoins actuels des devis convertis calculés en lecture seule,
 demande des commandes actives par ordre id/ligne ; annulation/stock pris en compte.
-PDF téléchargé/partagé contrôlé par version ; partage natif de fichier ou repli
+Consultation, téléchargement et partage du PDF contrôlés par version. Partage natif de fichier ou repli
 téléchargement + email/WhatsApp, sans envoi automatique ni statut fictif.
 [Guide](specs/devis.md), [recette](specs/captures/devis/resultats.json).
 
@@ -146,7 +146,7 @@ fermeture et doubles envois bloqués pendant l'écriture, saisie conservée en e
 Filtres, sélection de référence inventaire et connexion restent dans la page.
 Panier conservé à la fermeture ; confirmations d'inventaire empilées conservées.
 Référence catalogue immuable. Locale HTML/Zod française, traductions natives
-réinitialisées après correction/réouverture. L'aperçu intégré relaie aussi Échap.
+réinitialisées après correction/réouverture. Échap ferme aussi le lecteur PDF.
 Edition utilisateur : mot de passe vide conservé, téléphone `null` effacé, clé
 omise conservée. `/auth/me` relit le compte ; actualisation de soi recharge aussi
 le CSRF. [Formulaires](specs/formulaires-modaux.md), [utilisateurs](specs/utilisateurs.md).
@@ -929,3 +929,31 @@ Les exemples fictifs de cette recette restent sous
 du nettoyage par le contrôle automatique. Le dépôt conserve ses références.
 Le [graphe Graphify](graphify-out/graph.html) prend pour base le commit
 `26e3dfe` qui contient le correctif et les résultats des contrôles PDF.
+
+## Consultation des PDF dans l’application — 28 novembre 2026
+
+Reprise sur `5b43ad5`, arbre propre. La passation et Graphify identifient les
+factures des ventes au comptoir, les devis et l’aperçu de personnalisation dans
+les paramètres. La demande porte sur la lecture de ces PDF directement dans
+l’application. Les téléchargements et le partage restent des actions volontaires.
+
+Le dialogue `PdfPreviewDialog` récupère le document avec la session en cours ou reçoit le
+brouillon PDF déjà préparé. Il annule la requête à la fermeture et libère l’URL
+de téléchargement. Le lecteur PDF.js et son worker sont servis par l’application.
+Les devis utilisent la version de la ligne sélectionnée et les factures le numéro
+de vente. Les parcours de lecture sont en recette sur ordinateur et écran mobile.
+
+`PdfReader` utilise PDF.js 6.5.438 pour dessiner la page et exposer son texte aux lecteurs
+d’écran. Les quatre parcours Chromium (développement et build, bureau et mobile
+375 px) vérifient les pixels visibles, les deux pages du devis, le zoom, le retour
+au détail, le conflit de version, le fichier illisible et la réponse tardive.
+Le téléchargement volontaire restitue les octets du document affiché. Les 65
+contrôles du comptoir, les 74 des devis et les 75 des paramètres passent, ainsi
+que le build, Oxlint, `test:pdf` et `test:errors`. Le serveur Vite local sert le
+nouveau lecteur et l’API de développement répond sur son port habituel.
+
+Sur le build servi par Express avec MariaDB 11.4.5 jetable, Chromium a affiché
+la facture 000001 puis les deux pages d’un devis de 28 lignes à 390 px de large.
+Les six tables métier et d’audit contrôlées ont conservé leurs empreintes. Les
+bases jetables ont été supprimées et les instances arrêtées. Les [captures du
+lecteur](specs/captures/documents-pdf/README.md#interface) illustrent la consultation.

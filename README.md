@@ -8,7 +8,7 @@ Application React + Express + MariaDB pour la gestion commerciale et logistique.
 
 ### Première installation
 
-1. Exécuter `npm ci` depuis la racine du dépôt.
+1. Avec Node.js 22.13 ou ultérieur, exécuter `npm ci` depuis la racine du dépôt.
 2. Démarrer MariaDB et y créer une base vide en `utf8mb4`, par exemple avec
    `CREATE DATABASE openstrass CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`.
    Donner au compte d’installation les droits de créer et modifier les tables, les vues et les données de cette base.
@@ -104,6 +104,11 @@ et la liste d'approvisionnement. `npm run test:devis` utilise des bases jetables
 
 ## Documents PDF
 
+Dans **Ventes au comptoir**, **Voir la facture** ouvre la facture de la vente
+sélectionnée. Dans **Devis**, **Voir le PDF** ouvre la version affichée du devis.
+Le lecteur permet de tourner les pages, de zoomer et de télécharger le fichier
+si vous souhaitez en garder une copie.
+
 Les [documents PDF](specs/documents-pdf-personnalisation.md) disposent d'une
 rubrique **Paramètres → Documents PDF**, réservée aux administrateurs :
 émetteur, sous-titre, coordonnées, logo PNG/JPEG et pied commun personnalisables,
@@ -111,7 +116,8 @@ avec aperçu fictif du brouillon avant sauvegarde. Les nouveaux PDF générés
 utilisent ces réglages sans redémarrage ni migration supplémentaire.
 `npm run test:pdf` inclut leurs tests purs ; `npm run test:documents-pdf`
 complète la recette API sur une base jetable, et `npm run test:documents-pdf:ui`
-vérifie l'interface après le build avec une API simulée.
+vérifie l'interface après le build avec une API simulée. La commande
+`npm run test:pdf-reader:ui` vérifie la lecture des documents sur ordinateur et mobile.
 
 ## Tests sur une base jetable
 

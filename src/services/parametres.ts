@@ -35,14 +35,3 @@ export const documentsPdfApi = {
     }
   },
 }
-
-export function downloadPdfPreview(file: Blob): void {
-  const url = URL.createObjectURL(file)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'apercu-documents.pdf'
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  globalThis.setTimeout(() => URL.revokeObjectURL(url), 1000)
-}

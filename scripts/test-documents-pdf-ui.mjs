@@ -12,7 +12,7 @@ import { textFromPdf } from './lib/pdf-buffer-text.ts'
 import { verifyPdf } from './lib/pdf-assertions.ts'
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
-const output = resolve('specs/captures/documents-pdf')
+const output = resolve(process.env.DOCUMENTS_PDF_UI_OUTPUT ?? 'specs/captures/documents-pdf')
 const downloads = await mkdtemp(join(tmpdir(), 'openstrass-documents-ui-'))
 const checks = [], errors = [], contexts = [], states = [], captures = []
 const check = (condition, message) => { assert.ok(condition, message); checks.push(message) }
@@ -175,12 +175,15 @@ try {
 
   await previewButton().click()
   await viewer().waitFor()
-  const previewUrl = await viewer().locator('iframe').getAttribute('src')
-  check(previewUrl.startsWith('blob:'), 'Aperçu servi dans un lecteur depuis un Blob local')
+  await viewer().locator('.pdf-reader-text').filter({ hasText: draft.nomEmetteur }).waitFor({ state: 'attached' })
+  check(await viewer().locator('canvas').isVisible(), 'Le lecteur affiche la page du brouillon et expose son texte')
+  const downloadLink = viewer().getByRole('link', { name: 'Télécharger l’aperçu', exact: true })
+  const previewUrl = await downloadLink.getAttribute('href')
+  check(previewUrl.startsWith('blob:'), 'Le fichier de l’aperçu reste disponible dans la session')
   check(state.previews.at(-1).nomEmetteur === draft.nomEmetteur && state.saves.length === 0, 'Aperçu construit depuis la saisie sans PUT')
   check(state.settings.documentsPdf.nomEmetteur === original.nomEmetteur, 'Aperçu laisse les valeurs enregistrées intactes')
   const downloadPromise = page.waitForEvent('download')
-  await viewer().getByRole('button', { name: 'Télécharger l’aperçu', exact: true }).click()
+  await downloadLink.click()
   const download = await downloadPromise
   const downloadPath = join(downloads, 'apercu.pdf')
   await download.saveAs(downloadPath)
@@ -275,6 +278,7 @@ try {
     check(await previewButton().isVisible() && await saveButton().isVisible(), `Actions de brouillon accessibles au défilement mobile ${theme}`)
     await previewButton().click()
     await viewer().waitFor()
+    await viewer().locator('.pdf-reader-text').filter({ hasText: draft.nomEmetteur }).waitFor({ state: 'attached' })
     check(await viewer().evaluate((element) => element.scrollWidth <= element.clientWidth && element.getBoundingClientRect().width <= innerWidth), `Lecteur sans débordement mobile ${theme}`)
     check(await viewer().getByRole('button', { name: 'Fermer l’aperçu', exact: true }).isVisible(), `Fermeture du lecteur accessible mobile ${theme}`)
     await screenshot(page, `apercu-mobile-${theme}.png`)

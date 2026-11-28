@@ -28,8 +28,10 @@ ce choix.
 
 **Aperçu fictif** compose un document avec les valeurs du brouillon et des données
 entièrement fictives. Il ne crée ni facture, ni devis, ni enregistrement métier,
-et n'enregistre pas les paramètres. L'aperçu peut être téléchargé ou ouvert
-dans le lecteur PDF du navigateur. Fermer l'aperçu restitue le formulaire.
+et n'enregistre pas les paramètres. Le lecteur intégré affiche les pages du
+brouillon avec les mêmes commandes de navigation et de zoom que pour une facture
+ou un devis. **Télécharger l’aperçu** et **Ouvrir dans un onglet** sont disponibles
+dans le lecteur. Fermer l'aperçu restitue le formulaire.
 
 Après sauvegarde, les prochains PDF générés utilisent les réglages enregistrés,
 sans redémarrage. Cela inclut le téléchargement d'une vente ou d'un devis déjà

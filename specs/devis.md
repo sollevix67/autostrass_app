@@ -9,7 +9,7 @@ l'attribution des réceptions restent le chantier suivant.
 Les administrateurs et caissiers disposent de **Commercial → Devis**. La liste
 se recherche par numéro, client ou article et se filtre par statut. Le numéro
 ouvre les coordonnées et les lignes du document ; les actions permettent de
-modifier, télécharger, partager et convertir le devis.
+modifier, consulter le PDF, télécharger, partager et convertir le devis.
 
 **Nouveau devis** ouvre un dialogue avec le client, la date, la validité
 facultative, les articles et les notes. Les suggestions du catalogue proposent
@@ -34,8 +34,9 @@ et de conversion suivent la journée en Europe/Paris.
 ## PDF et partage
 
 Le PDF comprend le numéro, les dates, le statut, le client, les lignes et les
-totaux figés. Les téléchargements et le partage contrôlent la version affichée :
-un document modifié dans un autre onglet doit être actualisé avant son partage.
+totaux figés. **Voir le PDF** ouvre le document dans le lecteur de l’application,
+depuis la liste ou la fiche. La consultation, le téléchargement et le partage
+utilisent la version affichée. Si le devis a changé, actualisez la liste.
 Sa [présentation A4 commune](documents-commerciaux.md) reprend celle du modèle
 de bon de livraison, avec le même en-tête, bandeau, tableau, récapitulatif et pied
 de page que la facture ; la validité et le statut restent propres au devis.

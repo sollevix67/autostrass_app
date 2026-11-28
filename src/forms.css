@@ -79,6 +79,10 @@ input[type='checkbox'], input[type='radio'] { width: 18px; height: 18px; margin:
 .form-dialog-header h2 { min-width: 0; margin: 0; overflow-wrap: anywhere; }
 .form-dialog-header .action-btn { flex-shrink: 0; }
 .form-dialog-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.pdf-preview-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-block-end: 12px; }
+@media (max-width: 600px) {
+  .form-dialog.pdf-preview-dialog { width: calc(100% - 12px); max-height: calc(100dvh - 12px); padding: 12px; }
+}
 .form-dialog .parametre-detail, .form-dialog .form-card { margin: 0; padding: 0; border: 0; box-shadow: none; background: transparent; }
 .confirm-modal .modal-desc strong { color: var(--text-strong); }
 

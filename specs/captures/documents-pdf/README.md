@@ -35,6 +35,12 @@ recette. Le PDF téléchargé de l’aperçu est contrôlé sémantiquement. Les
 natifs Windows montrent les deux documents personnalisés et valident le gabarit
 commun. Les fenêtres, contrôles et débordements mobiles sont vérifiés séparément.
 
+Depuis le 28 novembre 2026, le lecteur intégré dessine les pages dans OpenStrass.
+La recette `npm run test:pdf-reader:ui` vérifie les pixels et le texte de la page,
+la navigation, le zoom et le téléchargement volontaire. Les captures montrent une
+[facture sur ordinateur](lecteur-facture-bureau.png) et la
+[seconde page d’un devis sur mobile](lecteur-devis-mobile.png).
+
 ## Reproduction
 
 Depuis la racine du dépôt :

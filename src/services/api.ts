@@ -181,6 +181,13 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 export const api = {
   get: <T>(path: string, options?: RequestOptions) => request<T>('GET', path, options),
   getBlob: (path: string, options?: RequestOptions) => request<Blob>('GET', path, options, 'blob'),
+  getPdf: async (path: string, options?: Pick<RequestOptions, 'signal' | 'query'>): Promise<Blob> => {
+    const file = await api.getBlob(path, { ...options, headers: { Accept: 'application/pdf' } })
+    if (file.size === 0 || file.type.split(';')[0].trim().toLowerCase() !== 'application/pdf') {
+      throw new ApiError(502, 'INVALID_PDF', 'Le serveur n’a pas renvoyé un PDF valide. Actualisez les données puis réessayez.')
+    }
+    return file
+  },
   postBlob: (path: string, body?: unknown, options?: RequestOptions) =>
     request<Blob>('POST', path, { ...options, body: body === undefined ? undefined : JSON.stringify(body) }, 'blob'),
   post: <T>(path: string, body?: unknown, options?: RequestOptions) =>

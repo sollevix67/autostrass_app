@@ -6,7 +6,7 @@
 .devis-number { text-align: start; overflow-wrap: anywhere; }
 .devis-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
 .devis-row-actions .action-btn { min-width: 34px; min-height: 34px; }
-.devis-convert-button { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+.devis-row-actions .secondary-button { min-height: 34px; padding: 6px 10px; font-size: 12px; }
 .devis-status { display: inline-block; padding: 5px 8px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; background: var(--color-surface-sunken); }
 .devis-status-envoye { color: var(--status-info); background: var(--status-info-bg); }
 .devis-status-converti { color: var(--status-success); background: var(--status-success-bg); }
@@ -36,7 +36,7 @@
   .devis-toolbar .filter-bar { flex-basis: 100%; }
   .devis-toolbar > button { width: 100%; }
   .devis-besoins { padding: 16px; }
-  .devis-row-actions .action-btn, .devis-convert-button { min-height: 44px; min-width: 44px; }
+  .devis-row-actions .action-btn, .devis-row-actions .secondary-button { min-height: 44px; min-width: 44px; }
   .devis-detail-header { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .devis-totals { justify-content: space-between; gap: 16px; padding: 14px; }
   .devis-totals b { font-size: 16px; }

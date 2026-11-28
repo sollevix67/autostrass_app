@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormDialog } from '../../components/FormDialog'
+import { PdfPreviewDialog } from '../../components/PdfPreviewDialog'
 import { Icon } from '../../components/Icon'
 import { ErrorSummary } from '../../components/forms/ErrorSummary'
 import { FormInput, FormTextarea, type FieldRegister } from '../../components/forms/FormFields'
@@ -11,7 +12,6 @@ import { documentsPdfApi } from '../../services/parametres'
 import type { ApiParametres } from '../../services/contracts'
 import { DEFAULT_DOCUMENTS_PDF_SETTINGS, DOCUMENTS_PDF_LIMITS, documentsPdfSettingsSchema, type DocumentsPdfSettings } from '../../schemas/parametres'
 import { pdfLogoSource, readPdfLogo } from '../../utils/pdfLogo'
-import DocumentsPdfPreview, { type PdfPreview } from './DocumentsPdfPreview'
 
 const labels = { nomEmetteur: 'Nom de l’émetteur', activite: 'Activité', coordonnees: 'Coordonnées et mentions de l’émetteur', piedCommun: 'Pied de page commun', logo: 'Logo' }
 
@@ -31,13 +31,12 @@ export default function DocumentsPdfForm({ values, onSaved, onClose }: {
   const [invalidLogo, setInvalidLogo] = useState(false)
   const [filename, setFilename] = useState<string | null>(null)
   const [error, setRequestError] = useState<string | null>(null)
-  const [preview, setPreview] = useState<PdfPreview | null>(null)
+  const [preview, setPreview] = useState<Blob | null>(null)
   const active = useRef(true)
   const action = useRef<'save' | 'preview' | null>(null)
   const invalidLogoRef = useRef(false)
   const logoRequest = useRef<AbortController | null>(null)
   const previewRequest = useRef<AbortController | null>(null)
-  const previewFile = useRef<PdfPreview | null>(null)
   const previewButton = useRef<HTMLButtonElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const logo = watch('logo')
@@ -49,14 +48,10 @@ export default function DocumentsPdfForm({ values, onSaved, onClose }: {
       active.current = false
       logoRequest.current?.abort()
       previewRequest.current?.abort()
-      if (previewFile.current) URL.revokeObjectURL(previewFile.current.url)
-      previewFile.current = null
     }
   }, [])
 
   function closePreview() {
-    if (previewFile.current) URL.revokeObjectURL(previewFile.current.url)
-    previewFile.current = null
     setPreview(null)
     globalThis.requestAnimationFrame(() => { if (active.current) previewButton.current?.focus() })
   }
@@ -107,10 +102,7 @@ export default function DocumentsPdfForm({ values, onSaved, onClose }: {
         if (!active.current || controller.signal.aborted) return
         const file = await documentsPdfApi.preview(draft, controller.signal)
         if (!active.current || controller.signal.aborted) return
-        const result = { file, url: URL.createObjectURL(file) }
-        if (previewFile.current) URL.revokeObjectURL(previewFile.current.url)
-        previewFile.current = result
-        setPreview(result)
+        setPreview(file)
       })()
     } catch (cause) { if (active.current && !isAbortError(cause)) showApiError(cause) }
     finally { previewRequest.current = null; action.current = null; if (active.current) setPreviewing(false) }
@@ -203,6 +195,8 @@ export default function DocumentsPdfForm({ values, onSaved, onClose }: {
         </div>
       </form>
     </FormDialog>
-    {preview && <DocumentsPdfPreview preview={preview} onClose={closePreview} />}
+    {preview && <PdfPreviewDialog file={preview} title="Aperçu fictif des documents PDF"
+      description="Document d’exemple créé avec votre saisie, avant son enregistrement."
+      filename="apercu-documents.pdf" downloadLabel="Télécharger l’aperçu" showOpenInTab onClose={closePreview} />}
   </>
 }

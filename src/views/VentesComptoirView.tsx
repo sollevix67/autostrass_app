@@ -22,6 +22,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PageLayout } from '../components/PageLayout'
 import { FormDialog } from '../components/FormDialog'
+import { PdfPreviewDialog, type PdfPreviewRequest } from '../components/PdfPreviewDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/useToast'
@@ -37,7 +38,7 @@ import { useAuth, canWrite } from '../components/useAuth'
 import { venteSchema, type DocumentLineFormValues } from '../schemas'
 import { PAYMENT_MODE_OPTIONS, formatEuros } from '../options'
 import type { ApiVente } from '../services/contracts'
-import { buildUrl } from '../services/api'
+import { api } from '../services/api'
 import type { Article } from '../types'
 
 /** Ligne du panier local. `lineId` est la cle React stable de la ligne. */
@@ -70,6 +71,7 @@ export default function VentesComptoirView() {
   const [cart, setCart] = useState<CartLine[]>([])
   const [selection, setSelection] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [invoicePreview, setInvoicePreview] = useState<PdfPreviewRequest | null>(null)
   const pending = useRef(false)
 
   const totals = useMemo(() => {
@@ -227,19 +229,22 @@ export default function VentesComptoirView() {
     },
     {
       key: 'actions',
-      header: '',
+      header: 'FACTURE',
       align: 'center',
-      render: (row) => (
-        <a
-          href={buildUrl(`/ventes/${row.id}/facture`)}
-          target="_blank"
-          rel="noopener noreferrer"
+      render: ({ id }) => {
+        const numero = String(id).padStart(6, '0')
+        return <button
+          type="button"
           className="secondary-button small"
-          title="Telecharger la facture"
-        >
-          <Icon name="download" size="sm" /> Facture
-        </a>
-      ),
+          aria-haspopup="dialog"
+          aria-label={`Voir la facture ${numero}`}
+          onClick={() => setInvoicePreview({
+            title: `Facture n° ${numero}`,
+            filename: `facture-${id}.pdf`,
+            loadFile: (signal) => api.getPdf(`/ventes/${id}/facture`, { signal }),
+          })}
+        >Voir la facture</button>
+      },
     },
   ]
 
@@ -446,6 +451,7 @@ export default function VentesComptoirView() {
         emptyMessage="Aucune vente enregistree."
         defaultSort={{ key: 'dateVente', direction: 'desc' }}
       />
+      {invoicePreview && <PdfPreviewDialog {...invoicePreview} onClose={() => setInvoicePreview(null)} />}
     </PageLayout>
   )
 }

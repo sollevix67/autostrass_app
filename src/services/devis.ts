@@ -1,4 +1,4 @@
-import { api, ApiError } from './api'
+import { api } from './api'
 import type { ApiDevis, ApiDevisConversion, DevisInput, DevisUpdateInput } from './contracts'
 
 export const devisApi = {
@@ -7,15 +7,8 @@ export const devisApi = {
   update: (id: number, payload: DevisUpdateInput) => api.put<ApiDevis>(`/devis/${id}`, payload),
   convert: (id: number, version: number, dateLivraisonPrevue?: string) =>
     api.post<ApiDevisConversion>(`/devis/${id}/convertir`, { version, dateLivraisonPrevue: dateLivraisonPrevue || undefined }),
-  pdf: async (id: number, signal?: AbortSignal, version?: number) => {
-    const blob = await api.getBlob(`/devis/${id}/pdf`, {
-      signal, query: { version }, headers: { Accept: 'application/pdf' },
-    })
-    if (blob.size === 0 || blob.type.split(';')[0].trim().toLowerCase() !== 'application/pdf') {
-      throw new ApiError(502, 'INVALID_PDF', 'Le serveur n’a pas renvoyé un PDF valide. Actualisez les données puis réessayez.')
-    }
-    return blob
-  },
+  pdf: (id: number, signal?: AbortSignal, version?: number) =>
+    api.getPdf(`/devis/${id}/pdf`, { signal, query: { version } }),
 }
 
 /** Le lien temporaire permet de télécharger le fichier avec la session HTTP actuelle. */

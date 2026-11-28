@@ -5,7 +5,7 @@ import { resolve } from 'node:path'
 import { preview } from 'vite'
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright')
-const output = resolve('specs/captures/devis')
+const output = resolve(process.env.DEVIS_UI_OUTPUT ?? 'specs/captures/devis')
 const checks = [], errors = [], contexts = [], states = []
 const check = (condition, label) => { assert.ok(condition, label); checks.push(label) }
 const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' })
@@ -351,7 +351,7 @@ try {
   check(await forbidden.page.getByRole('link', { name: 'Devis', exact: true }).count() === 0, 'Navigation devis masquée au magasinier')
   check(errors.length === 0, 'Aucune erreur JavaScript')
   await writeFile(resolve(output, 'resultats.json'), JSON.stringify({ scenarios: checks.length, checks, errors, api: 'simulée', messagesEnvoyes: 0 }, null, 2) + '\n', 'utf8')
-  console.log(`${checks.length} contrôles Chromium devis réussis ; captures sous specs/captures/devis/.`)
+  console.log(`${checks.length} contrôles Chromium devis réussis. Captures dans ${output}.`)
 } finally {
   states.forEach((state) => state.releases.splice(0).forEach((release) => release()))
   await Promise.allSettled(contexts.map((context) => context.close()))

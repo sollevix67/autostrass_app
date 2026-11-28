@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageLayout } from '../components/PageLayout'
 import { FormDialog } from '../components/FormDialog'
+import { PdfPreviewDialog, type PdfPreviewRequest } from '../components/PdfPreviewDialog'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { Icon } from '../components/Icon'
 import { useAuth, canWrite } from '../components/useAuth'
@@ -50,6 +51,7 @@ function DevisWorkspace() {
   const [modeFilter, setModeFilter] = useState('')
   const [formTarget, setFormTarget] = useState<{ devis: ApiDevis | null } | null>(null)
   const [detailTarget, setDetailTarget] = useState<ApiDevis | null>(null)
+  const [pdfPreview, setPdfPreview] = useState<PdfPreviewRequest | null>(null)
   const [shareTarget, setShareTarget] = useState<ApiDevis | null>(null)
   const [conversionTarget, setConversionTarget] = useState<ApiDevis | null>(null)
   const [downloading, setDownloading] = useState<number | null>(null)
@@ -93,6 +95,15 @@ function DevisWorkspace() {
     finally { downloadPending.current = false; setDownloading(null) }
   }
 
+  function viewPdf({ id, numero, version }: ApiDevis) {
+    setDocumentError(null)
+    setPdfPreview({
+      title: `Devis ${numero}`,
+      filename: devisPdfFilename({ numero }),
+      loadFile: (signal) => devisApi.pdf(id, signal, version),
+    })
+  }
+
   const query = search.trim().toLocaleLowerCase('fr')
   const visibleRows = devis.rows.filter((row) => (!status || row.statut === status) && (!query ||
     `${row.numero} ${row.clientSnapshot.numeroClient} ${row.clientSnapshot.prenom} ${row.clientSnapshot.nom} ${row.articles.map((line) => `${line.reference} ${line.designation}`).join(' ')}`.toLocaleLowerCase('fr').includes(query)))
@@ -106,10 +117,11 @@ function DevisWorkspace() {
     { key: 'dateValidite', header: 'VALIDITÉ', render: (row) => row.dateValidite ?? '—' },
     { key: 'totalTTC', header: 'TOTAL TTC', align: 'right', render: (row) => <b className="devis-amount">{formatEuros(row.totalTTC)}</b> },
     { key: 'actions', header: 'ACTIONS', render: (row) => <div className="devis-row-actions">
+      <button type="button" className="secondary-button" disabled={busy} aria-haspopup="dialog" aria-label={`Voir le PDF du devis ${row.numero}`} onClick={() => viewPdf(row)}>Voir le PDF</button>
       <button type="button" className="action-btn" disabled={busy} onClick={() => { devis.clearError(); setShareTarget(row) }} aria-label={`Partager le devis ${row.numero}`} title="Partager"><Icon name="share" size="sm" /></button>
-      <button type="button" className="action-btn" disabled={busy} onClick={() => void download(row)} aria-label={`Télécharger le PDF du devis ${row.numero}`} title="PDF"><Icon name="download" size="sm" /></button>
+      <button type="button" className="action-btn" disabled={busy} onClick={() => void download(row)} aria-label={`Télécharger le PDF du devis ${row.numero}`} title="Télécharger le PDF"><Icon name="download" size="sm" /></button>
       {row.statut !== 'converti' && <button type="button" className="action-btn" disabled={busy} onClick={() => { devis.clearError(); setFormTarget({ devis: row }) }} aria-label={`Modifier le devis ${row.numero}`} title="Modifier"><Icon name="edit" size="sm" /></button>}
-      {row.statut !== 'converti' && row.statut !== 'annulé' && !devisExpired(row.dateValidite) && <button type="button" className="secondary-button devis-convert-button" disabled={busy} onClick={() => { devis.clearError(); setConversionTarget(row) }} aria-label={`Convertir le devis ${row.numero} en commande client`}>Convertir</button>}
+      {row.statut !== 'converti' && row.statut !== 'annulé' && !devisExpired(row.dateValidite) && <button type="button" className="secondary-button" disabled={busy} onClick={() => { devis.clearError(); setConversionTarget(row) }} aria-label={`Convertir le devis ${row.numero} en commande client`}>Convertir</button>}
       {row.commandeId !== null && <Link className="link-button" to="/commandes-clients">Commande #{row.commandeId}</Link>}
     </div> },
   ]
@@ -172,11 +184,12 @@ function DevisWorkspace() {
         if (result) { besoins.reload(); invalidateReferentials(['/commandes']) }
         return result
       }} />}
-    {detailTarget && <DevisDetails devis={detailTarget} onClose={() => setDetailTarget(null)} />}
+    {detailTarget && <DevisDetails devis={detailTarget} onViewPdf={() => viewPdf(detailTarget)} onClose={() => setDetailTarget(null)} />}
+    {pdfPreview && <PdfPreviewDialog {...pdfPreview} onClose={() => setPdfPreview(null)} />}
   </PageLayout>
 }
 
-function DevisDetails({ devis, onClose }: { devis: ApiDevis; onClose: () => void }) {
+function DevisDetails({ devis, onViewPdf, onClose }: { devis: ApiDevis; onViewPdf: () => void; onClose: () => void }) {
   const snapshot = devis.clientSnapshot
   return <FormDialog open title={`Devis ${devis.numero}`} size="wide" cancelLabel="Fermer" onClose={onClose}>
     <div className="devis-detail-header">
@@ -189,6 +202,9 @@ function DevisDetails({ devis, onClose }: { devis: ApiDevis; onClose: () => void
     </table></div>
     <div className="devis-totals"><span>HT <b>{formatEuros(devis.totalHT)}</b></span><span>TVA <b>{formatEuros(devis.totalTVA)}</b></span><strong>Total TTC <b>{formatEuros(devis.totalTTC)}</b></strong></div>
     {devis.notes && <div className="devis-notes"><h3>Notes</h3><p>{devis.notes}</p></div>}
-    {devis.commandeId !== null && <Link className="primary-button" to="/commandes-clients">Voir la commande client #{devis.commandeId}</Link>}
+    <div className="form-actions">
+      <button type="button" className="secondary-button" aria-haspopup="dialog" onClick={onViewPdf}>Voir le PDF</button>
+      {devis.commandeId !== null && <Link className="primary-button" to="/commandes-clients">Voir la commande client #{devis.commandeId}</Link>}
+    </div>
   </FormDialog>
 }
