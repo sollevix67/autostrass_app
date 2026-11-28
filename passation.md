@@ -3,8 +3,8 @@
 État consolidé le **28 novembre 2026**. Le parcours d’achat des devis convertis
 couvre le choix du fournisseur, la commande, les réceptions et les attributions.
 Les factures et les devis sont consultables dans l’application.
-La base de développement `autostrass_test` est en 0012. Le parcours fournisseur
-et la migration 0013 ont été vérifiés sur MariaDB jetable.
+La base de développement `autostrass_test` est en 0013. L’API redémarrée et
+l’écran des commandes fournisseurs ont été vérifiés sur cette base.
 Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
 détaillées sont dans les guides liés. L'ancien journal reste disponible
 avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
@@ -16,8 +16,8 @@ dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inv
 SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-depot-2026-11-27.md)
 et ses [correctifs](#reprise-des-cinq-correctifs-du-27-novembre-2026) couvrent cinq autres constats.
 
-1. Déployer la migration **0013** sur `autostrass_test` et les installations
-   concernées après sauvegarde, puis redémarrer l’API. Vérifier les versions antérieures.
+1. Vérifier la version des autres installations et y déployer la migration
+   **0013** après sauvegarde, puis redémarrer leur API.
    Rapprocher les anciennes ventes
    HT encaissées de leurs justificatifs, sans réécriture ni reset d'empreintes.
 2. Étendre l’approvisionnement aux commandes clients saisies directement et
@@ -167,6 +167,8 @@ Journal Drizzle versionné **0000 à 0013** : `0007` référentiels, `0008` inve
 `0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2,
 `0012` Devis/suivi approvisionnement et numéros/client/TVA commandes,
 `0013` horaires fournisseurs, traçabilité des achats et entrées en stock.
+`0013` appliquée le 28 novembre à `autostrass_test`. Les 14 entrées Drizzle,
+les données antérieures et l’écran fournisseur ont été contrôlés après sauvegarde.
 `0012` appliquée le 21 novembre à `autostrass_test` MariaDB 10.11.14 : trois
 tables ajoutées, anciennes colonnes et 805 lignes des 36 tables historiques
 inchangées, treize migrations vérifiées ; données Devis de recette absentes.
@@ -1014,3 +1016,35 @@ Le contrôle automatique a refusé le nettoyage de quatre dossiers sous `%TEMP%`
 `openstrass-achats-devis-ce252beac14140e19b9f3bd87d7898a9` et
 `openstrass-achats-receptions-24ec06640245408ebe8b41766edf30e7` (captures de recette) et `openstrass-graphe-achats-gxzgqx07` (copies de travail de Graphify).
 Le [graphe Graphify](graphify-out/graph.html) indexe `8176c8e` avec 3 830 nœuds, 8 455 liens, 198 communautés et 674 sources au manifeste.
+
+## Mise en service des commandes fournisseurs sur la base de développement
+
+L’API signale l’erreur MariaDB 1054 sur la colonne heure_blocage. La
+passation et Graphify situent cette lecture dans le dépôt fournisseurs et
+la création de la colonne dans la migration 0013.
+
+La connexion effective de l’API cible autostrass_test sur MariaDB 10.11.14.
+Ses treize entrées Drizzle correspondent aux migrations 0000 à 0012. Les
+colonnes de 0013 sont absentes. La base comporte 40 tables InnoDB et
+une commande fournisseur envoyée.
+
+La lecture des horaires sur le dépôt MariaDB a reproduit l’erreur 1054. Avant
+migration, un dump transactionnel de 113 098 octets a été sauvegardé hors Git.
+Les empreintes des 818 lignes des 39 tables métier sont identiques de part et
+d’autre du dump. La structure des 40 tables et de la vue figure dans le SQL.
+Sauvegarde : `%LOCALAPPDATA%/Autostrass/backups/migrations/0013-2026-11-28T16-23-50.815Z-608f7a16/avant-0013.sql`.
+
+La [migration 0013](database/drizzle/0013_commandes_fournisseurs.sql) est
+appliquée à autostrass_test. Les 14 empreintes Drizzle correspondent au dépôt.
+Les dix colonnes, les trois index et les deux clés étrangères attendus sont présents.
+Les 818 lignes des 39 tables métier et la définition de la vue concordent avec
+la sauvegarde. Les lectures fournisseurs, horaires, commandes et besoins passent.
+
+Après redémarrage de l’API et de Vite, Chromium affiche les trois horaires
+fournisseurs avec une session magasinier. Le chargement de l’annuaire, des
+horaires, des commandes fournisseurs et des articles à commander renvoie HTTP 200
+dans l’application. L’API et le proxy Vite confirment la connexion MariaDB.
+Le point de santé HTTPS répond également en 200, avec certificat vérifié et TLS 1.3.
+
+Les empreintes des données métier concordent aussi après la consultation Chromium.
+Le journal du nouveau serveur compte zéro erreur 1054 pendant ces contrôles.
