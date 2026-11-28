@@ -877,3 +877,23 @@ correctifs du dépôt dans `8039bd6`. Ce dernier commit sert de base au
 Graphify 0.9.115 a réindexé le code. Le parseur SQL facultatif reste absent.
 La mise à jour automatique du marqueur Graphify de Claude a été annulée après
 comparaison des neuf fichiers de la compétence avec le paquet 0.9.114.
+
+## Compétences Obsidian et find-skills du 28 novembre 2026
+
+Le registre d’installation personnel et le catalogue de la session Codex
+confirment huit ajouts. Le dépôt `obsidianmd/obsidian-skills` fournit
+`obsidian-markdown`, `obsidian-bases`, `json-canvas`, `obsidian-cli`,
+`obsidian-headless`, `defuddle` et `knap`. La compétence `find-skills`
+provient de `vercel-labs/skills`. Ces compétences sont installées dans
+`~/.agents/skills/`. La compétence `accessibility` est suivie dans OpenStrass.
+
+La première consultation de Graphify 0.9.122 a actualisé le marqueur de
+la compétence Claude. Son manifeste et ses huit références correspondent
+à la version 0.9.114. Le marqueur a été rétabli à cette version.
+
+Le verrou npm avait aussi été modifié avant l’inventaire. Avec ces versions,
+`npm run build`, `npm run lint` et `npm run test:errors` passent. La suite
+`npm run test:pdf` échoue dans `scripts/lib/pdf-assertions.ts` lors de la
+seconde lecture d’un flux déjà consommé avec `pdfmake` 0.3.15. Cet utilitaire
+sert aux tests et à la génération des exemples. Le générateur utilisé pour
+les factures, devis et aperçus appelle `getBuffer()` une seule fois.
