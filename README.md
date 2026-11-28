@@ -102,6 +102,16 @@ Voir le [guide Devis](specs/devis.md) pour les garanties, le partage de fichier
 et la liste d'approvisionnement. `npm run test:devis` utilise des bases jetables ;
 `npm run test:devis:ui` vérifie l'interface avec une API simulée après le build.
 
+## Commandes fournisseurs
+
+Dans **Commandes fournisseurs**, l’administrateur ou le magasinier affecte les
+articles manquants d’un devis converti, passe la commande au prix d’achat HT
+et enregistre les livraisons partielles ou complètes. L’écran détaille les
+quantités reçues et attribuées à chaque commande client. Sauvegarder la base
+et lancer `npm run db:migrate` pour appliquer `0013`, puis redémarrer l’API.
+Les horaires, les règles de stock et les captures figurent dans le
+[guide des commandes fournisseurs](specs/commandes-fournisseurs.md).
+
 ## Documents PDF
 
 Dans **Ventes au comptoir**, **Voir la facture** ouvre la facture de la vente

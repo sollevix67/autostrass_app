@@ -124,10 +124,11 @@ export type ApiUtilisateur = {
 /** Reception renvoyee par `GET /api/receptions`. */
 export type ApiReception = {
   id: number
+  commandeFournisseurId?: number | null
   fournisseur: string
   dateReception: string
   notes: string | null
-  articles: ApiLine[]
+  articles: (ApiLine & { ligneCommandeFournisseur?: number | null; quantiteAttribuee?: number | null })[]
   totalHT: number
   createdAt: string
   updatedAt: string
@@ -282,7 +283,36 @@ export type ApiArticleACommander = {
   designation: string
   quantite: number
   fournisseurId: number | null
-  modeLivraison: string
+  modeLivraison: ApiFournisseur['modeLivraison']
+}
+
+export type ApiCommandeFournisseur = {
+  id: number
+  fournisseurId: number
+  fournisseur: string
+  modeLivraison: ApiFournisseur['modeLivraison']
+  statut: 'brouillon' | 'envoyée' | 'partielle' | 'reçue' | 'annulée'
+  reliquatInconnu: boolean
+  dateCommande: string
+  articles: {
+    ligne: number
+    besoinId: number | null
+    commandeClientId: number | null
+    commandeClientNumero: string | null
+    reference: string
+    designation: string
+    quantite: number
+    quantiteRecue: number
+    quantiteAttribuee: number
+    prixUnitaire: number
+  }[]
+}
+
+export type ApiHoraireFournisseur = {
+  fournisseurId: number
+  heureBlocage: string | null
+  dureeBlocageMinutes: number | null
+  bloque: boolean
 }
 
 export type ApiDevisConversion = {

@@ -44,6 +44,8 @@ export type DocumentLine = {
   prixUnitaire: number
   tauxTva?: number | null
   montant: number
+  ligneCommandeFournisseur?: number
+  quantiteAttribuee?: number
 }
 
 /** Ligne d'entree, avant conversion vers la forme exposee. */
@@ -236,6 +238,7 @@ export class DocumentRepository<TRow extends { id: number }> {
 
 export type ReceptionRow = {
   id: number
+  commandeFournisseurId?: number
   fournisseur: string
   dateReception: string
   notes: string | null
@@ -245,13 +248,46 @@ export type ReceptionRow = {
   updatedAt: string
 }
 
+class ReceptionRepository extends DocumentRepository<ReceptionRow> {
+  // Cette origine est définitive : elle est écrite à la création, avec le mouvement de stock.
+  private async requireEditable(id: number) {
+    const [receipt] = await this.db.select({ source: schema.receptions.commande_fournisseur_id })
+      .from(schema.receptions).where(eq(schema.receptions.id, id))
+    if (receipt?.source != null) {
+      throw new BusinessError(409, 'RECEPTION_FOURNISSEUR_FIGEE', 'Cette réception a enregistré une entrée en stock et ne peut plus être modifiée.')
+    }
+  }
+
+  override async replaceLines(id: number, lines: LineInput[]) {
+    await this.requireEditable(id)
+    return super.replaceLines(id, lines)
+  }
+
+  override async updateHead(id: number, patch: Record<string, unknown>) {
+    await this.requireEditable(id)
+    return super.updateHead(id, patch)
+  }
+
+  override async remove(id: number) {
+    await this.requireEditable(id)
+    return super.remove(id)
+  }
+}
+
 export function createReceptionRepository(db: MySql2Database<Tables>): DocumentRepository<ReceptionRow> {
-  return new DocumentRepository<ReceptionRow>(db, schema.receptions, schema.receptions.id, {
+  return new ReceptionRepository(db, schema.receptions, schema.receptions.id, {
     linesTable: schema.receptionLines,
     lineFk: schema.receptionLines.reception_id,
-    mapLine: baseLine,
+    mapLine: (raw) => ({
+      ...baseLine(raw),
+      ...(raw.ligne_commande_fournisseur != null && {
+        ligneCommandeFournisseur: Number(raw.ligne_commande_fournisseur),
+        quantiteAttribuee: Number(raw.quantite_attribuee),
+      }),
+    }),
     mapRow: (raw, lines) => ({
       id: Number(raw.id),
+      ...(raw.commande_fournisseur_id != null && { commandeFournisseurId: Number(raw.commande_fournisseur_id) }),
       fournisseur: String(raw.fournisseur ?? ''),
       dateReception: toDateString(raw.date_reception as Date | null),
       notes: raw.notes === null || raw.notes === undefined ? null : String(raw.notes),

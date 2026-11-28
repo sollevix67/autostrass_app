@@ -14,6 +14,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { PageLayout } from '../components/PageLayout'
 import { DataTable, type ColumnDef } from '../components/DataTable'
 import { ConfirmDialog } from '../components/ConfirmDialog'
@@ -26,6 +27,7 @@ import { useResource } from '../hooks/useResource'
 import { useAuth, canWrite } from '../components/useAuth'
 import { fournisseurSchema, type FournisseurFormValues, type FournisseurFormOutput } from '../schemas'
 import type { ApiFournisseur } from '../services/contracts'
+import { SUPPLIER_DELIVERY_OPTIONS } from '../options'
 
 /** Valeurs initiales du formulaire : jamais de champ `undefined`. */
 const EMPTY_FOURNISSEUR = {
@@ -41,13 +43,6 @@ const EMPTY_FOURNISSEUR = {
   modeLivraison: 'livraison',
   actif: true,
 } as const
-
-const LIVRAISON_MODES = [
-  { value: 'retrait', label: 'Retrait sur place' },
-  { value: 'livraison', label: 'Livraison' },
-  { value: 'express', label: 'Express' },
-  { value: 'franchise', label: 'Franchise' },
-]
 
 function fournisseurFormValues(row: ApiFournisseur): FournisseurFormValues {
   return {
@@ -238,6 +233,7 @@ export default function FournisseursView() {
       width: '150px',
       render: (row) => (
         <div className="actions-cell">
+          {canEdit && <Link className="action-btn" to={`/commandes-fournisseurs?vue=commandes&fournisseur=${row.id}`} title="Commandes fournisseurs" aria-label={`Voir les commandes de ${row.nom}`}><Icon name="clipboard" size="sm" /></Link>}
           <button type="button" className="action-btn edit" onClick={() => openSupplierDialog(row)} disabled={!canEdit || busy} title="Modifier" aria-label={`Modifier ${row.nom}`} aria-haspopup="dialog">
             <Icon name="edit" size="sm" />
           </button>
@@ -341,7 +337,7 @@ export default function FournisseursView() {
                 <FormInput label="Ville" name="ville" error={errors.ville?.message} register={register} />
                 <FormInput label="Code postal" name="codePostal" error={errors.codePostal?.message} register={register} />
                 <FormInput label="Délai (jours)" name="delaiLivraison" error={errors.delaiLivraison?.message} type="number" min={0} step="1" register={register} />
-                <FormSelect label="Mode de livraison" name="modeLivraison" error={errors.modeLivraison?.message} register={register} options={LIVRAISON_MODES} />
+                <FormSelect label="Mode de livraison" name="modeLivraison" error={errors.modeLivraison?.message} register={register} options={SUPPLIER_DELIVERY_OPTIONS} />
               </div>
               <div className="form-actions">
                 <FormCheckbox label="Actif" name="actif" register={register} />

@@ -3,9 +3,12 @@ import type { AuthenticatedUser } from '../middleware/auth.js'
 import { venteTotals } from '../../src/utils/venteTotals.js'
 import { dateParis, generateDocumentNumber } from '../services/documentNumbers.js'
 import { toIsoString } from './mapping.js'
-import { RepositoryError, toRepositoryError } from './simpleRepositories.js'
+import { RepositoryError } from './simpleRepositories.js'
+import { listProcurementNeeds, withSupplyTransaction, type ArticleACommanderRow } from './approvisionnement.js'
 import type { CommandeRow } from './documentRepositories.js'
-import type { DeliveryMode, DevisStatus } from '../db/schema.js'
+import type { DevisStatus } from '../db/schema.js'
+
+export type { ArticleACommanderRow } from './approvisionnement.js'
 
 export type DevisClientSnapshot = {
   nom: string
@@ -64,59 +67,18 @@ export type DevisPatch = Partial<DevisInput> & {
   statut?: Exclude<DevisStatus, 'converti'>
 }
 export type DevisConversionInput = { version: number; dateLivraisonPrevue?: string | null }
-export type ArticleACommanderRow = {
-  id: number
-  commandeId: number
-  commandeNumero: string | null
-  clientId: number
-  ligne: number
-  reference: string
-  designation: string
-  quantite: number
-  fournisseurId: number | null
-  modeLivraison: DeliveryMode
-}
 export type ConversionResult = { devis: DevisRow; commande: CommandeRow; articlesACommander: ArticleACommanderRow[] }
 type Actor = Pick<AuthenticatedUser, 'id' | 'nom' | 'prenom'>
 type Query = Pick<PoolConnection, 'query'>
 
 const headColumns = `d.*, DATE_FORMAT(d.date_devis, '%Y-%m-%d') AS date_devis_iso,
   DATE_FORMAT(d.date_validite, '%Y-%m-%d') AS date_validite_iso`
-// La priorité des commandes actives est stable : identifiant, puis rang de ligne.
-// La projection reste une seule lecture cohérente et ne réserve ni ne déplace le stock.
-const procurementQuery = `WITH demandes AS (
-  SELECT c.id AS commande_id, l.ligne, l.reference, l.quantite,
-    COALESCE(SUM(l.quantite) OVER (
-      PARTITION BY l.reference ORDER BY c.id, l.ligne
-      ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
-    ), 0) AS quantite_avant
-  FROM commandes c JOIN commande_lines l ON l.commande_id = c.id
-  WHERE c.statut IN ('en attente', 'validée')
-), besoins AS (
-  SELECT a.*, c.numero AS commande_numero, c.client_id,
-    GREATEST(0, d.quantite - GREATEST(0, COALESCE(s.quantity, 0) - d.quantite_avant)) AS quantite_actuelle
-  FROM articles_a_commander a
-  JOIN commandes c ON c.id = a.commande_id
-  JOIN demandes d ON d.commande_id = a.commande_id AND d.ligne = a.ligne
-  LEFT JOIN articles article ON article.reference = d.reference
-  LEFT JOIN stock_balances s ON s.reference_id = article.id
-) SELECT * FROM besoins WHERE quantite_actuelle > 0`
 
 function mapLine(row: RowDataPacket): DevisLine {
   return {
     ligne: Number(row.ligne), reference: String(row.reference), designation: String(row.designation),
     quantite: Number(row.quantite), prixUnitaire: Number(row.prix_unitaire), tauxTva: Number(row.taux_tva),
     montant: Number(row.montant), montantTVA: Number(row.montant_tva), montantTTC: Number(row.montant_ttc),
-  }
-}
-
-function mapProcurement(row: RowDataPacket): ArticleACommanderRow {
-  return {
-    id: Number(row.id), commandeId: Number(row.commande_id), commandeNumero: row.commande_numero ?? null,
-    clientId: Number(row.client_id), ligne: Number(row.ligne), reference: String(row.reference),
-    designation: String(row.designation), quantite: Number(row.quantite_actuelle),
-    fournisseurId: row.fournisseur_id == null ? null : Number(row.fournisseur_id),
-    modeLivraison: row.mode_livraison as DeliveryMode,
   }
 }
 
@@ -127,24 +89,6 @@ function parseSnapshot(value: unknown): DevisClientSnapshot {
 /** Le document, sa conversion et son audit sont écrits dans une transaction. */
 export class DevisRepository {
   constructor(private readonly pool: Pool) {}
-
-  private async transaction<T>(action: (connection: PoolConnection) => Promise<T>): Promise<T> {
-    const connection = await this.pool.getConnection()
-    let started = false
-    try {
-      await connection.query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED')
-      await connection.beginTransaction()
-      started = true
-      const result = await action(connection)
-      await connection.commit()
-      return result
-    } catch (error) {
-      if (started) await connection.rollback()
-      throw toRepositoryError(error)
-    } finally {
-      connection.release()
-    }
-  }
 
   async list(): Promise<DevisRow[]> {
     return this.read()
@@ -175,7 +119,7 @@ export class DevisRepository {
   }
 
   async create(input: DevisInput, user: Actor): Promise<DevisRow> {
-    return this.transaction(async (connection) => {
+    return withSupplyTransaction(this.pool, async (connection) => {
       const snapshot = await this.clientSnapshot(connection, input.clientId)
       const lines = await this.resolveLines(connection, input.articles)
       const totals = this.totals(lines)
@@ -203,7 +147,7 @@ export class DevisRepository {
   }
 
   async update(id: number, input: DevisPatch, user: Actor): Promise<DevisRow> {
-    return this.transaction(async (connection) => {
+    return withSupplyTransaction(this.pool, async (connection) => {
       const current = await this.load(connection, id, true)
       this.checkEditable(current, input.version)
       if (input.dateDevis !== undefined && input.dateDevis !== current.dateDevis) {
@@ -234,7 +178,7 @@ export class DevisRepository {
   }
 
   async convertir(id: number, input: DevisConversionInput, user: Actor): Promise<ConversionResult> {
-    return this.transaction(async (connection) => {
+    return withSupplyTransaction(this.pool, async (connection) => {
       const current = await this.load(connection, id, true)
       // Un second clic ou un rejeu réseau retrouve exactement la même commande.
       if (current.commandeId !== null) return this.conversionResult(connection, current)
@@ -301,15 +245,7 @@ export class DevisRepository {
   }
 
   async listArticlesACommander(): Promise<ArticleACommanderRow[]> {
-    return this.procurement(this.pool)
-  }
-
-  private async procurement(connection: Query, commandeId?: number): Promise<ArticleACommanderRow[]> {
-    const [rows] = await connection.query<RowDataPacket[]>(
-      `${procurementQuery}${commandeId === undefined ? '' : ' AND commande_id = ?'} ORDER BY ${commandeId === undefined ? 'id DESC' : 'ligne'}`,
-      commandeId === undefined ? [] : [commandeId],
-    )
-    return rows.map(mapProcurement)
+    return listProcurementNeeds(this.pool)
   }
 
   private checkEditable(current: DevisRow, version: number) {
@@ -415,7 +351,7 @@ export class DevisRepository {
     if (!heads[0]) throw new RepositoryError(409, 'DEVIS_FROZEN', 'La commande liée au devis est introuvable.')
     const head = heads[0]
     const [lines] = await connection.query<RowDataPacket[]>('SELECT * FROM commande_lines WHERE commande_id = ? ORDER BY ligne', [quote.commandeId])
-    const procurement = await this.procurement(connection, quote.commandeId!)
+    const procurement = await listProcurementNeeds(connection, { commandeId: quote.commandeId! })
     return {
       devis: quote,
       commande: {

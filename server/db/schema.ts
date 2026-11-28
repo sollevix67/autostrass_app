@@ -18,10 +18,11 @@
  */
 
 import { relations, sql } from 'drizzle-orm'
-import { fournisseurs, DELIVERY_MODES } from './schema_step2.js'
+import { commandesFournisseurs, fournisseurs, DELIVERY_MODES } from './schema_step2.js'
 import {
   mysqlTable,
   varchar,
+  char,
   text,
   int,
   decimal,
@@ -201,12 +202,17 @@ export const receptions = mysqlTable(
   {
     id: int('id', { unsigned: true }).primaryKey().autoincrement(),
     fournisseur: varchar('fournisseur', { length: 128 }).notNull(),
+    commande_fournisseur_id: int('commande_fournisseur_id', { unsigned: true }).references(() => commandesFournisseurs.id, { onDelete: 'restrict' }),
+    cle_operation: char('cle_operation', { length: 36 }),
     date_reception: date('date_reception', { mode: 'string' }).notNull(),
     notes: text('notes'),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (table) => [index('idx_receptions_date').on(table.date_reception)],
+  (table) => [
+    index('idx_receptions_date').on(table.date_reception),
+    uniqueIndex('uq_receptions_commande_cle').on(table.commande_fournisseur_id, table.cle_operation),
+  ],
 )
 
 export const receptionLines = mysqlTable(
@@ -221,6 +227,8 @@ export const receptionLines = mysqlTable(
     reference: varchar('reference', { length: 64 }).notNull(),
     designation: varchar('designation', { length: 255 }).notNull(),
     quantite_recue: int('quantite_recue').notNull(),
+    ligne_commande_fournisseur: int('ligne_commande_fournisseur'),
+    quantite_attribuee: int('quantite_attribuee').notNull().default(0),
     prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull().default('0.00'),
   },
   (table) => [primaryKey({ columns: [table.reception_id, table.ligne] })],
@@ -544,7 +552,10 @@ export const commandeLines = mysqlTable(
     /** Taux figé pour les commandes issues d'un devis, NULL sur l'historique. */
     taux_tva: decimal('taux_tva', { precision: 5, scale: 2 }),
   },
-  (table) => [primaryKey({ columns: [table.commande_id, table.ligne] })],
+  (table) => [
+    primaryKey({ columns: [table.commande_id, table.ligne] }),
+    index('idx_commande_lines_reference').on(table.reference),
+  ],
 )
 
 // ---------------------------------------------------------------------------
@@ -605,6 +616,19 @@ export const articlesACommander = mysqlTable('articles_a_commander', {
 }, (table) => [
   uniqueIndex('uq_articles_a_commander_ligne').on(table.commande_id, table.ligne),
   index('idx_articles_a_commander_reference').on(table.reference),
+])
+
+export const commandeFournisseurLines = mysqlTable('commande_four_lines', {
+  commande_id: int('commande_id', { unsigned: true }).notNull(),
+  ligne: int('ligne').notNull().default(1),
+  besoin_id: int('besoin_id', { unsigned: true }).references(() => articlesACommander.id, { onDelete: 'restrict' }),
+  reference: varchar('reference', { length: 64 }).notNull(),
+  designation: varchar('designation', { length: 255 }).notNull(),
+  quantite: int('quantite').notNull(),
+  quantite_recue: int('quantite_recue').notNull().default(0),
+  prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull().default('0.00'),
+}, (table) => [
+  primaryKey({ columns: [table.commande_id, table.ligne] }),
 ])
 
 // ---------------------------------------------------------------------------
@@ -779,7 +803,6 @@ export {
   SUPPLIER_ORDER_STATUSES,
   type SupplierOrderStatus,
   commandesFournisseurs,
-  commandeFournisseurLines,
   AUDIT_ACTIONS,
   type AuditAction,
   journalActions,

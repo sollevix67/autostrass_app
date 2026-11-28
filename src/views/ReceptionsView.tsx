@@ -11,6 +11,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { PageLayout } from '../components/PageLayout'
@@ -188,7 +189,10 @@ export default function ReceptionsView() {
       header: 'FOURNISSEUR',
       sortable: true,
       sortValue: (row) => row.fournisseur,
-      render: (row) => <b>{row.fournisseur}</b>,
+      render: (row) => <><b>{row.fournisseur}</b>{row.commandeFournisseurId != null && <small className="form-hint">
+        {canEdit ? <Link className="text-button" to={`/commandes-fournisseurs?vue=commandes&commande=${row.commandeFournisseurId}`}>Commande fournisseur n° {row.commandeFournisseurId}</Link>
+          : <>Commande fournisseur n° {row.commandeFournisseurId}</>}
+      </small>}</>,
     },
     {
       key: 'dateReception',
@@ -202,7 +206,9 @@ export default function ReceptionsView() {
       header: 'ARTICLES',
       align: 'right',
       sortValue: (row) => row.articles.length,
-      render: (row) => `${row.articles.length} ligne(s)`,
+      render: (row) => <>{row.articles.length} ligne(s){row.commandeFournisseurId != null && <small className="form-hint">
+        {row.articles.reduce((somme, line) => somme + (line.quantiteAttribuee ?? 0), 0)} unité(s) attribuée(s) aux clients
+      </small>}</>,
     },
     {
       key: 'totalHT',
@@ -217,7 +223,7 @@ export default function ReceptionsView() {
       header: 'ACTIONS',
       width: '60px',
       render: (row) =>
-        canEdit ? (
+        canEdit && row.commandeFournisseurId == null ? (
           <button
             type="button"
             className="action-btn delete"
@@ -245,6 +251,9 @@ export default function ReceptionsView() {
           }} disabled={loading || suppliers.loading}>
             <Icon name="rotate-ccw" size="sm" /> Actualiser
           </button>
+          {canEdit && (
+            <Link className="secondary-button" to="/commandes-fournisseurs?vue=commandes">Réceptionner une commande</Link>
+          )}
           {canEdit && (
             <button type="button" className="primary-button" onClick={openReceptionDialog} disabled={busy} aria-haspopup="dialog">
               <Icon name="plus" size="sm" /> Nouvelle réception

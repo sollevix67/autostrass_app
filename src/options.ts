@@ -14,6 +14,13 @@
 /** Option de liste. `value: ''` est reservee a l'option vide d'un select. */
 export type SelectOption = { value: string; label: string }
 
+export const SUPPLIER_DELIVERY_OPTIONS = [
+  { value: 'retrait', label: 'Retrait sur place' },
+  { value: 'livraison', label: 'Livraison' },
+  { value: 'express', label: 'Express' },
+  { value: 'franchise', label: 'Franchise' },
+]
+
 export const CLIENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'particulier', label: 'Particulier' },
   { value: 'professionnel', label: 'Professionnel' },

@@ -29,6 +29,8 @@
     "test:pdf-reader:ui": "node scripts/test-pdf-reader-ui.mjs",
     "test:devis": "tsx scripts/test-devis-pdf.ts && tsx scripts/test-devis.ts && tsx scripts/test-devis-concurrence.ts",
     "test:devis:ui": "node scripts/test-devis-ui.mjs",
+    "test:commandes-fournisseurs": "tsx scripts/test-commandes-fournisseurs.ts && tsx scripts/test-receptions-fournisseur.ts",
+    "test:commandes-fournisseurs:ui": "node scripts/test-commandes-fournisseurs-ui.mjs",
     "test:ventes": "tsx scripts/test-vente-validation.ts && tsx scripts/test-fiscal-integrity.ts && tsx scripts/test-ventes-caisse.ts",
     "test:parametres": "tsx scripts/test-parametres-unit.ts && tsx scripts/test-parametres.ts --all",
     "test:stock": "tsx scripts/test-stock-transfers.ts",

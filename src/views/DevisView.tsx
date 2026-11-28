@@ -37,6 +37,7 @@ export default function DevisView() {
 }
 
 function DevisWorkspace() {
+  const { user } = useAuth()
   const toast = useToast()
   const devis = useDevis()
   const clients = useRemoteValue<ApiClient[]>('/clients')
@@ -163,7 +164,8 @@ function DevisWorkspace() {
 
     {showBesoins && <section id="devis-besoins" className="devis-besoins" aria-labelledby="devis-besoins-title">
       <div className="devis-section-heading"><h2 id="devis-besoins-title">Articles à commander</h2><button type="button" className="link-button" onClick={besoins.reload} disabled={besoins.loading || busy}>Actualiser la liste</button></div>
-      <p className="form-hint">Quantités manquantes pour les devis convertis en commandes clients en cours.</p>
+      <p className="form-hint">Quantités restant à commander pour les devis convertis en commandes clients en cours.</p>
+      {canWrite(user?.role, 'depot') && <Link className="secondary-button" to="/commandes-fournisseurs">Gérer les commandes fournisseurs</Link>}
       {besoins.error && <p className="error-banner" role="alert">{besoins.error}</p>}
       <div className="filter-bar">
         <label className="sr-only" htmlFor="besoins-fournisseur">Filtrer par fournisseur</label>

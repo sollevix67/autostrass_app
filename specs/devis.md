@@ -1,8 +1,8 @@
 # Devis et conversion en commande client
 
 Livraison du 21 novembre 2026. Ce module reprend les exigences Devis du
-[cahier des charges](../TODO.md). Les commandes fournisseurs, leurs horaires et
-l'attribution des réceptions restent le chantier suivant.
+[cahier des charges](../TODO.md). Les besoins générés par la conversion
+alimentent les [commandes fournisseurs](commandes-fournisseurs.md).
 
 ## Utilisation
 
@@ -65,15 +65,16 @@ disponibilité tient compte des quantités des commandes en attente et validées
 Le volet **Articles à commander** présente les quantités encore manquantes des
 devis convertis, liées à leur commande client. Les commandes directes participent
 au calcul de disponibilité ; leur propre approvisionnement reste à compléter
-dans le chantier fournisseurs. La lecture recalcule ces besoins depuis le stock
-physique et la demande des commandes actives, par ordre de création et de ligne.
+pour les commandes saisies directement. La lecture recalcule ces besoins depuis
+le stock physique, les quantités déjà attribuées et les achats en cours. Le stock
+libre est réparti par ordre de création des commandes actives puis par ligne.
 Une annulation ou une entrée de stock peut réduire ou supprimer un besoin ;
 une baisse du stock peut le faire réapparaître. Il s'agit d'un calcul de demande,
-sans réservation ni redistribution des emplacements physiques.
+sans mouvement d’emplacement à la consultation.
 
 Les fournisseurs et modes de livraison se filtrent dans ce volet. Le fournisseur
-est initialement **À choisir**, et le mode **livraison**. Leur affectation, la
-commande fournisseur et les réceptions seront gérées dans le prochain module.
+est initialement **À choisir**, et le mode **livraison**. Les acheteurs effectuent
+l’affectation, la commande et les réceptions dans **Commandes fournisseurs**.
 L'API de lecture est aussi accessible aux magasiniers.
 
 Une commande provenant d'un devis conserve ses coordonnées et ses lignes :

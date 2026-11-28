@@ -2,7 +2,7 @@
 // Ce fichier est injecté dans `schema.ts` (manuel) pour éviter la perte d'exports.
 
 import { sql } from 'drizzle-orm'
-import { mysqlTable, varchar, text, int, decimal, date, timestamp, boolean, primaryKey, index, uniqueIndex } from 'drizzle-orm/mysql-core'
+import { mysqlTable, varchar, char, text, int, decimal, date, time, timestamp, boolean, index, uniqueIndex } from 'drizzle-orm/mysql-core'
 
 // NOTE: on réutilise `createdAt/updatedAt` définis dans schema.ts.
 // Ce fichier ne doit pas être importé directement dans drizzle-kit.
@@ -54,6 +54,8 @@ export const fournisseurs = mysqlTable('fournisseurs', {
   code_postal: varchar('code_postal', { length: 16 }),
   delai_livraison: int('delai_livraison').notNull().default(0),
   mode_livraison: varchar('mode_livraison', { length: 16, enum: DELIVERY_MODES }).notNull().default('livraison'),
+  heure_blocage: time('heure_blocage'),
+  duree_blocage_minutes: int('duree_blocage_minutes', { unsigned: true }),
   actif: boolean('actif').notNull().default(true),
   createdAt: timestamp('created_at', { mode: 'date' }).default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp('updated_at', { mode: 'date' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
@@ -68,6 +70,8 @@ export type SupplierOrderStatus = (typeof SUPPLIER_ORDER_STATUSES)[number]
 export const commandesFournisseurs = mysqlTable('commandes_fournisseurs', {
   id: int('id', { unsigned: true }).primaryKey().autoincrement(),
   fournisseur_id: int('fournisseur_id', { unsigned: true }).notNull(),
+  fournisseur_nom: varchar('fournisseur_nom', { length: 128 }),
+  cle_commande: char('cle_commande', { length: 36 }),
   date_commande: date('date_commande', { mode: 'string' }).notNull(),
   statut: varchar('statut', { length: 16, enum: SUPPLIER_ORDER_STATUSES }).notNull().default('brouillon'),
   mode_livraison: varchar('mode_livraison', { length: 16, enum: DELIVERY_MODES }).notNull().default('livraison'),
@@ -76,20 +80,10 @@ export const commandesFournisseurs = mysqlTable('commandes_fournisseurs', {
   createdAt: timestamp('created_at', { mode: 'date' }).default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp('updated_at', { mode: 'date' }).default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
 }, (table) => [
+  uniqueIndex('uq_cmd_four_cle').on(table.cle_commande),
   index('idx_cmd_four_fournisseur').on(table.fournisseur_id),
   index('idx_cmd_four_statut').on(table.statut),
   index('idx_cmd_four_date').on(table.date_commande),
-])
-
-export const commandeFournisseurLines = mysqlTable('commande_four_lines', {
-  commande_id: int('commande_id', { unsigned: true }).notNull(),
-  ligne: int('ligne').notNull().default(1),
-  reference: varchar('reference', { length: 64 }).notNull(),
-  designation: varchar('designation', { length: 255 }).notNull(),
-  quantite: int('quantite').notNull(),
-  prix_unitaire: decimal('prix_unitaire', { precision: 12, scale: 2 }).notNull().default('0.00'),
-}, (table) => [
-  primaryKey({ columns: [table.commande_id, table.ligne] }),
 ])
 
 export const AUDIT_ACTIONS = ['création', 'modification', 'suppression'] as const

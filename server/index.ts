@@ -23,6 +23,9 @@ import { validateCertificate } from './services/httpsSettings.js'
 import { createReferentielSettingsRouter } from './middleware/referentielSettingsRoutes.js'
 import { createInventaireRouter } from './middleware/inventaireRoutes.js'
 import { createDevisRouter } from './middleware/devisRoutes.js'
+import { createCommandeFournisseurRouter } from './middleware/commandeFournisseurRoutes.js'
+import { createHorairesFournisseurRouter } from './middleware/horairesFournisseurRoutes.js'
+import { createReceptionFournisseurRouter } from './middleware/receptionFournisseurRoutes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3001)
@@ -107,14 +110,16 @@ app.get('/api/dashboard', async (_request: Request, response: Response) => {
     )
     const [movements] = await pool.query<Array<RowDataPacket & { type: string; title: string; detail: string; created_at: Date }>>(
       `SELECT
-        CASE WHEN m.reason = 'TRANSFERT' THEN 'TRANSFERT' ELSE 'INVENTAIRE' END AS type,
+        CASE m.reason WHEN 'TRANSFERT' THEN 'TRANSFERT'
+             WHEN 'RECEPTION_FOURNISSEUR' THEN 'RECEPTION' ELSE 'INVENTAIRE' END AS type,
         a.designation AS title,
         CASE WHEN m.reason = 'TRANSFERT' THEN 'Transfert entre emplacements'
+             WHEN m.reason = 'RECEPTION_FOURNISSEUR' THEN CONCAT('Réception fournisseur, quantité reçue : ', m.delta)
              ELSE CONCAT('Quantite ajustee de ', m.delta) END AS detail,
         m.created_at
       FROM stock_movements m
       JOIN articles a ON a.id = m.reference_id
-      ORDER BY m.created_at DESC
+      ORDER BY m.created_at DESC, m.id DESC
       LIMIT 8`,
     )
 
@@ -765,6 +770,9 @@ app.use('/api', createReferentielSettingsRouter())
 app.use('/api', createComplianceRouter())
 app.use('/api/inventaires', createInventaireRouter())
 app.use('/api', createDevisRouter())
+app.use('/api/commandes-fournisseurs/horaires', createHorairesFournisseurRouter())
+app.use('/api/commandes-fournisseurs', createReceptionFournisseurRouter())
+app.use('/api', createCommandeFournisseurRouter())
 app.use('/api', createApiRouter())
 
 // 404 puis gestionnaire d'erreurs : l'ordre compte, les routes `/api/*` sont

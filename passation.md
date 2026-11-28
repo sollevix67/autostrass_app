@@ -1,9 +1,10 @@
 # Passation — OpenStrass
 
-État consolidé le **28 novembre 2026**. Les factures et les devis sont consultables
-dans l’application. La suite de génération PDF passe avec `pdfmake` 0.3.15.
-La migration 0012 des Devis a été appliquée à la base locale le 21 novembre
-après sauvegarde et comparaison des données.
+État consolidé le **28 novembre 2026**. Le parcours d’achat des devis convertis
+couvre le choix du fournisseur, la commande, les réceptions et les attributions.
+Les factures et les devis sont consultables dans l’application.
+La base de développement `autostrass_test` est en 0012. Le parcours fournisseur
+et la migration 0013 ont été vérifiés sur MariaDB jetable.
 Les 16 constats de la revue initiale restent corrigés. Les preuves et procédures
 détaillées sont dans les guides liés. L'ancien journal reste disponible
 avec `git show 397ddee:passation.md` (747 lignes, 55 795 octets dans Git).
@@ -15,14 +16,14 @@ dans les [correctifs](specs/correctifs-revue-2026-11-14.md). La revue et son inv
 SHA-256 documentent l’ancien état. La [revue du 27 novembre](specs/analyse-depot-2026-11-27.md)
 et ses [correctifs](#reprise-des-cinq-correctifs-du-27-novembre-2026) couvrent cinq autres constats.
 
-1. Migration **0012** appliquée et développement redémarré sur `autostrass_test`
-   le 21 novembre après sauvegarde ; vérifier les autres installations, dont 0011.
+1. Déployer la migration **0013** sur `autostrass_test` et les installations
+   concernées après sauvegarde, puis redémarrer l’API. Vérifier les versions antérieures.
    Rapprocher les anciennes ventes
    HT encaissées de leurs justificatifs, sans réécriture ni reset d'empreintes.
-2. Développer les **commandes fournisseurs** : sélection fournisseur/mode,
-   horaires, commande et attribution des réceptions ; compléter les bons PDF.
-   Les Devis sont livrés : [guide](specs/devis.md). [TODO.md](TODO.md)
-   reste le cahier des charges ; un CRUD ne couvre pas toutes ses exigences.
+2. Étendre l’approvisionnement aux commandes clients saisies directement et
+   compléter les bons de commande et de livraison PDF. Le parcours livré est
+   décrit dans le [guide des achats](specs/commandes-fournisseurs.md).
+   [TODO.md](TODO.md) reste le cahier des charges.
 3. Vérifier les migrations et le redémarrage API sur chaque installation ;
    réaliser les recettes certificat, Cloudflare Turnstile et PDA Zebra TC22.
    L'authentification Android avec Turnstile reste à définir.
@@ -57,7 +58,7 @@ passation ; avant livraison, actualiser Graphify, committer et pousser.
 | Catalogue | CRUD, référentiels administrables, prix HT/TTC, TVA, EAN13, forcing et délai | Recherche EAN13 dédiée, compatibilité immatriculation/VIN |
 | Caisse/comptoir | Sessions sérialisées, comptages, plafond, TVA figée, encaissement TTC, empreintes v1/v2, facture PDF ; migration 0011 locale appliquée | Autres installations ; rapprochement historique ; clavier/autocomplétion et recette fiscale |
 | Devis | Numéro D, création/édition, PDF, partage volontaire email/WhatsApp, conversion C atomique et besoins courants | Recette messageries/PDA sur appareils ciblés |
-| Fournisseurs/réceptions | Annuaire, sélection des fournisseurs actifs et réceptions avec lignes/historique | Commandes fournisseurs, horaires, liste à commander, suivi et attribution automatique |
+| Fournisseurs/réceptions | Fournisseur et mode par besoin, horaires, achats groupés, prix d’achat, réceptions partielles, stock et attribution au client | Approvisionnement des commandes directes et rapprochement des anciens reliquats inconnus |
 | Commandes clients | Création, lignes, statuts, numéros C et TVA/client figés ; commandes issues d'un devis protégées | Bon PDF et approvisionnement des commandes directes |
 | Livraisons | CRUD lié aux commandes, dates, transporteur, adresse/statut ; modèle PDF documenté | Bons automatiques, numérotation, tournées et secteurs ; [modèle BL](specs/bon-livraison-modele.md) |
 | Retours | Création et lignes, montant recalculé | Avoirs numérotés/PDF, remise en stock, motifs et bons de refus |
@@ -133,8 +134,8 @@ HT explicitement éditables avant conversion ; nouvelle référence → catalogu
 Validation complète et version optimiste ; devis annulé/expiré non convertible,
 converti figé. Conversion transactionnelle/idempotente, commande liée immuable
 hors statut/date de livraison ; audit et lignes atomiques. Aucun mouvement de
-stock ni fiscal. Besoins actuels des devis convertis calculés en lecture seule,
-demande des commandes actives par ordre id/ligne ; annulation/stock pris en compte.
+stock ni fiscal. Les besoins des devis convertis tiennent compte des achats en
+cours, des attributions et du stock disponible pour les commandes actives.
 Consultation, téléchargement et partage du PDF contrôlés par version. Partage natif de fichier ou repli
 téléchargement + email/WhatsApp, sans envoi automatique ni statut fictif.
 [Guide](specs/devis.md), [recette](specs/captures/devis/resultats.json).
@@ -162,9 +163,10 @@ Turnstile vérifie jeton, hostname et action via Siteverify.
 
 ## Base et déploiement
 
-Journal Drizzle versionné **0000 à 0012** : `0007` référentiels, `0008` inventaire,
+Journal Drizzle versionné **0000 à 0013** : `0007` référentiels, `0008` inventaire,
 `0009` SIRET fournisseur, `0010` SIRET client, `0011` TVA/TTC/scellement v2,
-`0012` Devis/suivi approvisionnement et numéros/client/TVA commandes.
+`0012` Devis/suivi approvisionnement et numéros/client/TVA commandes,
+`0013` horaires fournisseurs, traçabilité des achats et entrées en stock.
 `0012` appliquée le 21 novembre à `autostrass_test` MariaDB 10.11.14 : trois
 tables ajoutées, anciennes colonnes et 805 lignes des 36 tables historiques
 inchangées, treize migrations vérifiées ; données Devis de recette absentes.
@@ -194,7 +196,7 @@ magasinier : dépôt ; caissier : caisse/documents. Ne jamais versionner secrets
 
 Commandes courantes : `npm ci`, `npm run dev`/`dev:api`, `build`, `lint`, `preview`,
 `test:errors`, `test:pdf`, `test:ventes`, `test:devis`, `test:devis:ui` et
-`test:installation`.
+`test:installation`, `test:commandes-fournisseurs` et `test:commandes-fournisseurs:ui`.
 `test:stock`, `test:inventaire`, `test:integration`,
 `test:parametres` et `test:utilisateurs:ui` créent une base/API jetable via
 `TEST_DB_*` (compte pouvant créer/supprimer une base). Les appels directs
@@ -958,3 +960,48 @@ Les six tables métier et d’audit contrôlées ont conservé leurs empreintes.
 bases jetables ont été supprimées et les instances arrêtées. Les [captures du
 lecteur](specs/captures/documents-pdf/README.md#interface) illustrent la consultation.
 Le commit fonctionnel `5a5fbbb` sert de base au [graphe Graphify](graphify-out/graph.html).
+
+## Reprise après la consultation des PDF — 28 novembre 2026
+
+La passation et le graphe (3 643 nœuds) ont été consultés. Le lecteur de factures
+et de devis est livré. La prochaine priorité de développement indiquée dans la
+passation concerne les commandes fournisseurs et leur réception.
+
+Sur `de9f8e2`, le cahier des charges, le schéma et le calcul des besoins confirment
+que les tables de commandes fournisseurs existent. Le lot reprend les besoins des
+devis convertis. Les travaux sont répartis entre commandes, réceptions et interface.
+Le conducteur prend en charge la migration, les horaires, l’intégration et la recette.
+
+MariaDB 11.4.5 jetable écoute sur la boucle locale. La migration 0013 a été
+générée pour les horaires, le lien achat–besoin, les quantités reçues et
+attribuées et les clés de rejeu. Les colonnes facultatives et les valeurs
+par défaut permettent de relire les documents antérieurs.
+
+Les routes des horaires sont raccordées. Les douze contrôles de l’horloge
+Europe/Paris couvrent l’heure limite incluse, la réouverture, le passage à minuit
+et les deux changements d’heure. Le prix d’achat HT est saisi lors de la commande,
+le catalogue ne conservant jusqu’ici que le prix de vente.
+
+Sur MariaDB 11.4.5 jetable, les 27 groupes Devis/concurrence et le PDF Devis
+passent avec 0013. Les tests des réceptions vérifient l’attribution hors ordre,
+le rejeu concurrent, le dernier reliquat et l’annulation de toute la transaction
+si l’audit échoue. Le tableau de bord reconnaît le mouvement de réception fournisseur.
+
+Le parcours Chromium sur le build Express et l’API réelle a converti une demande
+de sept pièces avec deux en stock. Cinq ont été achetées à 7,55 € HT puis reçues
+en deux fois (deux et trois). L’écran mobile et MariaDB confirment cinq pièces
+attribuées et sept en stock. Les trois parcours Chromium avec API simulée couvrent
+les droits, les filtres et la reprise d’une saisie après perte de réponse.
+Le build et Oxlint passent, ainsi que les suites PDF, erreurs, installation,
+stock (19 scénarios), inventaire (14), API (136 contrôles) et sécurité (59).
+Le chargement initial représente 656,12 kB minifiés, avec l’avertissement
+Vite de 500 kB. La nouvelle page est chargée à la demande.
+
+L’index des lignes clientes par référence et le calcul des besoins ont été
+vérifiés sur 3 000 lignes, dont 2 160 actives comparées à un calcul indépendant.
+Une base en 0012 avec achats envoyés, partiels et reçus a repris 0013 après
+interruption du DDL. Les anciennes colonnes des 35 tables métier ont été comparées
+avant et après migration puis rejeu. Le journal compte quatorze migrations.
+La base configurée `autostrass_test` a été contrôlée en lecture à la version 0012.
+La première requête Graphify avait actualisé le marqueur de la compétence Claude.
+Le marqueur 0.9.114 a été rétabli après comparaison des neuf fichiers au paquet Windows.

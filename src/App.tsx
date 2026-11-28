@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink, useLocation } from 'react-router-dom'
 import { APP_MONOGRAM, APP_NAME, APP_SIGNATURE } from './branding'
 
@@ -23,7 +23,7 @@ import { useDashboard } from './hooks/useDashboard'
 import { ToastProvider } from './components/Toast'
 import { Icon, type IconName } from './components/Icon'
 import { AuthProvider } from './components/AuthProvider'
-import { useAuth } from './components/useAuth'
+import { canWrite, useAuth } from './components/useAuth'
 import { LoginView } from './views/LoginView'
 import DashboardView from './views/DashboardView'
 import CatalogueView from './views/CatalogueView'
@@ -54,10 +54,13 @@ import HttpsView from './views/parametres/HttpsView'
 import TurnstileView from './views/parametres/TurnstileView'
 import { parametreTitle, visibleParametres } from './parametres'
 
+const CommandesFournisseursView = lazy(() => import('./views/CommandesFournisseursView'))
+
 const navigation = [
   { label: 'Vue d’ensemble', path: '/', icon: 'grid' },
   { label: 'Catalogue', path: '/catalogue', icon: 'clipboard' },
   { label: 'Stock', path: '/stock', icon: 'box' },
+  { label: 'Commandes fournisseurs', path: '/commandes-fournisseurs', icon: 'truck' },
   { label: 'Receptions', path: '/receptions', icon: 'download' },
   { label: 'Ventes comptoir', path: '/ventes-comptoir', icon: 'cart' },
   { label: 'Caisse', path: '/caisse', icon: 'clipboard' },
@@ -159,7 +162,10 @@ function AppContent() {
         <div className="workspace-switcher"><span className="workspace-dot"></span><span><b>Depot principal</b><small>Ouvert aujourd hui</small></span><span className="chevron">⌄</span></div>
         <nav aria-label="Navigation principale">
           <p className="nav-label">ESPACE DE TRAVAIL</p>
-          {navigation.filter((item) => item.path !== '/devis' || user.role === 'admin' || user.role === 'caissier').map((item) => (
+          {navigation.filter((item) =>
+            (item.path !== '/devis' || canWrite(user.role, 'caisse')) &&
+            (item.path !== '/commandes-fournisseurs' || canWrite(user.role, 'depot'))
+          ).map((item) => (
             <NavLink
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
               to={item.path}
@@ -229,6 +235,7 @@ function AppContent() {
             <Route path="/catalogue" element={<CatalogueView />} />
             <Route path="/stock" element={<StockView />} />
             <Route path="/stock/inventaire" element={<InventaireView />} />
+            <Route path="/commandes-fournisseurs" element={<Suspense fallback={<p role="status">Chargement des commandes fournisseurs…</p>}><CommandesFournisseursView /></Suspense>} />
             <Route path="/receptions" element={<ReceptionsView />} />
             <Route path="/ventes-comptoir" element={<VentesComptoirView />} />
             <Route path="/caisse" element={<CaisseView />} />

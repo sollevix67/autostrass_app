@@ -10,6 +10,7 @@
 import { asc, eq, sql } from 'drizzle-orm'
 import type { MySql2Database } from 'drizzle-orm/mysql2'
 import * as schema from '../db/schema.js'
+import { isSupplierOrderBlocked } from '../services/horairesFournisseur.js'
 import { toIsoString } from './mapping.js'
 import { RepositoryError, SimpleRepository, toRepositoryError } from './simpleRepositories.js'
 
@@ -339,6 +340,22 @@ export type FournisseurInput = {
   actif?: boolean
 }
 
+type HoraireFournisseur = { heureBlocage: string | null; dureeBlocageMinutes: number | null }
+
+const champsHoraire = {
+  fournisseurId: schema.fournisseurs.id,
+  heureBlocage: schema.fournisseurs.heure_blocage,
+  dureeBlocageMinutes: schema.fournisseurs.duree_blocage_minutes,
+}
+
+function mapHoraire(row: HoraireFournisseur & { fournisseurId: number }, now = new Date()) {
+  return {
+    ...row,
+    heureBlocage: row.heureBlocage?.slice(0, 5) ?? null,
+    bloque: isSupplierOrderBlocked(row.heureBlocage, row.dureeBlocageMinutes, now),
+  }
+}
+
 function mapFournisseur(raw: Record<string, unknown>): FournisseurRow {
   return {
     id: Number(raw.id),
@@ -363,6 +380,33 @@ export class FournisseurRepository {
 
   constructor(private readonly db: MySql2Database<Tables>) {
     this.base = new SimpleRepository(db, schema.fournisseurs, schema.fournisseurs.id, mapFournisseur)
+  }
+
+  async listHoraires() {
+    const rows = await this.db.select(champsHoraire).from(schema.fournisseurs).orderBy(asc(schema.fournisseurs.nom))
+    const now = new Date()
+    return rows.map((row) => mapHoraire(row, now))
+  }
+
+  async updateHoraire(id: number, horaire: HoraireFournisseur, userId: number) {
+    return this.db.transaction(async (tx) => {
+      const table = schema.fournisseurs
+      const [row] = await tx.select(champsHoraire).from(table).where(eq(table.id, id)).for('update')
+      if (!row) return null
+      const previous = mapHoraire(row)
+      if (previous.heureBlocage === horaire.heureBlocage && previous.dureeBlocageMinutes === horaire.dureeBlocageMinutes) {
+        return previous
+      }
+      await tx.update(table).set({
+        heure_blocage: horaire.heureBlocage,
+        duree_blocage_minutes: horaire.dureeBlocageMinutes,
+      }).where(eq(table.id, id))
+      await tx.insert(schema.journalActions).values({
+        entite: 'fournisseur', entite_id: String(id), utilisateur_id: userId, action: 'modification',
+        details: JSON.stringify({ horaireCommandes: horaire }),
+      })
+      return mapHoraire({ fournisseurId: id, ...horaire })
+    })
   }
 
   list(): Promise<FournisseurRow[]> {
