@@ -402,9 +402,9 @@
     "semantic_hash": "9f04e00311d07fe8622e4ba7d9691909"
   },
   "package.json": {
-    "mtime": 1795810486.7204072,
-    "seen": 1795811420.5867505,
-    "ast_hash": "b579592d4afc64f48d0ccb98a57e3b83",
+    "mtime": 1795876905.8767412,
+    "seen": 1795877482.9337914,
+    "ast_hash": "a8fb143b83386322bbaab1d50aaea694",
     "semantic_hash": ""
   },
   "scripts/apply-migration.ts": {
@@ -762,9 +762,9 @@
     "semantic_hash": ""
   },
   "src/services/api.ts": {
-    "mtime": 1795290122.036209,
-    "seen": 1795292932.6138666,
-    "ast_hash": "1223a11f5172c4c13f645b79b04b4f53",
+    "mtime": 1795876854.8192737,
+    "seen": 1795877482.9559581,
+    "ast_hash": "07c9bff3c6c0fe5ccec452e8c08fca02",
     "semantic_hash": ""
   },
   "src/services/contracts.ts": {
@@ -858,9 +858,9 @@
     "semantic_hash": ""
   },
   "src/views/VentesComptoirView.tsx": {
-    "mtime": 1795810464.8932092,
-    "seen": 1795811420.6257722,
-    "ast_hash": "94bc6133133cb695e94f9d08a60a411d",
+    "mtime": 1795876868.610914,
+    "seen": 1795877482.958702,
+    "ast_hash": "aa717d9284b84d4d561d498cf066cd72",
     "semantic_hash": ""
   },
   "tsconfig.app.json": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": "7eef1c243919f39bb734c1d3b4b1c6aa"
   },
   "README.md": {
-    "mtime": 1795810786.2815278,
-    "seen": 1795811420.6473756,
-    "ast_hash": "6e843e962d347837d9b9fac27f7a6715",
+    "mtime": 1795877246.0642085,
+    "seen": 1795877482.9736826,
+    "ast_hash": "e44f5ae629fc128e3d9fda1108398e88",
     "semantic_hash": ""
   },
   "SECURITY-REVIEW.md": {
@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795876125.455646,
-    "seen": 1795876187.776163,
-    "ast_hash": "b1a838d532d2ee7058608ed01c6e45c6",
+    "mtime": 1795877445.0713189,
+    "seen": 1795877482.9748669,
+    "ast_hash": "9b96b30e6e9851b9587d7390a46387dc",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -3066,9 +3066,9 @@
     "semantic_hash": ""
   },
   "scripts/test-devis-ui.mjs": {
-    "mtime": 1795260378.3740518,
-    "seen": 1795261301.4220943,
-    "ast_hash": "e9443f3af6687bfcef336d496a4cc833",
+    "mtime": 1795877111.4785562,
+    "seen": 1795877482.937268,
+    "ast_hash": "66e2476597fe7b017619dcdf0c198661",
     "semantic_hash": ""
   },
   "scripts/test-devis.ts": {
@@ -3126,9 +3126,9 @@
     "semantic_hash": ""
   },
   "src/services/devis.ts": {
-    "mtime": 1795259914.8997533,
-    "seen": 1795261301.436358,
-    "ast_hash": "f597bf559c23ac9ce67029e14d951259",
+    "mtime": 1795876854.8207996,
+    "seen": 1795877482.9560814,
+    "ast_hash": "88f5d57df071d0956a7e4e72ee2e1d44",
     "semantic_hash": ""
   },
   "src/utils/devis.ts": {
@@ -3138,9 +3138,9 @@
     "semantic_hash": ""
   },
   "src/views/DevisView.tsx": {
-    "mtime": 1795260233.97221,
-    "seen": 1795261301.4374702,
-    "ast_hash": "3ae13ccf5b1a23f3ac57b2176fdf9a51",
+    "mtime": 1795876854.8218958,
+    "seen": 1795877482.957537,
+    "ast_hash": "27dba1dca20e724881fc1ba278c6b9ab",
     "semantic_hash": ""
   },
   "src/views/devis/DevisConversionDialog.tsx": {
@@ -3162,9 +3162,9 @@
     "semantic_hash": ""
   },
   "specs/devis.md": {
-    "mtime": 1795273356.208896,
-    "seen": 1795275276.0386984,
-    "ast_hash": "40ef76374f479472cf600643c2be42fc",
+    "mtime": 1795876905.8786433,
+    "seen": 1795877482.9765463,
+    "ast_hash": "4dc3aeb8511da3a4c3c374dbccaa8ac0",
     "semantic_hash": ""
   },
   "specs/captures/devis/conversion-desktop.png": {
@@ -3642,9 +3642,9 @@
     "semantic_hash": ""
   },
   "scripts/test-documents-pdf-ui.mjs": {
-    "mtime": 1795292398.1662257,
-    "seen": 1795292932.5879443,
-    "ast_hash": "b910f0a641b3c17ed1b39d294a2dd4bb",
+    "mtime": 1795876879.292731,
+    "seen": 1795877482.9375136,
+    "ast_hash": "5c8f0439ebb23e55637a86caf35590c1",
     "semantic_hash": ""
   },
   "scripts/test-documents-pdf-unit.ts": {
@@ -3690,9 +3690,9 @@
     "semantic_hash": ""
   },
   "src/services/parametres.ts": {
-    "mtime": 1795290482.8115275,
-    "seen": 1795292932.6140165,
-    "ast_hash": "44c2ba263f649006bcfab0e10d10fedf",
+    "mtime": 1795876905.8757346,
+    "seen": 1795877482.9560838,
+    "ast_hash": "bf24e0534eb8635cdb6582cd29008112",
     "semantic_hash": ""
   },
   "src/utils/pdfLogo.ts": {
@@ -3702,15 +3702,9 @@
     "semantic_hash": ""
   },
   "src/views/parametres/DocumentsPdfForm.tsx": {
-    "mtime": 1795290482.8125322,
-    "seen": 1795292932.6210546,
-    "ast_hash": "b99c72ac1a773d89152a78cd1d46951d",
-    "semantic_hash": ""
-  },
-  "src/views/parametres/DocumentsPdfPreview.tsx": {
-    "mtime": 1795290319.4892132,
-    "seen": 1795292932.6210577,
-    "ast_hash": "724b50ed47c77bfe8a7fc0e69ec5954b",
+    "mtime": 1795876841.9433494,
+    "seen": 1795877482.9598765,
+    "ast_hash": "381ef841d678ca4af0cb7f6a5b169bbc",
     "semantic_hash": ""
   },
   "src/views/parametres/DocumentsPdfView.tsx": {
@@ -3720,15 +3714,15 @@
     "semantic_hash": ""
   },
   "specs/captures/documents-pdf/README.md": {
-    "mtime": 1795292530.9828694,
-    "seen": 1795292932.6432226,
-    "ast_hash": "f0cd650af37d597956252095662e8e1b",
+    "mtime": 1795877374.084013,
+    "seen": 1795877482.9758463,
+    "ast_hash": "38e0d7fb4a02b02e51785a2f2c443930",
     "semantic_hash": ""
   },
   "specs/documents-pdf-personnalisation.md": {
-    "mtime": 1795291745.7005255,
-    "seen": 1795292932.6443093,
-    "ast_hash": "85094be787d1619208a6e4ef81b0cc39",
+    "mtime": 1795876905.8796494,
+    "seen": 1795877482.9767165,
+    "ast_hash": "0e9dbbb570b18a38782653f6940d00d7",
     "semantic_hash": ""
   },
   "specs/captures/documents-pdf/devis-personnalise.pdf": {
@@ -3834,9 +3828,63 @@
     "semantic_hash": ""
   },
   "package-lock.json": {
-    "mtime": 1795873538.7022524,
-    "seen": 1795874369.994846,
-    "ast_hash": "5b6a0abc51d1ad1d1704a698792f0d70",
+    "mtime": 1795876712.361709,
+    "seen": 1795877483.0085588,
+    "ast_hash": "67ee29890374aad886121ffc5d219553",
     "semantic_hash": ""
+  },
+  "src/forms.css": {
+    "mtime": 1795876841.9480703,
+    "seen": 1795877553.3255339,
+    "ast_hash": "",
+    "semantic_hash": "4d0d3381f9961f98eb0511d7b1d5cdcc"
+  },
+  "src/components/PdfReader.css": {
+    "mtime": 1795877035.7449324,
+    "seen": 1795877553.3255339,
+    "ast_hash": "",
+    "semantic_hash": "8070a7a9428469250afe66719f2656ef"
+  },
+  "src/components/PdfPreviewDialog.tsx": {
+    "mtime": 1795876983.3105578,
+    "seen": 1795877482.9523501,
+    "ast_hash": "9e3b3e6fb360f7da9205a6ad789f284c",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/lecteur-devis-mobile.png": {
+    "mtime": 1795877194.3350902,
+    "seen": 1795877482.9829085,
+    "ast_hash": "1f478cf66c6a165df5d9de722760967a",
+    "semantic_hash": ""
+  },
+  "src/devis.css": {
+    "mtime": 1795876854.8230317,
+    "seen": 1795877553.3255339,
+    "ast_hash": "",
+    "semantic_hash": "64e60cb6fed1969c3a312d298ff5b798"
+  },
+  "scripts/test-pdf-reader-ui.mjs": {
+    "mtime": 1795877159.942032,
+    "seen": 1795877482.9395328,
+    "ast_hash": "6acfce62cc5fa0b6eeb808b3a34eabdf",
+    "semantic_hash": ""
+  },
+  "specs/captures/documents-pdf/lecteur-facture-bureau.png": {
+    "mtime": 1795877188.5377831,
+    "seen": 1795877482.9829102,
+    "ast_hash": "dab75cf693494de459d3742f4e2d89d5",
+    "semantic_hash": ""
+  },
+  "src/components/PdfReader.tsx": {
+    "mtime": 1795877035.7434356,
+    "seen": 1795877482.9523523,
+    "ast_hash": "d19800afd45fcfed0e51d7d9b8361508",
+    "semantic_hash": ""
+  },
+  "src/parametres.css": {
+    "mtime": 1795876841.9475944,
+    "seen": 1795877553.3255339,
+    "ast_hash": "",
+    "semantic_hash": "1471e765e71c82e3c68da9c5b86446f4"
   }
 }

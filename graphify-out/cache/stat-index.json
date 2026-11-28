@@ -1131,10 +1131,10 @@
     }
   },
   "README.md": {
-    "size": 10373,
-    "mtime_ns": 1795810786281527800,
-    "indexed_at_ns": 1795811411074972300,
-    "word_count": 1323
+    "size": 10798,
+    "mtime_ns": 1795877246064208600,
+    "indexed_at_ns": 1795877468546019400,
+    "word_count": 1388
   },
   "TODO.md": {
     "size": 4834,
@@ -1299,19 +1299,19 @@
     "word_count": 39
   },
   "package.json": {
-    "size": 3812,
-    "mtime_ns": 1795810486720407200,
-    "indexed_at_ns": 1795811412129572300,
-    "word_count": 264,
+    "size": 3909,
+    "mtime_ns": 1795876905876741200,
+    "indexed_at_ns": 1795877469310287400,
+    "word_count": 269,
     "hashes": {
-      "package.json": "04ab6047a3b0acb4333cf1ff12b8ea6111ff539e6c5c14fc7675c0448c1fe47a"
+      "package.json": "76c2e83cb158bf2dac99f21e61db765e6772b0f795c9dc4b7191b89cabb85763"
     }
   },
   "passation.md": {
-    "size": 68011,
-    "mtime_ns": 1795876125455646000,
-    "indexed_at_ns": 1795876187776163100,
-    "word_count": 9037
+    "size": 69984,
+    "mtime_ns": 1795877445071318900,
+    "indexed_at_ns": 1795877468580163700,
+    "word_count": 9326
   },
   "public/favicon.svg": {
     "size": 294,
@@ -1821,10 +1821,10 @@
     }
   },
   "src/services/api.ts": {
-    "size": 8034,
-    "mtime_ns": 1795290122036209000,
-    "indexed_at_ns": 1795292923114639500,
-    "word_count": 1000
+    "size": 8499,
+    "mtime_ns": 1795876854819273800,
+    "indexed_at_ns": 1795877468859666800,
+    "word_count": 1055
   },
   "src/services/contracts.ts": {
     "size": 10392,
@@ -1947,10 +1947,10 @@
     }
   },
   "src/views/VentesComptoirView.tsx": {
-    "size": 18329,
-    "mtime_ns": 1795810464893209100,
-    "indexed_at_ns": 1795811411511852000,
-    "word_count": 1625
+    "size": 18824,
+    "mtime_ns": 1795876868610913900,
+    "indexed_at_ns": 1795877468880761500,
+    "word_count": 1668
   },
   "tsconfig.app.json": {
     "size": 655,
@@ -3261,13 +3261,10 @@
     "word_count": 566
   },
   "scripts/test-devis-ui.mjs": {
-    "size": 29367,
-    "mtime_ns": 1795260378374051700,
-    "indexed_at_ns": 1795262433235756800,
-    "word_count": 2923,
-    "hashes": {
-      "scripts/test-devis-ui.mjs": "9ea2a54845e093995422eb0ed5352f26169ca0203a5b95289f63e0be59e7f1a5"
-    }
+    "size": 29385,
+    "mtime_ns": 1795877111478556200,
+    "indexed_at_ns": 1795877468602731100,
+    "word_count": 2924
   },
   "scripts/test-devis.ts": {
     "size": 20764,
@@ -3327,12 +3324,12 @@
     }
   },
   "specs/devis.md": {
-    "size": 7754,
-    "mtime_ns": 1795273356208896000,
-    "indexed_at_ns": 1795275268471149300,
-    "word_count": 1054,
+    "size": 7844,
+    "mtime_ns": 1795876905878643300,
+    "indexed_at_ns": 1795877469360965100,
+    "word_count": 1070,
     "hashes": {
-      "specs/devis.md": "73a59d4cfe131afba043fd7dc05b186c2446fd7d0cba33f7b09157d605dcaabb"
+      "specs/devis.md": "697dd40cc71fd775289b1ad4cd21de530161a3294a7c6049f162146bdabd2a25"
     }
   },
   "src/hooks/useDevis.ts": {
@@ -3354,13 +3351,10 @@
     }
   },
   "src/services/devis.ts": {
-    "size": 1611,
-    "mtime_ns": 1795259914899753300,
-    "indexed_at_ns": 1795262433145892800,
-    "word_count": 173,
-    "hashes": {
-      "src/services/devis.ts": "16d9121ba3b165e19531bac606529c2bf26a5d899229f3883d9136dccd7221bc"
-    }
+    "size": 1265,
+    "mtime_ns": 1795876854820799700,
+    "indexed_at_ns": 1795877468861616600,
+    "word_count": 131
   },
   "src/utils/devis.ts": {
     "size": 603,
@@ -3372,13 +3366,10 @@
     }
   },
   "src/views/DevisView.tsx": {
-    "size": 15029,
-    "mtime_ns": 1795260233972210000,
-    "indexed_at_ns": 1795262433166288900,
-    "word_count": 1273,
-    "hashes": {
-      "src/views/DevisView.tsx": "4df0884dcf5deb3ed5152148e53286526729b3ae2e56eaf9c029f94a7ea872fc"
-    }
+    "size": 15982,
+    "mtime_ns": 1795876854821895900,
+    "indexed_at_ns": 1795877468872882300,
+    "word_count": 1356
   },
   "src/views/devis/DevisConversionDialog.tsx": {
     "size": 3527,
@@ -3585,10 +3576,10 @@
     "word_count": 1558
   },
   "scripts/test-documents-pdf-ui.mjs": {
-    "size": 23864,
-    "mtime_ns": 1795292398166225600,
-    "indexed_at_ns": 1795292922716350600,
-    "word_count": 2278
+    "size": 24281,
+    "mtime_ns": 1795876879292731000,
+    "indexed_at_ns": 1795877468605190300,
+    "word_count": 2313
   },
   "scripts/test-documents-pdf-unit.ts": {
     "size": 15932,
@@ -3615,12 +3606,12 @@
     "word_count": 265
   },
   "specs/captures/documents-pdf/README.md": {
-    "size": 2657,
-    "mtime_ns": 1795292530982869500,
-    "indexed_at_ns": 1795292924236496200,
-    "word_count": 322,
+    "size": 3035,
+    "mtime_ns": 1795877374084012900,
+    "indexed_at_ns": 1795877469355834300,
+    "word_count": 372,
     "hashes": {
-      "specs/captures/documents-pdf/README.md": "4a9fb4eaed45c272b71bb5ebeeb56884972435bfc51a79595d66c814339f5d9f"
+      "specs/captures/documents-pdf/README.md": "784d31b339799af2c172633a0bee07d31040acf2e291938def67e10e93c114c4"
     }
   },
   "specs/captures/documents-pdf/devis-personnalise.pdf": {
@@ -3663,19 +3654,19 @@
     }
   },
   "specs/documents-pdf-personnalisation.md": {
-    "size": 5650,
-    "mtime_ns": 1795291745700525500,
-    "indexed_at_ns": 1795292924291569700,
-    "word_count": 805,
+    "size": 5800,
+    "mtime_ns": 1795876905879649500,
+    "indexed_at_ns": 1795877469362799900,
+    "word_count": 829,
     "hashes": {
-      "specs/documents-pdf-personnalisation.md": "6e8a7763ba9455d861e64f6575f99c34d3c8ae5e32554092341dfd0677162ad7"
+      "specs/documents-pdf-personnalisation.md": "064a90f6d20167f59e3e79c9d60fb3ec834ed81e71ca74ffa1fdc959e97a4daf"
     }
   },
   "src/services/parametres.ts": {
-    "size": 2084,
-    "mtime_ns": 1795290482811527400,
-    "indexed_at_ns": 1795292923117341800,
-    "word_count": 212
+    "size": 1757,
+    "mtime_ns": 1795876905875734600,
+    "indexed_at_ns": 1795877468862580200,
+    "word_count": 184
   },
   "src/utils/pdfLogo.ts": {
     "size": 4109,
@@ -3684,16 +3675,10 @@
     "word_count": 541
   },
   "src/views/parametres/DocumentsPdfForm.tsx": {
-    "size": 10830,
-    "mtime_ns": 1795290482812532200,
-    "indexed_at_ns": 1795292923143306200,
-    "word_count": 944
-  },
-  "src/views/parametres/DocumentsPdfPreview.tsx": {
-    "size": 1991,
-    "mtime_ns": 1795290319489213300,
-    "indexed_at_ns": 1795292923144419000,
-    "word_count": 191
+    "size": 10589,
+    "mtime_ns": 1795876841943349400,
+    "indexed_at_ns": 1795877468888807100,
+    "word_count": 928
   },
   "src/views/parametres/DocumentsPdfView.tsx": {
     "size": 2292,
@@ -3727,5 +3712,23 @@
     "mtime_ns": 1795811089592566000,
     "indexed_at_ns": 1795811411159934000,
     "word_count": 783
+  },
+  "src/components/PdfPreviewDialog.tsx": {
+    "size": 3047,
+    "mtime_ns": 1795876983310557900,
+    "indexed_at_ns": 1795877468833029200,
+    "word_count": 340
+  },
+  "scripts/test-pdf-reader-ui.mjs": {
+    "size": 12970,
+    "mtime_ns": 1795877159942032000,
+    "indexed_at_ns": 1795877468617913900,
+    "word_count": 1382
+  },
+  "src/components/PdfReader.tsx": {
+    "size": 5186,
+    "mtime_ns": 1795877035743435700,
+    "indexed_at_ns": 1795877468834345000,
+    "word_count": 532
   }
 }

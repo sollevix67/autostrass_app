@@ -957,3 +957,4 @@ la facture 000001 puis les deux pages d’un devis de 28 lignes à 390 px de lar
 Les six tables métier et d’audit contrôlées ont conservé leurs empreintes. Les
 bases jetables ont été supprimées et les instances arrêtées. Les [captures du
 lecteur](specs/captures/documents-pdf/README.md#interface) illustrent la consultation.
+Le commit fonctionnel `5a5fbbb` sert de base au [graphe Graphify](graphify-out/graph.html).
