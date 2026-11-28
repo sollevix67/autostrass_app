@@ -1308,10 +1308,10 @@
     }
   },
   "passation.md": {
-    "size": 65905,
-    "mtime_ns": 1795874085054470800,
-    "indexed_at_ns": 1795874369994846200,
-    "word_count": 8737
+    "size": 68011,
+    "mtime_ns": 1795876125455646000,
+    "indexed_at_ns": 1795876187776163100,
+    "word_count": 9037
   },
   "public/favicon.svg": {
     "size": 294,
@@ -3417,10 +3417,10 @@
     }
   },
   "scripts/lib/pdf-assertions.ts": {
-    "size": 7739,
-    "mtime_ns": 1795290945961791400,
-    "indexed_at_ns": 1795292922696952100,
-    "word_count": 926
+    "size": 7780,
+    "mtime_ns": 1795875863138563900,
+    "indexed_at_ns": 1795876187776163100,
+    "word_count": 930
   },
   "scripts/render-pdf-examples.ps1": {
     "size": 4620,

@@ -1,18 +1,19 @@
 # Graph Report - OpenStrass  (2026-11-28)
 
 ## Corpus Check
-- 422 files · ~486,737 words
+- 422 files · ~487,041 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 66 file(s) not represented in the graph (top: .csv 53, .css 8, (none) 3)
 
 ## Summary
-- 3615 nodes · 7900 edges · 209 communities (164 shown, 45 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 250 edges (avg confidence: 0.86)
+- 3616 nodes · 7904 edges · 209 communities (164 shown, 45 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 253 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ac06c211`
+- Built from commit: `26e3dfec`
 - [Compétences Obsidian et find-skills du 28 novembre 2026](../passation.md#compétences-obsidian-et-find-skills-du-28-novembre-2026)
+- [Reprise des contrôles PDF du 28 novembre 2026](../passation.md#reprise-des-contrôles-pdf-du-28-novembre-2026)
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -224,7 +225,7 @@
 3. `Icon()` - 56 edges
 4. `react` - 55 edges
 5. `PageLayout()` - 48 edges
-6. `OpenStrass Project Handoff` - 46 edges
+6. `OpenStrass Project Handoff` - 47 edges
 7. `FormInput()` - 45 edges
 8. `FormDialog()` - 43 edges
 9. `useToast()` - 41 edges
@@ -237,10 +238,10 @@
   specs/accessibilite-wcag-review.md → src/components/forms/ErrorSummary.tsx
 - `Création et modification des clients — 6 novembre 2026` --references--> `useResource()`  [INFERRED]
   specs/client-modal.md → src/hooks/useResource.ts
-- `R12 — P2 — Une panne SQL est renvoyée comme une authentification invalide` --references--> `AuthError`  [INFERRED]
-  specs/revue-code-2026-11-14.md → server/middleware/auth.ts
-- `Correctifs de la revue intégrale — 14 novembre 2026` --references--> `createdAt()`  [INFERRED]
-  specs/correctifs-revue-2026-11-14.md → server/db/schema.ts
+- `Reprise des contrôles PDF du 28 novembre 2026` --references--> `capturePdfDefinitions()`  [INFERRED]
+  passation.md → scripts/lib/pdf-assertions.ts
+- `Reprise des contrôles PDF du 28 novembre 2026` --references--> `renderedPdfPages()`  [INFERRED]
+  passation.md → scripts/lib/pdf-assertions.ts
 
 ## Import Cycles
 - None detected.
@@ -391,7 +392,7 @@ Nodes (38): scripts, build, caisse:diagnostic, db:admin, db:generate, db:migrate
 
 ### Community 35 - "Project Handoff Documentation"
 Cohesion: 0.08
-Nodes (37): OpenStrass Project Handoff, OpenStrass Initial Requirements, API and Security Test Suites, Authentication and Role-Based Access Control, OpenStrass Roadmap, Cash Session Management, Centralized HTTP Client, Customer and Supplier Address Books (+29 more)
+Nodes (38): OpenStrass Project Handoff, OpenStrass Initial Requirements, API and Security Test Suites, Authentication and Role-Based Access Control, OpenStrass Roadmap, Cash Session Management, Centralized HTTP Client, Customer and Supplier Address Books (+30 more)
 
 ### Community 36 - "Application TypeScript Configuration"
 Cohesion: 0.10
@@ -928,7 +929,7 @@ Nodes (8): Autres défauts confirmés, R08 — P2 — Le journal soustrait deux 
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `OpenStrass Project Handoff` connect `Project Handoff Documentation` to `OpenStrass Design System Master`, `pdfCommercial.ts`, `toErrorMessage`, `Inventaire physique par référence`, `Création et modification des clients — 6 novembre 2026`, `formulaires-modaux.md`, `Application Architecture README`, `parametres.md`, `Clôture de caisse — 10 novembre 2026`, `Audit des fichiers inutiles — 13 novembre 2026`, `Création et modification des fournisseurs — 6 novembre 2026`, `Analyse de Microsoft TokenEconomizer`, `Correctifs de la revue intégrale — 14 novembre 2026`, `Comptage du fond de caisse à l'ouverture — 10 novembre 2026`, `Security Review Findings`, `review-accessibility-ui.mjs`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `TailwindConfigGenerator` (e.g. with `TestGeneratedConfigIsValidJs` and `TestTailwindConfigGenerator`) actually correct?**
   _`TailwindConfigGenerator` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `RFC-5321`, `./server/services/settingsStore.ts`, `Banner Design Skill` to the rest of the system?**

@@ -1362,9 +1362,9 @@
     "semantic_hash": ""
   },
   "passation.md": {
-    "mtime": 1795874085.0544708,
-    "seen": 1795874369.994846,
-    "ast_hash": "5cdf4cfd8bc96eb9caeadc973fee5742",
+    "mtime": 1795876125.455646,
+    "seen": 1795876187.776163,
+    "ast_hash": "b1a838d532d2ee7058608ed01c6e45c6",
     "semantic_hash": ""
   },
   "specs/stock-emplacements-design.md": {
@@ -3234,9 +3234,9 @@
     "semantic_hash": ""
   },
   "scripts/lib/pdf-assertions.ts": {
-    "mtime": 1795290945.9617915,
-    "seen": 1795292932.5844166,
-    "ast_hash": "ac0699f4ce2794c94f2bbcde010a7df3",
+    "mtime": 1795875863.1385639,
+    "seen": 1795876187.776163,
+    "ast_hash": "f6e55b595ab88975883dad589ae2a07b",
     "semantic_hash": ""
   },
   "scripts/render-pdf-examples.ps1": {

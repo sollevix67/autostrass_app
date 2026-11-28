@@ -927,3 +927,5 @@ facture personnalisée et les deux pages du devis ont aussi été relues à l’
 Les exemples fictifs de cette recette restent sous
 `%TEMP%/openstrass-pdf-fa367a98724f4d6f8a116f6aa26ee09a` après le refus
 du nettoyage par le contrôle automatique. Le dépôt conserve ses références.
+Le [graphe Graphify](graphify-out/graph.html) prend pour base le commit
+`26e3dfe` qui contient le correctif et les résultats des contrôles PDF.

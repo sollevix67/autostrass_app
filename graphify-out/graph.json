@@ -21685,7 +21685,7 @@
       "file_type": "document",
       "norm_label": "openstrass project handoff",
       "source_file": "passation.md",
-      "source_location": "L1-L899",
+      "source_location": "L1-L931",
       "source_url": null
     },
     {
@@ -44796,6 +44796,18 @@
       "community": 35,
       "community_name": "Project Handoff Documentation",
       "norm_label": "compétences obsidian et find-skills du 28 novembre 2026"
+    },
+    {
+      "id": "passation_reprise_des_contrôles_pdf_du_28_novembre_2026",
+      "label": "Reprise des contrôles PDF du 28 novembre 2026",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "passation.md",
+      "source_location": "L901",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Project Handoff Documentation",
+      "norm_label": "reprise des controles pdf du 28 novembre 2026"
     }
   ],
   "links": [
@@ -136653,6 +136665,53 @@
       "source_location": "L899",
       "weight": 1.0,
       "_origin": "ast"
+    },
+    {
+      "source": "passation_autostrass_project_handoff",
+      "target": "passation_reprise_des_contrôles_pdf_du_28_novembre_2026",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "passation.md",
+      "source_location": "L901",
+      "weight": 1.0,
+      "_origin": "ast",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "passation_reprise_des_contrôles_pdf_du_28_novembre_2026",
+      "target": "server_types_pdfmake_d_pdfmake_pdfmakeoutput_getbuffer",
+      "relation": "references",
+      "context": "getBuffer()",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "passation.md",
+      "source_location": "L908",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "passation_reprise_des_contrôles_pdf_du_28_novembre_2026",
+      "target": "scripts_lib_pdf_assertions_capturepdfdefinitions",
+      "relation": "references",
+      "context": "capturePdfDefinitions",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "passation.md",
+      "source_location": "L904",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "passation_reprise_des_contrôles_pdf_du_28_novembre_2026",
+      "target": "scripts_lib_pdf_assertions_renderedpdfpages",
+      "relation": "references",
+      "context": "renderedPdfPages",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "passation.md",
+      "source_location": "L904",
+      "weight": 1.0,
+      "_origin": "ast"
     }
   ],
   "hyperedges": [
@@ -136713,5 +136772,5 @@
       "source_file": ".github/prompts/ui-styling/SKILL.md"
     }
   ],
-  "built_at_commit": "ac06c211fcd51be8019767a69a141ab616fecd27"
+  "built_at_commit": "26e3dfec2b33af751c814e65f23137ea2b9388a0"
 }
